@@ -1,0 +1,87 @@
+/* ---------- design tokens ---------- */
+:root {
+    --grid-color: #dddddd;
+    --grid-line-width: 1;
+
+    --edge-color: #000000;
+    --edge-width: 1.5;
+
+    --vertex-fill: steelblue;
+    --vertex-radius: 16px;
+    --label-color: #ffffff;
+    --label-size: 12px;
+
+    --container-border: 2px solid red;
+    --container-height: 100vh;
+}
+
+/* ---------- page ---------- */
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- graph container (created by Graph) ---------- */
+.graph-container {
+    border: var(--container-border);
+    height: var(--container-height);
+    box-sizing: border-box;
+}
+
+/* ---------- svg window ---------- */
+.graph-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none; /* let d3.zoom handle touch gestures */
+}
+
+.graph-svg.panning {
+    cursor: grabbing;
+}
+
+/* ---------- grid ---------- */
+.grid-background {
+    fill: url(#graph-grid-pattern);
+    pointer-events: none;
+}
+
+.grid-line {
+    fill: none;
+    stroke: var(--grid-color);
+    stroke-width: var(--grid-line-width);
+}
+
+/* Hidden SVG that holds the shared grid pattern.
+   Zero size instead of display:none, which breaks pattern references. */
+.graph-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* ---------- edges ---------- */
+.edge {
+    stroke: var(--edge-color);
+    stroke-width: var(--edge-width);
+    vector-effect: non-scaling-stroke; /* constant thickness when zooming */
+}
+
+/* ---------- vertices ---------- */
+.vertex {
+    r: var(--vertex-radius);
+    fill: var(--vertex-fill);
+}
+
+/* ---------- vertex labels ---------- */
+.vertex-label {
+    fill: var(--label-color);
+    font-size: var(--label-size);
+    font-family: sans-serif;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    user-select: none;
+}
