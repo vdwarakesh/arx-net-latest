@@ -1,5 +1,6 @@
 import { Vertex } from "./Vertex.js";
 import { Edge } from "./Edge.js";
+import { Container } from "../Container.js";
 import { SVGWindow } from "../SVGWindow.js";
 import { GraphRender } from "./GraphRender.js";
 
@@ -7,22 +8,17 @@ const MIN_CIRCLE_RADIUS = 100;
 const VERTEX_SPACING = 80; // straight-line distance between neighbouring vertices
 
 export class Graph {
-    static idCounter = 0; // Keep track of how many graphs are created
-
     constructor() {
         this.vertices = new Map();
         this.edges = [];
+
+        // The Container provides the outer box, header (Grid / Zoom on
+        // Focus checkboxes) and a content area - it's shared, generic UI
+        // that a future Tree class can reuse as-is.
+        this.container = new Container();
+
         this.svgWindow = null;
         this.graphRender = null;
-
-        // Generate a unique ID and create the container div automatically
-        Graph.idCounter++;
-        this.containerId = `graph-container-${Graph.idCounter}`;
-        this.container = document.createElement("div");
-        this.container.id = this.containerId;
-        this.container.classList.add("graph-container");
-
-        document.body.appendChild(this.container);
     }
 
     createVertex(id, connections = []) {
