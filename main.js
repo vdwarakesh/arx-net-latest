@@ -10,6 +10,5 @@ graph.createVertex("D", ["B"]);
 graph.createVertex("E", ["B"]);
 graph.createVertex("F", ["C"]);
 
-// Call render without passing a container string
-graph.render();
+document.body.appendChild(graph)
 console.log(graph)

@@ -34,8 +34,11 @@ export class SVGWindow {
         this.setupZoom();
         this.setupCenterOnDoubleClick();
 
-        container.onGridToggle(checked => this.grid.classed("hidden", !checked));
-        container.onZoomFocusToggle(checked => { this.zoomOnFocus = checked; });
+        // Stored so destroy() can remove exactly these listeners later.
+        this.handleGridToggle = event => this.grid.classed("hidden", !event.detail);
+        this.handleZoomFocusToggle = event => { this.zoomOnFocus = event.detail; };
+        container.addEventListener("gridtoggle", this.handleGridToggle);
+        container.addEventListener("zoomfocustoggle", this.handleZoomFocusToggle);
 
         // Attach after wiring everything up, so the SVG has a real size
         // when we fit the view.
@@ -219,6 +222,8 @@ export class SVGWindow {
     getSelection() { return this.svg; }
 
     destroy() {
+        this.container.removeEventListener("gridtoggle", this.handleGridToggle);
+        this.container.removeEventListener("zoomfocustoggle", this.handleZoomFocusToggle);
         this.svg.on(".zoom", null).on("wheel", null);
         this.svg.remove();
     }

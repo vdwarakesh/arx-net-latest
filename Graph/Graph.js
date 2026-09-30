@@ -7,16 +7,22 @@ import { GraphRender } from "./GraphRender.js";
 const MIN_CIRCLE_RADIUS = 100;
 const VERTEX_SPACING = 80; // straight-line distance between neighbouring vertices
 
-export class Graph {
+// A Graph IS a Container (and therefore an HTMLElement), so it goes on the
+// page the normal DOM way:
+//
+//   const graph = new Graph();
+//   graph.createVertex("a", []);
+//   document.body.appendChild(graph);
+//
+// There's no separate render()/mount() call. connectedCallback() is the
+// standard custom-element lifecycle hook that the browser calls the moment
+// an element is actually inserted into the document - that's where the
+// vertex layout and the SVG rendering get built.
+export class Graph extends Container {
     constructor() {
+        super();
         this.vertices = new Map();
         this.edges = [];
-
-        // The Container provides the outer box, header (Grid / Zoom on
-        // Focus checkboxes) and a content area - it's shared, generic UI
-        // that a future Tree class can reuse as-is.
-        this.container = new Container();
-
         this.svgWindow = null;
         this.graphRender = null;
     }
@@ -60,10 +66,16 @@ export class Graph {
         });
     }
 
-    render() {
-        this.rearrangeVerticesInCircle(); // before the window fits its view
-        this.svgWindow = new SVGWindow(this, this.container);
+    // Called by the browser when this element is inserted into the
+    // document (e.g. by appendChild). Guarded so re-inserting an
+    // already-built graph elsewhere in the page doesn't rebuild it.
+    connectedCallback() {
+        if (this.svgWindow) { return; }
+
+        this.rearrangeVerticesInCircle();
+        this.svgWindow = new SVGWindow(this, this);
         this.graphRender = new GraphRender(this, this.svgWindow);
-        return this.graphRender;
     }
 }
+
+customElements.define("graph-view", Graph);

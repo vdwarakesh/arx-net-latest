@@ -1,54 +1,50 @@
-// Generic visualization shell: an outer box with a header (Grid / Zoom on
-// Focus checkboxes) and a content area for a renderer (SVGWindow, etc.) to
-// mount into. Knows nothing about graphs, trees, or any specific drawing -
-// any visualization type can reuse it by constructing one and reading its
-// content element, initial state, and toggle events.
-export class Container {
-    static idCounter = 0;
+const TAG_NAME = "viz-container";
 
+// Generic visualization shell: a real custom element with a header (Grid /
+// Zoom on Focus checkboxes) and a content area for a renderer (SVGWindow,
+// etc.) to mount into.
+//
+// Because it IS an HTMLElement, it plugs into the DOM the normal way -
+// someParent.appendChild(container) - with no bespoke mount/render method.
+// It also inherits addEventListener/removeEventListener/dispatchEvent for
+// free, so toggle changes are announced as standard CustomEvents
+// ("gridtoggle", "zoomfocustoggle") rather than a hand-rolled listener list.
+export class Container extends HTMLElement {
     constructor() {
-        Container.idCounter++;
-        this.id = `viz-container-${Container.idCounter}`;
+        super();
+        this.classList.add("viz-container");
 
         this.gridEnabled = true;
         this.zoomOnFocus = false;
-        this.gridToggleListeners = [];
-        this.zoomFocusToggleListeners = [];
-
-        this.element = document.createElement("div");
-        this.element.id = this.id;
-        this.element.className = "viz-container";
 
         this.header = document.createElement("div");
         this.header.className = "viz-header";
-        this.element.appendChild(this.header);
+        this.appendChild(this.header);
 
         this.content = document.createElement("div");
         this.content.className = "viz-content";
-        this.element.appendChild(this.content);
+        this.appendChild(this.content);
 
         this.createCheckboxOption("Grid", this.gridEnabled, checked => {
             this.gridEnabled = checked;
-            this.gridToggleListeners.forEach(listener => listener(checked));
+            this.dispatchEvent(new CustomEvent("gridtoggle", { detail: checked }));
         });
 
         this.createCheckboxOption("Zoom on Focus", this.zoomOnFocus, checked => {
             this.zoomOnFocus = checked;
-            this.zoomFocusToggleListeners.forEach(listener => listener(checked));
+            this.dispatchEvent(new CustomEvent("zoomfocustoggle", { detail: checked }));
         });
-
-        document.body.appendChild(this.element);
     }
 
     // ---------- header ----------
 
-    createCheckboxOption(labelText, defaultChecked, onChange) {
+    createCheckboxOption(labelText, isChecked, onChange) {
         const label = document.createElement("label");
         label.className = "viz-header-option";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.checked = defaultChecked;
+        checkbox.checked = isChecked;
         checkbox.addEventListener("change", () => onChange(checkbox.checked));
 
         label.appendChild(checkbox);
@@ -57,22 +53,6 @@ export class Container {
 
         return checkbox;
     }
-
-    // ---------- subscriptions ----------
-    // Consumers read gridEnabled / zoomOnFocus for the initial state, then
-    // subscribe here to react to later changes.
-
-    onGridToggle(listener) {
-        this.gridToggleListeners.push(listener);
-    }
-
-    onZoomFocusToggle(listener) {
-        this.zoomFocusToggleListeners.push(listener);
-    }
-
-    // ---------- cleanup ----------
-
-    destroy() {
-        this.element.remove();
-    }
 }
+
+customElements.define(TAG_NAME, Container);
