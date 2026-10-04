@@ -1,0 +1,132 @@
+/* ---------- design tokens ---------- */
+:root {
+    --grid-color: #dddddd;
+    --grid-line-width: 1;
+
+    --edge-color: #000000;
+    --edge-width: 1.5;
+
+    --vertex-fill: steelblue;
+    --vertex-radius: 16px;
+    --label-color: #ffffff;
+    --label-size: 12px;
+
+    --viz-border: 2px solid red;
+    --viz-height: 100vh;
+
+    --header-background: #f5f5f5;
+    --header-border: 1px solid #cccccc;
+    --header-text-color: #333333;
+    --header-gap: 16px;
+    --header-padding: 8px 12px;
+    --header-font-size: 14px;
+}
+
+/* ---------- page ---------- */
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* ---------- generic visualization shell (Container class) ---------- */
+/* Reused by any visualization type - graph, tree, etc. */
+.viz-container {
+    display: flex;
+    flex-direction: column;
+    border: var(--viz-border);
+    height: var(--viz-height);
+    box-sizing: border-box;
+}
+
+.viz-header {
+    flex: 0 0 auto;
+    display: flex;
+    gap: var(--header-gap);
+    padding: var(--header-padding);
+    background: var(--header-background);
+    border-bottom: var(--header-border);
+    font-size: var(--header-font-size);
+    color: var(--header-text-color);
+    font-family: sans-serif;
+}
+
+.viz-header-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.viz-content {
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 0;
+}
+
+/* ---------- svg window (graph-specific rendering) ---------- */
+.graph-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none; /* let d3.zoom handle touch gestures */
+}
+
+.graph-svg.panning {
+    cursor: grabbing;
+}
+
+/* ---------- grid ---------- */
+.grid-background {
+    fill: url(#graph-grid-pattern);
+    pointer-events: none;
+}
+
+.grid-line {
+    fill: none;
+    stroke: var(--grid-color);
+    stroke-width: var(--grid-line-width);
+}
+
+.graph-grid.hidden {
+    display: none;
+}
+
+/* Hidden SVG that holds the shared grid pattern.
+   Zero size instead of display:none, which breaks pattern references. */
+.graph-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* ---------- edges ---------- */
+.edge {
+    stroke: var(--edge-color);
+    stroke-width: var(--edge-width);
+    vector-effect: non-scaling-stroke; /* constant thickness when zooming */
+}
+
+/* ---------- vertices ---------- */
+.vertex {
+    r: var(--vertex-radius);
+    fill: var(--vertex-fill);
+    cursor: grab;
+}
+
+.vertex.dragging {
+    cursor: grabbing;
+}
+
+/* ---------- vertex labels ---------- */
+.vertex-label {
+    fill: var(--label-color);
+    font-size: var(--label-size);
+    font-family: sans-serif;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    user-select: none;
+}

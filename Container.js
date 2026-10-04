@@ -1,14 +1,4 @@
 const TAG_NAME = "viz-container";
-
-// Generic visualization shell: a real custom element with a header (Grid /
-// Zoom on Focus checkboxes) and a content area for a renderer (SVGWindow,
-// etc.) to mount into.
-//
-// Because it IS an HTMLElement, it plugs into the DOM the normal way -
-// someParent.appendChild(container) - with no bespoke mount/render method.
-// It also inherits addEventListener/removeEventListener/dispatchEvent for
-// free, so toggle changes are announced as standard CustomEvents
-// ("gridtoggle", "zoomfocustoggle") rather than a hand-rolled listener list.
 export class Container extends HTMLElement {
     constructor() {
         super();
