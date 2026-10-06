@@ -1,143 +1,14 @@
-// --- 1. Utility for rem-to-px calculations ---
+// ============================================================
+// 1. UTILITIES
+// ============================================================
+
+// Converts rem values to pixels for resize calculations
 const remPx = () => parseFloat(getComputedStyle(document.documentElement).fontSize);
 
-// --- 2. Container Class ---
-class Container {
-    static count = 0;
+// ============================================================
+// 2. REUSABLE FLOATING WINDOW
+// ============================================================
 
-    constructor(name) {
-        Container.count++;
-        // Use provided name or default to Container {number}
-        this.name = name || `Container ${Container.count}`;
-        this.element = this.createDOM();
-    }
-
-    createDOM() {
-        const template = document.getElementById('container-template');
-        const clone = template.content.cloneNode(true);
-        const containerEl = clone.querySelector('.container');
-        const titleEl = clone.querySelector('.container-title');
-        const focusBtn = containerEl.querySelector('.focus-btn');
-
-        titleEl.textContent = this.name;
-
-        // Bind the focus event strictly to this container's element
-        focusBtn.addEventListener('click', () => {
-            focusContainer(this.element);
-        });
-
-        return containerEl;
-    }
-}
-
-// --- 3. View Management (Grid vs Focused) ---
-const btnNew = document.getElementById('btn-new');
-const btnList = document.getElementById('btn-list');
-const multiView = document.getElementById('multi-view');
-const focusedView = document.getElementById('focused-view');
-const focusedSlot = document.getElementById('focused-container-slot');
-
-let currentFocused = null;
-let lastFocused = null; // Tracks the container to return to when toggling
-
-const gridPlaceholder = document.createElement('div');
-gridPlaceholder.style.display = 'none';
-
-const createNewContainer = (name) => {
-    const container = new Container(name);
-    multiView.appendChild(container.element);
-
-    // Automatically focus the newly created container
-    focusContainer(container.element);
-};
-
-const focusContainer = (containerElement) => {
-    if (currentFocused) {
-        gridPlaceholder.replaceWith(currentFocused);
-    }
-
-    containerElement.replaceWith(gridPlaceholder);
-    focusedSlot.appendChild(containerElement);
-
-    currentFocused = containerElement;
-    lastFocused = containerElement; // Remember this container
-
-    multiView.classList.add('hidden');
-    focusedView.classList.remove('hidden');
-};
-
-const toggleList = () => {
-    const isCurrentlyList = !multiView.classList.contains('hidden');
-
-    if (isCurrentlyList) {
-        // Switch TO Focused View
-        if (lastFocused) {
-            focusContainer(lastFocused);
-        }
-    } else {
-        // Switch TO List View
-        if (currentFocused) {
-            gridPlaceholder.replaceWith(currentFocused);
-            currentFocused = null; // Clears the active slot (but lastFocused remembers it)
-        }
-        multiView.classList.remove('hidden');
-        focusedView.classList.add('hidden');
-    }
-};
-
-// Sidebar event listeners
-btnNew.addEventListener('click', () => createNewContainer());
-btnList.addEventListener('click', toggleList); // Now a toggle
-
-// Initialize the app with a default container (it will auto-focus!)
-createNewContainer("Main Container");
-
-
-// --- 4. Resizing Logic (Pointer Events) ---
-const algorithm = document.getElementById('algorithm');
-const codeCard = document.getElementById('codeCard');
-const dividerH = document.getElementById('dividerH');
-
-let dragging = false;
-let startY = 0;
-let startCodeHeight = 0;
-
-dividerH.addEventListener('pointerdown', (e) => {
-    dividerH.setPointerCapture(e.pointerId);
-    dragging = true;
-    dividerH.classList.add('is-dragging');
-
-    startY = e.clientY;
-    startCodeHeight = codeCard.getBoundingClientRect().height;
-    document.body.style.userSelect = 'none';
-    e.preventDefault();
-});
-
-dividerH.addEventListener('pointerup', (e) => {
-    if (!dragging) return;
-    dragging = false;
-    dividerH.classList.remove('is-dragging');
-
-    document.body.style.userSelect = '';
-    dividerH.releasePointerCapture(e.pointerId);
-});
-
-dividerH.addEventListener('pointermove', (e) => {
-    if (!dragging) return;
-
-    const totalHeight = algorithm.getBoundingClientRect().height;
-    const handleHeight = dividerH.offsetHeight;
-
-    const minHeight = 3 * remPx();
-    const maxHeight = totalHeight - handleHeight - minHeight;
-
-    const delta = e.clientY - startY;
-    const newHeight = Math.max(minHeight, Math.min(startCodeHeight + delta, maxHeight));
-
-    codeCard.style.flex = `0 0 ${newHeight / remPx()}rem`;
-});
-
-// --- 5. Reusable Floating Window Class ---
 class FloatingWindow {
     constructor(title) {
         this.overlay = document.createElement('div');
@@ -155,10 +26,9 @@ class FloatingWindow {
 
         this.body = this.overlay.querySelector('.modal-body');
 
-        // Close on X click
         this.overlay.querySelector('.modal-close').addEventListener('click', () => this.close());
 
-        // Close on clicking outside the window
+        // Close when clicking outside the window
         this.overlay.addEventListener('mousedown', (e) => {
             if (e.target === this.overlay) this.close();
         });
@@ -179,12 +49,292 @@ class FloatingWindow {
     }
 }
 
+// ============================================================
+// 3. CONTAINER REGISTRY & NAMING
+// ============================================================
 
-// --- 6. Settings & Advanced Theme Logic ---
+const appContainers = new Map();
+
+// Returns a unique name, appending _1, _2, ... if needed
+const getUniqueName = (desiredName) => {
+    if (!appContainers.has(desiredName)) return desiredName;
+    let counter = 1;
+    while (appContainers.has(`${desiredName}_${counter}`)) {
+        counter++;
+    }
+    return `${desiredName}_${counter}`;
+};
+
+// Updates name, DOM label, and map entry. Does not remove any old map entry.
+const setContainerName = (container, newName) => {
+    container.name = newName;
+    container.element.querySelector('.container-title').textContent = newName;
+    appContainers.set(newName, container);
+};
+
+// Normal rename: removes the old map entry, then sets the new one
+const executeRename = (container, newName) => {
+    appContainers.delete(container.name);
+    setContainerName(container, newName);
+};
+
+// ============================================================
+// 4. CONTAINER CLASS
+// ============================================================
+
+class Container {
+    constructor(name) {
+        this.name = getUniqueName(name);
+        this.element = this.createDOM();
+    }
+
+    createDOM() {
+        const template = document.getElementById('container-template');
+        const clone = template.content.cloneNode(true);
+        const containerEl = clone.querySelector('.container');
+        const titleEl = clone.querySelector('.container-title');
+        const focusBtn = containerEl.querySelector('.focus-btn');
+
+        titleEl.textContent = this.name;
+
+        focusBtn.addEventListener('click', () => focusContainer(containerEl));
+
+        // Double-click the title to rename inline
+        titleEl.addEventListener('dblclick', () => {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'rename-input';
+            input.value = this.name;
+            titleEl.replaceWith(input);
+            input.focus();
+            input.select();
+
+            let isFinished = false;
+
+            const finishEdit = () => {
+                if (isFinished) return;
+                isFinished = true;
+                const newName = input.value.trim();
+                input.replaceWith(titleEl);
+
+                if (newName && newName !== this.name) {
+                    attemptRename(this, newName);
+                }
+            };
+
+            input.addEventListener('blur', finishEdit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') input.blur();
+                if (e.key === 'Escape') {
+                    input.value = this.name;
+                    input.blur();
+                }
+            });
+        });
+
+        return containerEl;
+    }
+}
+
+// ============================================================
+// 5. CONTAINER CREATION & RENAME CONFLICTS (modals)
+// ============================================================
+
+const creationModal = new FloatingWindow('Create Object');
+const warningModal = new FloatingWindow('Name Conflict');
+
+const openCreationModal = (type) => {
+    const defaultName = getUniqueName(type);
+    creationModal.overlay.querySelector('.modal-header span').textContent = `Create ${type}`;
+
+    creationModal.setContent(`
+        <div class="modal-form">
+            <label>Container Name:</label>
+            <input type="text" class="modal-input" id="create-name" value="${defaultName}">
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="create-confirm">Create</button>
+            </div>
+        </div>
+    `);
+    creationModal.open();
+
+    const nameInput = document.getElementById('create-name');
+
+    const confirmCreate = () => {
+        const finalName = nameInput.value.trim() || type;
+        createNewContainer(finalName);
+        creationModal.close();
+    };
+
+    document.getElementById('create-confirm').onclick = confirmCreate;
+
+    nameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            confirmCreate();
+        }
+    });
+
+    setTimeout(() => nameInput.focus(), 100);
+};
+
+const attemptRename = (container, desiredName) => {
+    if (!appContainers.has(desiredName)) {
+        executeRename(container, desiredName);
+        return;
+    }
+
+    warningModal.setContent(`
+        <div class="modal-form">
+            <p>The name <strong>"${desiredName}"</strong> is already in use by another container.</p>
+            <p>If you force this rename, the existing container will be automatically renamed.</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="warn-cancel">Cancel</button>
+                <button class="btn btn-danger" id="warn-force">Force Rename</button>
+            </div>
+        </div>
+    `);
+    warningModal.open();
+
+    document.getElementById('warn-cancel').onclick = () => {
+        warningModal.close();
+    };
+
+    document.getElementById('warn-force').onclick = () => {
+        warningModal.close();
+
+        const requester = container;
+        const existing = appContainers.get(desiredName);
+
+        // Free the requester's old name so it can be reused as a displaced slot
+        appContainers.delete(requester.name);
+
+        // Pick the next free name for the displaced container (e.g. Graph -> Graph_1)
+        const forcedName = getUniqueName(desiredName);
+
+        // Move the displaced container and give the requested name to the requester
+        appContainers.delete(desiredName);
+        setContainerName(existing, forcedName);
+        setContainerName(requester, desiredName);
+    };
+};
+
+// ============================================================
+// 6. VIEW MANAGEMENT (Grid vs Focused)
+// ============================================================
+
+const btnNew = document.getElementById('btn-new');
+const btnList = document.getElementById('btn-list');
+const multiView = document.getElementById('multi-view');
+const focusedView = document.getElementById('focused-view');
+const focusedSlot = document.getElementById('focused-container-slot');
+
+let currentFocused = null;
+let lastFocused = null;
+
+const gridPlaceholder = document.createElement('div');
+gridPlaceholder.style.display = 'none';
+
+const createNewContainer = (name = 'Object') => {
+    const container = new Container(name);
+    appContainers.set(container.name, container);
+    multiView.appendChild(container.element);
+    focusContainer(container.element);
+};
+
+const focusContainer = (containerElement) => {
+    if (currentFocused) {
+        gridPlaceholder.replaceWith(currentFocused);
+    }
+
+    containerElement.replaceWith(gridPlaceholder);
+    focusedSlot.appendChild(containerElement);
+
+    currentFocused = containerElement;
+    lastFocused = containerElement;
+
+    multiView.classList.add('hidden');
+    focusedView.classList.remove('hidden');
+};
+
+const toggleList = () => {
+    if (appContainers.size === 0) return;
+
+    const isCurrentlyList = !multiView.classList.contains('hidden');
+
+    if (isCurrentlyList) {
+        if (!lastFocused) return;
+        focusContainer(lastFocused);
+    } else {
+        if (currentFocused) {
+            gridPlaceholder.replaceWith(currentFocused);
+            currentFocused = null;
+        }
+        multiView.classList.remove('hidden');
+        focusedView.classList.add('hidden');
+    }
+};
+
+btnNew.addEventListener('click', () => createNewContainer());
+btnList.addEventListener('click', toggleList);
+
+// ============================================================
+// 7. RESIZING (Pointer Events)
+// ============================================================
+
+const algorithm = document.getElementById('algorithm');
+const codeCard = document.getElementById('codeCard');
+const dividerH = document.getElementById('dividerH');
+
+let dragging = false;
+let startY = 0;
+let startCodeHeight = 0;
+
+dividerH.addEventListener('pointerdown', (e) => {
+    dividerH.setPointerCapture(e.pointerId);
+    dragging = true;
+    dividerH.classList.add('is-dragging');
+
+    startY = e.clientY;
+    startCodeHeight = codeCard.getBoundingClientRect().height;
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+});
+
+dividerH.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+
+    const totalHeight = algorithm.getBoundingClientRect().height;
+    const handleHeight = dividerH.offsetHeight;
+    const minHeight = 3 * remPx();
+    const maxHeight = totalHeight - handleHeight - minHeight;
+
+    const delta = e.clientY - startY;
+    const newHeight = Math.max(minHeight, Math.min(startCodeHeight + delta, maxHeight));
+
+    codeCard.style.flex = `0 0 ${newHeight / remPx()}rem`;
+});
+
+dividerH.addEventListener('pointerup', (e) => {
+    if (!dragging) return;
+    dragging = false;
+    dividerH.classList.remove('is-dragging');
+
+    document.body.style.userSelect = '';
+    dividerH.releasePointerCapture(e.pointerId);
+});
+
+// ============================================================
+// 8. THEME (Light / Dark / System)
+// ============================================================
+
 const themeMedia = window.matchMedia('(prefers-color-scheme: dark)');
 
 const applyTheme = (themeValue) => {
-    let isDark = themeValue === 'dark' ? true : themeValue === 'light' ? false : themeMedia.matches;
+    const isDark = themeValue === 'dark' ? true
+        : themeValue === 'light' ? false
+            : themeMedia.matches;
+
     if (isDark) {
         document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -199,7 +349,10 @@ themeMedia.addEventListener('change', () => {
     if ((localStorage.getItem('app-theme') || 'system') === 'system') applyTheme('system');
 });
 
-// 6.1. Define Settings Data (Plug-and-Play)
+// ============================================================
+// 9. SETTINGS MODAL
+// ============================================================
+
 const settingsConfig = [
     {
         id: 'appearance',
@@ -253,7 +406,7 @@ const settingsConfig = [
     }
 ];
 
-// 6.2. Build the UI from the Config
+// Build tabs and panes from config
 let tabsHTML = '';
 let panesHTML = '';
 
@@ -277,23 +430,21 @@ settingsModal.setContent(`
     </div>
 `);
 
-// 6.3. Wire up Tab Switching Logic
+// Tab switching
 const tabs = settingsModal.overlay.querySelectorAll('.settings-tab');
 const panes = settingsModal.overlay.querySelectorAll('.settings-pane');
 
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-        // Remove active class from all
         tabs.forEach(t => t.classList.remove('active'));
         panes.forEach(p => p.classList.remove('active'));
 
-        // Add active class to clicked tab and corresponding pane
         tab.classList.add('active');
         document.getElementById(`pane-${tab.dataset.target}`).classList.add('active');
     });
 });
 
-// 6.4. Hook up the Radio Buttons
+// Theme radios
 const themeRadios = settingsModal.overlay.querySelectorAll('input[name="themeSetting"]');
 themeRadios.forEach(radio => {
     if (radio.value === savedTheme) radio.checked = true;
@@ -304,9 +455,159 @@ themeRadios.forEach(radio => {
     });
 });
 
-// 6.5. Hook up the Sidebar Settings Button
 document.getElementById('btn-settings').addEventListener('click', () => {
     settingsModal.open();
 });
 
-// --- 7. Anything ---
+// ============================================================
+// 10. FULLSCREEN TOGGLE (logo)
+// ============================================================
+
+const logoBtn = document.getElementById('logo');
+
+logoBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.warn(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+});
+
+logoBtn.addEventListener('mouseenter', () => {
+    logoBtn.src = document.fullscreenElement ? 'images/windowed.png' : 'images/fullscreen.png';
+});
+
+logoBtn.addEventListener('mouseleave', () => {
+    logoBtn.src = 'images/logo.png';
+});
+
+// Update the icon if fullscreen changes (e.g. Esc) while hovering
+document.addEventListener('fullscreenchange', () => {
+    if (logoBtn.matches(':hover')) {
+        logoBtn.src = document.fullscreenElement ? 'images/windowed.png' : 'images/fullscreen.png';
+    }
+});
+
+// ============================================================
+// 11. HOVER POPOVERS
+// ============================================================
+
+class HoverPopover {
+    constructor(targetId, title, contentGenerator) {
+        this.target = document.getElementById(targetId);
+        this.title = title;
+        this.contentGenerator = contentGenerator;
+        this.popover = null;
+        this.hideTimeout = null;
+
+        this.target.addEventListener('mouseenter', () => this.show());
+        this.target.addEventListener('mouseleave', () => this.scheduleHide());
+    }
+
+    buildDOM() {
+        if (this.popover) return;
+
+        this.popover = document.createElement('div');
+        this.popover.className = 'popover';
+
+        // Keep open while the mouse is over the popover itself
+        this.popover.addEventListener('mouseenter', () => clearTimeout(this.hideTimeout));
+        this.popover.addEventListener('mouseleave', () => this.scheduleHide());
+
+        document.body.appendChild(this.popover);
+    }
+
+    show() {
+        clearTimeout(this.hideTimeout);
+        this.buildDOM();
+
+        // Regenerate content each time it opens
+        const bodyContent = this.contentGenerator ? this.contentGenerator() : '';
+
+        if (bodyContent) {
+            this.popover.classList.remove('no-body');
+            this.popover.innerHTML = `
+                <div class="popover-header">${this.title}</div>
+                <div class="popover-body">${bodyContent}</div>
+            `;
+        } else {
+            this.popover.classList.add('no-body');
+            this.popover.innerHTML = `<div class="popover-header">${this.title}</div>`;
+        }
+
+        // Position to the right of the sidebar icon
+        const rect = this.target.getBoundingClientRect();
+        this.popover.style.top = `${rect.top}px`;
+        this.popover.style.left = `${rect.right + 10}px`;
+
+        // Hide after any option inside is clicked
+        this.popover.querySelectorAll('.popover-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.hide());
+        });
+
+        this.popover.classList.add('active');
+    }
+
+    scheduleHide() {
+        this.hideTimeout = setTimeout(() => this.hide(), 150);
+    }
+
+    hide() {
+        if (this.popover) this.popover.classList.remove('active');
+    }
+}
+
+new HoverPopover('btn-new', 'Create new', () => `
+    <button class="popover-btn" id="new-graph">Graph</button>
+    <button class="popover-btn" id="new-tree">Tree</button>
+`);
+
+new HoverPopover('btn-list', 'Show object list', () => {
+    if (appContainers.size === 0) return '';
+
+    const names = [...appContainers.keys()].sort((a, b) =>
+        a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+    );
+
+    return names
+        .map(name => `<button class="popover-btn list-jump-btn" data-name="${name}">${name}</button>`)
+        .join('');
+});
+
+new HoverPopover('btn-settings', 'Settings', null);
+
+// ============================================================
+// 12. GLOBAL EVENT DELEGATION
+// ============================================================
+
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'new-graph') openCreationModal('Graph');
+    if (e.target.id === 'new-tree') openCreationModal('Tree');
+
+    if (e.target.classList.contains('list-jump-btn')) {
+        const containerName = e.target.dataset.name;
+        const container = appContainers.get(containerName);
+        if (container) focusContainer(container.element);
+    }
+});
+
+// ============================================================
+// 13. KEYBOARD SHORTCUTS
+// ============================================================
+
+document.addEventListener('keydown', (e) => {
+    if (!e.altKey || e.ctrlKey || e.metaKey) return;
+
+    const key = e.key.toLowerCase();
+
+    if (key === 'n') {
+        e.preventDefault();
+        openCreationModal('Graph');
+    }
+    if (key === 'l') {
+        e.preventDefault();
+        toggleList();
+    }
+});
