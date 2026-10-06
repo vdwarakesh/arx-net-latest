@@ -480,13 +480,12 @@ p {
     background: var(--card-bg);
     border: 0.0625rem solid var(--border-color);
     border-radius: 0.5rem;
-
-    width: 50%;
-    height: 70%;
-
     overflow: hidden;
 
-    /* Safeguards to prevent the modal from overflowing on very small mobile screens */
+    /* Removed fixed 50%/70% so JS inline styles (auto/fit-content) take over */
+    width: auto;
+    height: auto;
+
     max-width: 90vw;
     max-height: 90vh;
 

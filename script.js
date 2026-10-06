@@ -10,12 +10,13 @@ const remPx = () => parseFloat(getComputedStyle(document.documentElement).fontSi
 // ============================================================
 
 class FloatingWindow {
-    constructor(title) {
+    constructor(title, width = 'auto', height = 'auto') {
         this.overlay = document.createElement('div');
         this.overlay.className = 'modal-overlay';
 
+        // Applies dynamic sizing with inline styles
         this.overlay.innerHTML = `
-            <div class="modal-window">
+            <div class="modal-window" style="width: ${width}; height: ${height};">
                 <div class="modal-header">
                     <span>${title}</span>
                     <span class="modal-close" title="Close">&times;</span>
@@ -140,8 +141,8 @@ class Container {
 // 5. CONTAINER CREATION & RENAME CONFLICTS (modals)
 // ============================================================
 
-const creationModal = new FloatingWindow('Create Object');
-const warningModal = new FloatingWindow('Name Conflict');
+const creationModal = new FloatingWindow('Create Object', 'min(50rem, 95vw)', 'auto');
+const warningModal = new FloatingWindow('Name Conflict', 'min(50rem, 95vw)', 'auto');
 
 const openCreationModal = (type) => {
     const defaultName = getUniqueName(type);
@@ -275,7 +276,18 @@ const toggleList = () => {
     }
 };
 
-btnNew.addEventListener('click', () => createNewContainer());
+// Pick Type Modal
+const pickTypeModal = new FloatingWindow('Create New', 'min(50rem, 90vw)', 'auto');
+pickTypeModal.setContent(`
+    <div class="modal-form">
+        <p style="margin-bottom: 0.5rem; font-size: 0.95rem;">Select the type of object to create:</p>
+        <button class="btn btn-secondary" id="pick-graph" style="width: 100%; text-align: left;">Graph</button>
+        <button class="btn btn-secondary" id="pick-tree" style="width: 100%; text-align: left;">Tree</button>
+    </div>
+`);
+
+// --- Sidebar Event Listeners ---
+btnNew.addEventListener('click', () => pickTypeModal.open());
 btnList.addEventListener('click', toggleList);
 
 // ============================================================
@@ -392,14 +404,6 @@ const settingsConfig = [
                         <span>Toggle view</span>
                         <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>L</kbd></div>
                     </div>
-                    <div class="shortcut-row">
-                        <span>Save session</span>
-                        <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>S</kbd></div>
-                    </div>
-                    <div class="shortcut-row">
-                        <span>Open session</span>
-                        <div class="shortcut-keys"><kbd>Ctrl</kbd><kbd>O</kbd></div>
-                    </div>
                 </div>
             </div>
         `
@@ -422,7 +426,7 @@ settingsConfig.forEach((section, index) => {
         </div>`;
 });
 
-const settingsModal = new FloatingWindow('Settings');
+const settingsModal = new FloatingWindow('Settings', 'min(50rem, 95vw)', 'min(32rem, 90vh)');
 settingsModal.setContent(`
     <div class="settings-layout">
         <div class="settings-sidebar">${tabsHTML}</div>
@@ -559,10 +563,10 @@ class HoverPopover {
     }
 }
 
-new HoverPopover('btn-new', 'Create new', () => `
-    <button class="popover-btn" id="new-graph">Graph</button>
-    <button class="popover-btn" id="new-tree">Tree</button>
-`);
+new HoverPopover('btn-new', 'Create new', null);
+
+const newGraphBtn = document.getElementById("new-graph");
+const newTreeBtn = document.getElementById("new-tree");
 
 new HoverPopover('btn-list', 'Show object list', () => {
     if (appContainers.size === 0) return '';
@@ -583,13 +587,24 @@ new HoverPopover('btn-settings', 'Settings', null);
 // ============================================================
 
 document.addEventListener('click', (e) => {
-    if (e.target.id === 'new-graph') openCreationModal('Graph');
-    if (e.target.id === 'new-tree') openCreationModal('Tree');
+    // Routes choices from the Pick Type modal to the Name input modal
+    if (e.target.id === 'pick-graph') {
+        pickTypeModal.close();
+        openCreationModal('Graph');
+    }
+    if (e.target.id === 'pick-tree') {
+        pickTypeModal.close();
+        openCreationModal('Tree');
+    }
 
+    // Handles jumping to containers from both the Desktop Popover and the Mobile Modal
     if (e.target.classList.contains('list-jump-btn')) {
         const containerName = e.target.dataset.name;
         const container = appContainers.get(containerName);
-        if (container) focusContainer(container.element);
+        if (container) {
+            focusContainer(container.element);
+            mobileListModal.close(); 
+        }
     }
 });
 
