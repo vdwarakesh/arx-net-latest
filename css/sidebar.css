@@ -1,0 +1,40 @@
+/* ==========================================================================
+   SIDEBAR & ICONS
+   ========================================================================== */
+
+/* .sidebar holds the navigation icons on the left. */
+.sidebar {
+    width: 3rem;
+    flex-shrink: 0;
+    height: 100%;
+    background: var(--bg-color);
+    padding: 1rem 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+/* .icon targets all images inside the sidebar (Logo, New, List, Settings, UpDown). */
+.icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    padding: 0.25rem;
+    object-fit: contain;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, filter 0.3s ease;
+}
+
+/* Inverts all black sidebar icons to white when Dark Mode is active */
+[data-theme="dark"] .icon {
+    filter: invert(1);
+}
+
+/* Hover state for all interactive icons */
+.icon:hover {
+    background-color: var(--icon-img-hover);
+    cursor: pointer;
+}

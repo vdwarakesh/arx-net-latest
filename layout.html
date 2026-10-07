@@ -4,7 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resizable Layout</title>
-    <link rel="stylesheet" href="styles.css">
+
+    <!-- Loaded in cascade order: tokens/base first, components next, responsive overrides last. -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/views.css">
+    <link rel="stylesheet" href="css/containers-cards.css">
+    <link rel="stylesheet" href="css/resize-divider.css">
+    <link rel="stylesheet" href="css/scrollbars.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/popover.css">
+    <link rel="stylesheet" href="css/buttons.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
     <div class="layout" id="layout">
@@ -64,6 +78,8 @@
         </div>
     </template>
 
-    <script src="script.js"></script>
+    <!-- type="module" gives each file in js/ its own scope, so nothing in
+         there leaks into the global `window` object. See js/main.js. -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+/* ==========================================================================
+   RESIZE SLIDER (.divider-h)
+   Paired with js/ResizablePanel.js
+   ========================================================================== */
+
+/* Invisible touch-target area for the drag slider */
+.divider-h {
+    height: 0.4rem;
+    flex-shrink: 0;
+    background: transparent;
+    cursor: row-resize;
+    position: relative;
+}
+
+/* The visible horizontal line inside the slider */
+.divider-h::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2rem;
+    height: 0.1875rem;
+    transform: translate(-50%, -50%);
+    background: var(--divider-color);
+    border-radius: 0.1875rem;
+    transition: background-color 0.3s ease, width 0.3s ease;
+}
+
+/* Expands and turns blue when the user hovers or drags the slider */
+.divider-h:hover::after,
+.divider-h.is-dragging::after {
+    width: 100%;
+    background: var(--accent-color);
+}

@@ -1,0 +1,56 @@
+/* ==========================================================================
+   SHARED BUTTONS & INLINE RENAME INPUT
+   Generic .btn-* classes used across modals and popovers, plus the inline
+   rename input used when double-clicking a container title.
+   ========================================================================== */
+
+.rename-input {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 0.0625rem solid var(--accent-color);
+    border-radius: 0.25rem;
+    padding: 0.2rem 0.4rem;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    width: 10rem;
+    outline: none;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.2s, opacity 0.2s;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 0.0625rem solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--icon-hover-bg);
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    opacity: 0.85;
+}

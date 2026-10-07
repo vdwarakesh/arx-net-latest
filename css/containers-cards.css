@@ -1,0 +1,77 @@
+/* ==========================================================================
+   CONTAINERS, CARDS, & HEADERS
+   The visual building blocks: .container (from the <template>), .card (Code/Traversal).
+   ========================================================================== */
+
+/* Shared structural styling for both main .containers and algorithm .cards */
+.container,
+.card {
+    display: flex;
+    flex-direction: column;
+    min-height: 3rem;
+    overflow: hidden;
+    background: var(--card-bg);
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Code card takes 60% of the vertical space by default.
+   max-height protects against extreme JS resize values pushing the traversal card off-screen. */
+.card.code {
+    flex: 0 0 60%;
+    max-height: calc(100% - 3.4rem);
+    min-height: 3rem;
+}
+
+/* Traversal card flexibly takes whatever vertical space is left over */
+.card.traversal {
+    flex: 1 1 0;
+    min-height: 3rem;
+}
+
+/* Shared styling for top title bars in containers and cards */
+.card-header,
+.container-header {
+    height: 3rem;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    background: var(--header-bg);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease;
+}
+
+/* Inner content area of containers/cards. Allows internal scrolling if content overflows */
+.card-body,
+.container-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 1rem;
+}
+
+/* Header icon styling (specifically used for the focus.png icon) */
+.header-icon {
+    width: 2rem;
+    /* Expanded slightly to match sidebar icons */
+    height: 2rem;
+    padding: 0.25rem;
+    /* Added padding so the hover background frames the icon */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, background-color 0.2s ease, filter 0.3s ease;
+}
+
+.header-icon:hover {
+    opacity: 1;
+    background-color: var(--icon-hover-bg);
+}
+
+[data-theme="dark"] .header-icon {
+    filter: invert(1);
+}

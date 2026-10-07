@@ -1,0 +1,20 @@
+/* ==========================================================================
+   MAIN LAYOUT ARCHITECTURE
+   The top-level flex skeleton: sidebar + main content.
+   ========================================================================== */
+
+/* .layout is the flex container wrapping the Sidebar and the Main Content area. */
+.layout {
+    display: flex;
+    gap: 0.4rem;
+    height: 100%;
+    width: 100%;
+}
+
+/* .main-content wraps the view panels (Multi-View grid and Focused-View). */
+.main-content {
+    flex: 1;
+    display: flex;
+    height: 100%;
+    min-width: 0;
+}

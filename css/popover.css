@@ -1,0 +1,68 @@
+/* ==========================================================================
+   FLOATING POPOVER (Tooltip/Menu)
+   Styles for js/HoverPopover.js. Suppressed on mobile in responsive.css,
+   since HoverPopover.show() also refuses to open below that breakpoint.
+   ========================================================================== */
+
+.popover {
+    position: absolute;
+    background: var(--card-bg);
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateX(10px);
+    /* Creates a smooth slide-in effect */
+    min-width: 9rem;
+}
+
+.popover.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.popover-header {
+    padding: 0.5rem 1rem;
+    background: var(--header-bg);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-bottom: 0.0625rem solid var(--border-color);
+    white-space: nowrap;
+    color: var(--text-color);
+}
+
+/* Removes the divider line if the body is empty */
+.popover.no-body .popover-header {
+    border-bottom: none;
+}
+
+.popover-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+}
+
+/* Standardized buttons inside popovers */
+.popover-btn {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.popover-btn:hover {
+    background: var(--icon-hover-bg);
+}

@@ -1,0 +1,34 @@
+/* ==========================================================================
+   CUSTOM SCROLLBARS
+   ========================================================================== */
+
+/* Base dimensions for all webkit scrollbars */
+::-webkit-scrollbar {
+    width: 0.4rem;
+    height: 0.4rem;
+}
+
+/* Transparent track with margin ensures the scrollbar doesn't hug the absolute edge of cards */
+::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 0.5rem;
+}
+
+/* The draggable thumb uses our soft border color, matching the theme natively */
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 0.4rem;
+}
+
+/* Highlights slightly when interacting */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* stable prevents layout jitter by permanently reserving scrollbar space in scrollable areas */
+.grid-view,
+.card-body,
+.container-body,
+.settings-content {
+    scrollbar-gutter: stable;
+}

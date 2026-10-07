@@ -1,0 +1,40 @@
+/* ==========================================================================
+   BASE RESET & GLOBAL TYPOGRAPHY
+   ========================================================================== */
+
+/* Applies box-sizing: border-box globally so padding/borders don't increase element dimensions */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Locks the layout to exactly the viewport size, hiding default browser scrollbars */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    overflow: hidden;
+}
+
+/* Body acts as the outermost wrapper. Applies the global background, text color, and outer padding. Includes transitions so theme swapping fades smoothly instead of snapping. */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    padding: 0.4rem;
+    /* Provides the outer margin framing the entire app */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Base typography for generic text used inside cards and containers */
+h2 {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+}

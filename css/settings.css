@@ -1,0 +1,180 @@
+/* ==========================================================================
+   SETTINGS LAYOUT (SIDEBAR & PANES)
+   Built on top of modal.css's FloatingWindow. Paired with js/SettingsModal.js
+   and js/settingsConfig.js.
+   ========================================================================== */
+
+/* Wrapper for the settings window.
+   Negative margin removes the default modal-body padding to allow the sidebar to touch the edges. */
+/* --- Settings Two-Column Layout --- */
+.settings-layout {
+    display: flex;
+    /* Adds the top and bottom 1.25rem padding back to the total height */
+    height: calc(100% + 2.5rem);
+    margin: -1.25rem;
+}
+
+/* The vertical sidebar inside the settings window holding the category tabs */
+.settings-sidebar {
+    width: 14rem;
+    background: var(--header-bg);
+    border-right: 0.0625rem solid var(--border-color);
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Individual tab items inside the settings sidebar (Icons removed per request) */
+.settings-tab {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    transition: background-color 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.settings-tab:hover {
+    background-color: var(--icon-hover-bg);
+    opacity: 1;
+}
+
+/* Highlights the currently selected tab and adds a blue indicator line on the left */
+.settings-tab.active {
+    background-color: var(--icon-hover-bg);
+    opacity: 1;
+    font-weight: 600;
+    border-left: 0.2rem solid var(--accent-color);
+}
+
+/* The right side of the settings layout where the forms and options live */
+.settings-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+/* Wrapper for individual tab content panels. Hidden by default. */
+.settings-pane {
+    display: none;
+    animation: viewFadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.settings-pane.active {
+    display: block;
+}
+
+/* Wraps logical groupings of settings (e.g., "Theme") */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+/* Uppercase subtitle for settings sections */
+.settings-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-color);
+    opacity: 0.6;
+    margin-bottom: 1rem;
+    border-bottom: 0.0625rem solid var(--border-color);
+    padding-bottom: 0.4rem;
+}
+
+/* ==========================================================================
+   FORM ELEMENTS (CUSTOM RADIOS & KEYBOARDS)
+   Used inside the Appearance and Shortcuts settings panes.
+   ========================================================================== */
+
+/* Wraps the radio buttons in a vertical stack */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Makes the entire text/icon row clickable for a radio button */
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+/* Hides the ugly default browser radio input */
+.radio-label input[type="radio"] {
+    display: none;
+}
+
+/* The custom circular border replacing the default radio */
+.radio-custom {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 0.125rem solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border-color 0.2s ease;
+}
+
+/* The inner colored dot, scaled to 0 until the radio is checked */
+.radio-custom::after {
+    content: "";
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--accent-color);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Checked state logic: turns the border blue and scales the inner dot to 1 */
+.radio-label input[type="radio"]:checked+.radio-custom {
+    border-color: var(--accent-color);
+}
+
+.radio-label input[type="radio"]:checked+.radio-custom::after {
+    transform: scale(1);
+}
+
+/*
+   Keyboard Shortcut Layout.
+   Row wrapper that pushes text to the left and keys to the right.
+*/
+.shortcut-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+    border-bottom: 0.0625rem solid transparent;
+}
+
+/* Adds a divider line to all rows except the bottom one */
+.shortcut-row:not(:last-child) {
+    border-bottom-color: var(--border-color);
+}
+
+/* Wraps multiple keys next to each other (e.g., [Ctrl] [N]) */
+.shortcut-keys {
+    display: flex;
+    gap: 0.4rem;
+}
+
+/* Sleek styling for individual keyboard keys. */
+kbd {
+    background-color: transparent;
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--text-color);
+}
