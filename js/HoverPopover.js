@@ -1,11 +1,7 @@
 // ============================================================
 // HOVER POPOVERS
 // Used for the sidebar tooltips/menus (New / List / Settings icons).
-//
-// MOBILE_QUERY must stay in sync with the breakpoint in css/responsive.css.
-// Hover popovers rely on mouseenter/mouseleave, which touch devices don't
-// fire reliably, so they are intentionally disabled below this breakpoint
-// rather than left to misbehave (get stuck open, never close, etc).
+// Mobile devices do NOT have hover popovers.
 // ============================================================
 
 const MOBILE_QUERY = '(max-width: 48rem)';
@@ -43,6 +39,14 @@ export class HoverPopover {
         this.popover.addEventListener('mouseenter', () => clearTimeout(this.hideTimeout));
         this.popover.addEventListener('mouseleave', () => this.scheduleHide());
 
+        // Delegated once here, rather than re-attached to every .popover-btn
+        // inside show(). The content (and its buttons) gets rebuilt on every
+        // open, but this listener on the stable popover container doesn't
+        // need to be — it just checks what was actually clicked.
+        this.popover.addEventListener('click', (e) => {
+            if (e.target.classList.contains('popover-btn')) this.hide();
+        });
+
         document.body.appendChild(this.popover);
     }
 
@@ -71,11 +75,6 @@ export class HoverPopover {
         const rect = this.target.getBoundingClientRect();
         this.popover.style.top = `${rect.top}px`;
         this.popover.style.left = `${rect.right + 10}px`;
-
-        // Hide after any option inside is clicked
-        this.popover.querySelectorAll('.popover-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.hide());
-        });
 
         this.popover.classList.add('active');
     }

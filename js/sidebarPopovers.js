@@ -26,5 +26,5 @@ export function initSidebarPopovers(registry) {
             .join('');
     });
 
-    new HoverPopover('btn-settings', 'Settings', null);
+    new HoverPopover('btn-settings', 'Profile and settings', null);
 }
