@@ -1,13 +1,7 @@
 // ============================================================
 // APP CONTROLLER
 // Composition root: builds every module and wires them together.
-//
-// This is also the ONE place in the whole app that attaches listeners
-// directly to `document` (global click delegation + keyboard shortcuts).
-// Everything else attaches its listeners to the specific element it
-// owns. If a click or keypress anywhere seems to do the wrong thing,
-// or nothing at all, start here — _handleGlobalClick / _handleKeydown
-// is the full list of app-wide shortcuts and delegated actions.
+// This is the ONE place in the whole app that attaches listeners directly to `document`:
 // ============================================================
 
 import { ContainerRegistry } from './ContainerRegistry.js';
@@ -44,19 +38,14 @@ export class AppController {
 
     // ------------------------------------------------------------------
     // GLOBAL EVENT DELEGATION
+    // Only "list-jump-btn" lives here, because its buttons are regenerated
+    // from scratch every time the "Show object list" popover reopens
+    // (see sidebarPopovers.js) — a direct listener would miss buttons
+    // created after the listener was attached. Everything with a fixed,
+    // one-time DOM (pick-graph/pick-tree, modal buttons, etc.) gets a
+    // direct listener instead; see ViewManager.js.
     // ------------------------------------------------------------------
     _handleGlobalClick(e) {
-        // Routes choices from the Pick Type modal to the Name input modal
-        if (e.target.id === 'pick-graph') {
-            this.viewManager.pickTypeModal.close();
-            this.viewManager.openCreationModal('Graph');
-        }
-        if (e.target.id === 'pick-tree') {
-            this.viewManager.pickTypeModal.close();
-            this.viewManager.openCreationModal('Tree');
-        }
-
-        // Handles jumping to a container from the "Show object list" popover
         if (e.target.classList.contains('list-jump-btn')) {
             const containerName = e.target.dataset.name;
             const container = this.registry.get(containerName);

@@ -36,6 +36,14 @@ export class ViewManager {
                 <button class="btn btn-secondary" id="pick-tree" style="width: 100%; text-align: left;">Tree</button>
             </div>
         `);
+        this.pickTypeModal.overlay.querySelector('#pick-graph').addEventListener('click', () => {
+            this.pickTypeModal.close();
+            this.openCreationModal('Graph');
+        });
+        this.pickTypeModal.overlay.querySelector('#pick-tree').addEventListener('click', () => {
+            this.pickTypeModal.close();
+            this.openCreationModal('Tree');
+        });
 
         this.creationModal = new FloatingWindow('Create Object', 'min(50rem, 95vw)', 'auto');
 
