@@ -1,48 +1,87 @@
-const TAG_NAME = "viz-container";
-export class Container extends HTMLElement {
-    constructor() {
-        super();
-        this.classList.add("viz-container");
+// ============================================================
+// CONTAINER
+// Represents one draggable/focusable "object" box built from the
+// #container-template in layout.html: its DOM, its focus/delete
+// buttons (with their hover tooltips), and its double-click-to-rename
+// behavior. Naming/rename-conflict/delete-confirmation logic itself
+// lives in ContainerRegistry.js — this class just asks for it.
+// ============================================================
 
-        this.gridEnabled = true;
-        this.zoomOnFocus = false;
+import { HoverPopover } from './HoverPopover.js';
 
-        this.header = document.createElement("div");
-        this.header.className = "viz-header";
-        this.appendChild(this.header);
-
-        this.content = document.createElement("div");
-        this.content.className = "viz-content";
-        this.appendChild(this.content);
-
-        this.createCheckboxOption("Grid", this.gridEnabled, checked => {
-            this.gridEnabled = checked;
-            this.dispatchEvent(new CustomEvent("gridtoggle", { detail: checked }));
-        });
-
-        this.createCheckboxOption("Zoom on Focus", this.zoomOnFocus, checked => {
-            this.zoomOnFocus = checked;
-            this.dispatchEvent(new CustomEvent("zoomfocustoggle", { detail: checked }));
-        });
+export class Container {
+    /**
+     * @param {string} name - desired name (registry will dedupe it)
+     * @param {import('./ContainerRegistry.js').ContainerRegistry} registry
+     * @param {(containerElement: HTMLElement) => void} onFocusRequest - called when the focus button is clicked
+     * @param {(containerElement: HTMLElement) => void} onDeleteRequest - called after the delete confirmation modal is accepted
+     */
+    constructor(name, registry, onFocusRequest, onDeleteRequest) {
+        this.registry = registry;
+        this.name = registry.getUniqueName(name);
+        this.element = this._createDOM(onFocusRequest, onDeleteRequest);
     }
 
-    // ---------- header ----------
+    _createDOM(onFocusRequest, onDeleteRequest) {
+        const template = document.getElementById('container-template');
+        const clone = template.content.cloneNode(true);
+        const containerEl = clone.querySelector('.container');
+        const titleEl = clone.querySelector('.container-title');
+        const focusBtn = containerEl.querySelector('.focus-btn');
+        const deleteBtn = containerEl.querySelector('.delete-btn');
 
-    createCheckboxOption(labelText, isChecked, onChange) {
-        const label = document.createElement("label");
-        label.className = "viz-header-option";
+        titleEl.textContent = this.name;
 
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = isChecked;
-        checkbox.addEventListener("change", () => onChange(checkbox.checked));
+        focusBtn.addEventListener('click', () => onFocusRequest(containerEl));
 
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(labelText));
-        this.header.appendChild(label);
+        // Confirmation happens in the registry (it owns registry state);
+        // onDeleteRequest only runs if the user actually confirms, and is
+        // where the DOM/view-state side of deletion happens (ViewManager).
+        deleteBtn.addEventListener('click', () => {
+            this.registry.confirmDelete(this, () => onDeleteRequest(containerEl));
+        });
 
-        return checkbox;
+        // Small hover tooltips, same component the sidebar icons use —
+        // passed the element directly since a template-cloned icon has no
+        // id to target by. Automatically hidden on mobile (see HoverPopover.js).
+        new HoverPopover(focusBtn, 'Focus', null);
+        new HoverPopover(deleteBtn, 'Delete', null);
+
+        // Double-click the title to rename inline
+        titleEl.addEventListener('dblclick', () => this._beginRename(titleEl));
+
+        return containerEl;
+    }
+
+    _beginRename(titleEl) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'rename-input';
+        input.value = this.name;
+        titleEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        let isFinished = false;
+
+        const finishEdit = () => {
+            if (isFinished) return;
+            isFinished = true;
+            const newName = input.value.trim();
+            input.replaceWith(titleEl);
+
+            if (newName && newName !== this.name) {
+                this.registry.attemptRename(this, newName);
+            }
+        };
+
+        input.addEventListener('blur', finishEdit);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') input.blur();
+            if (e.key === 'Escape') {
+                input.value = this.name;
+                input.blur();
+            }
+        });
     }
 }
-
-customElements.define(TAG_NAME, Container);

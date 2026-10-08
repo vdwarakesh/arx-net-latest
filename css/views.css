@@ -38,7 +38,11 @@
    GRID VIEW (MULTI-CONTAINER)
    ========================================================================== */
 
-/* .grid-view displays multiple containers in a 2-column layout. */
+/*
+   .grid-view displays multiple containers in a 2-column layout.
+   grid-template-rows calculates exact 50% heights minus the gap to fit exactly 2 rows per screen view.
+   padding-right prevents the scrollbar from touching the right edge of the containers.
+*/
 .grid-view {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -57,29 +61,57 @@
     height: 100%;
 }
 
+/*
+   Mobile-only list of container names, prepended inside #multi-view by
+   ViewManager so it always renders as the first grid item (list, then
+   container 1, container 2, ...). Hidden here because on desktop the
+   sidebar's hover popover already covers "show me the names" — see
+   css/responsive.css for where this becomes visible and how it gets an
+   auto-height grid row instead of the fixed container-sized one.
+*/
+.mobile-object-list {
+    display: none;
+}
+
 /* ==========================================================================
    FOCUSED VIEW
    ========================================================================== */
 
-/* #focused-view sets up a Flexbox layout displaying one container on the left and the algorithm tools (Code/Traversal) on the right. */
+/*
+   #focused-view sets up a Flexbox layout displaying one container on the left
+   and the algorithm tools (Code/Traversal) on the right.
+*/
 #focused-view {
     display: flex;
     gap: 0.4rem;
 }
 
-/* The wrapper slot for the currently focused container. */
+/*
+   The wrapper slot for the currently focused container.
+   flex: 47 dynamically takes 47% of available space.
+   gap matches every other spacing in the app (.layout, #focused-view) —
+   used here instead of a .divider-h spacer because, unlike Code/Traversal
+   on the right, the container and the metadata card below it are NOT
+   resizable, so there's no drag handle element to double as the gap.
+*/
 #focused-container-slot {
-    flex: 54;
+    flex: 47;
     height: 100%;
     display: flex;
     flex-direction: column;
+    gap: 0.4rem;
 }
 
-/* Forces the container inside the slot to expand and fill the entire height/width */
+/*
+   The container fills whatever height .card.metadata (see
+   containers-cards.css) doesn't take — flex: 1 1 0 instead of a fixed
+   height so it automatically absorbs the space freed up by changing
+   .card.metadata's percentage.
+*/
 #focused-container-slot .container {
-    flex: 1;
+    flex: 1 1 0;
     width: 100%;
-    height: 100%;
+    min-height: 0;
 }
 
 /* Hides the "focus" icon on the container header when it's already in the focused view */
@@ -87,10 +119,44 @@
     display: none;
 }
 
-/* The algorithm wrapper holding the Code and Traversal cards. */
+/*
+   The algorithm wrapper holding the Code and Traversal cards.
+   flex: 53 takes the remaining 53% of available space to complete the 100% width.
+*/
 .algorithm {
-    flex: 46;
+    flex: 53;
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+/*
+   Shown instead of #focused-container-slot + .algorithm whenever nothing
+   is focused (see ViewManager: constructor + focusContainer/toggleList).
+   Hidden by default — JS flips this to "flex" the moment something IS
+   focused, and back to "none" the moment it isn't.
+*/
+.empty-state {
+    display: none;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+}
+
+.empty-state-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.empty-state-subtitle {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-color);
+    opacity: 0.5;
 }

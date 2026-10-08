@@ -30,6 +30,18 @@
     min-height: 3rem;
 }
 
+/*
+   Object metadata card (left side, below the focused container).
+   Fixed 30% of #focused-container-slot's height — change this one value
+   to resize it, same as .card.code's 60% above. Unlike .card.code, this
+   is NOT paired with a .divider-h, so there's no drag handle: the split
+   is CSS-only and not user-resizable at runtime.
+*/
+.card.metadata {
+    flex: 0 0 30%;
+    min-height: 3rem;
+}
+
 /* Shared styling for top title bars in containers and cards */
 .card-header,
 .container-header {
@@ -54,7 +66,20 @@
     padding: 1rem;
 }
 
-/* Header icon styling (specifically used for the focus.png icon) */
+/*
+   Groups the focus/delete icons at the right end of a container-header,
+   so justify-content: space-between on the header above pushes the title
+   left and this whole group right as one unit, instead of spreading
+   title/focus/delete apart evenly as three separate items.
+*/
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+/* Header icon styling — used for the focus and delete icons in every container-header */
 .header-icon {
     width: 2rem;
     /* Expanded slightly to match sidebar icons */

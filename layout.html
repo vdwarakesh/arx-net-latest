@@ -27,7 +27,7 @@
             <img class="icon" src="images/logo.png" id="logo" alt="">
             <img class="icon" src="images/new.png" id="btn-new" alt="">
             <img class="icon" src="images/list.png" id="btn-list" alt="">
-            <img class="icon" src="images/profile.png" id="btn-settings" alt="">
+            <img class="icon" src="images/settings.png" id="btn-settings" alt="">
         </div>
 
         <!-- Main Content Area -->
@@ -40,8 +40,22 @@
 
             <!-- FOCUSED VIEW (One container + Algorithm block) -->
             <div id="focused-view" class="view-panel">
+                <!-- Shown instead of the two panes below when nothing is focused; see ViewManager.js -->
+                <div id="empty-state" class="empty-state">
+                    <div class="empty-state-title">Arx Net</div>
+                    <div class="empty-state-subtitle">VISUALIZATION DONE DIFFERENTLY</div>
+                </div>
+
                 <div id="focused-container-slot">
-                    <!-- The currently focused container moves here -->
+                    <!-- The currently focused container is inserted here by ViewManager,
+                         always before the metadata card below so it stays on top. -->
+
+                    <div class="card metadata" id="metadataCard">
+                        <div class="card-header">Object metadata</div>
+                        <div class="card-body">
+                            <p>Name: <span id="metadata-name-value">—</span></p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="algorithm" id="algorithm">
@@ -70,7 +84,10 @@
         <div class="container">
             <div class="container-header">
                 <span class="container-title">Container</span>
-                <img class="icon focus-btn" src="images/focus.png" alt="">
+                <div class="header-actions">
+                    <img class="header-icon focus-btn" src="images/focus.png" alt="">
+                    <img class="header-icon delete-btn" src="images/delete.png" alt="">
+                </div>
             </div>
             <div class="container-body">
                 <p>Main content area.</p>

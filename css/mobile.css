@@ -1,0 +1,174 @@
+/* ==========================================================================
+   MOBILE RESPONSIVENESS
+   All breakpoint overrides live here, loaded last so they win the cascade.
+   The breakpoint (48rem / 768px) must stay in sync with the MOBILE_QUERY
+   constant in js/HoverPopover.js.
+   ========================================================================== */
+
+/* Triggers when the screen width drops below 768px (48rem) */
+@media (max-width: 48rem) {
+
+    /* Stacks the entire layout vertically */
+    .layout {
+        flex-direction: column;
+    }
+
+    /*
+       Adjusts height to account for the horizontal sidebar taking space at
+       the top: sidebar height (1.5rem, halved below) + the .layout gap
+       (0.4rem) between it and .main-content.
+    */
+    .main-content {
+        height: calc(100% - 1.9rem);
+    }
+
+    /* Converts the vertical sidebar into a horizontal top-bar, at half its desktop height */
+    .sidebar {
+        width: 100%;
+        height: 1.5rem;
+        display: flex;
+        flex-direction: row;
+        padding: 0 1rem;
+        gap: 1rem;
+    }
+
+    /*
+       Shrinks every .icon (sidebar icons) AND .header-icon (the
+       focus/delete icons inside .container-header) so they still fit
+       comfortably inside the halved 1.5rem sidebar/header heights below.
+    */
+    .icon,
+    .header-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+        padding: 0.15rem;
+        border-radius: 0.35rem;
+    }
+
+    /*
+       Collapses the grid view from 2 columns to 1 single vertical column.
+       Also prepends an "auto" sized row ahead of the usual fixed-height
+       container rows, reserved for .mobile-object-list below — so the
+       name list gets exactly the height its content needs instead of
+       being stretched to a container-sized 50% row.
+    */
+    .grid-view {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto calc(50% - 0.2rem) calc(50% - 0.2rem);
+    }
+
+    /*
+       The mobile name list itself: list -> container 1 -> container 2 -> ...
+       Hover popovers don't work via touch (see css/popover.css /
+       js/HoverPopover.js), so this is the mobile replacement for the
+       sidebar's "Show object list" popover — same names, same
+       .list-jump-btn click behavior, just laid out inline instead of
+       in a hover popup.
+    */
+    .mobile-object-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        grid-row: 1;
+        background: var(--card-bg);
+        border: 0.0625rem solid var(--border-color);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    /* No containers yet: collapse away instead of showing an empty box */
+    .mobile-object-list:empty {
+        display: none;
+    }
+
+    /* Stacks the container slot and the algorithm cards vertically */
+    #focused-view {
+        flex-direction: column;
+    }
+
+    #focused-container-slot,
+    .algorithm {
+        width: 100%;
+        flex: 1 1 0;
+    }
+
+    /* Allows the cards to distribute space properly on mobile */
+    .card.code {
+        flex: 0 0 60%;
+    }
+
+    .card.traversal {
+        flex: 1 1 0;
+    }
+
+    /*
+       Object metadata isn't shown on mobile — the container itself and
+       the Code/Traversal cards already compete for limited vertical
+       space there, and .card.metadata's one piece of content (the name)
+       is already visible in the container's own header. The container
+       (flex: 1 1 0 in css/views.css) automatically expands to fill the
+       space this frees up; no other rule needs to change for that.
+    */
+    .card.metadata {
+        display: none;
+    }
+
+    /*
+       Halves card/container header height and shrinks their text to
+       match — .icon above already shrinks the focus-btn that sits
+       inside .container-header, so this is the other half of "fit
+       everything into a shorter header."
+    */
+    .card-header,
+    .container-header {
+        height: 1.5rem;
+        padding: 0 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    /* Fallback width/height overrides for the modal on mobile so it doesn't stay rigid */
+    .modal-window {
+        width: 95%;
+        height: 85%;
+    }
+
+    .settings-sidebar {
+        display: none !important;
+    }
+
+    /* 2. Reset the layout to standard block scrolling */
+    .settings-layout {
+        display: block;
+        height: calc(100% + 2.5rem);
+        /* Keeps the height fix we added earlier */
+    }
+
+    .settings-content {
+        padding: 1.25rem;
+        height: 100%;
+    }
+
+    /* 3. Force ALL panes to show, ignoring the JavaScript 'active' tab logic */
+    .settings-pane {
+        display: block !important;
+        animation: none;
+        /* Disable the tab-switching fade animation */
+    }
+
+    /* 4. Add a clear divider line between the different sections */
+    .settings-pane:not(:last-child) {
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /*
+       Hover popovers (sidebar tooltips/menus) are driven by mouseenter/mouseleave,
+       which touchscreens don't reliably fire — they'd otherwise get stuck open or
+       never appear. js/HoverPopover.js already refuses to open below this
+       breakpoint; this rule is a belt-and-suspenders guard so no popover can ever
+       render on mobile, even if something else tries to add .active to it.
+    */
+    .popover.active {
+        display: none !important;
+    }
+}

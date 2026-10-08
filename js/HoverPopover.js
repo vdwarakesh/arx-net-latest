@@ -1,14 +1,26 @@
 // ============================================================
 // HOVER POPOVERS
-// Used for the sidebar tooltips/menus (New / List / Settings icons).
-// Mobile devices do NOT have hover popovers.
+// Used for the sidebar tooltips/menus (New / List / Settings icons),
+// AND for the small "Focus" / "Delete" tooltips on each container's
+// header icons (see Container.js, which passes an element directly
+// instead of an id — there's no stable id to give a per-container,
+// template-cloned icon).
+//
+// MOBILE_QUERY must stay in sync with the breakpoint in css/responsive.css.
+// Hover popovers rely on mouseenter/mouseleave, which touch devices don't
+// fire reliably, so they are intentionally disabled below this breakpoint
+// rather than left to misbehave (get stuck open, never close, etc).
 // ============================================================
 
 const MOBILE_QUERY = '(max-width: 48rem)';
 
 export class HoverPopover {
-    constructor(targetId, title, contentGenerator) {
-        this.target = document.getElementById(targetId);
+    /**
+     * @param {string | HTMLElement} target - an element id (sidebar icons)
+     *   or the element itself (per-container icons, which have no id).
+     */
+    constructor(target, title, contentGenerator) {
+        this.target = typeof target === 'string' ? document.getElementById(target) : target;
         this.title = title;
         this.contentGenerator = contentGenerator;
         this.popover = null;
