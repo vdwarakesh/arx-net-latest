@@ -38,13 +38,13 @@
 }
 
 .settings-tab:hover {
-    background-color: var(--icon-hover-bg);
+    background-color: var(--text-hover-bg);
     opacity: 1;
 }
 
 /* Highlights the currently selected tab and adds a blue indicator line on the left */
 .settings-tab.active {
-    background-color: var(--icon-hover-bg);
+    background-color: var(--text-hover-bg);
     opacity: 1;
     font-weight: 600;
     border-left: 0.2rem solid var(--accent-color);

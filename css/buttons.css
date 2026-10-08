@@ -43,7 +43,7 @@
 }
 
 .btn-secondary:hover {
-    background: var(--icon-hover-bg);
+    background: var(--text-hover-bg);
 }
 
 .btn-danger {

@@ -64,5 +64,5 @@
 }
 
 .popover-btn:hover {
-    background: var(--icon-hover-bg);
+    background: var(--text-hover-bg);
 }

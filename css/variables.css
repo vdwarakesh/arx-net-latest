@@ -13,8 +13,9 @@
     --card-bg: #fdfdfd;
     --header-bg: #f4f5f7;
     --border-color: #dcdfe4;
-    --icon-img-hover: #d3d3d3;
-    --icon-hover-bg: #e2e5e9;
+    --icon-hover-bg: #d3d3d3;
+    --text-hover-bg: #e2e5e9;
+    --card-header-icon-hover-bg: #d3d3d3;
     --divider-color: #cdd2d8;
     --text-color: #334155;
     --accent-color: #5a8ddf;
@@ -30,8 +31,9 @@
     --card-bg: #1e1e1e;
     --header-bg: #2d2d2d;
     --border-color: #404040;
-    --icon-img-hover: #d3d3d3;
-    --icon-hover-bg: #404040;
+    --icon-hover-bg: #cbcbcb;
+    --text-hover-bg: #404040;
+    --card-header-icon-hover-bg: #ededed;
     --divider-color: #666666;
     --text-color: #e0e0e0;
     --accent-color: #3b82f6;

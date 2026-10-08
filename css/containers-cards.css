@@ -79,24 +79,6 @@
     flex-shrink: 0;
 }
 
-/* Header icon styling — used for the focus and delete icons in every container-header */
-.header-icon {
-    width: 2rem;
-    /* Expanded slightly to match sidebar icons */
-    height: 2rem;
-    padding: 0.25rem;
-    /* Added padding so the hover background frames the icon */
-    border-radius: 0.5rem;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s, background-color 0.2s ease, filter 0.3s ease;
-}
-
-.header-icon:hover {
-    opacity: 1;
-    background-color: var(--icon-hover-bg);
-}
-
-[data-theme="dark"] .header-icon {
-    filter: invert(1);
+.header-actions .icon:hover {
+    background-color: var(--card-header-icon-hover-bg);
 }

@@ -35,6 +35,13 @@
 
 /* Hover state for all interactive icons */
 .icon:hover {
-    background-color: var(--icon-img-hover);
+    background-color: var(--icon-hover-bg);
     cursor: pointer;
 }
+
+/*
+.header-actions .icon:hover {
+    background-color: var(--bg-color);
+}
+This rule is defined in containers-cards.css
+*/ 
