@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resizable Layout</title>
 
-    <!-- Loaded in cascade order: tokens/base first, components next, responsive overrides last. -->
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -60,7 +59,14 @@
                 
                 <div class="algorithm" id="algorithm">
                     <div class="card code" id="codeCard">
-                        <div class="card-header">Code</div>
+                        <div class="card-header">
+                            <select data-custom-select>
+                                <option> C++ </option>
+                                <option> Python </option>
+                                <option> Java </option>
+                            </select>
+                            Explanation Notes
+                        </div>
                         <div class="card-body">
                             <p>Code section content goes here.</p>
                         </div>

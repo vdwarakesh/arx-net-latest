@@ -3,11 +3,6 @@
    If a color looks wrong anywhere in the app, this is the file to check.
    ========================================================================== */
 
-/*
-   The :root pseudo-class holds our default Light Mode variables.
-   These variables are referenced throughout the other CSS files using var(--variable-name).
-   This low-contrast "Slate & Denim" palette prevents eye strain.
-*/
 :root {
     --bg-color: #f0f2f5;
     --card-bg: #fdfdfd;
@@ -31,9 +26,9 @@
     --card-bg: #1e1e1e;
     --header-bg: #2d2d2d;
     --border-color: #404040;
-    --icon-hover-bg: #cbcbcb;
+    --icon-hover-bg: #cbcbcb; /* Inverted to become #343434 */
     --text-hover-bg: #404040;
-    --card-header-icon-hover-bg: #ededed;
+    --card-header-icon-hover-bg: #bfbfbf; /* Inverted to become #404040 */
     --divider-color: #666666;
     --text-color: #e0e0e0;
     --accent-color: #3b82f6;
