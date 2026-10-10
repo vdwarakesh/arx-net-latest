@@ -89,17 +89,18 @@
 /*
    The wrapper slot for the currently focused container.
    flex: 47 dynamically takes 47% of available space.
-   gap matches every other spacing in the app (.layout, #focused-view) —
-   used here instead of a .divider-h spacer because, unlike Code/Traversal
-   on the right, the container and the metadata card below it are NOT
-   resizable, so there's no drag handle element to double as the gap.
+   No gap here — #metadataDividerH (a real .divider-h, see
+   css/resize-divider.css) sits between the container and
+   .card.metadata and provides the spacing itself, the same way
+   .divider-h already does between Code/Explanation and the Traversal
+   row below. See js/initTraversalResize.js's sibling,
+   AppController's metadataResizer, for the drag logic.
 */
 #focused-container-slot {
     flex: 47;
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
 }
 
 /*
@@ -134,14 +135,16 @@
 /*
    Wraps Traversal + State variables side by side. Takes over the "fill
    whatever .card.code doesn't use" role .card.traversal used to play on
-   its own — the 60/40 split between the two cards themselves lives in
-   css/containers-cards.css, next to .card.code's own 60% rule.
+   its own. No gap here — #dividerV (a .divider-v, see
+   css/resize-divider.css) provides the spacing itself and is also the
+   drag handle between them; see js/initTraversalResize.js. The 60/40
+   default split and 3rem minimums live in css/containers-cards.css,
+   next to .card.code's own 60% rule.
 */
 .traversal-row {
     flex: 1 1 0;
     min-height: 0;
     display: flex;
-    gap: 0.4rem;
 }
 
 /*

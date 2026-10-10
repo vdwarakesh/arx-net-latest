@@ -1,5 +1,5 @@
 // ============================================================
-// CODE / EXPLANATION TABS
+// CODE / EXPLANATION / NOTES TABS
 // Switches between the #codeCard and #explanationCard cards (two
 // separate cards with deliberately-duplicated header markup — see the
 // comment in layout.html for why) and, while Explanation is active,
@@ -9,16 +9,20 @@
 // what that class actually changes, and css/containers-cards.css for
 // the tab bar's own look.
 //
+// Notes has no data-tab attribute on purpose (see layout.html) and is
+// never picked up below, so it has no card to show, no click handler,
+// and no active-state toggling — it genuinely does nothing yet.
+//
 // The language <select> is intentionally NOT wired up in here at all:
-// it's a sibling of the Code tab, not nested inside it, so clicking it
-// can never bubble into a tab switch. This class only ever listens for
-// clicks on .code-tab.
+// it's a sibling of the tabs, not nested inside any of them, so
+// clicking it can never bubble into a tab switch. This class only ever
+// listens for clicks on .code-tab[data-tab].
 // ============================================================
 
 export class CodePanel {
     constructor() {
         this.algorithm = document.getElementById('algorithm');
-        this.tabs = [...document.querySelectorAll('.code-tab')];
+        this.tabs = [...document.querySelectorAll('.code-tab[data-tab]')];
         this.languageSelects = [...document.querySelectorAll('.language-select')];
 
         this.tabs.forEach(tab => {

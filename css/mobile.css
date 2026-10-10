@@ -177,4 +177,16 @@
     .popover.active {
         display: none !important;
     }
+
+    /*
+       js/CustomSelect.js already hides its own trigger/list and shows
+       the real <select> below this breakpoint; this is the same
+       belt-and-suspenders guard as .popover.active above, for the same
+       reason — the custom dropdown should never be reachable on mobile,
+       even if something leaves it in the wrong state.
+    */
+    .custom-select-trigger,
+    .custom-select-list.active {
+        display: none !important;
+    }
 }

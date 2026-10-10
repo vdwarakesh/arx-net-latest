@@ -1,9 +1,13 @@
 /* ==========================================================================
-   RESIZE SLIDER (.divider-h)
-   Paired with js/ResizablePanel.js
+   RESIZE SLIDERS (.divider-h, .divider-v)
+   Paired with js/ResizablePanel.js. .divider-h drags up/down (there are
+   two now: #dividerH between Code/Explanation and the Traversal row,
+   and #metadataDividerH between the focused container and Object
+   metadata). .divider-v drags left/right (#dividerV, between Traversal
+   and State variables).
    ========================================================================== */
 
-/* Invisible touch-target area for the drag slider */
+/* Invisible touch-target area for a vertical-drag slider */
 .divider-h {
     height: 0.4rem;
     flex-shrink: 0;
@@ -30,5 +34,35 @@
 .divider-h:hover::after,
 .divider-h.is-dragging::after {
     width: 100%;
+    background: var(--accent-color);
+}
+
+/* Invisible touch-target area for a horizontal-drag slider — same idea as
+   .divider-h above, rotated 90°. */
+.divider-v {
+    width: 0.4rem;
+    flex-shrink: 0;
+    background: transparent;
+    cursor: col-resize;
+    position: relative;
+}
+
+/* The visible vertical line inside the slider */
+.divider-v::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.1875rem;
+    height: 2rem;
+    transform: translate(-50%, -50%);
+    background: var(--divider-color);
+    border-radius: 0.1875rem;
+    transition: background-color 0.3s ease, height 0.3s ease;
+}
+
+.divider-v:hover::after,
+.divider-v.is-dragging::after {
+    height: 100%;
     background: var(--accent-color);
 }

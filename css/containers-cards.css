@@ -23,35 +23,44 @@
    traversal row off-screen; both this and the 60% basis get overridden
    with !important while Explanation is active (see css/views.css). */
 .card.code {
-    flex: 0 0 70%;
-    max-height: calc(100% - 3.4rem); /* 3rem for header and 0.4 rem for padding */
+    flex: 0 0 60%;
+    max-height: calc(100% - 3.4rem);
     min-height: 3rem;
 }
 
 /*
-   Traversal (60%) and State variables (40%), the two cards inside
-   .traversal-row — see css/views.css for that wrapper's own layout and
-   for why the whole row disappears while Explanation is active.
+   Traversal (60% default) and State variables (fills whatever Traversal
+   doesn't use), the two cards inside .traversal-row — dragged via
+   #dividerV, see js/initTraversalResize.js. min-width is a CSS-level
+   floor matching the 3rem one that resizer enforces in JS; min-height
+   already comes from the shared .container, .card rule above. See
+   css/views.css for .traversal-row's own layout and for why the whole
+   row disappears while Explanation is active.
+
+   state-variables is flex: 1 1 0 (fill-remaining), NOT a fixed
+   percentage, specifically so it can't fight with the pixel value
+   ResizablePanel sets on .card.traversal while dragging — a fixed
+   basis on both sides at once would either overflow the row or leave a
+   gap. Same reasoning as .algorithm's Code card + Traversal row pair.
 */
 .card.traversal {
     flex: 0 0 60%;
-    min-height: 3rem;
+    min-width: 3rem;
 }
 
 .card.state-variables {
-    flex: 0 0 calc(40% - 0.4rem); /* -0.4 rem because there is extra space between traversal and state variables */
-    min-height: 3rem;
+    flex: 1 1 0;
+    min-width: 3rem;
 }
 
 /*
    Object metadata card (left side, below the focused container).
-   Fixed 30% of #focused-container-slot's height — change this one value
-   to resize it, same as .card.code's 60% above. Unlike .card.code, this
-   is NOT paired with a .divider-h, so there's no drag handle: the split
-   is CSS-only and not user-resizable at runtime.
+   30% default height of #focused-container-slot — dragged via
+   #metadataDividerH, see AppController's metadataResizer. Change this
+   one value to change the default, same as .card.code's 60% above.
 */
 .card.metadata {
-    flex: 0 0 calc(30% - 0.4rem); /* Code section is set to 70%, the 0.4 rem gap is taken from traversal section */
+    flex: 0 0 30%;
     min-height: 3rem;
 }
 
@@ -116,53 +125,97 @@
 }
 
 /*
-   Code/Explanation tab bar (css-header's two halves). justify-content:
-   space-between on .card-header above already places .code-tabs on the
-   left and the Explanation tab on the right — nothing extra needed here
-   for that split, just the look of the pieces themselves.
+   Code/language select/Explanation/Notes, all in one row — the
+   language select sits right next to Code for easy access rather than
+   off at the header's far edge. .code-tabs is the sole child of
+   .card-header now, so that rule's justify-content: space-between has
+   nothing left to split; it's still there for .card-header/
+   .container-header's other, two-child uses (title + .header-actions).
 */
 .code-tabs {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
     min-width: 0;
 }
 
 /*
-   The language <select> is a sibling of the Code tab here, not nested
-   inside it (see layout.html) — that's what keeps "change the language"
-   and "switch to the Code tab" from ever being the same click. See
-   js/CodePanel.js, which only listens for clicks on .code-tab, never on
-   .language-select.
+   The language <select> is a sibling of the tab buttons here (see
+   layout.html), not nested inside any of them — that's what keeps
+   "change the language" and "switch tabs" from ever being the same
+   click, regardless of which tab it happens to sit next to. See
+   js/CodePanel.js, which only listens for clicks on .code-tab[data-tab]
+   — Notes has no data-tab and is deliberately excluded, same reasoning.
 */
 .code-tab {
     background: none;
     border: none;
     font: inherit;
     font-weight: 600;
+    font-size: 0.8rem;
     color: var(--text-color);
     opacity: 0.55;
     cursor: pointer;
     padding: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease;
 }
 
 .code-tab:hover {
     opacity: 0.85;
 }
 
+/*
+   Active state is opacity-only, deliberately not the accent (blue)
+   color used elsewhere in the app — matches the flat, no-blue look of
+   .language-select / .custom-select-* below.
+*/
 .code-tab.active {
     opacity: 1;
-    color: var(--accent-color);
 }
 
+/*
+   Real <select>, used directly on mobile and kept in the DOM (hidden)
+   as the source of truth on desktop, where css/custom-select.css's
+   .custom-select-trigger/.custom-select-list are drawn on top of it
+   instead — see js/CustomSelect.js. This exact flat style (no border,
+   header-bg background) is what was asked for, since the native
+   dropdown chrome itself can't be styled reliably across browsers.
+*/
 .language-select {
-    background: var(--bg-color);
-    color: var(--text-color);
-    border: 0.0625rem solid var(--border-color);
-    border-radius: 0.3rem;
-    padding: 0.15rem 0.4rem;
-    font: inherit;
+    border: none;
+    background: var(--header-bg);
+    font-weight: 600;
     font-size: 0.8rem;
+    font-family: inherit;
+    color: var(--text-color);
+    outline: none;
     cursor: pointer;
+}
+
+/* Best-effort only — most browsers render native <option> chrome themselves */
+.language-select option {
+    background: var(--header-bg);
+    color: var(--text-color);
+}
+
+/*
+   COLLAPSED (vertical tab) — applied by initTraversalResize.js to
+   whichever of Traversal/State variables is currently at its 3rem
+   minimum width. The header rotates to fill that 3rem strip top-to-
+   bottom instead of trying to lay itself out horizontally with no
+   room; the body is hidden since there's no space left to show it in.
+   Generic on .card (not scoped to .traversal/.state-variables) in case
+   another panel wants this same collapse behavior later.
+*/
+.card.collapsed .card-header {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.card.collapsed .card-body {
+    display: none;
 }

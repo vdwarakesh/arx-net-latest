@@ -1,18 +1,19 @@
 // ============================================================
 // HOVER POPOVERS
 // Used for the sidebar tooltips/menus (New / List / Settings icons),
-// AND for the small "Focus" / "Delete" tooltips on each container's
-// header icons (see Container.js, which passes an element directly
-// instead of an id — there's no stable id to give a per-container,
-// template-cloned icon).
+// AND for the small "Focus" tooltip on each container's focus icon
+// (see Container.js, which passes an element directly instead of an
+// id — there's no stable id to give a per-container, template-cloned
+// icon).
 //
-// MOBILE_QUERY must stay in sync with the breakpoint in css/responsive.css.
+// MOBILE_QUERY (from utils.js) must stay in sync with the breakpoint in
+// css/responsive.css — js/CustomSelect.js shares the same constant.
 // Hover popovers rely on mouseenter/mouseleave, which touch devices don't
 // fire reliably, so they are intentionally disabled below this breakpoint
 // rather than left to misbehave (get stuck open, never close, etc).
 // ============================================================
 
-const MOBILE_QUERY = '(max-width: 48rem)';
+import { MOBILE_QUERY } from './utils.js';
 
 export class HoverPopover {
     /**

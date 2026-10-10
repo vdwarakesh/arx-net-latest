@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/views.css">
     <link rel="stylesheet" href="css/containers-cards.css">
+    <link rel="stylesheet" href="css/custom-select.css">
     <link rel="stylesheet" href="css/resize-divider.css">
     <link rel="stylesheet" href="css/scrollbars.css">
     <link rel="stylesheet" href="css/modal.css">
@@ -48,7 +49,9 @@
 
                 <div id="focused-container-slot">
                     <!-- The currently focused container is inserted here by ViewManager,
-                         always before the metadata card below so it stays on top. -->
+                         always before the divider below so it stays on top. -->
+
+                    <div class="divider-h" id="metadataDividerH"></div>
 
                     <div class="card metadata" id="metadataCard">
                         <div class="card-header">Object metadata</div>
@@ -73,14 +76,18 @@
                             <div class="code-tabs">
                                 <button type="button" class="code-tab active" data-tab="code">Code</button>
                                 <!-- Sibling of the Code tab, not nested inside it — so changing the
-                                     language can never also trigger a tab switch. -->
+                                     language can never also trigger a tab switch. Placed right next
+                                     to Code for easy access, rather than off at the header's far edge. -->
                                 <select class="language-select">
                                     <option value="cpp">C++</option>
                                     <option value="python">Python</option>
                                     <option value="java">Java</option>
                                 </select>
+                                <button type="button" class="code-tab" data-tab="explanation">Explanation</button>
+                                <!-- No data-tab, and deliberately not picked up by CodePanel.js —
+                                     styled like the other tabs but does nothing when clicked yet. -->
+                                <button type="button" class="code-tab">Notes</button>
                             </div>
-                            <button type="button" class="code-tab" data-tab="explanation">Explanation</button>
                         </div>
                         <div class="card-body">
                             <p>Code section content goes here.</p>
@@ -96,8 +103,9 @@
                                     <option value="python">Python</option>
                                     <option value="java">Java</option>
                                 </select>
+                                <button type="button" class="code-tab active" data-tab="explanation">Explanation</button>
+                                <button type="button" class="code-tab">Notes</button>
                             </div>
-                            <button type="button" class="code-tab active" data-tab="explanation">Explanation</button>
                         </div>
                         <div class="card-body">
                             <p>Explanation section content goes here.</p>
@@ -116,6 +124,12 @@
                                 <p>Traversal section content goes here.</p>
                             </div>
                         </div>
+
+                        <!-- Horizontal drag handle — see css/resize-divider.css's .divider-v
+                             and js/initTraversalResize.js. Minimum width on both sides is
+                             3rem; at that minimum a card's header rotates into a vertical
+                             tab (see the .collapsed rules in css/containers-cards.css). -->
+                        <div class="divider-v" id="dividerV"></div>
 
                         <div class="card state-variables" id="stateVariablesCard">
                             <div class="card-header">State variables</div>

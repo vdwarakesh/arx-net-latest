@@ -1,0 +1,78 @@
+/* ==========================================================================
+   CUSTOM SELECT (desktop only)
+   Built by js/CustomSelect.js on top of the real <select class="language-
+   select"> (styled in css/containers-cards.css), since native dropdown
+   chrome can't be styled reliably across browsers. On mobile this whole
+   component stays hidden and the real <select> is used directly instead
+   — see js/CustomSelect.js's _applyMode() and the belt-and-suspenders
+   mobile override in css/responsive.css.
+
+   Flat, header-bg colored, no accent/blue anywhere — matches
+   .language-select and .code-tab on purpose.
+   ========================================================================== */
+
+.custom-select {
+    position: relative;
+    display: inline-flex;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: none;
+    background: var(--header-bg);
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: inherit;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0;
+}
+
+.custom-select-caret {
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
+
+.custom-select-list {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.3rem;
+    min-width: 6rem;
+    background: var(--header-bg);
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.custom-select-list.active {
+    display: flex;
+}
+
+.custom-select-option {
+    border: none;
+    background: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    font-family: inherit;
+    color: var(--text-color);
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.custom-select-option:hover {
+    opacity: 1;
+    background: var(--icon-hover-bg);
+}
+
+.custom-select-option.active {
+    opacity: 1;
+}

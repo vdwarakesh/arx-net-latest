@@ -40,6 +40,7 @@ export class ViewManager {
         this.focusedSlot = document.getElementById('focused-container-slot');
         this.algorithm = document.getElementById('algorithm');
         this.emptyState = document.getElementById('empty-state');
+        this.metadataDivider = document.getElementById('metadataDividerH');
         this.metadataCard = document.getElementById('metadataCard');
         this.metadataNameValue = document.getElementById('metadata-name-value');
 
@@ -154,9 +155,11 @@ export class ViewManager {
         }
 
         containerElement.replaceWith(this.gridPlaceholder);
-        // Insert before the metadata card specifically (not appendChild),
-        // so the container always stays above it regardless of DOM order.
-        this.focusedSlot.insertBefore(containerElement, this.metadataCard);
+        // Insert before the divider specifically (not appendChild, and not
+        // insertBefore(metadataCard) either), so the order always stays
+        // [container, divider, metadataCard] regardless of how many times
+        // containers get swapped in and out.
+        this.focusedSlot.insertBefore(containerElement, this.metadataDivider);
 
         this.currentFocused = containerElement;
         this.lastFocused = containerElement;
