@@ -1,7 +1,19 @@
 // ============================================================
 // APP CONTROLLER
 // Composition root: builds every module and wires them together.
-// This is the ONE place in the whole app that attaches listeners directly to `document`:
+//
+// This is the ONE place in the whole app that attaches listeners
+// directly to `document`:
+//   - keydown, for shortcuts that must work regardless of what's
+//     focused (there's no single "owning" element for those).
+//   - click, but ONLY for .list-jump-btn — its buttons are rebuilt
+//     from scratch every time the object-list popover reopens, so a
+//     listener attached once to a specific button would miss ones
+//     created later. See sidebarPopovers.js.
+// Everything else (pick-graph/pick-tree, sidebar buttons, modal
+// buttons, etc.) has a fixed DOM and gets a direct listener on its
+// own element, attached where that element is created — see
+// ViewManager.js, SettingsModal.js, FullscreenToggle.js.
 // ============================================================
 
 import { ContainerRegistry } from './ContainerRegistry.js';
@@ -10,6 +22,7 @@ import { ThemeManager } from './ThemeManager.js';
 import { SettingsModal } from './SettingsModal.js';
 import { FullscreenToggle } from './FullscreenToggle.js';
 import { ResizablePanel } from './ResizablePanel.js';
+import { CodePanel } from './CodePanel.js';
 import { initSidebarPopovers } from './sidebarPopovers.js';
 
 export class AppController {
@@ -24,6 +37,7 @@ export class AppController {
             topCardId: 'codeCard',
             dividerId: 'dividerH'
         });
+        this.codePanel = new CodePanel();
 
         initSidebarPopovers(this.registry);
 

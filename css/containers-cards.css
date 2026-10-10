@@ -16,17 +16,30 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Code card takes 60% of the vertical space by default.
-   max-height protects against extreme JS resize values pushing the traversal card off-screen. */
+/* Code/Explanation card takes 60% of the vertical space by default — only
+   one of #codeCard/#explanationCard is ever visible at once (see
+   css/views.css), so this rule effectively sizes whichever one is shown.
+   max-height protects against extreme JS resize values pushing the
+   traversal row off-screen; both this and the 60% basis get overridden
+   with !important while Explanation is active (see css/views.css). */
 .card.code {
-    flex: 0 0 60%;
-    max-height: calc(100% - 3.4rem);
+    flex: 0 0 70%;
+    max-height: calc(100% - 3.4rem); /* 3rem for header and 0.4 rem for padding */
     min-height: 3rem;
 }
 
-/* Traversal card flexibly takes whatever vertical space is left over */
+/*
+   Traversal (60%) and State variables (40%), the two cards inside
+   .traversal-row — see css/views.css for that wrapper's own layout and
+   for why the whole row disappears while Explanation is active.
+*/
 .card.traversal {
-    flex: 1 1 0;
+    flex: 0 0 60%;
+    min-height: 3rem;
+}
+
+.card.state-variables {
+    flex: 0 0 calc(40% - 0.4rem); /* -0.4 rem because there is extra space between traversal and state variables */
     min-height: 3rem;
 }
 
@@ -38,7 +51,7 @@
    is CSS-only and not user-resizable at runtime.
 */
 .card.metadata {
-    flex: 0 0 30%;
+    flex: 0 0 calc(30% - 0.4rem); /* Code section is set to 70%, the 0.4 rem gap is taken from traversal section */
     min-height: 3rem;
 }
 
@@ -67,10 +80,11 @@
 }
 
 /*
-   Groups the focus/delete icons at the right end of a container-header,
-   so justify-content: space-between on the header above pushes the title
-   left and this whole group right as one unit, instead of spreading
-   title/focus/delete apart evenly as three separate items.
+   Groups action icons at the right end of a container-header (currently
+   just focus-btn), so justify-content: space-between on the header above
+   pushes the title left and this whole group right as one unit. Built to
+   hold more than one icon — see the removed delete-btn comment in
+   layout.html — so a second icon added later just slots in here.
 */
 .header-actions {
     display: flex;
@@ -79,6 +93,76 @@
     flex-shrink: 0;
 }
 
-.header-actions .icon:hover {
-    background-color: var(--card-header-icon-hover-bg);
+/* Header icon styling — used for the focus icon in every container-header */
+.header-icon {
+    width: 2rem;
+    /* Expanded slightly to match sidebar icons */
+    height: 2rem;
+    padding: 0.25rem;
+    /* Added padding so the hover background frames the icon */
+    border-radius: 0.5rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, background-color 0.2s ease, filter 0.3s ease;
+}
+
+.header-icon:hover {
+    opacity: 1;
+    background-color: var(--icon-hover-bg);
+}
+
+[data-theme="dark"] .header-icon {
+    filter: invert(1);
+}
+
+/*
+   Code/Explanation tab bar (css-header's two halves). justify-content:
+   space-between on .card-header above already places .code-tabs on the
+   left and the Explanation tab on the right — nothing extra needed here
+   for that split, just the look of the pieces themselves.
+*/
+.code-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+/*
+   The language <select> is a sibling of the Code tab here, not nested
+   inside it (see layout.html) — that's what keeps "change the language"
+   and "switch to the Code tab" from ever being the same click. See
+   js/CodePanel.js, which only listens for clicks on .code-tab, never on
+   .language-select.
+*/
+.code-tab {
+    background: none;
+    border: none;
+    font: inherit;
+    font-weight: 600;
+    color: var(--text-color);
+    opacity: 0.55;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.code-tab:hover {
+    opacity: 0.85;
+}
+
+.code-tab.active {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+.language-select {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 0.0625rem solid var(--border-color);
+    border-radius: 0.3rem;
+    padding: 0.15rem 0.4rem;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
 }

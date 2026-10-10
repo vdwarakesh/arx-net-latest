@@ -144,12 +144,16 @@ export class ContainerRegistry {
         };
     }
 
-    // Entry point used by Container when its delete icon is clicked. Shows
-    // a confirmation modal; only removes the name from the registry (and
+    // The delete entry point — currently not called from anywhere (there's
+    // no delete button in the UI right now; see Container.js), but kept
+    // fully intact and reusable: wiring a future delete trigger to it is
+    // just registry.confirmDelete(containerInstance, onConfirmed). Shows a
+    // confirmation modal; only removes the name from the registry (and
     // notifies subscribers) if the user actually confirms. The caller
-    // (ViewManager, via the onConfirmed callback) is responsible for
-    // removing the container's DOM element and any view-state cleanup —
-    // this class only owns naming/registry state, never the DOM.
+    // (ViewManager.deleteContainer, via the onConfirmed callback) is
+    // responsible for removing the container's DOM element and any
+    // view-state cleanup — this class only owns naming/registry state,
+    // never the DOM.
     confirmDelete(container, onConfirmed) {
         this.deleteModal.setContent(`
             <div class="modal-form">

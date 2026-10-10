@@ -99,20 +99,23 @@ export class ViewManager {
     }
 
     createNewContainer(name = 'Object') {
-        const container = new Container(
-            name,
-            this.registry,
-            this.focusContainer,
-            (containerElement) => this.deleteContainer(containerElement)
-        );
+        const container = new Container(name, this.registry, this.focusContainer);
         this.registry.set(container.name, container);
         this.multiView.appendChild(container.element);
         this.focusContainer(container.element);
         return container;
     }
 
+    // Kept intentionally reusable even though nothing currently calls it —
+    // Container.js no longer has a delete button wired to it (see the
+    // comment there), but this method plus
+    // ContainerRegistry.confirmDelete() are the full delete mechanism,
+    // ready to be wired to whatever delete trigger gets added next:
+    //   registry.confirmDelete(containerInstance,
+    //       () => viewManager.deleteContainer(containerInstance.element));
+    //
     // Runs only after the user confirms in ContainerRegistry's delete
-    // modal (the registry has already removed the name by this point).
+    // modal (the registry has already removed the name by that point).
     // .remove() takes the container and everything inside it with it,
     // regardless of whether it currently lives in the grid or the
     // focused slot — no gridPlaceholder bookkeeping needed either way,
