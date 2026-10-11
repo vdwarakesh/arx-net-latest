@@ -49,13 +49,6 @@
         border-radius: 0.35rem;
     }
 
-    .icon {
-        /* 75% of pc size and padding */
-        width: 1.5rem;
-        height: 1.5rem;
-        padding: 0.1875rem;
-    }
-
     /*
        Collapses the grid view from 2 columns to 1 single vertical column.
        Also prepends an "auto" sized row ahead of the usual fixed-height

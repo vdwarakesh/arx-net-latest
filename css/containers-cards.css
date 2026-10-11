@@ -185,7 +185,7 @@
 .language-select {
     border: none;
     background: var(--header-bg);
-    font-size: 1rem;
+    font-size: var(--base-text-size); /* Doesn't work without this for some reason */
     font-weight: 600;
     font-family: inherit;
     color: var(--text-color);
