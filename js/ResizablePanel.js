@@ -1,29 +1,6 @@
-// ============================================================
-// RESIZABLE PANEL (generic — vertical or horizontal)
-// Drags a divider to resize "target" (setting its flex-basis in rem
-// directly), while target's sibling passively absorbs whatever space
-// that frees up or takes via its own flex: 1 1 0. One class, used for
-// three dividers: Code/Explanation <-> Traversal row (vertical),
-// container <-> Object metadata (vertical), and Traversal <-> State
-// variables (horizontal) — just different options at each call site.
-// If dragging feels wrong (jumps, won't go past a point, wrong side
-// grows), check here first.
-// ============================================================
-
 import { remPx } from './utils.js';
 
 export class ResizablePanel {
-    /**
-     * @param {Object} opts
-     * @param {string} opts.panelId - the flex container holding target + divider (+ its sibling)
-     * @param {string} opts.targetId - the element whose flex-basis this directly sets while dragging
-     * @param {string} opts.dividerId - the drag handle between target and its sibling
-     * @param {'vertical'|'horizontal'} [opts.axis='vertical'] - drag direction / which dimension is resized
-     * @param {'before'|'after'} [opts.targetPosition='before'] - is target before or after the divider, along that axis?
-     * @param {number} [opts.minRem=3] - target's own minimum size, in rem
-     * @param {number} [opts.otherMinRem=3] - minimum reserved for whatever's on target's other side, in rem
-     * @param {(sizes: {targetSize: number, siblingSize: number}) => void} [opts.onResize] - called with live pixel sizes on every drag step (and once from checkSizes())
-     */
     constructor({
         panelId,
         targetId,
@@ -38,9 +15,6 @@ export class ResizablePanel {
         this.target = document.getElementById(targetId);
         this.divider = document.getElementById(dividerId);
         this.axis = axis;
-        // target "before" the divider (e.g. Code, Traversal): dragging in the
-        // positive direction moves the divider away from target, growing it.
-        // target "after" the divider (e.g. Object metadata): the opposite.
         this.sign = targetPosition === 'before' ? 1 : -1;
         this.minRem = minRem;
         this.otherMinRem = otherMinRem;
@@ -50,6 +24,10 @@ export class ResizablePanel {
         this.startPos = 0;
         this.startSize = 0;
 
+        // FIX 1: Prevent the mobile browser from taking over the touch for scrolling/panning.
+        // You can also do this in your CSS: #dividerId { touch-action: none; }
+        this.divider.style.touchAction = 'none';
+
         this._onPointerDown = this._onPointerDown.bind(this);
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
@@ -57,6 +35,10 @@ export class ResizablePanel {
         this.divider.addEventListener('pointerdown', this._onPointerDown);
         this.divider.addEventListener('pointermove', this._onPointerMove);
         this.divider.addEventListener('pointerup', this._onPointerUp);
+        
+        // FIX 2: Handle pointercancel. Mobile browsers fire this when the touch 
+        // is interrupted (e.g., system gestures, palm rejection, or scrolling).
+        this.divider.addEventListener('pointercancel', this._onPointerUp);
     }
 
     _clientPos(e) {
@@ -110,14 +92,16 @@ export class ResizablePanel {
         if (!this.dragging) return;
         this.dragging = false;
         this.divider.classList.remove('is-dragging');
-
         document.body.style.userSelect = '';
-        this.divider.releasePointerCapture(e.pointerId);
+        
+        // Wrap release in a try/catch or check if it has capture. 
+        // On pointercancel, the browser often drops capture automatically, 
+        // which can cause releasePointerCapture to throw an error.
+        if (this.divider.hasPointerCapture(e.pointerId)) {
+            this.divider.releasePointerCapture(e.pointerId);
+        }
     }
 
-    // Re-reads current sizes and fires onResize once, without requiring a
-    // drag first — used to establish correct initial state (e.g. collapsed
-    // classes) right after setup.
     checkSizes() {
         if (!this.onResize) return;
         const targetSize = this._targetSize();
