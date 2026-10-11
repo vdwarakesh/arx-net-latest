@@ -16,7 +16,7 @@
 import { ResizablePanel } from './ResizablePanel.js';
 import { remPx } from './utils.js';
 
-const MIN_REM = 3;
+const MIN_REM = 2;
 
 export function initTraversalResize() {
     const traversalCard = document.getElementById('traversalCard');

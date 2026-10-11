@@ -25,7 +25,7 @@
    with !important while Explanation is active (see css/views.css). */
 .card.code {
     flex: 0 0 70%;
-    max-height: calc(100% - 3.4rem);
+    max-height: calc(100% - 2.4rem);
     min-height: 2rem;
 }
 

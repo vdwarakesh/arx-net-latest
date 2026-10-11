@@ -14,11 +14,11 @@
 
     /*
        Adjusts height to account for the horizontal sidebar taking space at
-       the top: sidebar height (1.5rem, halved below) + the .layout gap
+       the top: sidebar height (2.25rem, halved below) + the .layout gap
        (0.4rem) between it and .main-content.
     */
     .main-content {
-        height: calc(100% - 3.4rem);
+        height: calc(100% - 2.65rem);
     }
 
     /* Converts the vertical sidebar into a horizontal top-bar, at half its desktop height */

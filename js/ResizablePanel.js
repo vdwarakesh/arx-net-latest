@@ -7,8 +7,8 @@ export class ResizablePanel {
         dividerId,
         axis = 'vertical',
         targetPosition = 'before',
-        minRem = 3,
-        otherMinRem = 3,
+        minRem = 2,
+        otherMinRem = 2,
         onResize
     }) {
         this.panel = document.getElementById(panelId);
