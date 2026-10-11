@@ -124,12 +124,20 @@
    The algorithm wrapper holding Code/Explanation and, below that,
    Traversal + State variables.
    flex: 53 takes the remaining 53% of available space to complete the 100% width.
+   min-width: 0 matters here the same way it does on .traversal-row
+   below: without it, .traversal-row's content (specifically Traversal,
+   once ResizablePanel sets its width directly) can push .algorithm
+   itself wider than its 53% share, which then lets .traversal-row
+   measure a too-large "available width" on the very next pointermove —
+   the row's own min-width: 0 alone isn't enough if its parent can
+   still be inflated the same way.
 */
 .algorithm {
     flex: 53;
     height: 100%;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 /*
@@ -141,9 +149,22 @@
    default split and 3rem minimums live in css/containers-cards.css,
    next to .card.code's own 60% rule.
 */
+/*
+   min-width: 0 and overflow: hidden matter here specifically (unlike
+   .algorithm's own height, which is explicit and can't be pushed
+   taller by its children): without them, when Traversal's JS-set
+   width gets large, .traversal-row's own width would grow to
+   accommodate it instead of staying fixed, which inflates the
+   "available space" ResizablePanel measures on the very next
+   pointermove — a feedback loop that lets Traversal grow unbounded
+   and defeats State variables' 3rem floor. See .main-content's own
+   min-width: 0 in css/layout.css for the same trick on the other axis.
+*/
 .traversal-row {
     flex: 1 1 0;
     min-height: 0;
+    min-width: 0;
+    overflow: hidden;
     display: flex;
 }
 

@@ -23,6 +23,8 @@ export function initTraversalResize() {
     const stateVariablesCard = document.getElementById('stateVariablesCard');
 
     const applyCollapsed = ({ targetSize, siblingSize }) => {
+        if (targetSize === 0 && siblingSize === 0) return;
+
         const minPx = MIN_REM * remPx();
         // Small tolerance so float rounding can't leave both (or neither) collapsed.
         traversalCard.classList.toggle('collapsed', targetSize <= minPx + 0.5);
