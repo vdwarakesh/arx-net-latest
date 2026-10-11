@@ -220,13 +220,12 @@
 }
 
 .empty-state-title {
-    font-size: 3rem;
+    font-size: 3rem; /* Arx Net title in new page */
     font-weight: 700;
     color: var(--text-color);
 }
 
 .empty-state-subtitle {
-    font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.15em;
     color: var(--text-color);

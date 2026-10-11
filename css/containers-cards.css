@@ -8,7 +8,7 @@
 .card {
     display: flex;
     flex-direction: column;
-    min-height: 2rem;
+    min-height: var(--base-header-size);
     overflow: hidden;
     background: var(--card-bg);
     border: 0.0625rem solid var(--border-color);
@@ -25,15 +25,15 @@
    with !important while Explanation is active (see css/views.css). */
 .card.code {
     flex: 0 0 70%;
-    max-height: calc(100% - 2.4rem);
-    min-height: 2rem;
+    max-height: calc(100% - calc(var(--base-header-size) + 0.4rem));
+    min-height: var(--base-header-size);
 }
 
 /*
    Traversal (60% default) and State variables (fills whatever Traversal
    doesn't use), the two cards inside .traversal-row — dragged via
    #dividerV, see js/initTraversalResize.js. min-width is a CSS-level
-   floor matching the 2rem one that resizer enforces in JS; min-height
+   floor matching the var(--base-header-size) one that resizer enforces in JS; min-height
    already comes from the shared .container, .card rule above. See
    css/views.css for .traversal-row's own layout and for why the whole
    row disappears while Explanation is active.
@@ -46,31 +46,31 @@
 */
 .card.traversal {
     flex: 0 0 60%;
-    min-width: 2rem;
+    min-width: var(--base-header-size);
 }
 
 .card.state-variables {
     flex: 1 1 0;
-    min-width: 2rem;
+    min-width: var(--base-header-size);
 }
 
 /*
    Object metadata card (left side, below the focused container).
-   Starts at its 2rem minimum (same value as min-height below, and as
+   Starts at its var(--base-header-size) minimum (same value as min-height below, and as
    ResizablePanel's own minRem for #metadataDividerH in AppController) —
    change this one value to change the default, same as .card.code's
    70% above. The container above it (flex: 1 1 0 in css/views.css)
    absorbs whatever this doesn't use, same as always.
 */
 .card.metadata {
-    flex: 0 0 2rem;
-    min-height: 2rem;
+    flex: 0 0 var(--base-header-size);
+    min-height: var(--base-header-size);
 }
 
 /* Shared styling for top title bars in containers and cards */
 .card-header,
 .container-header {
-    height: 2rem;
+    height: var(--base-header-size);
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -78,7 +78,6 @@
     padding: 0 1rem;
     background: var(--header-bg);
     font-weight: 600;
-    font-size: 0.85rem;
     transition: background-color 0.3s ease;
 }
 
@@ -155,7 +154,6 @@
     border: none;
     font: inherit;
     font-weight: 600;
-    font-size: 0.8rem;
     color: var(--text-color);
     opacity: 0.55;
     cursor: pointer;
@@ -187,8 +185,8 @@
 .language-select {
     border: none;
     background: var(--header-bg);
+    font-size: 1rem;
     font-weight: 600;
-    font-size: 0.8rem;
     font-family: inherit;
     color: var(--text-color);
     outline: none;
@@ -203,8 +201,8 @@
 
 /*
    COLLAPSED (vertical tab) — applied by initTraversalResize.js to
-   whichever of Traversal/State variables is currently at its 2rem
-   minimum width. The header rotates to fill that 2rem strip top-to-
+   whichever of Traversal/State variables is currently at its var(--base-header-size)
+   minimum width. The header rotates to fill that var(--base-header-size) strip top-to-
    bottom instead of trying to lay itself out horizontally with no
    room; the body is hidden since there's no space left to show it in.
    Generic on .card (not scoped to .traversal/.state-variables) in case

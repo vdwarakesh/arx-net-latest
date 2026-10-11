@@ -16,7 +16,7 @@
 import { ResizablePanel } from './ResizablePanel.js';
 import { remPx } from './utils.js';
 
-const MIN_REM = 2;
+const MIN_REM = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--base-header-size"));
 
 export function initTraversalResize() {
     const traversalCard = document.getElementById('traversalCard');

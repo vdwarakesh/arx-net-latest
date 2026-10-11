@@ -7,8 +7,8 @@ export class ResizablePanel {
         dividerId,
         axis = 'vertical',
         targetPosition = 'before',
-        minRem = 2,
-        otherMinRem = 2,
+        minRem = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--base-header-size")),
+        otherMinRem = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--base-header-size")),
         onResize
     }) {
         this.panel = document.getElementById(panelId);

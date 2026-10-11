@@ -18,12 +18,12 @@
 
 .custom-select-trigger {
     display: flex;
+    font-size: var(--base-font-size); /* Doesn't work without this for some reason */
+    font-weight: 600;
     align-items: center;
     gap: 0.3rem;
     border: none;
     background: var(--header-bg);
-    font-weight: 600;
-    font-size: 0.8rem;
     font-family: inherit;
     color: var(--text-color);
     cursor: pointer;
@@ -31,7 +31,7 @@
 }
 
 .custom-select-caret {
-    font-size: 0.6rem;
+    font-size: 0.6rem; /* Style of the select dropdown arrow */
     opacity: 0.6;
 }
 
@@ -40,7 +40,7 @@
     flex-direction: column;
     position: absolute;
     top: 100%;
-    right: 0;
+    right: 0%;
     margin-top: 0.3rem;
     min-width: 6rem;
     background: var(--header-bg);
@@ -57,8 +57,6 @@
 .custom-select-option {
     border: none;
     background: none;
-    font-weight: 600;
-    font-size: 0.8rem;
     font-family: inherit;
     color: var(--text-color);
     text-align: left;
@@ -70,7 +68,7 @@
 
 .custom-select-option:hover {
     opacity: 1;
-    background: var(--icon-hover-bg);
+    background: var(--text-hover-bg);
 }
 
 .custom-select-option.active {

@@ -15,7 +15,7 @@ body {
     height: 100%;
     width: 100%;
     font-family: system-ui, -apple-system, sans-serif;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     overflow: hidden;
 }
 
@@ -26,15 +26,4 @@ body {
     padding: 0.4rem;
     /* Provides the outer margin framing the entire app */
     transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Base typography for generic text used inside cards and containers */
-h2 {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-}
-
-p {
-    font-size: 0.9rem;
-    line-height: 1.5;
 }

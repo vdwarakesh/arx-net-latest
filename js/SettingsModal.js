@@ -15,7 +15,7 @@ export class SettingsModal {
      */
     constructor(themeManager, triggerId = 'btn-settings') {
         this.themeManager = themeManager;
-        this.modal = new FloatingWindow('Settings', 'min(50rem, 95vw)', 'min(32rem, 90vh)');
+        this.modal = new FloatingWindow('Settings', 'min(55rem, 95vw)', 'min(32rem, 90vh)');
 
         this.modal.setContent(this._buildContent());
         this._wireTabs();

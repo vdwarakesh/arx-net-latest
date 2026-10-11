@@ -67,7 +67,7 @@ export class ViewManager {
         this.pickTypeModal = new FloatingWindow('Create New', 'min(50rem, 90vw)', 'auto');
         this.pickTypeModal.setContent(`
             <div class="modal-form">
-                <p style="margin-bottom: 0.5rem; font-size: 0.95rem;">Select the type of object to create:</p>
+                <p style="margin-bottom: 0.5rem;">Select the type of object to create:</p>
                 <button class="btn btn-secondary" id="pick-graph" style="width: 100%; text-align: left;">Graph</button>
                 <button class="btn btn-secondary" id="pick-tree" style="width: 100%; text-align: left;">Tree</button>
             </div>

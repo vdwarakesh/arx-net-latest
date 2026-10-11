@@ -4,6 +4,8 @@
    ========================================================================== */
 
 :root {
+    --base-header-size: 2.5rem;
+    --base-font-size: 1rem;
     --bg-color: #f0f2f5;
     --card-bg: #fdfdfd;
     --header-bg: #f4f5f7;
