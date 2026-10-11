@@ -24,10 +24,6 @@ export class ResizablePanel {
         this.startPos = 0;
         this.startSize = 0;
 
-        // FIX 1: Prevent the mobile browser from taking over the touch for scrolling/panning.
-        // You can also do this in your CSS: #dividerId { touch-action: none; }
-        this.divider.style.touchAction = 'none';
-
         this._onPointerDown = this._onPointerDown.bind(this);
         this._onPointerMove = this._onPointerMove.bind(this);
         this._onPointerUp = this._onPointerUp.bind(this);
@@ -35,9 +31,6 @@ export class ResizablePanel {
         this.divider.addEventListener('pointerdown', this._onPointerDown);
         this.divider.addEventListener('pointermove', this._onPointerMove);
         this.divider.addEventListener('pointerup', this._onPointerUp);
-        
-        // FIX 2: Handle pointercancel. Mobile browsers fire this when the touch 
-        // is interrupted (e.g., system gestures, palm rejection, or scrolling).
         this.divider.addEventListener('pointercancel', this._onPointerUp);
     }
 
