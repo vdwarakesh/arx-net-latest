@@ -7,10 +7,6 @@
 
 /* Triggers when the screen width drops below 768px (48rem) */
 @media (max-width: 48rem) {
-    * {
-        user-select: none;
-    }
-
     /* Stacks the entire layout vertically */
     .layout {
         flex-direction: column;
