@@ -27,3 +27,11 @@ body {
     /* Provides the outer margin framing the entire app */
     transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Necessary to override browser defaults */
+button,
+input,
+select,
+textarea {
+    font-size: inherit;
+}

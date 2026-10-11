@@ -1,7 +1,6 @@
-add spacing between sections (notes, explanation, code) - In progress
-
-High priority
-fix minimum height/width for phones to only match the headers, not a fixed 3rem
+Medium priority
+Reordering of objects in grid view
 
 Low priority
+add spacing between sections
 style section buttons
