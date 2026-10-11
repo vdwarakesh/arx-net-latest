@@ -7,6 +7,9 @@
    and State variables).
    ========================================================================== */
 
+.divider-h, .divier-v {
+    touch-action: none;
+}
 /* Invisible touch-target area for a vertical-drag slider */
 .divider-h {
     height: 0.4rem;

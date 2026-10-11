@@ -8,7 +8,7 @@
 .card {
     display: flex;
     flex-direction: column;
-    min-height: 3rem;
+    min-height: 2rem;
     overflow: hidden;
     background: var(--card-bg);
     border: 0.0625rem solid var(--border-color);
@@ -16,23 +16,24 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Code/Explanation card takes 60% of the vertical space by default — only
-   one of #codeCard/#explanationCard is ever visible at once (see
-   css/views.css), so this rule effectively sizes whichever one is shown.
+/* Code/Explanation card takes 70% of the vertical space by default (the
+   Traversal row fills the remaining 30%) — only one of #codeCard/
+   #explanationCard is ever visible at once (see css/views.css), so this
+   rule effectively sizes whichever one is shown.
    max-height protects against extreme JS resize values pushing the
-   traversal row off-screen; both this and the 60% basis get overridden
+   traversal row off-screen; both this and the 70% basis get overridden
    with !important while Explanation is active (see css/views.css). */
 .card.code {
-    flex: 0 0 60%;
+    flex: 0 0 70%;
     max-height: calc(100% - 3.4rem);
-    min-height: 3rem;
+    min-height: 2rem;
 }
 
 /*
    Traversal (60% default) and State variables (fills whatever Traversal
    doesn't use), the two cards inside .traversal-row — dragged via
    #dividerV, see js/initTraversalResize.js. min-width is a CSS-level
-   floor matching the 3rem one that resizer enforces in JS; min-height
+   floor matching the 2rem one that resizer enforces in JS; min-height
    already comes from the shared .container, .card rule above. See
    css/views.css for .traversal-row's own layout and for why the whole
    row disappears while Explanation is active.
@@ -45,29 +46,31 @@
 */
 .card.traversal {
     flex: 0 0 60%;
-    min-width: 3rem;
+    min-width: 2rem;
 }
 
 .card.state-variables {
     flex: 1 1 0;
-    min-width: 3rem;
+    min-width: 2rem;
 }
 
 /*
    Object metadata card (left side, below the focused container).
-   30% default height of #focused-container-slot — dragged via
-   #metadataDividerH, see AppController's metadataResizer. Change this
-   one value to change the default, same as .card.code's 60% above.
+   Starts at its 2rem minimum (same value as min-height below, and as
+   ResizablePanel's own minRem for #metadataDividerH in AppController) —
+   change this one value to change the default, same as .card.code's
+   70% above. The container above it (flex: 1 1 0 in css/views.css)
+   absorbs whatever this doesn't use, same as always.
 */
 .card.metadata {
-    flex: 0 0 30%;
-    min-height: 3rem;
+    flex: 0 0 2rem;
+    min-height: 2rem;
 }
 
 /* Shared styling for top title bars in containers and cards */
 .card-header,
 .container-header {
-    height: 3rem;
+    height: 2rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -75,7 +78,7 @@
     padding: 0 1rem;
     background: var(--header-bg);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     transition: background-color 0.3s ease;
 }
 
@@ -200,8 +203,8 @@
 
 /*
    COLLAPSED (vertical tab) — applied by initTraversalResize.js to
-   whichever of Traversal/State variables is currently at its 3rem
-   minimum width. The header rotates to fill that 3rem strip top-to-
+   whichever of Traversal/State variables is currently at its 2rem
+   minimum width. The header rotates to fill that 2rem strip top-to-
    bottom instead of trying to lay itself out horizontally with no
    room; the body is hidden since there's no space left to show it in.
    Generic on .card (not scoped to .traversal/.state-variables) in case

@@ -3,7 +3,6 @@ add spacing between sections (notes, explanation, code) - In progress
 collasped object metadata section - In progress
 
 High priority
-remove object metadata resize slider in mobile
 reduce all header sizes and min width/height to 2rem instead of 3rem except for sidebar, match font size accordingly
 fix minimum height/width for phones to only match the headers, not a fixed 3rem
 
