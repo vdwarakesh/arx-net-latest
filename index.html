@@ -20,7 +20,12 @@
     <link rel="stylesheet" href="css/settings.css">
     <link rel="stylesheet" href="css/popover.css">
     <link rel="stylesheet" href="css/buttons.css">
-    <link rel="stylesheet" href="css/code-theme.css"> <script src="js/prism-syntax-highlight.js"></script> <!-- Syntax highlighting in code card -->
+
+    <!-- Syntax highlighting in code card -->
+    <link rel="stylesheet" href="css/prism.css">
+    <script src="js/prism.js"></script>
+
+    <!-- Mobile overrides -->
     <link rel="stylesheet" href="css/mobile.css">
 </head>
 
@@ -93,7 +98,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <pre><code class="language-python"># A simple Python program
+                            <pre class="line-numbers" data-line="3"><code class="language-python"># A simple Python program
 
 def calculate_sum(a, b):
     """Calculate the sum of two numbers."""
@@ -115,57 +120,7 @@ if name == "main":
     main()
     print(f"First number: {num1}")
     print(f"Second number: {num2}")
-    print(f"Sum: {result}")
-</code></pre>
-<pre>
-    <code class="language-cpp">
-#include <iostream>
-#include <vector>
-#include <string>
-using namespace std;
-
-class Student {
-private:
-    string name;
-    vector<int> marks;
-
-public:
-    Student(string studentName, vector<int> studentMarks)
-        : name(studentName), marks(studentMarks) {}
-
-    double calculateAverage() {
-        int total = 0;
-
-        for (int mark : marks) {
-            total += mark;
-        }
-
-        return marks.empty() ? 0.0
-                             : static_cast<double>(total) / marks.size();
-    }
-
-    void display() {
-        cout << "Student: " << name << endl;
-        cout << "Average: " << calculateAverage() << endl;
-
-        if (calculateAverage() >= 50) {
-            cout << "Result: Pass" << endl;
-        } else {
-            cout << "Result: Fail" << endl;
-        }
-    }
-};
-
-int main() {
-    vector<int> marks = {85, 92, 78, 88};
-
-    Student student("Alex", marks);
-    student.display();
-
-    return 0;
-}
-</code>
-</pre>
+    print(f"Sum: {result}")</code></pre>
                         </div>
                     </div>
 

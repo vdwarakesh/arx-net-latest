@@ -1,0 +1,305 @@
+/* prismjs 1.30.0 
+adapted for vs code modern theme (unified light/dark) */
+code[class*=language-],
+pre[class*=language-] {
+    color: var(--prism-color);
+    background: 0 0;
+    text-shadow: none;
+    font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
+    font-size: 1em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none
+}
+
+code[class*=language-] ::-moz-selection,
+code[class*=language-]::-moz-selection,
+pre[class*=language-] ::-moz-selection,
+pre[class*=language-]::-moz-selection {
+    text-shadow: none;
+    background: var(--prism-selection-bg)
+}
+
+code[class*=language-] ::selection,
+code[class*=language-]::selection,
+pre[class*=language-] ::selection,
+pre[class*=language-]::selection {
+    text-shadow: none;
+    background: var(--prism-selection-bg)
+}
+
+@media print {
+    code[class*=language-],
+    pre[class*=language-] {
+        text-shadow: none
+    }
+}
+
+pre[class*=language-] {
+    /* padding: 1em; */
+    /* margin: .5em 0; */
+    overflow: auto
+}
+
+:not(pre)>code[class*=language-],
+pre[class*=language-] {
+    background: var(--prism-bg)
+}
+
+:not(pre)>code[class*=language-] {
+    background: var(--prism-inline-bg);
+    /* padding: .1em; */
+    border-radius: .3em;
+    white-space: normal
+}
+
+.token.cdata,
+.token.comment,
+.token.doctype,
+.token.prolog {
+    color: var(--prism-comment)
+}
+
+.token.punctuation {
+    color: var(--prism-punctuation)
+}
+
+.token.namespace {
+    opacity: .7
+}
+
+.token.boolean,
+.token.deleted,
+.token.symbol {
+    color: var(--prism-boolean)
+}
+
+.token.constant {
+    color: var(--prism-constant)
+}
+
+.token.tag {
+    color: var(--prism-tag)
+}
+
+.token.number {
+    color: var(--prism-number)
+}
+
+.token.property,
+.token.variable {
+    color: var(--prism-property)
+}
+
+.token.attr-name {
+    color: var(--prism-attr-name)
+}
+
+.token.builtin,
+.token.char,
+.token.inserted,
+.token.string {
+    color: var(--prism-string)
+}
+
+.token.selector {
+    color: var(--prism-selector)
+}
+
+.language-css .token.string,
+.style .token.string,
+.token.entity,
+.token.operator,
+.token.url {
+    color: var(--prism-operator);
+    background: transparent
+}
+
+.token.atrule,
+.token.keyword {
+    color: var(--prism-keyword)
+}
+
+.token.attr-value {
+    color: var(--prism-attr-value)
+}
+
+.token.class-name,
+.token.function {
+    color: var(--prism-function)
+}
+
+.token.important,
+.token.regex {
+    color: var(--prism-regex)
+}
+
+.token.bold,
+.token.important {
+    font-weight: 700
+}
+
+.token.italic {
+    font-style: italic
+}
+
+.token.entity {
+    cursor: help
+}
+
+/* plugin: line highlight */
+pre[data-line] {
+    position: relative;
+    padding: 1em 0 1em 3em
+}
+
+.line-highlight {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: inherit 0;
+    margin-top: 1em;
+    background: var(--prism-line-highlight-bg);
+    background: linear-gradient(to right, var(--prism-line-highlight-grad) 70%, var(--prism-line-highlight-transparent));
+    pointer-events: none;
+    line-height: inherit;
+    white-space: pre
+}
+
+@media print {
+    .line-highlight {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact
+    }
+}
+
+.line-highlight:before,
+.line-highlight[data-end]:after {
+    content: attr(data-start);
+    position: absolute;
+    top: .4em;
+    left: .6em;
+    min-width: 1em;
+    padding: 0 .5em;
+    background-color: var(--prism-line-highlight-label-bg);
+    color: var(--prism-line-highlight-label-text);
+    font: bold 65%/1.5 sans-serif;
+    text-align: center;
+    vertical-align: .3em;
+    border-radius: 999px;
+    text-shadow: none;
+    box-shadow: none
+}
+
+.line-highlight[data-end]:after {
+    content: attr(data-end);
+    top: auto;
+    bottom: .4em
+}
+
+.line-numbers .line-highlight:after,
+.line-numbers .line-highlight:before {
+    content: none
+}
+
+/* plugin: line numbers */
+pre[id].linkable-line-numbers span.line-numbers-rows {
+    pointer-events: all
+}
+
+pre[id].linkable-line-numbers span.line-numbers-rows>span:before {
+    cursor: pointer
+}
+
+pre[id].linkable-line-numbers span.line-numbers-rows>span:hover:before {
+    background-color: var(--prism-line-numbers-hover)
+}
+
+pre[class*=language-].line-numbers {
+    position: relative;
+    padding-left: 3.8em;
+    counter-reset: linenumber
+}
+
+pre[class*=language-].line-numbers>code {
+    position: relative;
+    white-space: inherit
+}
+
+.line-numbers .line-numbers-rows {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    font-size: 100%;
+    left: -3.8em;
+    width: 3em;
+    letter-spacing: -1px;
+    border-right: 1px solid var(--prism-line-numbers-border);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none
+}
+
+.line-numbers-rows>span {
+    display: block;
+    counter-increment: linenumber
+}
+
+.line-numbers-rows>span:before {
+    content: counter(linenumber);
+    color: var(--prism-invisibles);
+    display: block;
+    padding-right: .8em;
+    text-align: right
+}
+
+/* plugin: show invisibles */
+.token.cr,
+.token.lf,
+.token.space,
+.token.tab:not(:empty) {
+    position: relative
+}
+
+.token.cr:before,
+.token.lf:before,
+.token.space:before,
+.token.tab:not(:empty):before {
+    color: var(--prism-invisibles);
+    opacity: .6;
+    position: absolute
+}
+
+.token.tab:not(:empty):before {
+    content: '\21e5'
+}
+
+.token.cr:before {
+    /* content: '\240d' */
+    content: ''
+}
+
+.token.crlf:before {
+    /* content: '\240d\240a' */
+    content: ''
+}
+
+.token.lf:before {
+    /* content: '\240a' */
+    content: ''
+}
+
+.token.space:before {
+    content: '\00b7'
+}
