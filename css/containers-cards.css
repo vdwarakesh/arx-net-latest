@@ -4,6 +4,10 @@
    ========================================================================== */
 
 /* Shared structural styling for both main .containers and algorithm .cards */
+.container {
+    position: relative;
+}
+
 .container,
 .card {
     display: flex;
@@ -13,7 +17,15 @@
     background: var(--card-bg);
     border: 0.0625rem solid var(--border-color);
     border-radius: 0.5rem;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+
+.container:has(.focus-overlay:hover) {
+    cursor: pointer;
+    /* transform: translateY(calc(-1*calc(var(--base-header-size) - 0.4rem))); */ /* Upward floating animation disabled because card goes out of screen */
+    box-shadow:
+        6px 6px 16px var(--shadow-color-primary),
+        2px 2px 4px var(--shadow-color-secondary);
 }
 
 /* Code/Explanation card takes 70% of the vertical space by default (the

@@ -115,8 +115,14 @@
     min-height: 0;
 }
 
+.focus-overlay {
+    position: absolute;
+    background-color: transparent;
+    inset: 0;
+}
+
 /* Hides the "focus" icon on the container header when it's already in the focused view */
-#focused-container-slot .focus-btn {
+#focused-container-slot .focus-overlay {
     display: none;
 }
 

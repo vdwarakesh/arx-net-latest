@@ -16,6 +16,8 @@
     --divider-color: #cdd2d8;
     --text-color: #334155;
     --accent-color: #5a8ddf;
+    --shadow-color-primary: #8080802E;
+    --shadow-color-secondary: #0000001A;
 }
 
 /*
@@ -34,4 +36,6 @@
     --divider-color: #666666;
     --text-color: #e0e0e0;
     --accent-color: #3b82f6;
+    --shadow-color-primary: #000000CC;
+    --shadow-color-secondary: #FFFFFF1A;
 }

@@ -16,8 +16,6 @@
 //       () => viewManager.deleteContainer(containerInstance.element));
 // ============================================================
 
-import { HoverPopover } from './HoverPopover.js';
-
 export class Container {
     /**
      * @param {string} name - desired name (registry will dedupe it)
@@ -35,16 +33,10 @@ export class Container {
         const clone = template.content.cloneNode(true);
         const containerEl = clone.querySelector('.container');
         const titleEl = clone.querySelector('.container-title');
-        const focusBtn = containerEl.querySelector('.focus-btn');
+        const focusOverlay = containerEl.querySelector('.focus-overlay');
 
         titleEl.textContent = this.name;
-
-        focusBtn.addEventListener('click', () => onFocusRequest(containerEl));
-
-        // Small hover tooltip, same component the sidebar icons use —
-        // passed the element directly since a template-cloned icon has no
-        // id to target by. Automatically hidden on mobile (see HoverPopover.js).
-        new HoverPopover(focusBtn, 'Focus', null);
+        focusOverlay.addEventListener('click', () => onFocusRequest(containerEl));
 
         // Double-click the title to rename inline
         titleEl.addEventListener('dblclick', () => this._beginRename(titleEl));
