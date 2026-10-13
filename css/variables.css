@@ -14,28 +14,68 @@
     --text-hover-bg: #e2e5e9;
     --card-header-icon-hover-bg: #d3d3d3;
     --divider-color: #cdd2d8;
-    --text-color: #334155;
+    --text-color: #3b3b3b;
     --accent-color: #5a8ddf;
-    --shadow-color-primary: #8080802E;
-    --shadow-color-secondary: #0000001A;
+    --shadow-color-primary: #8080802e;
+    --shadow-color-secondary: #0000001a;
+    
+    /* PrismJS Light Variables */
+    --prism-color: #3b3b3b;
+    --prism-base-bg: #ffffff;
+    --prism-pre-bg: #fdfdfd;
+    --prism-inline-bg: #f8f8f8;
+    --prism-selection-bg: #add6ff80;
+    --prism-comment: #008000;
+    --prism-punctuation: #3b3b3b;
+    --prism-boolean: #0000ff;
+    --prism-constant: #0070c1;
+    --prism-tag: #800000;
+    --prism-number: #098658;
+    --prism-property: #001080;
+    --prism-attr-name: #ff0000;
+    --prism-string: #a31515;
+    --prism-selector: #800000;
+    --prism-operator: #3b3b3b;
+    --prism-keyword: #af00db;
+    --prism-attr-value: #0000ff;
+    --prism-function: #795e26;
+    --prism-regex: #d16969;
 }
 
-/*
-   Dark Mode Overrides.
-   Triggered dynamically by ThemeManager (js/ThemeManager.js) setting [data-theme="dark"] on the <html> element.
-   Replaces the light variables with high-contrast, dark slate colors.
-*/
+/* Dark Mode Overrides */
 [data-theme="dark"] {
     --bg-color: #121212;
-    --card-bg: #1e1e1e;
+    --card-bg: #1f1f1f;
     --header-bg: #2d2d2d;
     --border-color: #404040;
     --icon-hover-bg: #cbcbcb; /* Inverted to become #343434 */
     --text-hover-bg: #404040;
     --card-header-icon-hover-bg: #bfbfbf; /* Inverted to become #404040 */
     --divider-color: #666666;
-    --text-color: #e0e0e0;
+    --text-color: #cccccc;
     --accent-color: #3b82f6;
-    --shadow-color-primary: #000000CC;
-    --shadow-color-secondary: #FFFFFF1A;
+    --shadow-color-primary: #000000cc;
+    --shadow-color-secondary: #ffffff1a;
+
+    /* PrismJS Dark Variables */
+    --prism-color: #cccccc;
+    --prism-base-bg: #1f1f1f;
+    --prism-pre-bg: #1f1f1f;
+    --prism-inline-bg: #2b2b2b;
+    --prism-selection-bg: #264f78;
+    --prism-comment: #6a9955;
+    --prism-punctuation: #cccccc;
+    --prism-boolean: #569cd6;
+    --prism-constant: #569cd6;
+    --prism-tag: #569cd6;
+    --prism-number: #b5cea8;
+    --prism-property: #9cdcfe;
+    --prism-attr-name: #9cdcfe;
+    --prism-string: #ce9178;
+    --prism-selector: #d7ba7d;
+    --prism-operator: #cccccc;
+    --prism-keyword: #c586c0;
+    --prism-attr-value: #ce9178;
+    --prism-function: #dcdcaa;
+    --prism-regex: #d16969;
 }
