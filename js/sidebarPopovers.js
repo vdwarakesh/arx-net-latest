@@ -17,9 +17,11 @@ export function initSidebarPopovers(registry) {
     new HoverPopover('btn-list', 'Show object list', () => {
         if (registry.size === 0) return '';
 
-        const names = [...registry.keys()].sort((a, b) =>
-            a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
-        );
+        const names = [...registry.keys()]
+        // Uncomment for sorted buttons. Check in ContainerRegistry.js for mobile ordering
+        // const names = [...registry.keys()].sort((a, b) =>
+        //     a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+        // );
 
         return names
             .map(name => `<button class="popover-btn list-jump-btn" data-name="${name}">${name}</button>`)

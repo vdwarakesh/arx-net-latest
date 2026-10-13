@@ -63,9 +63,13 @@ export class ContainerRegistry {
     // Clicking a button here is handled by AppController's delegated
     // .list-jump-btn click listener, not by anything in this class.
     renderJumpButtonsHTML() {
-        return this.getSortedNames()
+        return [...this.keys()]
             .map(name => `<button class="popover-btn list-jump-btn" data-name="${name}">${name}</button>`)
             .join('');
+        // Uncomment for sorted return. Also check in sidebarPopovers.js for PC ordering.
+        // return this.getSortedNames()
+        //     .map(name => `<button class="popover-btn list-jump-btn" data-name="${name}">${name}</button>`)
+        //     .join('');
     }
 
     // Subscribe to be notified whenever a name is added, removed, or renamed.
