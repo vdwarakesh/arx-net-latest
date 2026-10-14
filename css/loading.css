@@ -1,3 +1,78 @@
+/* ==========================================================================
+   LOADING SCREEN
+   ========================================================================== */
+
+/* The full-screen background overlay */
+.app-loader {
+    position: fixed;
+    inset: 0; /* Covers top, left, right, bottom */
+    background: var(--card-bg); /* Uses your existing theme background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    
+    /* Smooth fade out when loading is done */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Shown when the body has the is-loading class */
+body.is-loading .app-loader {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+/* Flexbox container to stack the items vertically */
+.loader-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* App Title styling */
+.loader-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+}
+
+/* The sleek, modern spinning ring */
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.25rem solid var(--border-color); /* Faded background ring */
+    border-top: 0.25rem solid var(--text-color); /* Solid rotating top (can change to an accent color if you have one) */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Subtle pulsing text effect */
+.loader-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+    animation: pulseText 2s ease-in-out infinite;
+}
+
+/* Keyframes for the spinner rotation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Keyframes for the text pulse */
+@keyframes pulseText {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
 /* Hide the main layout while loading */
 body.is-loading .layout {
     opacity: 0;
@@ -5,24 +80,9 @@ body.is-loading .layout {
     pointer-events: none;
 }
 
-/* Smooth fade-in when loading finishes */
+/* Smooth fade-in for the main layout */
 .layout {
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-/* Style your optional loading text/spinner */
-.app-loader {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-body.is-loading .app-loader {
-    display: block;
+    transition: opacity 0.5s ease 0.2s, visibility 0.5s ease 0.2s; /* 0.2s delay creates a nice transition from loader to app */
 }
