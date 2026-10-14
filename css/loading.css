@@ -1,0 +1,28 @@
+/* Hide the main layout while loading */
+body.is-loading .layout {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Smooth fade-in when loading finishes */
+.layout {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+/* Style your optional loading text/spinner */
+.app-loader {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+body.is-loading .app-loader {
+    display: block;
+}

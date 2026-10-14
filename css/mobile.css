@@ -209,4 +209,7 @@
         /* Prevents iOS/Android from secretly scaling text */
         text-size-adjust: 100%;
     }
+    code[class*="language-"] {
+        padding-top: 0.1em; /* Nudges the text down slightly to center it in the highlight */
+    }
 }
