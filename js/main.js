@@ -21,16 +21,7 @@ Promise.all([
     // Ensure fonts are loaded so layout math and Prism heights are 100% accurate
     document.fonts ? document.fonts.ready : Promise.resolve()
 ]).then(() => {
-    
-    // 1. Initialize your app logic
     const app = new AppController();
     app.init();
-    
-    // 2. Force Prism to highlight AFTER layout and fonts are locked in
-    if (window.Prism) {
-        Prism.highlightAll();
-    }
-
-    // 3. Remove the loading curtain and reveal the app smoothly
     document.body.classList.remove('is-loading');
 });
