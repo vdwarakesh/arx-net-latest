@@ -168,7 +168,7 @@ pre[data-line] {
     left: 0;
     right: 0;
     padding: inherit 0;
-    margin-top: 1em;
+    margin-top: 0.93em;
     background: var(--prism-line-highlight-bg);
     background: linear-gradient(to right, var(--prism-line-highlight-grad) 70%, var(--prism-line-highlight-transparent));
     pointer-events: none;
