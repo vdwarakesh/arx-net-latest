@@ -202,8 +202,4 @@
     code[class*="language-"] {
         padding-top: 0.1em;
     }
-
-    .line-highlight {
-        margin-top: 0.96em;
-    }
 }
