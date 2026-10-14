@@ -102,6 +102,10 @@
     padding: 1rem;
 }
 
+#codeSection {
+    padding: 0 1rem;
+}
+
 /*
    Groups action icons at the right end of a container-header (currently
    just focus-btn), so justify-content: space-between on the header above
