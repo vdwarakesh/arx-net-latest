@@ -199,17 +199,7 @@
         display: none !important;
     }
 
-    /* Force consistent scaling for Prism text and highlights */
-    pre[class*="language-"],
-    code[class*="language-"] {
-        font-size: var(--base-font-size) !important;
-        line-height: 1.5 !important;
-        /* Unitless line-height scales perfectly with font-size */
-        -webkit-text-size-adjust: 100%;
-        /* Prevents iOS/Android from secretly scaling text */
-        text-size-adjust: 100%;
-    }
-    code[class*="language-"] {
-        padding-top: 0.1em; /* Nudges the text down slightly to center it in the highlight */
-    }
+    /* code[class*="language-"] {
+        padding-top: 0.1em;
+    } */
 }

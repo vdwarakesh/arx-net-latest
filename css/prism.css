@@ -6,7 +6,6 @@ pre[class*=language-] {
     background: 0 0;
     text-shadow: none;
     font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
-    font-size: 1em;
     text-align: left;
     white-space: pre;
     word-spacing: normal;
