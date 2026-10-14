@@ -199,7 +199,11 @@
         display: none !important;
     }
 
-    /* code[class*="language-"] {
+    code[class*="language-"] {
         padding-top: 0.1em;
-    } */
+    }
+
+    .line-highlight {
+        margin-top: 1.2em;
+    }
 }
