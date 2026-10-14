@@ -22,7 +22,8 @@
 
 .container:has(.focus-overlay:hover) {
     cursor: pointer;
-    /* transform: translateY(calc(-1*calc(var(--base-header-size) - 0.4rem))); */ /* Upward floating animation disabled because card goes out of screen */
+    /* transform: translateY(calc(-1*calc(var(--base-header-size) - 0.4rem))); */
+    /* Upward floating animation disabled because card goes out of screen */
     box-shadow:
         6px 6px 16px var(--shadow-color-primary),
         2px 2px 4px var(--shadow-color-secondary);
@@ -39,6 +40,77 @@
     flex: 0 0 70%;
     max-height: calc(100% - calc(var(--base-header-size) + 0.4rem));
     min-height: var(--base-header-size);
+}
+
+/* Override the default column layout specifically for the code card */
+#codeCard {
+    flex-direction: row;
+}
+
+/* Algorithms takes exactly 30% of the width */
+.algorithms {
+    flex: 0 0 25%;
+    border-right: 0.0625rem solid var(--border-color);
+    /* Adds a divider line */
+    overflow-y: auto;
+    /* Allows scrolling if algorithm list gets long */
+    padding: 1rem;
+    /* Add spacing (adjust as needed) */
+}
+
+/* The clickable header of the collapsible list */
+.sidebar-section summary {
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    border-bottom: 0.0625rem solid var(--border-color);
+    margin-bottom: 0.5rem;
+    user-select: none;
+    color: var(--text-color);
+    transition: opacity 0.2s ease;
+}
+
+.sidebar-section summary:hover {
+    opacity: 0.8;
+}
+
+/* Remove default list styling for the options */
+.sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Individual list options */
+.sidebar-list li {
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.sidebar-list li:hover {
+    background-color: var(--text-hover-bg);
+    opacity: 1;
+}
+
+/* The actively selected item */
+.sidebar-list li.active {
+    opacity: 1;
+    font-weight: 600;
+    background-color: var(--text-hover-bg);
+}
+
+/* Wrapper takes the remaining 70% and stacks its children vertically */
+.code-wrapper {
+    flex: 1 1 70%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    /* Prevents overflow issues with <pre> code blocks */
 }
 
 /*

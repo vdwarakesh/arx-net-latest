@@ -94,68 +94,51 @@
                         is the only thing that knows there are two of them.
                     -->
                     <div class="card code" id="codeCard">
-                        <div class="card-header code-header">
-                            <div class="code-tabs">
-                                <button type="button" class="code-tab active" data-tab="code">Code</button>
-                                <!-- Sibling of the Code tab, not nested inside it — so changing the
-                                     language can never also trigger a tab switch. Placed right next
-                                     to Code for easy access, rather than off at the header's far edge. -->
-                                <select class="language-select">
-                                    <option value="cpp">C++</option>
-                                    <option value="python">Python</option>
-                                    <option value="java">Java</option>
-                                </select>
-                                &nbsp;&nbsp;&nbsp;
-                                <button type="button" class="code-tab" data-tab="explanation">Explanation</button>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <button type="button" class="code-tab notes-tab">Notes</button>
-                            </div>
+                        <!-- Left Side: 30% width -->
+                        <div class="algorithms">
+                            <!-- Language Collapsible List -->
+                            <details class="sidebar-section">
+                                <summary>Language</summary>
+                                <ul class="sidebar-list">
+                                    <!-- 'active' class used here to set Python as the default visual selection -->
+                                    <li class="active">Python</li>
+                                    <li>C++</li>
+                                    <li>Java</li>
+                                </ul>
+                            </details>
+
+                            <!-- Algorithms Collapsible List -->
+                            <details class="sidebar-section">
+                                <summary>Algorithms</summary>
+                                <ul class="sidebar-list">
+                                    <li>BFS</li>
+                                    <li>DFS</li>
+                                    <li>Dijkstra's</li>
+                                </ul>
+                            </details>
                         </div>
-                        <div class="card-body" id="codeSection">
-                            <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
-    flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
-    max_flow = 0
-    
-    while True:
-        parent = {u: None for u in graph.nodes}
-        parent[source] = source
-        queue = [source]
-        path_found = False
-        
-        while queue and not path_found:
-            u = queue.pop(0)
-            
-            for v in graph.adj[u]:
-                residual = graph.capacity[u][v] - flow[u][v]
-                if parent[v] is None and residual > 0:
-                    parent[v] = u
-                    if v == sink:
-                        path_found = True
-                        break
-                    queue.append(v)
-                    
-        if not path_found:
-            break
-            
-        bottleneck = float('inf')
-        curr = sink
-        path = []
-        
-        while curr != source:
-            p = parent[curr]
-            bottleneck = min(bottleneck, graph.capacity[p][curr] - flow[p][curr])
-            path.append((p, curr))
-            curr = p
-            
-        path.reverse()
-        
-        for u, v in path:
-            flow[u][v] += bottleneck
-            flow[v][u] -= bottleneck
-            
-        max_flow += bottleneck
-        
-    return max_flow</code></pre>
+
+                        <!-- Right Side: 70% width (Groups header & body vertically) -->
+                        <div class="code-wrapper">
+                            <div class="card-header code-header">
+                                <div class="code-tabs">
+                                    <button type="button" class="code-tab active" data-tab="code">Code</button>
+                                    <select class="language-select">
+                                        <option value="cpp">C++</option>
+                                        <option value="python">Python</option>
+                                        <option value="java">Java</option>
+                                    </select>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="code-tab" data-tab="explanation">Explanation</button>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button type="button" class="code-tab notes-tab">Notes</button>
+                                </div>
+                            </div>
+
+                            <div class="card-body" id="codeSection">
+                                <pre class="line-numbers"
+                                    data-line="1,4,32"><code class="language-python">aaa</code></pre>
+                            </div>
                         </div>
                     </div>
 
