@@ -5,7 +5,7 @@ pre[class*=language-] {
     color: var(--prism-color);
     background: 0 0;
     text-shadow: none;
-    font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
+    font-family: "Noto Sans Mono", monospace;
     text-align: left;
     white-space: pre;
     word-spacing: normal;

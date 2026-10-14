@@ -96,3 +96,21 @@
     
     --prism-invisibles: #6e7681;
 }
+
+/* Google Sans */
+@font-face {
+    font-family: "Adwaita Sans";
+    src: url("../fonts/AdwaitaSans-Regular.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    /* font-display: swap; */
+}
+
+/* Cascadia Code */
+@font-face {
+    font-family: "Noto Sans Mono";
+    src: url("../fonts/NotoSansMono.ttf") format("truetype");
+    /* font-weight: 200 700; */
+    font-style: normal;
+    /* font-display: swap; */
+}

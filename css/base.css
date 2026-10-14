@@ -14,7 +14,7 @@ html,
 body {
     height: 100%;
     width: 100%;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: "Adwaita Sans", sans-serif;
     font-size: var(--base-font-size);
     overflow: hidden;
 }
