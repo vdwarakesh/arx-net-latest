@@ -109,6 +109,15 @@
         flex: 0 0 60%;
     }
 
+    .code-tab {
+        padding: 0.05rem 0.5rem;
+    }
+
+    .code-tab-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
     .traversal-row {
         flex: 1 1 0;
     }

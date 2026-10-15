@@ -310,6 +310,19 @@
     opacity: 0.85;
 }
 
+.code-tab-icon {
+    filter: invert(1);
+    width: 2rem;
+    height: 2rem;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+}
+
+.code-tab-icon:hover {
+    cursor: pointer;
+    background-color: var(--card-header-icon-hover-bg);
+}
+
 /*
    Active state is opacity-only, deliberately not the accent (blue)
    color used elsewhere in the app — matches the flat, no-blue look of
