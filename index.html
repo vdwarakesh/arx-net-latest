@@ -147,7 +147,50 @@
 
                             <div class="card-body" id="codeSection">
                                 <pre class="line-numbers"
-                                    data-line="1,4,32"><code class="language-python">aaa</code></pre>
+                                    data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
+    flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
+    max_flow = 0
+    
+    while True:
+        parent = {u: None for u in graph.nodes}
+        parent[source] = source
+        queue = [source]
+        path_found = False
+        
+        while queue and not path_found:
+            u = queue.pop(0)
+            
+            for v in graph.adj[u]:
+                residual = graph.capacity[u][v] - flow[u][v]
+                if parent[v] is None and residual > 0:
+                    parent[v] = u
+                    if v == sink:
+                        path_found = True
+                        break
+                    queue.append(v)
+                    
+        if not path_found:
+            break
+            
+        bottleneck = float('inf')
+        curr = sink
+        path = []
+        
+        while curr != source:
+            p = parent[curr]
+            bottleneck = min(bottleneck, graph.capacity[p][curr] - flow[p][curr])
+            path.append((p, curr))
+            curr = p
+            
+        path.reverse()
+        
+        for u, v in path:
+            flow[u][v] += bottleneck
+            flow[v][u] -= bottleneck
+            
+        max_flow += bottleneck
+        
+    return max_flow</code></pre>
                             </div>
                         </div>
                     </div>

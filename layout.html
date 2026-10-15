@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shard Spiral - VS Code Modern Layout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="prism.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.css" />
+  <style>
+    /* =========================================================================
+       1. VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
+       (Strictly zero px units anywhere in this document)
+       ========================================================================= */
+    :root,
+    [data-theme="dark"] {
+      --bg-app: #181818;
+      --bg-card: #1f1f1f;
+      --bg-card-header: #252526;
+      --bg-elevated: #252526;
+      --bg-input: #313131;
+      --bg-hover: #2a2d2e;
+      --bg-active-item: #04395e;
+      --bg-pill-active: #383838;
+      --border-color: #2b2b2b;
+      --border-subtle: #252526;
+      --text-primary: #cccccc;
+      --text-bright: #ffffff;
+      --text-muted: #858585;
+      --accent-primary: #0078d4;
+      --accent-hover: #1084df;
+      --scrollbar-thumb: #383838;
+      --scrollbar-thumb-hover: #4f4f4f;
+      --splitter-pill: #6e6e6e;
+      --sidebar-icon-filter: invert(0.85);
+      --code-line-highlight: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 75%, transparent 100%);
+    }
+
+    [data-theme="light"] {
+      --bg-app: #f8f8f8;
+      --bg-card: #ffffff;
+      --bg-card-header: #f3f3f3;
+      --bg-elevated: #f3f3f3;
+      --bg-input: #ffffff;
+      --bg-hover: #ececec;
+      --bg-active-item: #e8f2fc;
+      --bg-pill-active: #e0e0e0;
+      --border-color: #e5e5e5;
+      --border-subtle: #eaeaea;
+      --text-primary: #3b3b3b;
+      --text-bright: #1e1e1e;
+      --text-muted: #616161;
+      --accent-primary: #005fb8;
+      --accent-hover: #0258a8;
+      --scrollbar-thumb: #c4c4c4;
+      --scrollbar-thumb-hover: #a6a6a6;
+      --splitter-pill: #9e9e9e;
+      --sidebar-icon-filter: invert(0.25);
+      --code-line-highlight: linear-gradient(90deg, rgba(0, 95, 184, 0.1) 0%, rgba(0, 95, 184, 0.03) 75%, transparent 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      font-size: inherit;
+    }
+
+    html {
+      font-size: 1rem;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 1rem;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* =========================================================================
+       2. CORE DESKTOP LAYOUT & CARD COMPONENTS (REM / EM / % ONLY)
+       ========================================================================= */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .top-titlebar {
+      height: 2.75rem;
+      min-height: 2.75rem;
+      padding: 0 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.0625rem solid var(--border-color);
+      background-color: var(--bg-app);
+      flex-shrink: 0;
+      gap: 0.5rem;
+      z-index: 30;
+    }
+
+    .main-area {
+      display: flex;
+      flex: 1 1 0%;
+      min-height: 0;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .activity-bar {
+      width: 3.25rem;
+      min-width: 3.25rem;
+      background-color: var(--bg-app);
+      border-right: 0.0625rem solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.375rem 0;
+      flex-shrink: 0;
+      z-index: 25;
+    }
+
+    .activity-icons-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .activity-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.25rem;
+      border-radius: 0.5rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .activity-btn:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-hover);
+    }
+
+    /* Workspace Container */
+    .workspace-container {
+      flex: 1 1 0%;
+      display: flex;
+      padding: 0.375rem;
+      min-width: 0;
+      min-height: 0;
+      background-color: var(--bg-app);
+      overflow: hidden;
+    }
+
+    /* VS Code Card */
+    .vscode-card {
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.4375rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+      min-height: 0;
+      position: relative;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .vscode-card-header {
+      height: 2.75rem;
+      min-height: 2.75rem;
+      padding: 0 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 0.0625rem solid var(--border-color);
+      background-color: var(--bg-card-header);
+      font-weight: 600;
+      color: var(--text-primary);
+      flex-shrink: 0;
+      gap: 0.375rem;
+    }
+
+    /* Tabs */
+    .vscode-tab {
+      height: 1.5rem;
+      padding: 0 0.5625rem;
+      border-radius: 0.3125rem;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.12s ease, background-color 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .vscode-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .vscode-tab.active {
+      color: var(--text-bright);
+      background-color: var(--bg-pill-active);
+      font-weight: 600;
+    }
+
+    /* Icon Action Button in Card Headers */
+    .card-icon-btn {
+      width: 2.5rem;
+      height: 2.5rem;
+      padding: 0.25rem;
+      border-radius: 0.5rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+      flex-shrink: 0;
+    }
+
+    .card-icon-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-bright);
+    }
+
+    /* Sidebar Toggle Image Styling (images/sidebar-open.png & images/sidebar-close.png) */
+    .sidebar-toggle-img {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      display: block;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .brand-logo {
+      width: 2rem;
+      height: 2rem;
+      padding: 0.25rem;
+      border-radius: 0.5rem;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .activity-icon-img {
+      width: 2rem;
+      height: 2rem;
+      object-fit: contain;
+      display: block;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    /* Profile Floating Modal Window */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .profile-modal {
+      width: 100%;
+      max-width: 34rem;
+      height: 22rem;
+      max-height: 85dvh;
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
+    }
+
+    .profile-modal-header {
+      height: 2.25rem;
+      min-height: 2.25rem;
+      padding: 0 0.75rem;
+      background-color: var(--bg-card-header);
+      border-bottom: 0.0625rem solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .profile-modal-body {
+      flex: 1 1 0%;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .profile-modal-sidebar {
+      width: 10.5rem;
+      min-width: 10.5rem;
+      background-color: var(--bg-elevated);
+      border-right: 0.0625rem solid var(--border-color);
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .profile-nav-tab {
+      width: 100%;
+      text-align: left;
+      padding: 0.4375rem 0.625rem;
+      border-radius: 0.3125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .profile-nav-tab:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .profile-nav-tab.active {
+      background-color: var(--bg-active-item);
+      color: var(--text-bright);
+      font-weight: 600;
+    }
+
+    .profile-modal-content {
+      flex: 1 1 0%;
+      padding: 0.875rem 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .kbd-badge {
+      display: inline-block;
+      padding: 0.125rem 0.375rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      color: var(--text-bright);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Fallback inline icon when external png is missing in preview */
+    .sidebar-fallback-box {
+      width: 0.875rem;
+      height: 0.8125rem;
+      border: 0.08rem solid var(--text-muted);
+      border-radius: 0.125rem;
+      display: none;
+      align-items: center;
+      position: relative;
+      line-height: 1;
+      color: var(--text-primary);
+    }
+    .sidebar-fallback-box::before {
+      content: '';
+      width: 0.22rem;
+      height: 100%;
+      border-right: 0.08rem solid var(--text-muted);
+    }
+
+    /* Resizer / Splitter Bars */
+    .splitter-v {
+      width: 0.5rem;
+      min-width: 0.5rem;
+      cursor: col-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+      touch-action: none;
+    }
+
+    .splitter-v::after {
+      content: '';
+      width: 0.1875rem;
+      height: 1.75rem;
+      border-radius: 0.25rem;
+      background-color: var(--splitter-pill);
+      opacity: 0.65;
+      transition: all 0.15s ease;
+    }
+
+    .splitter-v:hover::after,
+    .splitter-v.dragging::after {
+      height: 3.25rem;
+      opacity: 1;
+      background-color: var(--accent-primary);
+    }
+
+    .splitter-h {
+      height: 0.5rem;
+      min-height: 0.5rem;
+      cursor: row-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 20;
+      flex-shrink: 0;
+      touch-action: none;
+    }
+
+    .splitter-h::after {
+      content: '';
+      height: 0.1875rem;
+      width: 2rem;
+      border-radius: 0.25rem;
+      background-color: var(--splitter-pill);
+      opacity: 0.65;
+      transition: all 0.15s ease;
+    }
+
+    .splitter-h:hover::after,
+    .splitter-h.dragging::after {
+      width: 3.5rem;
+      opacity: 1;
+      background-color: var(--accent-primary);
+    }
+
+    /* Buttons */
+    .vscode-btn-secondary {
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      color: var(--text-primary);
+      height: 1.5625rem;
+      min-height: 1.5625rem;
+      padding: 0 0.5rem;
+      border-radius: 0.25rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .vscode-btn-secondary:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .vscode-btn-primary {
+      background-color: var(--accent-primary);
+      border: 0.0625rem solid transparent;
+      color: #ffffff;
+      height: 1.5625rem;
+      min-height: 1.5625rem;
+      padding: 0 0.625rem;
+      border-radius: 0.25rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .vscode-btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Theme Segmented Switcher */
+    .theme-switcher {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      padding: 0.0625rem;
+      gap: 0.0625rem;
+    }
+
+    .theme-option-btn {
+      height: 1.375rem;
+      padding: 0 0.4375rem;
+      border-radius: 0.1875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .theme-option-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .theme-option-btn.active {
+      background-color: var(--bg-card);
+      color: var(--text-bright);
+    }
+
+    /* Custom Range Slider */
+    input[type="range"].vscode-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 4.5rem;
+      height: 0.2rem;
+      background: var(--border-color);
+      border-radius: 0.125rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].vscode-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 0.6875rem;
+      height: 0.6875rem;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      border: 0.09375rem solid var(--text-bright);
+    }
+
+    /* Language Selector Dropdown */
+    .lang-dropdown-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .lang-trigger-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3125rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      padding: 0 0.4375rem;
+      height: 1.4375rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .lang-trigger-btn:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .lang-dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 0.2rem);
+      width: 7.25rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      padding: 0.2rem;
+      box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.35);
+      z-index: 60;
+      display: none;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .lang-dropdown-menu.open {
+      display: flex;
+    }
+
+    .lang-option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.28rem 0.4375rem;
+      border-radius: 0.2rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+    }
+
+    .lang-option-item:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .lang-option-item.active {
+      background-color: var(--bg-active-item);
+      color: var(--text-bright);
+      font-weight: 500;
+    }
+
+    .lang-badge-dot {
+      width: 0.4375rem;
+      height: 0.4375rem;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* Prism.js VS Code Theme & Zero-PX Unit Overrides */
+    /* #codeViewPane pre[class*="language-"] {
+      margin: 0;
+      padding: 0.75rem 0.75rem 0.75rem 3.25rem;
+      background: transparent !important;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.5;
+      color: var(--text-primary);
+      text-shadow: none;
+      border: none;
+      box-shadow: none;
+      min-height: 100%;
+    } */
+
+    /* #codeViewPane code[class*="language-"] {
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.5;
+      color: var(--text-primary);
+      text-shadow: none;
+      background: transparent !important;
+    } */
+
+    /* #codeViewPane .line-numbers .line-numbers-rows {
+      top: 0.75rem;
+      left: 0;
+      width: 2.5rem;
+      border-right: 0.0625rem solid var(--border-color);
+      letter-spacing: -0.05em;
+    }
+
+    #codeViewPane .line-numbers-rows > span::before {
+      color: var(--text-muted);
+      padding-right: 0.5rem;
+    }
+
+    #codeViewPane .line-highlight {
+      background: var(--code-line-highlight) !important;
+      margin-top: 0.75rem;
+      left: 0;
+      right: 0;
+      pointer-events: none;
+    }
+
+    [data-theme="light"] #codeViewPane .token.keyword {
+      color: #0000ff;
+    }
+    [data-theme="light"] #codeViewPane .token.function {
+      color: #795e26;
+    }
+    [data-theme="light"] #codeViewPane .token.string {
+      color: #a31515;
+    }
+    [data-theme="light"] #codeViewPane .token.number,
+    [data-theme="light"] #codeViewPane .token.boolean {
+      color: #098658;
+    }
+    [data-theme="light"] #codeViewPane .token.operator,
+    [data-theme="light"] #codeViewPane .token.punctuation {
+      color: #3b3b3b;
+    } */
+
+    /* Desktop vs Mobile visibility helpers */
+    .mobile-only-flex {
+      display: none;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 0.375rem;
+      height: 0.375rem;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 0.2rem;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+
+    /* =========================================================================
+       3. PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
+       ========================================================================= */
+    @media (max-width: 56.25rem) {
+      body {
+        font-size: 0.8rem;
+      }
+
+      .desktop-only-el {
+        display: none !important;
+      }
+
+      /* Reorganize the exact same top-titlebar and activity-bar horizontally at the top */
+      .top-titlebar {
+        height: 2.625rem;
+        min-height: 2.625rem;
+        padding: 0 0.45rem;
+        border-bottom: 0.0625rem solid var(--border-color);
+      }
+
+      .main-area {
+        flex-direction: column;
+      }
+
+      .activity-bar {
+        width: 100%;
+        min-width: 100%;
+        height: 3rem;
+        min-height: 3rem;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 0.45rem;
+        border-right: none;
+        border-bottom: 0.0625rem solid var(--border-color);
+      }
+
+      .activity-icons-group {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .theme-option-btn {
+        height: 1.2rem;
+        padding: 0 0.32rem;
+        gap: 0.18rem;
+      }
+
+      /* Mobile Workspace is a vertical stack:
+         1. Graph Card (top)
+         2. Horizontal splitter
+         3. Code / Algorithms Card (middle)
+         4. Horizontal pill splitter
+         5. Bottom side-by-side row: Traversal Card | vertical pill splitter | State Variables Card
+      */
+      .workspace-container {
+        flex-direction: column;
+        padding: 0.25rem 0.35rem 0.35rem 0.35rem;
+        gap: 0;
+        overflow: hidden;
+      }
+
+      /* Compact headers, buttons, and paddings on phone */
+      .vscode-card {
+        border-radius: 0.45rem;
+      }
+
+      .vscode-card-header {
+        height: 2.625rem;
+        min-height: 2.625rem;
+        padding: 0 0.5rem;
+      }
+
+      .vscode-tab {
+        height: 1.35rem;
+        padding: 0 0.45rem;
+        border-radius: 0.28rem;
+      }
+
+      .profile-modal {
+        height: 20rem;
+      }
+
+      .profile-modal-sidebar {
+        width: 7.75rem;
+        min-width: 7.75rem;
+        padding: 0.375rem;
+      }
+
+      .vscode-btn-primary,
+      .vscode-btn-secondary {
+        height: 1.35rem;
+        min-height: 1.35rem;
+        padding: 0 0.4rem;
+        gap: 0.2rem;
+      }
+
+      .lang-trigger-btn {
+        height: 1.3rem;
+        padding: 0 0.35rem;
+        gap: 0.25rem;
+      }
+
+      input[type="range"].vscode-slider {
+        width: 3.25rem;
+      }
+
+      .playback-bar {
+        height: 2rem !important;
+        min-height: 2rem !important;
+        padding: 0 0.45rem !important;
+        gap: 0.3rem !important;
+      }
+
+      /* Mobile Splitters with pill indicators matching screenshot */
+      .splitter-h {
+        height: 0.45rem;
+        min-height: 0.45rem;
+      }
+      .splitter-h::after {
+        width: 1.85rem;
+        height: 0.16rem;
+      }
+
+      .splitter-v {
+        width: 0.45rem;
+        min-width: 0.45rem;
+      }
+      .splitter-v::after {
+        height: 1.85rem;
+        width: 0.16rem;
+      }
+    }
+  </style>
+</head>
+<body class="app-shell">
+
+  <!-- ================= DESKTOP TOP TITLE BAR ================= -->
+  <header class="top-titlebar">
+    <div class="brand-title" style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+      <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
+      <span style="font-weight: 600; color: var(--text-bright); white-space: nowrap;">
+        Shard Spiral
+      </span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.4375rem; flex-shrink: 0;">
+      <!-- Theme Switcher (System / Light / Dark) -->
+      <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
+        <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
+          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          <span>System</span>
+        </button>
+        <button type="button" class="theme-option-btn" data-theme-pref="light" title="VS Code Light Modern">
+          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          </svg>
+          <span>Light</span>
+        </button>
+        <button type="button" class="theme-option-btn" data-theme-pref="dark" title="VS Code Dark Modern">
+          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <span>Dark</span>
+        </button>
+      </div>
+
+      <button id="reset-layout-btn" class="vscode-btn-secondary" title="Reset panel proportions">
+        Reset Layout
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN BODY ================= -->
+  <div class="main-area">
+
+    <!-- ACTIVITY BAR (Vertical Left on Desktop, Horizontal Top Bar on Mobile) -->
+    <aside class="activity-bar" aria-label="Activity Bar">
+      <div class="activity-icons-group">
+        <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
+          <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
+        </button>
+        <button type="button" id="btnNew" class="activity-btn" title="New">
+          <img src="images/new.png" alt="New" class="activity-icon-img" />
+        </button>
+        <button type="button" id="btnLibrary" class="activity-btn" title="Library">
+          <img src="images/library.png" alt="Library" class="activity-icon-img" />
+        </button>
+        <button type="button" id="btnProfile" class="activity-btn" title="Profile">
+          <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= ADAPTIVE WORKSPACE CONTAINER ================= -->
+    <main id="workspace" class="workspace-container">
+
+      <!-- ===============================================================
+           SECTION A: GRAPH CARD
+           (Desktop: Top of Left Column | Phone: Top Card, ~43% height)
+           =============================================================== -->
+      <div id="left-column" style="display: flex; flex-direction: column; width: 50%; min-width: 0; min-height: 0;">
+
+        <section id="graph-card" class="vscode-card" style="height: 67%; flex-shrink: 0;">
+          <div class="vscode-card-header">
+            <span>Graph</span>
+          </div>
+
+          <div style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;">
+            <!-- Graph Content Area -->
+            <div style="flex: 1 1 0%; padding: 0.625rem 0.75rem; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden;">
+              <span style="color: var(--text-primary); opacity: 0.9;">
+                Main content area.
+              </span>
+            </div>
+
+            <!-- Compact Playback Controls Bar -->
+            <div class="playback-bar" style="height: 2.375rem; min-height: 2.375rem; padding: 0 0.625rem; border-top: 0.0625rem solid var(--border-color); background-color: var(--bg-card); display: flex; align-items: center; justify-content: space-between; gap: 0.375rem; overflow-x: auto;">
+              <div style="display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;">
+                <button type="button" class="vscode-btn-primary">
+                  <svg style="width: 0.625rem; height: 0.625rem; fill: currentColor;" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5-9-5.5z"/></svg>
+                  <span>Run</span>
+                </button>
+                <button type="button" class="vscode-btn-secondary">
+                  <span>Step</span>
+                </button>
+                <button type="button" class="vscode-btn-secondary">
+                  <span>Pause</span>
+                </button>
+                <button type="button" class="vscode-btn-secondary">
+                  <span>Reset</span>
+                </button>
+
+                <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: 0.25rem;">
+                  <span style="color: var(--text-muted);">Speed</span>
+                  <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1" class="vscode-slider" />
+                  <span id="speed-label" style="color: var(--text-primary); min-width: 1.4rem;">1x</span>
+                </div>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;">
+                <span style="color: var(--text-muted); white-space: nowrap;">0 / 0</span>
+                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;" title="Previous Step">&lt;</button>
+                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;" title="Next Step">&gt;</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Splitter: Desktop (Graph <-> Traversal) / Phone (Graph <-> Code) -->
+        <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
+
+        <!-- Desktop-Slot Placeholder for Traversal Card (JS moves nodes seamlessly if needed, or CSS flex order handles it) -->
+        <div id="desktop-traversal-slot" style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;"></div>
+      </div>
+
+      <!-- Desktop Main Vertical Splitter (Left Column <-> Right Column) -->
+      <div id="splitter-main-v" class="splitter-v desktop-only-el" title="Drag to resize"></div>
+
+      <!-- ===============================================================
+           SECTION B: RIGHT COLUMN (DESKTOP) / MIDDLE + BOTTOM ROWS (PHONE)
+           =============================================================== -->
+      <div id="right-column" style="flex: 1 1 0%; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
+
+        <!-- TOP-RIGHT ROW / PHONE MIDDLE ROW (ALGORITHMS + CODE CARD) -->
+        <div id="right-top-row" style="display: flex; min-height: 5rem; min-width: 0; height: 67%; flex-shrink: 0;">
+
+          <!-- COLLAPSIBLE ALGORITHMS CARD -->
+          <section id="algorithms-card" class="vscode-card" style="width: 30%; min-width: 8.5rem;">
+            <div class="vscode-card-header">
+              <span id="algo-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Algorithms</span>
+              <button
+                type="button"
+                id="toggle-algo-btn"
+                class="card-icon-btn"
+                title="Collapse Algorithms Panel"
+                aria-expanded="true"
+              >
+                <img
+                  id="algo-toggle-img"
+                  src="images/sidebar-close.png"
+                  alt="Collapse"
+                  class="sidebar-toggle-img"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
+                />
+                <span class="sidebar-fallback-box" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <!-- Expanded Algorithms Content -->
+            <div id="algo-body" style="flex: 1 1 0%; display: flex; flex-direction: column; padding: 0.45rem; gap: 0.45rem; overflow: auto;">
+              <input
+                type="text"
+                placeholder="Search algorithms..."
+                style="width: 100%; height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; background-color: var(--bg-input); border: 0.0625rem solid var(--border-color); color: var(--text-primary); outline: none;"
+              />
+              <div style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; border: 0.0625rem dashed var(--border-color); border-radius: 0.25rem; padding: 0.375rem; text-align: center;">
+                <span style="color: var(--text-muted);">Algorithms List</span>
+              </div>
+            </div>
+
+            <!-- Collapsed Vertical Strip -->
+            <div
+              id="algo-collapsed-strip"
+              style="display: none; flex: 1 1 0%; flex-direction: column; align-items: center; padding: 0.75rem 0; cursor: pointer;"
+              title="Click to expand Algorithms"
+            >
+              <span style="font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); writing-mode: vertical-rl; transform: rotate(180deg);">
+                Algorithms
+              </span>
+            </div>
+          </section>
+
+          <!-- Vertical Splitter (Algorithms <-> Code) -->
+          <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
+
+          <!-- CODE / EXPLANATION / NOTES CARD -->
+          <section id="code-card" class="vscode-card" style="flex: 1 1 0%; min-width: 8rem;">
+            <div class="vscode-card-header" style="padding: 0 0.45rem;">
+              <div style="display: flex; align-items: center; gap: 0.25rem; min-width: 0; overflow-x: auto;">
+                <button type="button" class="vscode-tab active" data-tab-group="right-top">Code</button>
+                <button type="button" class="vscode-tab" data-tab-group="right-top">Explanation</button>
+                <button type="button" class="vscode-tab" data-tab-group="right-top">Notes</button>
+              </div>
+
+              <!-- Compact Language Selector: Python, C++, Java -->
+              <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
+                <button
+                  type="button"
+                  id="lang-trigger-btn"
+                  class="lang-trigger-btn"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                >
+                  <span id="lang-active-dot" class="lang-badge-dot" style="background-color: #3572A5;"></span>
+                  <span id="lang-active-label">Python</span>
+                  <svg style="width: 0.65rem; height: 0.65rem; color: var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+
+                <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox" aria-label="Select Programming Language">
+                  <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python" data-color="#3572A5">
+                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <span class="lang-badge-dot" style="background-color: #3572A5;"></span>
+                      <span>Python</span>
+                    </span>
+                    <span style="color: var(--text-muted);">.py</span>
+                  </div>
+                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++" data-color="#f34b7d">
+                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <span class="lang-badge-dot" style="background-color: #f34b7d;"></span>
+                      <span>C++</span>
+                    </span>
+                    <span style="color: var(--text-muted);">.cpp</span>
+                  </div>
+                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java" data-color="#b07219">
+                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                      <span class="lang-badge-dot" style="background-color: #b07219;"></span>
+                      <span>Java</span>
+                    </span>
+                    <span style="color: var(--text-muted);">.java</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code Content Surface -->
+            <div id="codeViewPane" style="flex: 1 1 0%; display: flex; flex-direction: column; overflow: auto;">
+              <pre class="line-numbers"
+                                    data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
+    flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
+    max_flow = 0
+    
+    while True:
+        parent = {u: None for u in graph.nodes}
+        parent[source] = source
+        queue = [source]
+        path_found = False
+        
+        while queue and not path_found:
+            u = queue.pop(0)
+            
+            for v in graph.adj[u]:
+                residual = graph.capacity[u][v] - flow[u][v]
+                if parent[v] is None and residual > 0:
+                    parent[v] = u
+                    if v == sink:
+                        path_found = True
+                        break
+                    queue.append(v)
+                    
+        if not path_found:
+            break
+            
+        bottleneck = float('inf')
+        curr = sink
+        path = []
+        
+        while curr != source:
+            p = parent[curr]
+            bottleneck = min(bottleneck, graph.capacity[p][curr] - flow[p][curr])
+            path.append((p, curr))
+            curr = p
+            
+        path.reverse()
+        
+        for u, v in path:
+            flow[u][v] += bottleneck
+            flow[v][u] -= bottleneck
+            
+        max_flow += bottleneck
+        
+    return max_flow</code></pre>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Horizontal Pill Splitter (Between Code Row and Bottom Row) -->
+        <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
+
+        <!-- BOTTOM ROW: SIDE-BY-SIDE ON PHONE (TRAVERSAL | STATE VARIABLES) -->
+        <div id="bottom-split-row" style="flex: 1 1 0%; display: flex; min-height: 4.5rem; min-width: 0;">
+
+          <!-- TRAVERSAL CARD (Moves between Desktop Left-Bottom and Phone Bottom-Left) -->
+          <section id="log-card" class="vscode-card" style="width: 58%; min-width: 6.5rem; flex: 1 1 0%;">
+            <div class="vscode-card-header">
+              <span>Traversal</span>
+            </div>
+            <div style="flex: 1 1 0%; padding: 0.625rem 0.65rem; overflow: auto;">
+              <span style="color: var(--text-primary); line-height: 1.35; display: block;">
+                Traversal section content goes here.
+              </span>
+            </div>
+          </section>
+
+          <!-- Vertical Pill Splitter between Traversal & State Variables (Phone Mode) -->
+          <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
+
+          <!-- STATE VARIABLES CARD -->
+          <section id="state-card" class="vscode-card" style="flex: 1 1 0%; min-width: 6.5rem;">
+            <div class="vscode-card-header">
+              <span>State variables</span>
+            </div>
+            <div style="flex: 1 1 0%; padding: 0.625rem 0.65rem; overflow: auto;">
+              <span style="color: var(--text-primary); line-height: 1.35; display: block;">
+                State variables content goes here.
+              </span>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ================= PROFILE FLOATING WINDOW (MODAL) ================= -->
+  <div id="profile-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+    <div class="profile-modal">
+      <div class="profile-modal-header">
+        <span id="profile-modal-title">Profile</span>
+        <button type="button" id="close-profile-modal" class="card-icon-btn" title="Close" aria-label="Close modal">
+          &times;
+        </button>
+      </div>
+      <div class="profile-modal-body">
+        <nav class="profile-modal-sidebar" aria-label="Profile Sections">
+          <button type="button" class="profile-nav-tab active" data-profile-tab="account">Account</button>
+          <button type="button" class="profile-nav-tab" data-profile-tab="shortcuts">Keyboard shortcuts</button>
+        </nav>
+
+        <div class="profile-modal-content">
+          <!-- Account Tab Content -->
+          <div id="profile-pane-account" style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.625rem; border-bottom: 0.0625rem solid var(--border-color);">
+              <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--accent-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                SS
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 0.125rem;">
+                <span style="font-weight: 600; color: var(--text-bright);">alex.dev</span>
+                <span style="color: var(--text-muted);">alex.dev@shardspiral.io</span>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.45rem;">
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+                <span style="color: var(--text-muted);">Plan Tier</span>
+                <span style="color: var(--text-bright); font-weight: 500;">Pro Workspace</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+                <span style="color: var(--text-muted);">Cloud Sync</span>
+                <span style="color: var(--accent-primary); font-weight: 500;">Active &bull; Synced</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+                <span style="color: var(--text-muted);">Default Language</span>
+                <span style="color: var(--text-bright);">Python (.py)</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 0.25rem; display: flex; justify-content: flex-end;">
+              <button type="button" class="vscode-btn-secondary">Sign Out</button>
+            </div>
+          </div>
+
+          <!-- Keyboard Shortcuts Tab Content -->
+          <div id="profile-pane-shortcuts" style="display: none; flex-direction: column; gap: 0.45rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <span>Run / Pause Simulation</span>
+              <kbd class="kbd-badge">Space</kbd>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <span>Step Forward</span>
+              <kbd class="kbd-badge">&rarr;</kbd>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <span>Step Backward</span>
+              <kbd class="kbd-badge">&larr;</kbd>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <span>Reset Graph</span>
+              <kbd class="kbd-badge">R</kbd>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <span>Toggle Algorithms Panel</span>
+              <kbd class="kbd-badge">Ctrl + B</kbd>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0;">
+              <span>Toggle Fullscreen</span>
+              <kbd class="kbd-badge">F11</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. THEME MANAGEMENT (SYSTEM DEFAULT + LOCALSTORAGE PERSISTENCE)
+    // =========================================================================
+    const THEME_STORAGE_KEY = 'shard-spiral-theme-preference';
+    const systemDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    const themeOptionButtons = document.querySelectorAll('.theme-option-btn');
+
+    function getStoredThemePreference() {
+      try {
+        return localStorage.getItem(THEME_STORAGE_KEY) || 'system';
+      } catch (err) {
+        return 'system';
+      }
+    }
+
+    function resolveEffectiveTheme(pref) {
+      if (pref === 'light' || pref === 'dark') return pref;
+      return systemDarkMedia.matches ? 'dark' : 'light';
+    }
+
+    function applyThemePreference(pref, save = true) {
+      const effectiveTheme = resolveEffectiveTheme(pref);
+      document.documentElement.setAttribute('data-theme', effectiveTheme);
+
+      themeOptionButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-theme-pref') === pref);
+      });
+
+      if (save) {
+        try {
+          localStorage.setItem(THEME_STORAGE_KEY, pref);
+        } catch (err) {}
+      }
+    }
+
+    let currentThemePref = getStoredThemePreference();
+    applyThemePreference(currentThemePref, false);
+
+    systemDarkMedia.addEventListener('change', () => {
+      if (currentThemePref === 'system') applyThemePreference('system', false);
+    });
+
+    themeOptionButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentThemePref = btn.getAttribute('data-theme-pref');
+        applyThemePreference(currentThemePref, true);
+      });
+    });
+
+    // =========================================================================
+    // 1B. FULLSCREEN TOGGLE & PROFILE FLOATING MODAL WINDOW
+    // =========================================================================
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    const imgFullscreen = document.getElementById('imgFullscreen');
+
+    function updateFullscreenIcon() {
+      const isFs = Boolean(document.fullscreenElement);
+      imgFullscreen.src = isFs ? 'images/windowed.png' : 'images/fullscreen.png';
+      imgFullscreen.alt = isFs ? 'Windowed' : 'Fullscreen';
+    }
+
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+    // Profile Floating Modal
+    const btnProfile = document.getElementById('btnProfile');
+    const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
+    const closeProfileModalBtn = document.getElementById('close-profile-modal');
+    const profileNavTabs = document.querySelectorAll('.profile-nav-tab');
+    const profilePaneAccount = document.getElementById('profile-pane-account');
+    const profilePaneShortcuts = document.querySelectorId ? document.getElementById('profile-pane-shortcuts') : document.querySelector('#profile-pane-shortcuts');
+
+    function setProfileModalOpen(open) {
+      profileModalBackdrop.classList.toggle('open', open);
+    }
+
+    btnProfile.addEventListener('click', () => {
+      const isOpen = profileModalBackdrop.classList.contains('open');
+      setProfileModalOpen(!isOpen);
+    });
+
+    closeProfileModalBtn.addEventListener('click', () => setProfileModalOpen(false));
+
+    profileModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === profileModalBackdrop) setProfileModalOpen(false);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && profileModalBackdrop.classList.contains('open')) {
+        setProfileModalOpen(false);
+      }
+    });
+
+    profileNavTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-profile-tab');
+        profileNavTabs.forEach(t => t.classList.toggle('active', t === tab));
+        profilePaneAccount.style.display = target === 'account' ? 'flex' : 'none';
+        profilePaneShortcuts.style.display = target === 'shortcuts' ? 'flex' : 'none';
+      });
+    });
+
+    // =========================================================================
+    // 2. LANGUAGE SELECTOR (PYTHON, C++, JAVA)
+    // =========================================================================
+    const langWrapper = document.getElementById('lang-dropdown-wrapper');
+    const langTriggerBtn = document.getElementById('lang-trigger-btn');
+    const langMenu = document.getElementById('lang-dropdown-menu');
+    const langActiveDot = document.getElementById('lang-active-dot');
+    const langActiveLabel = document.getElementById('lang-active-label');
+    const langOptions = document.querySelectorAll('.lang-option-item');
+
+    langTriggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = langMenu.classList.toggle('open');
+      langTriggerBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const selectedLang = option.getAttribute('data-lang');
+        const selectedColor = option.getAttribute('data-color');
+
+        langActiveLabel.textContent = selectedLang;
+        langActiveDot.style.backgroundColor = selectedColor;
+
+        langOptions.forEach(opt => {
+          const active = opt === option;
+          opt.classList.toggle('active', active);
+          opt.setAttribute('aria-selected', String(active));
+        });
+
+        langMenu.classList.remove('open');
+        langTriggerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (!langWrapper.contains(e.target)) {
+        langMenu.classList.remove('open');
+        langTriggerBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // =========================================================================
+    // 3. TAB SWITCHING & SPEED SLIDER
+    // =========================================================================
+    document.querySelectorAll('.vscode-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const group = tab.getAttribute('data-tab-group');
+        document.querySelectorAll(`.vscode-tab[data-tab-group="${group}"]`).forEach(t => {
+          t.classList.remove('active');
+        });
+        tab.classList.add('active');
+      });
+    });
+
+    const speedSlider = document.getElementById('speed-slider');
+    const speedLabel = document.getElementById('speed-label');
+    speedSlider.addEventListener('input', (e) => {
+      speedLabel.textContent = `${e.target.value}x`;
+    });
+
+    // =========================================================================
+    // 4. COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
+    // =========================================================================
+    const phoneMedia = window.matchMedia('(max-width: 56.25rem)');
+    const workspace = document.getElementById('workspace');
+    const leftColumn = document.getElementById('left-column');
+    const rightColumn = document.getElementById('right-column');
+    const graphCard = document.getElementById('graph-card');
+    const splitterLeftH = document.getElementById('splitter-left-h');
+    const desktopTraversalSlot = document.getElementById('desktop-traversal-slot');
+    const bottomSplitRow = document.getElementById('bottom-split-row');
+    const splitterBottomMobileV = document.getElementById('splitter-bottom-mobile-v');
+    const logCard = document.getElementById('log-card');
+    const stateCard = document.getElementById('state-card');
+    const rightTopRow = document.getElementById('right-top-row');
+
+    const algoCard = document.getElementById('algorithms-card');
+    const algoTitle = document.getElementById('algo-title');
+    const algoBody = document.getElementById('algo-body');
+    const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
+    const toggleAlgoBtn = document.getElementById('toggle-algo-btn');
+    const algoToggleImg = document.getElementById('algo-toggle-img');
+    const splitterAlgoCode = document.getElementById('splitter-algo-code-v');
+
+    let isAlgoCollapsed = false;
+    let savedAlgoWidth = '30%';
+
+    function setAlgoCollapsed(collapse, customExpandedWidth) {
+      isAlgoCollapsed = collapse;
+      const isPhone = phoneMedia.matches;
+
+      if (isAlgoCollapsed) {
+        if (!customExpandedWidth && algoCard.style.width && algoCard.style.width !== '3rem') {
+          savedAlgoWidth = algoCard.style.width;
+        }
+        algoCard.style.display = 'flex';
+        algoCard.style.width = '3rem';
+        algoCard.style.minWidth = '3rem';
+        algoCard.style.flex = '0 0 auto';
+        algoTitle.style.display = 'none';
+        algoBody.style.display = 'none';
+        algoCollapsedStrip.style.display = 'flex';
+        splitterAlgoCode.style.display = 'flex';
+        splitterAlgoCode.style.pointerEvents = '';
+        splitterAlgoCode.style.opacity = '1';
+        algoToggleImg.src = 'images/sidebar-open.png';
+        toggleAlgoBtn.setAttribute('aria-expanded', 'false');
+      } else {
+        algoCard.style.display = 'flex';
+        algoCard.style.width = customExpandedWidth || (isPhone ? '38%' : savedAlgoWidth);
+        algoCard.style.minWidth = isPhone ? '6.5rem' : '8.5rem';
+        algoCard.style.flex = '0 0 auto';
+        algoTitle.style.display = '';
+        algoBody.style.display = 'flex';
+        algoCollapsedStrip.style.display = 'none';
+        splitterAlgoCode.style.display = 'flex';
+        splitterAlgoCode.style.pointerEvents = '';
+        splitterAlgoCode.style.opacity = '1';
+        algoToggleImg.src = 'images/sidebar-close.png';
+        toggleAlgoBtn.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    toggleAlgoBtn.addEventListener('click', () => setAlgoCollapsed(!isAlgoCollapsed));
+    algoCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
+
+    // Synchronize DOM structure between Desktop 2-column layout and Phone 3-row layout
+    function syncResponsiveStructure() {
+      const isPhone = phoneMedia.matches;
+
+      if (isPhone) {
+        // Move Traversal Card into bottom-split-row beside State Variables
+        if (logCard.parentElement !== bottomSplitRow) {
+          bottomSplitRow.insertBefore(logCard, splitterBottomMobileV);
+        }
+        splitterBottomMobileV.style.display = 'flex';
+        desktopTraversalSlot.style.display = 'none';
+
+        // Phone default heights matching screenshot proportions
+        leftColumn.style.width = '100%';
+        leftColumn.style.height = '44%';
+        leftColumn.style.flex = '0 0 auto';
+        graphCard.style.height = '100%';
+        graphCard.style.flex = '1 1 0%';
+
+        // Move splitterLeftH between leftColumn (Graph) and rightColumn (Code + Bottom row)
+        if (splitterLeftH.parentElement !== workspace) {
+          workspace.insertBefore(splitterLeftH, rightColumn);
+        }
+
+        rightTopRow.style.height = '60%';
+        logCard.style.width = '58%';
+        logCard.style.flex = '0 0 auto';
+        stateCard.style.flex = '1 1 0%';
+
+        // Default Algorithms collapsed on phone to match screenshot
+        setAlgoCollapsed(true);
+      } else {
+        // Desktop layout: Move splitterLeftH & logCard back inside leftColumn
+        if (splitterLeftH.parentElement !== leftColumn) {
+          leftColumn.insertBefore(splitterLeftH, desktopTraversalSlot);
+        }
+        if (logCard.parentElement !== desktopTraversalSlot) {
+          desktopTraversalSlot.appendChild(logCard);
+        }
+        desktopTraversalSlot.style.display = 'flex';
+        splitterBottomMobileV.style.display = 'none';
+
+        leftColumn.style.width = '50%';
+        leftColumn.style.height = '100%';
+        leftColumn.style.flex = '0 0 auto';
+        graphCard.style.height = '67%';
+        graphCard.style.flex = '0 0 auto';
+
+        rightTopRow.style.height = '67%';
+        logCard.style.width = '100%';
+        logCard.style.flex = '1 1 0%';
+        stateCard.style.flex = '1 1 0%';
+
+        setAlgoCollapsed(false);
+      }
+    }
+
+    phoneMedia.addEventListener('change', syncResponsiveStructure);
+    syncResponsiveStructure();
+
+    // =========================================================================
+    // 5. UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (ZERO PX UNITS)
+    // =========================================================================
+    function makeResizable({ splitter, getContainer, getTargetPane, getDirection, minPercent = 15, maxPercent = 85, onBeforeResize }) {
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        if (onBeforeResize && onBeforeResize() === false) return;
+        isDragging = true;
+        splitter.classList.add('dragging');
+        const dir = getDirection();
+        document.body.style.cursor = dir === 'horizontal' ? 'col-resize' : 'row-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const container = getContainer();
+        const targetPane = getTargetPane();
+        const dir = getDirection();
+        const rect = container.getBoundingClientRect();
+
+        if (dir === 'horizontal') {
+          let newPercent = ((clientX - rect.left) / rect.width) * 100;
+          newPercent = Math.max(minPercent, Math.min(maxPercent, newPercent));
+          targetPane.style.width = `${newPercent.toFixed(2)}%`;
+          targetPane.style.flex = '0 0 auto';
+        } else {
+          let newPercent = ((clientY - rect.top) / rect.height) * 100;
+          newPercent = Math.max(minPercent, Math.min(maxPercent, newPercent));
+          targetPane.style.height = `${newPercent.toFixed(2)}%`;
+          targetPane.style.flex = '0 0 auto';
+        }
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        splitter.classList.remove('dragging');
+        document.body.style.cursor = '';
+      };
+
+      splitter.addEventListener('mousedown', startDrag);
+      splitter.addEventListener('touchstart', startDrag, { passive: false });
+
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    }
+
+    // 1. Desktop Main Vertical Splitter (Left Column <-> Right Column)
+    makeResizable({
+      splitter: document.getElementById('splitter-main-v'),
+      getContainer: () => workspace,
+      getTargetPane: () => leftColumn,
+      getDirection: () => 'horizontal',
+      minPercent: 20,
+      maxPercent: 80
+    });
+
+    // 2. Top Horizontal Splitter (Desktop: Graph <-> Log | Phone: Graph <-> Lower Area)
+    makeResizable({
+      splitter: splitterLeftH,
+      getContainer: () => phoneMedia.matches ? workspace : leftColumn,
+      getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
+      getDirection: () => 'vertical',
+      minPercent: 18,
+      maxPercent: 78
+    });
+
+    // 3. Middle Horizontal Pill Splitter (Code Row <-> Bottom Split Row)
+    makeResizable({
+      splitter: document.getElementById('splitter-right-h'),
+      getContainer: () => rightColumn,
+      getTargetPane: () => rightTopRow,
+      getDirection: () => 'vertical',
+      minPercent: 20,
+      maxPercent: 80
+    });
+
+    // 4. Algorithms <-> Code Vertical Splitter (Supports drag-to-collapse & drag-to-expand)
+    (function setupAlgoSplitter() {
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        splitterAlgoCode.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = rightTopRow.getBoundingClientRect();
+        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const collapseThresholdRem = phoneMedia.matches ? 6.5 : 8.5;
+        const desiredWidthRem = (clientX - rect.left) / rootFontSize;
+
+        if (desiredWidthRem < collapseThresholdRem) {
+          if (!isAlgoCollapsed) {
+            setAlgoCollapsed(true);
+          }
+        } else {
+          let newPercent = ((clientX - rect.left) / rect.width) * 100;
+          newPercent = Math.max(15, Math.min(68, newPercent));
+          const widthStr = `${newPercent.toFixed(2)}%`;
+          savedAlgoWidth = widthStr;
+
+          if (isAlgoCollapsed) {
+            setAlgoCollapsed(false, widthStr);
+          } else {
+            algoCard.style.width = widthStr;
+            algoCard.style.flex = '0 0 auto';
+          }
+        }
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        splitterAlgoCode.classList.remove('dragging');
+        document.body.style.cursor = '';
+      };
+
+      splitterAlgoCode.addEventListener('mousedown', startDrag);
+      splitterAlgoCode.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    })();
+
+    // 5. Phone Bottom Vertical Pill Splitter (Traversal <-> State variables)
+    makeResizable({
+      splitter: splitterBottomMobileV,
+      getContainer: () => bottomSplitRow,
+      getTargetPane: () => logCard,
+      getDirection: () => 'horizontal',
+      minPercent: 22,
+      maxPercent: 78
+    });
+
+    // Reset Layout Buttons (Desktop & Phone)
+    function resetAllProportions() {
+      savedAlgoWidth = '30%';
+      syncResponsiveStructure();
+    }
+
+    document.getElementById('reset-layout-btn').addEventListener('click', resetAllProportions);
+  </script>
+  <script src="prism.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.js"></script>
+</body>
+</html>
