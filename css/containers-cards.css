@@ -300,11 +300,13 @@
     color: var(--text-color);
     opacity: 0.55;
     cursor: pointer;
-    padding: 0;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
     transition: opacity 0.2s ease;
 }
 
 .code-tab:hover {
+    background-color: var(--text-hover-bg);
     opacity: 0.85;
 }
 
@@ -314,6 +316,7 @@
    .language-select / .custom-select-* below.
 */
 .code-tab.active {
+    background-color: var(--text-hover-bg);
     opacity: 1;
 }
 
