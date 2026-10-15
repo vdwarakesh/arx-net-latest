@@ -9,9 +9,7 @@
 //   - click, for .list-jump-btn (its buttons are rebuilt from scratch
 //     every time the object-list popover reopens, so a listener
 //     attached once to a specific button would miss ones created
-//     later — see sidebarPopovers.js) AND for closing any open
-//     CustomSelect when the click lands outside it (see
-//     CustomSelect.js's closeIfOutside()).
+//     later — see sidebarPopovers.js)
 // Everything else (pick-graph/pick-tree, sidebar buttons, modal
 // buttons, etc.) has a fixed DOM and gets a direct listener on its
 // own element, attached where that element is created — see
@@ -26,7 +24,6 @@ import { FullscreenToggle } from './FullscreenToggle.js';
 import { ResizablePanel } from './ResizablePanel.js';
 import { CodePanel } from './CodePanel.js';
 import { initSidebarPopovers } from './sidebarPopovers.js';
-import { initLanguageSelects } from './initLanguageSelects.js';
 import { initTraversalResize } from './initTraversalResize.js';
 
 export class AppController {
@@ -62,7 +59,6 @@ export class AppController {
         this.traversalResizer = initTraversalResize();
 
         this.codePanel = new CodePanel();
-        this.languageSelects = initLanguageSelects();
 
         initSidebarPopovers(this.registry);
 
@@ -92,8 +88,6 @@ export class AppController {
                 this.viewManager.focusContainer(container.element);
             }
         }
-
-        this.languageSelects.forEach(select => select.closeIfOutside(e.target));
     }
 
     // ------------------------------------------------------------------

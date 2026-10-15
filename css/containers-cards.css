@@ -55,28 +55,18 @@
     overflow-y: auto;
     /* Allows scrolling if algorithm list gets long */
     padding: 1rem;
-    /* Add spacing (adjust as needed) */
 }
 
 /* Container spacing */
-/* 
-  MODERN SUMMARY (HEADERS)
-  Hides the default triangle, uses flexbox, and adds sleek typography
-*/
 .sidebar-section summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.7rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-color);
     opacity: 0.5;
     padding: 0.5rem;
     cursor: pointer;
     list-style: none;
-    /* Hides default marker */
     user-select: none;
     transition: opacity 0.2s ease;
 }
@@ -98,7 +88,6 @@
     border-right: 0.125rem solid currentColor;
     border-bottom: 0.125rem solid currentColor;
     transform: rotate(-45deg);
-    /* Points right when closed */
     transition: transform 0.2s ease;
     margin-right: 0.25rem;
 }
@@ -125,13 +114,11 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.4rem 0.5rem;
+    padding: 0.4rem 1rem;
     border-radius: 0.375rem;
-    font-size: 0.85rem;
     font-weight: 500;
     color: var(--text-color);
     cursor: pointer;
-    opacity: 0.7;
     transition: all 0.2s ease;
     border-left: 2px solid transparent;
     /* Prep for active state */
@@ -145,20 +132,7 @@
 /* The actively selected item */
 .sidebar-list li.active {
     opacity: 1;
-    background-color: var(--text-hover-bg, rgba(128, 128, 128, 0.15));
-    /* Adds a subtle accent line on the left side of the active item */
-    border-left: 2px solid var(--text-color);
-}
-
-/* 
-  ICONS AND DOTS
-*/
-.list-icon {
-    width: 1.2rem;
-    height: 1.2rem;
-    object-fit: contain;
-    /* Prevents the image from squishing */
-    flex-shrink: 0;
+    background-color: var(--text-hover-bg);
 }
 
 /* A subtle dot indicator for lists without icons (like the Algorithms list) */
@@ -170,6 +144,19 @@
     opacity: 0.4;
     margin-left: 0.35rem;
     margin-right: 0.05rem;
+    flex-shrink: 0; /* Prevents the dot from squishing when text is long */
+}
+
+/* A diamond indicator alternative to the dot */
+.list-diamond {
+    width: 0.35rem;
+    height: 0.35rem;
+    background-color: currentColor;
+    opacity: 0.4;
+    margin-left: 0.35rem;
+    margin-right: 0.05rem;
+    flex-shrink: 0; /* Prevents squishing */
+    transform: rotate(45deg); /* Rotates the square 45 degrees to form a diamond */
 }
 
 /* Wrapper takes the remaining 70% and stacks its children vertically */
@@ -328,30 +315,6 @@
 */
 .code-tab.active {
     opacity: 1;
-}
-
-/*
-   Real <select>, used directly on mobile and kept in the DOM (hidden)
-   as the source of truth on desktop, where css/custom-select.css's
-   .custom-select-trigger/.custom-select-list are drawn on top of it
-   instead — see js/CustomSelect.js. This exact flat style (no border,
-   header-bg background) is what was asked for, since the native
-   dropdown chrome itself can't be styled reliably across browsers.
-*/
-.language-select {
-    border: none;
-    background: var(--header-bg);
-    font-weight: 600;
-    font-family: inherit;
-    color: var(--text-color);
-    outline: none;
-    cursor: pointer;
-}
-
-/* Best-effort only — most browsers render native <option> chrome themselves */
-.language-select option {
-    background: var(--header-bg);
-    color: var(--text-color);
 }
 
 /*
