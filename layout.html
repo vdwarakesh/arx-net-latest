@@ -15,71 +15,126 @@
        ========================================================================= */
     :root {
       /* --- Typography & Base Scaling --- */
-      --base-root-font-size: 0.9rem; /* Base root font scaling across the entire app */
-      --desktop-body-font-size: 1rem; /* Standard font size on desktop viewports */
-      --mobile-body-font-size: 0.8rem; /* Compact font size on mobile/phone viewports (<= 56.25rem) */
+      --base-root-font-size: 0.9rem;
+      /* Base root font scaling across the entire app */
+      --desktop-body-font-size: 1rem;
+      /* Standard font size on desktop viewports */
+      --mobile-body-font-size: 0.8rem;
+      /* Compact font size on mobile/phone viewports (<= 56.25rem) */
 
       /* --- Header & Card Bar Heights --- */
-      --header-height-desktop: 2.75rem; /* Height of the top application header bar on desktop */
-      --header-height-mobile: 2.625rem; /* Height of the top application header bar on mobile */
-      --card-header-height-desktop: 2.75rem; /* Height of section card headers (Graph, Code, etc.) on desktop */
-      --card-header-height-mobile: 2.625rem; /* Height of section card headers on mobile */
-      --playback-bar-height-desktop: 2.375rem; /* Height of the bottom playback controls bar inside the Graph card on desktop */
-      --playback-bar-height-mobile: 2rem; /* Height of the bottom playback controls bar on mobile */
+      --header-height-desktop: 2.75rem;
+      /* Height of the top application header bar on desktop */
+      --header-height-mobile: 2.625rem;
+      /* Height of the top application header bar on mobile */
+      --card-header-height-desktop: 2.75rem;
+      /* Height of section card headers (Graph, Code, etc.) on desktop */
+      --card-header-height-mobile: 1.6rem;
+      /* Height of section card headers on mobile */
+      --playback-bar-height-desktop: 2.375rem;
+      /* Height of the bottom playback controls bar inside the Graph card on desktop */
+      --playback-bar-height-mobile: 2rem;
+      /* Height of the bottom playback controls bar on mobile */
 
       /* --- Icon & Action Button Sizes --- */
-      --brand-logo-size: 2rem; /* Width and height of the main Shard Spiral logo in the header */
-      --header-action-btn-size: 2.25rem; /* Hitbox width and height for the header action buttons (Fullscreen, New, Library, Reset, Profile) on desktop */
-      --header-action-btn-size-mobile: 1.9rem; /* Hitbox width and height for the header action buttons on mobile */
-      --header-action-icon-size: 1.5rem; /* Visual width and height of the PNG icons inside the header action buttons on desktop */
-      --header-action-icon-size-mobile: 1.3rem; /* Visual width and height of the PNG icons inside the header action buttons on mobile */
-      --card-icon-btn-size: 2.5rem; /* Hitbox width and height for icon buttons inside card headers (e.g., collapse toggle) */
-      --sidebar-toggle-icon-size: 2rem; /* Width and height of the collapse/expand image icon in the Algorithms header */
-      --theme-option-btn-size-desktop: 1.625rem; /* Width and height of each icon button inside the desktop 3-way theme switcher */
-      --theme-icon-size-desktop: 1rem; /* Width and height of the PNG icons (system.png, light.png, dark.png) inside the desktop theme switcher */
-      --theme-cycle-btn-size-mobile: 1.9rem; /* Width and height of the single-icon cycling theme toggle button on mobile */
-      --theme-cycle-icon-size-mobile: 1.25rem; /* Width and height of the active PNG icon inside the mobile theme toggle button */
-      --playback-icon-btn-size-desktop: 1.75rem; /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on desktop */
-      --playback-icon-btn-size-mobile: 1.5rem; /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on mobile */
-      --playback-icon-size-desktop: 1.15rem; /* Visual width and height of run.png, step.png, pause.png, reset.png on desktop */
-      --playback-icon-size-mobile: 1rem; /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
+      --brand-logo-size: 2rem;
+      /* Width and height of the main Shard Spiral logo in the header */
+      --header-action-btn-size: 2.25rem;
+      /* Hitbox width and height for the header action buttons (Fullscreen, New, Library, Reset, Profile) on desktop */
+      --header-action-btn-size-mobile: 1.9rem;
+      /* Hitbox width and height for the header action buttons on mobile */
+      --header-action-icon-size: 1.5rem;
+      /* Visual width and height of the PNG icons inside the header action buttons on desktop */
+      --header-action-icon-size-mobile: 1.3rem;
+      /* Visual width and height of the PNG icons inside the header action buttons on mobile */
+      --card-icon-btn-size: 2.5rem;
+      /* Hitbox width and height for icon buttons inside card headers (e.g., collapse toggle) */
+      --sidebar-toggle-icon-size-desktop: 1.75rem;
+      /* Width and height of the collapse/expand image icon in the Algorithms header on desktop */
+      --sidebar-toggle-icon-size-mobile: 1.5rem;
+      /* Width and height of the collapse/expand image icon in the Algorithms header on mobile */
+      --theme-option-btn-size-desktop: 1.625rem;
+      /* Width and height of each icon button inside the desktop 3-way theme switcher */
+      --theme-icon-size-desktop: 1rem;
+      /* Width and height of the PNG icons (system.png, light.png, dark.png) inside the desktop theme switcher */
+      --theme-cycle-btn-size-mobile: 1.9rem;
+      /* Width and height of the single-icon cycling theme toggle button on mobile */
+      --theme-cycle-icon-size-mobile: 1.25rem;
+      /* Width and height of the active PNG icon inside the mobile theme toggle button */
+      --playback-icon-btn-size-desktop: 1.75rem;
+      /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on desktop */
+      --playback-icon-btn-size-mobile: 1.5rem;
+      /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on mobile */
+      --playback-icon-size-desktop: 1.15rem;
+      /* Visual width and height of run.png, step.png, pause.png, reset.png on desktop */
+      --playback-icon-size-mobile: 1rem;
+      /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
 
       /* --- Algorithms & Code Card Constraints --- */
-      --algorithms-min-width-desktop: 8.5rem; /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
-      --algorithms-min-width-mobile: 6.5rem; /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
-      --algorithms-collapsed-width-desktop: 3rem; /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
-      --algorithms-collapsed-width-mobile: 2.25rem; /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
-      --code-card-min-width: 8rem; /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
-      --right-top-row-min-height: 5rem; /* Minimum height of the top-right row containing Algorithms and Code */
-      --bottom-row-min-height: 4.5rem; /* Minimum height of the bottom row containing Traversal and State Variables */
-      --bottom-cards-min-width: 6.5rem; /* Minimum width of the Traversal and State Variables cards when side-by-side */
+      --algorithms-min-width-desktop: 8.5rem;
+      /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
+      --algorithms-min-width-mobile: 6.5rem;
+      /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
+      --algorithms-collapsed-width-desktop: 3rem;
+      /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
+      --algorithms-collapsed-width-mobile: 1.6rem;
+      /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
+      --code-card-min-width: 8rem;
+      /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
+      --right-top-row-min-height: 5rem;
+      /* Minimum height of the top-right row containing Algorithms and Code */
+      --bottom-row-min-height: 4.5rem;
+      /* Minimum height of the bottom row containing Traversal and State Variables */
+      --bottom-cards-min-width: 6.5rem;
+      /* Minimum width of the Traversal and State Variables cards when side-by-side */
 
       /* --- Interactive Controls & Sliders --- */
-      --control-btn-height-desktop: 1.5625rem; /* Height of standard secondary buttons (e.g., <, >, Sign Out) on desktop */
-      --control-btn-height-mobile: 1.35rem; /* Height of standard secondary buttons on mobile */
-      --tab-height-desktop: 1.5rem; /* Height of card header tabs (Code, Explanation) on desktop */
-      --tab-height-mobile: 1.35rem; /* Height of card header tabs on mobile */
-      --lang-dropdown-width: 7.25rem; /* Width of the programming language dropdown menu */
-      --speed-slider-width-desktop: 4.5rem; /* Width of the playback speed range input on desktop */
-      --speed-slider-width-mobile: 3.25rem; /* Width of the playback speed range input on mobile */
-      --speed-slider-thumb-size: 0.6875rem; /* Diameter of the draggable thumb on the playback speed slider */
+      --control-btn-height-desktop: 1.5625rem;
+      /* Height of standard secondary buttons (e.g., <, >, Sign Out) on desktop */
+      --control-btn-height-mobile: 1.35rem;
+      /* Height of standard secondary buttons on mobile */
+      --tab-height-desktop: 1.5rem;
+      /* Height of card header tabs (Code, Explanation) on desktop */
+      --tab-height-mobile: 1.35rem;
+      /* Height of card header tabs on mobile */
+      --lang-dropdown-width: 7.25rem;
+      /* Width of the programming language dropdown menu */
+      --speed-slider-width-desktop: 4.5rem;
+      /* Width of the playback speed range input on desktop */
+      --speed-slider-width-mobile: 3.25rem;
+      /* Width of the playback speed range input on mobile */
+      --speed-slider-thumb-size: 0.6875rem;
+      /* Diameter of the draggable thumb on the playback speed slider */
 
       /* --- Resizer / Splitter Dimensions --- */
-      --splitter-thickness-desktop: 0.5rem; /* Interactive grab thickness of horizontal and vertical splitters on desktop */
-      --splitter-thickness-mobile: 0.45rem; /* Interactive grab thickness of horizontal and vertical splitters on mobile */
-      --splitter-pill-thickness: 0.1875rem; /* Thickness of the visual pill indicator inside splitters */
-      --splitter-v-pill-length: 1.75rem; /* Default vertical length of the pill inside vertical splitters */
-      --splitter-v-pill-hover-length: 3.25rem; /* Expanded vertical length of the pill when hovering/dragging a vertical splitter */
-      --splitter-h-pill-length: 2rem; /* Default horizontal length of the pill inside horizontal splitters */
-      --splitter-h-pill-hover-length: 3.5rem; /* Expanded horizontal length of the pill when hovering/dragging a horizontal splitter */
+      --splitter-thickness-desktop: 0.5rem;
+      /* Interactive grab thickness of horizontal and vertical splitters on desktop */
+      --splitter-thickness-mobile: 0.45rem;
+      /* Interactive grab thickness of horizontal and vertical splitters on mobile */
+      --splitter-pill-thickness: 0.1875rem;
+      /* Thickness of the visual pill indicator inside splitters */
+      --splitter-v-pill-length: 1.75rem;
+      /* Default vertical length of the pill inside vertical splitters */
+      --splitter-v-pill-hover-length: 3.25rem;
+      /* Expanded vertical length of the pill when hovering/dragging a vertical splitter */
+      --splitter-h-pill-length: 2rem;
+      /* Default horizontal length of the pill inside horizontal splitters */
+      --splitter-h-pill-hover-length: 3.5rem;
+      /* Expanded horizontal length of the pill when hovering/dragging a horizontal splitter */
 
       /* --- Profile Floating Modal Dimensions --- */
-      --profile-modal-max-width: 34rem; /* Maximum width of the floating Profile modal window */
-      --profile-modal-height-desktop: 22rem; /* Height of the Profile modal window on desktop */
-      --profile-modal-height-mobile: 20rem; /* Height of the Profile modal window on mobile */
-      --profile-sidebar-width-desktop: 10.5rem; /* Width of the left navigation sidebar inside the Profile modal on desktop */
-      --profile-sidebar-width-mobile: 7.75rem; /* Width of the left navigation sidebar inside the Profile modal on mobile */
-      --profile-avatar-size: 2.5rem; /* Width and height of the circular user avatar badge in the Profile modal */
+      --profile-modal-max-width: 34rem;
+      /* Maximum width of the floating Profile modal window */
+      --profile-modal-height-desktop: 22rem;
+      /* Height of the Profile modal window on desktop */
+      --profile-modal-height-mobile: 20rem;
+      /* Height of the Profile modal window on mobile */
+      --profile-sidebar-width-desktop: 10.5rem;
+      /* Width of the left navigation sidebar inside the Profile modal on desktop */
+      --profile-sidebar-width-mobile: 7.75rem;
+      /* Width of the left navigation sidebar inside the Profile modal on mobile */
+      --profile-avatar-size: 2.5rem;
+      /* Width and height of the circular user avatar badge in the Profile modal */
     }
 
     /* =========================================================================
@@ -153,6 +208,32 @@
       width: 100vw;
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    ::-webkit-scrollbar {
+      width: 0.4rem;
+      height: 0.4rem;
+    }
+
+    /* Transparent track with margin ensures the scrollbar doesn't hug the absolute edge of cards */
+    ::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 0.5rem;
+    }
+
+    /* The draggable thumb uses our soft border color, matching the theme natively */
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 0.4rem;
+    }
+
+    /* Highlights slightly when interacting */
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-color);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
     }
 
     /* =========================================================================
@@ -316,8 +397,8 @@
 
     /* Sidebar Toggle Image Styling (images/sidebar-open.png & images/sidebar-close.png) */
     .sidebar-toggle-img {
-      width: var(--sidebar-toggle-icon-size);
-      height: var(--sidebar-toggle-icon-size);
+      width: var(--sidebar-toggle-icon-size-desktop);
+      height: var(--sidebar-toggle-icon-size-desktop);
       padding: 0.125rem;
       border-radius: 0.5rem;
       object-fit: contain;
@@ -364,25 +445,12 @@
       background-color: var(--bg-hover);
     }
 
-    .playback-icon-btn.primary {
-      background-color: var(--accent-primary);
-      border-color: transparent;
-    }
-
-    .playback-icon-btn.primary:hover {
-      background-color: var(--accent-hover);
-    }
-
     .playback-icon-img {
       width: var(--playback-icon-size-desktop);
       height: var(--playback-icon-size-desktop);
       object-fit: contain;
       display: block;
       filter: var(--sidebar-icon-filter);
-    }
-
-    .playback-icon-btn.primary .playback-icon-img {
-      filter: brightness(0) invert(1);
     }
 
     /* Profile Floating Modal Window */
@@ -572,6 +640,7 @@
       border: 0.0625rem solid var(--border-color);
       color: var(--text-primary);
       height: var(--control-btn-height-desktop);
+      aspect-ratio: 1;
       min-height: var(--control-btn-height-desktop);
       padding: 0 0.5rem;
       border-radius: 0.25rem;
@@ -835,6 +904,11 @@
         flex-direction: column;
       }
 
+      .sidebar-toggle-img {
+        width: var(--sidebar-toggle-icon-size-mobile);
+        height: var(--sidebar-toggle-icon-size-mobile);
+      }
+
       /* Mobile Workspace is a vertical stack:
          1. Graph Card (top)
          2. Horizontal splitter
@@ -990,7 +1064,7 @@
 
       <!-- Reset Layout Icon Button (images/reset.png) -->
       <button type="button" id="reset-layout-btn" class="activity-btn" title="Reset panel proportions">
-        <img src="images/reset.png" alt="Reset Layout" class="activity-icon-img" />
+        <img src="images/reset-layout.png" alt="Reset Layout" class="activity-icon-img" />
       </button>
 
       <!-- Profile Icon Kept on the Right -->
@@ -1029,11 +1103,14 @@
             <!-- Compact Playback Controls Bar (Icon Buttons for Run, Step, Pause, Reset) -->
             <div class="playback-bar">
               <div style="display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;">
-                <button type="button" class="playback-icon-btn primary" title="Run">
+                <button type="button" class="playback-icon-btn" title="Run">
                   <img src="images/run.png" alt="Run" class="playback-icon-img" />
                 </button>
                 <button type="button" class="playback-icon-btn" title="Step">
-                  <img src="images/step.png" alt="Step" class="playback-icon-img" />
+                  <img src="images/step-back.png" alt="Step" class="playback-icon-img" />
+                </button>
+                <button type="button" class="playback-icon-btn" title="Step">
+                  <img src="images/step-front.png" alt="Step" class="playback-icon-img" />
                 </button>
                 <button type="button" class="playback-icon-btn" title="Pause">
                   <img src="images/pause.png" alt="Pause" class="playback-icon-img" />
@@ -1052,10 +1129,6 @@
 
               <div style="display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;">
                 <span style="color: var(--text-muted); white-space: nowrap;">0 / 0</span>
-                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;"
-                  title="Previous Step">&lt;</button>
-                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;"
-                  title="Next Step">&gt;</button>
               </div>
             </div>
           </div>
@@ -1244,8 +1317,7 @@
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
           <!-- STATE VARIABLES CARD -->
-          <section id="state-card" class="vscode-card"
-            style="flex: 1 1 0%; min-width: var(--bottom-cards-min-width);">
+          <section id="state-card" class="vscode-card" style="flex: 1 1 0%; min-width: var(--bottom-cards-min-width);">
             <div class="vscode-card-header">
               <span>State variables</span>
             </div>
