@@ -11,7 +11,7 @@
   <style>
     /* =========================================================================
        0. IMPORTANT LAYOUT & SIZING CONFIGURATION VARIABLES
-       (Modify these values to adjust global sizing, breakpoints, and dimensions)
+       (Single source of truth for global sizing, proportions, and dimensions)
        ========================================================================= */
     :root {
       /* --- Typography & Base Scaling --- */
@@ -22,7 +22,7 @@
       --mobile-body-font-size: 0.8rem;
       /* Compact font size on mobile/phone viewports (<= 56.25rem) */
 
-      /* --- Header & Card Bar Heights --- */
+      /* --- Header, Card Bar & Card Minimum Heights --- */
       --header-height-desktop: 2.75rem;
       /* Height of the top application header bar on desktop */
       --header-height-mobile: 2.625rem;
@@ -31,10 +31,32 @@
       /* Height of section card headers (Graph, Code, etc.) on desktop */
       --card-header-height-mobile: 1.6rem;
       /* Height of section card headers on mobile */
+      --card-min-height-desktop: 2.75rem;
+      /* Minimum height of each card on desktop (matches card header height) */
+      --card-min-height-mobile: 1.6rem;
+      /* Minimum height of each card on mobile (matches card header height) */
       --playback-bar-height-desktop: 2.375rem;
       /* Height of the bottom playback controls bar inside the Graph card on desktop */
       --playback-bar-height-mobile: 2rem;
       /* Height of the bottom playback controls bar on mobile */
+
+      /* --- Default Panel Proportions --- */
+      --desktop-left-col-width: 50%;
+      /* Default width of the left column (Graph + Traversal) on desktop */
+      --desktop-graph-height: 67%;
+      /* Default height of the Graph card inside the left column on desktop */
+      --desktop-right-top-height: 67%;
+      /* Default height of the Algorithms + Code row inside the right column on desktop */
+      --algorithms-default-width-desktop: 30%;
+      /* Default expanded width of the Algorithms card on desktop */
+      --algorithms-default-width-mobile: 38%;
+      /* Default expanded width of the Algorithms card when opened on mobile */
+      --mobile-graph-row-height: 44%;
+      /* Default height of the top Graph row on mobile */
+      --mobile-code-row-height: 60%;
+      /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
+      --mobile-traversal-width: 58%;
+      /* Default width of the Traversal card in the bottom side-by-side row on mobile */
 
       /* --- Icon & Action Button Sizes --- */
       --brand-logo-size: 2rem;
@@ -47,11 +69,13 @@
       /* Visual width and height of the PNG icons inside the header action buttons on desktop */
       --header-action-icon-size-mobile: 1.3rem;
       /* Visual width and height of the PNG icons inside the header action buttons on mobile */
-      --card-icon-btn-size: 2.5rem;
-      /* Hitbox width and height for icon buttons inside card headers (e.g., collapse toggle) */
+      --card-icon-btn-size: 2.25rem;
+      /* Hitbox width and height for icon buttons inside card headers on desktop */
+      --card-icon-btn-size-mobile: 1.5rem;
+      /* Hitbox width and height for icon buttons inside card headers on mobile */
       --sidebar-toggle-icon-size-desktop: 1.75rem;
       /* Width and height of the collapse/expand image icon in the Algorithms header on desktop */
-      --sidebar-toggle-icon-size-mobile: 1.5rem;
+      --sidebar-toggle-icon-size-mobile: 1.25rem;
       /* Width and height of the collapse/expand image icon in the Algorithms header on mobile */
       --theme-option-btn-size-desktop: 1.625rem;
       /* Width and height of each icon button inside the desktop 3-way theme switcher */
@@ -70,7 +94,9 @@
       --playback-icon-size-mobile: 1rem;
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
 
-      /* --- Algorithms & Code Card Constraints --- */
+      /* --- Algorithms, Code & Row Constraints --- */
+      --left-col-min-width-desktop: 12rem;
+      /* Minimum width of the left column on desktop */
       --algorithms-min-width-desktop: 8.5rem;
       /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
       --algorithms-min-width-mobile: 6.5rem;
@@ -81,18 +107,18 @@
       /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
       --code-card-min-width: 8rem;
       /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
-      --right-top-row-min-height: 5rem;
+      --right-top-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the top-right row containing Algorithms and Code */
-      --bottom-row-min-height: 4.5rem;
+      --bottom-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the bottom row containing Traversal and State Variables */
       --bottom-cards-min-width: 6.5rem;
       /* Minimum width of the Traversal and State Variables cards when side-by-side */
 
       /* --- Interactive Controls & Sliders --- */
       --control-btn-height-desktop: 1.5625rem;
-      /* Height of standard secondary buttons (e.g., <, >, Sign Out) on desktop */
+      /* Height of standard secondary buttons and inputs on desktop */
       --control-btn-height-mobile: 1.35rem;
-      /* Height of standard secondary buttons on mobile */
+      /* Height of standard secondary buttons and inputs on mobile */
       --tab-height-desktop: 1.5rem;
       /* Height of card header tabs (Code, Explanation) on desktop */
       --tab-height-mobile: 1.35rem;
@@ -129,6 +155,8 @@
       /* Height of the Profile modal window on desktop */
       --profile-modal-height-mobile: 20rem;
       /* Height of the Profile modal window on mobile */
+      --profile-modal-header-height: 2.25rem;
+      /* Height of the Profile modal top header bar */
       --profile-sidebar-width-desktop: 10.5rem;
       /* Width of the left navigation sidebar inside the Profile modal on desktop */
       --profile-sidebar-width-mobile: 7.75rem;
@@ -210,30 +238,33 @@
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
+    /* Unified Scrollbars */
     ::-webkit-scrollbar {
-      width: 0.4rem;
-      height: 0.4rem;
+      width: 0.375rem;
+      height: 0.375rem;
     }
 
-    /* Transparent track with margin ensures the scrollbar doesn't hug the absolute edge of cards */
     ::-webkit-scrollbar-track {
       background: transparent;
       margin: 0.5rem;
     }
 
-    /* The draggable thumb uses our soft border color, matching the theme natively */
     ::-webkit-scrollbar-thumb {
-      background: var(--border-color);
-      border-radius: 0.4rem;
+      background: var(--scrollbar-thumb);
+      border-radius: 0.2rem;
     }
 
-    /* Highlights slightly when interacting */
     ::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-color);
+      background: var(--scrollbar-thumb-hover);
     }
 
     ::-webkit-scrollbar-corner {
       background: transparent;
+    }
+
+    /* Prism Line Highlight Binding */
+    .line-highlight {
+      background: var(--code-line-highlight) !important;
     }
 
     /* =========================================================================
@@ -261,6 +292,27 @@
       z-index: 30;
     }
 
+    .header-left-group {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      min-width: 0;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-width: 0;
+    }
+
+    .header-right-group {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      flex-shrink: 0;
+    }
+
     .main-area {
       display: flex;
       flex: 1 1 0%;
@@ -286,12 +338,14 @@
     .activity-btn {
       width: var(--header-action-btn-size);
       height: var(--header-action-btn-size);
-      padding: 0.25rem;
+      min-width: var(--header-action-btn-size);
+      min-height: var(--header-action-btn-size);
+      padding: 0;
       border-radius: 0.5rem;
       background: transparent;
       border: none;
       color: var(--text-muted);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       position: relative;
@@ -311,7 +365,7 @@
       white-space: nowrap;
     }
 
-    /* Workspace Container */
+    /* Workspace Container & Columns */
     .workspace-container {
       flex: 1 1 0%;
       display: flex;
@@ -320,6 +374,48 @@
       min-height: 0;
       background-color: var(--bg-app);
       overflow: hidden;
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      width: var(--desktop-left-col-width);
+      min-width: var(--left-col-min-width-desktop);
+      max-width: calc(100% - var(--algorithms-collapsed-width-desktop) - var(--code-card-min-width) - (var(--splitter-thickness-desktop) * 2));
+      min-height: 0;
+      flex: 0 0 auto;
+    }
+
+    .right-column {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .desktop-traversal-slot {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      min-height: var(--card-min-height-desktop);
+      min-width: 0;
+    }
+
+    .right-top-row {
+      display: flex;
+      height: var(--desktop-right-top-height);
+      min-height: var(--right-top-row-min-height);
+      max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-desktop));
+      min-width: 0;
+      flex: 0 0 auto;
+    }
+
+    .bottom-split-row {
+      flex: 1 1 0%;
+      display: flex;
+      min-height: var(--bottom-row-min-height);
+      min-width: 0;
     }
 
     /* VS Code Card */
@@ -331,7 +427,7 @@
       flex-direction: column;
       overflow: hidden;
       min-width: 0;
-      min-height: 0;
+      min-height: var(--card-min-height-desktop);
       position: relative;
       transition: border-color 0.15s ease, background-color 0.15s ease;
     }
@@ -351,9 +447,187 @@
       gap: 0.375rem;
     }
 
+    .code-card-header {
+      padding: 0 0.45rem;
+    }
+
+    .card-tabs-group {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 0;
+      overflow-x: auto;
+    }
+
+    /* Specific Card Sizing & Constraints */
+    #graph-card {
+      height: var(--desktop-graph-height);
+      min-height: var(--card-min-height-desktop);
+      max-height: calc(100% - var(--card-min-height-desktop) - var(--splitter-thickness-desktop));
+      flex: 0 0 auto;
+    }
+
+    #algorithms-card {
+      width: var(--algorithms-default-width-desktop);
+      min-width: var(--algorithms-min-width-desktop);
+      max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
+      flex: 0 0 auto;
+    }
+
+    #algorithms-card.is-collapsed {
+      width: var(--algorithms-collapsed-width-desktop) !important;
+      min-width: var(--algorithms-collapsed-width-desktop) !important;
+      max-width: var(--algorithms-collapsed-width-desktop) !important;
+    }
+
+    #algorithms-card.is-collapsed .vscode-card-header {
+      justify-content: center;
+      padding: 0;
+    }
+
+    #algorithms-card.is-collapsed #algo-title,
+    #algorithms-card.is-collapsed #algo-body {
+      display: none;
+    }
+
+    #algorithms-card.is-collapsed #algo-collapsed-strip {
+      display: flex;
+    }
+
+    #code-card {
+      flex: 1 1 0%;
+      min-width: var(--code-card-min-width);
+    }
+
+    #log-card {
+      width: 100%;
+      min-width: 0;
+      flex: 1 1 0%;
+    }
+
+    #state-card {
+      flex: 1 1 0%;
+      min-width: var(--bottom-cards-min-width);
+    }
+
+    /* Card Internal Body Containers (0 padding on direct flex child so cards can shrink to header height) */
+    .graph-body-wrapper {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .graph-canvas-area {
+      flex: 1 1 0%;
+      min-height: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .card-scroll-body {
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-inner-pad {
+      padding: 0.625rem 0.65rem;
+    }
+
+    .graph-inner-pad {
+      padding: 0.625rem 0.75rem;
+    }
+
+    .card-body-text {
+      color: var(--text-primary);
+      line-height: 1.35;
+      display: block;
+    }
+
+    .graph-placeholder-text {
+      color: var(--text-primary);
+      opacity: 0.9;
+    }
+
+    /* Algorithms Card Internals */
+    #algo-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #algo-body {
+      flex: 1 1 0%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
+    .algo-body-inner {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      padding: 0.45rem;
+      gap: 0.45rem;
+      min-height: 0;
+    }
+
+    .algo-search-input {
+      width: 100%;
+      height: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 0 0.5rem;
+      border-radius: 0.25rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      color: var(--text-primary);
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .algo-list-placeholder {
+      flex: 1 1 0%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0.0625rem dashed var(--border-color);
+      border-radius: 0.25rem;
+      padding: 0.375rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    #algo-collapsed-strip {
+      display: none;
+      flex: 1 1 0%;
+      min-height: 0;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.75rem 0;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .algo-collapsed-label {
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
     /* Tabs */
     .vscode-tab {
       height: var(--tab-height-desktop);
+      min-height: var(--tab-height-desktop);
       padding: 0 0.5625rem;
       border-radius: 0.3125rem;
       display: inline-flex;
@@ -379,7 +653,9 @@
     .card-icon-btn {
       width: var(--card-icon-btn-size);
       height: var(--card-icon-btn-size);
-      padding: 0.25rem;
+      min-width: var(--card-icon-btn-size);
+      min-height: var(--card-icon-btn-size);
+      padding: 0;
       border-radius: 0.5rem;
       color: var(--text-muted);
       display: inline-flex;
@@ -395,22 +671,39 @@
       color: var(--text-bright);
     }
 
-    /* Sidebar Toggle Image Styling (images/sidebar-open.png & images/sidebar-close.png) */
+    /* Icon Images (Explicitly unconstrained by Tailwind max-width: 100%) */
     .sidebar-toggle-img {
       width: var(--sidebar-toggle-icon-size-desktop);
       height: var(--sidebar-toggle-icon-size-desktop);
-      padding: 0.125rem;
-      border-radius: 0.5rem;
+      min-width: var(--sidebar-toggle-icon-size-desktop);
+      min-height: var(--sidebar-toggle-icon-size-desktop);
+      max-width: none;
+      max-height: none;
+      padding: 0;
+      border-radius: 0.25rem;
       object-fit: contain;
       display: block;
+      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
+    }
+
+    .sidebar-toggle-img.has-error {
+      display: none;
+    }
+
+    .sidebar-toggle-img.has-error + .sidebar-fallback-box {
+      display: inline-flex;
     }
 
     .brand-logo {
       width: var(--brand-logo-size);
       height: var(--brand-logo-size);
-      padding: 0.25rem;
-      border-radius: 0.5rem;
+      min-width: var(--brand-logo-size);
+      min-height: var(--brand-logo-size);
+      max-width: none;
+      max-height: none;
+      padding: 0;
+      border-radius: 0.375rem;
       object-fit: contain;
       display: block;
       flex-shrink: 0;
@@ -419,17 +712,68 @@
     .activity-icon-img {
       width: var(--header-action-icon-size);
       height: var(--header-action-icon-size);
+      min-width: var(--header-action-icon-size);
+      min-height: var(--header-action-icon-size);
+      max-width: none;
+      max-height: none;
       object-fit: contain;
       display: block;
+      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
     }
 
-    /* Playback Icon Action Buttons (Run, Step, Pause, Reset) */
+    /* Playback Controls Bar & Icon Buttons */
+    .playback-bar {
+      height: var(--playback-bar-height-desktop);
+      min-height: var(--playback-bar-height-desktop);
+      padding: 0 0.625rem;
+      border-top: 0.0625rem solid var(--border-color);
+      background-color: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.375rem;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .playback-controls-left {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex-shrink: 0;
+    }
+
+    .playback-speed-group {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-left: 0.25rem;
+    }
+
+    .playback-muted-label {
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .playback-speed-value {
+      color: var(--text-primary);
+      min-width: 1.4rem;
+    }
+
+    .playback-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
     .playback-icon-btn {
       width: var(--playback-icon-btn-size-desktop);
       height: var(--playback-icon-btn-size-desktop);
+      min-width: var(--playback-icon-btn-size-desktop);
       min-height: var(--playback-icon-btn-size-desktop);
-      padding: 0.25rem;
+      padding: 0;
       border-radius: 0.3125rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
@@ -448,8 +792,13 @@
     .playback-icon-img {
       width: var(--playback-icon-size-desktop);
       height: var(--playback-icon-size-desktop);
+      min-width: var(--playback-icon-size-desktop);
+      min-height: var(--playback-icon-size-desktop);
+      max-width: none;
+      max-height: none;
       object-fit: contain;
       display: block;
+      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
     }
 
@@ -484,8 +833,8 @@
     }
 
     .profile-modal-header {
-      height: 2.25rem;
-      min-height: 2.25rem;
+      height: var(--profile-modal-header-height);
+      min-height: var(--profile-modal-header-height);
       padding: 0 0.75rem;
       background-color: var(--bg-card-header);
       border-bottom: 0.0625rem solid var(--border-color);
@@ -541,6 +890,89 @@
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
+    }
+
+    .profile-pane {
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .profile-pane.active {
+      display: flex;
+    }
+
+    .profile-user-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.625rem;
+      border-bottom: 0.0625rem solid var(--border-color);
+    }
+
+    .profile-user-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .profile-user-name {
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .profile-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .profile-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 0.0625rem solid var(--border-subtle);
+    }
+
+    .profile-info-row.no-border {
+      border-bottom: none;
+    }
+
+    .profile-val-bright {
+      color: var(--text-bright);
+      font-weight: 500;
+    }
+
+    .profile-val-accent {
+      color: var(--accent-primary);
+      font-weight: 500;
+    }
+
+    .profile-signout-row {
+      margin-top: 0.25rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .profile-avatar-badge {
+      width: var(--profile-avatar-size);
+      height: var(--profile-avatar-size);
+      min-width: var(--profile-avatar-size);
+      min-height: var(--profile-avatar-size);
+      border-radius: 50%;
+      background-color: var(--accent-primary);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease;
+    }
+
+    .profile-avatar-badge:hover {
+      background-color: var(--accent-hover);
     }
 
     .kbd-badge {
@@ -634,13 +1066,16 @@
       background-color: var(--accent-primary);
     }
 
+    #splitter-bottom-mobile-v {
+      display: none;
+    }
+
     /* Buttons */
     .vscode-btn-secondary {
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       color: var(--text-primary);
       height: var(--control-btn-height-desktop);
-      aspect-ratio: 1;
       min-height: var(--control-btn-height-desktop);
       padding: 0 0.5rem;
       border-radius: 0.25rem;
@@ -672,7 +1107,9 @@
     .theme-option-btn {
       width: var(--theme-option-btn-size-desktop);
       height: var(--theme-option-btn-size-desktop);
-      padding: 0.2rem;
+      min-width: var(--theme-option-btn-size-desktop);
+      min-height: var(--theme-option-btn-size-desktop);
+      padding: 0;
       border-radius: 0.25rem;
       background: transparent;
       border: none;
@@ -696,8 +1133,13 @@
     .theme-icon-img {
       width: var(--theme-icon-size-desktop);
       height: var(--theme-icon-size-desktop);
+      min-width: var(--theme-icon-size-desktop);
+      min-height: var(--theme-icon-size-desktop);
+      max-width: none;
+      max-height: none;
       object-fit: contain;
       display: block;
+      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
     }
 
@@ -706,7 +1148,9 @@
       display: none;
       width: var(--theme-cycle-btn-size-mobile);
       height: var(--theme-cycle-btn-size-mobile);
-      padding: 0.2rem;
+      min-width: var(--theme-cycle-btn-size-mobile);
+      min-height: var(--theme-cycle-btn-size-mobile);
+      padding: 0;
       border-radius: 0.45rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
@@ -725,6 +1169,8 @@
     .mobile-theme-cycle-btn .theme-icon-img {
       width: var(--theme-cycle-icon-size-mobile);
       height: var(--theme-cycle-icon-size-mobile);
+      min-width: var(--theme-cycle-icon-size-mobile);
+      min-height: var(--theme-cycle-icon-size-mobile);
     }
 
     /* Custom Range Slider */
@@ -747,6 +1193,25 @@
       border-radius: 50%;
       background: var(--accent-primary);
       cursor: pointer;
+      transition: background-color 0.12s ease;
+    }
+
+    input[type="range"].vscode-slider::-webkit-slider-thumb:hover {
+      background: var(--accent-hover);
+    }
+
+    input[type="range"].vscode-slider::-moz-range-thumb {
+      width: var(--speed-slider-thumb-size);
+      height: var(--speed-slider-thumb-size);
+      border: none;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      transition: background-color 0.12s ease;
+    }
+
+    input[type="range"].vscode-slider::-moz-range-thumb:hover {
+      background: var(--accent-hover);
     }
 
     /* Language Selector Dropdown */
@@ -763,7 +1228,8 @@
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.25rem;
       padding: 0 0.4375rem;
-      height: 1.4375rem;
+      height: var(--tab-height-desktop);
+      min-height: var(--tab-height-desktop);
       font-weight: 500;
       color: var(--text-primary);
       cursor: pointer;
@@ -772,6 +1238,13 @@
 
     .lang-trigger-btn:hover {
       background-color: var(--bg-hover);
+    }
+
+    .lang-chevron-icon {
+      width: 0.65rem;
+      height: 0.65rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
     }
 
     .lang-dropdown-menu {
@@ -815,6 +1288,12 @@
       font-weight: 500;
     }
 
+    .lang-option-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
     .lang-badge-dot {
       width: 0.4375rem;
       height: 0.4375rem;
@@ -823,43 +1302,27 @@
       flex-shrink: 0;
     }
 
-    /* Playback Controls Bar */
-    .playback-bar {
-      height: var(--playback-bar-height-desktop);
-      min-height: var(--playback-bar-height-desktop);
-      padding: 0 0.625rem;
-      border-top: 0.0625rem solid var(--border-color);
-      background-color: var(--bg-card);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.375rem;
-      overflow-x: auto;
+    .dot-python {
+      background-color: #3572A5;
     }
 
-    /* Scrollbars */
-    ::-webkit-scrollbar {
-      width: 0.375rem;
-      height: 0.375rem;
+    .dot-cpp {
+      background-color: #f34b7d;
     }
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--scrollbar-thumb);
-      border-radius: 0.2rem;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--scrollbar-thumb-hover);
+    .dot-java {
+      background-color: #b07219;
     }
 
     /* =========================================================================
        3. PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
        ========================================================================= */
     @media (max-width: 56.25rem) {
+      :root {
+        --right-top-row-min-height: var(--card-min-height-mobile);
+        --bottom-row-min-height: var(--card-min-height-mobile);
+      }
+
       body {
         font-size: var(--mobile-body-font-size);
       }
@@ -868,7 +1331,6 @@
         display: none !important;
       }
 
-      /* Hide "Shard Spiral" text on mobile while keeping the logo visible */
       .brand-name-text {
         display: none !important;
       }
@@ -877,21 +1339,22 @@
         height: var(--header-height-mobile);
         min-height: var(--header-height-mobile);
         padding: 0 0.45rem;
-        border-bottom: 0.0625rem solid var(--border-color);
       }
 
       .activity-btn {
         width: var(--header-action-btn-size-mobile);
         height: var(--header-action-btn-size-mobile);
-        padding: 0.2rem;
+        min-width: var(--header-action-btn-size-mobile);
+        min-height: var(--header-action-btn-size-mobile);
       }
 
       .activity-icon-img {
         width: var(--header-action-icon-size-mobile);
         height: var(--header-action-icon-size-mobile);
+        min-width: var(--header-action-icon-size-mobile);
+        min-height: var(--header-action-icon-size-mobile);
       }
 
-      /* Hide the 3-button segmented theme bar on mobile and show the single-icon cycler */
       .theme-switcher {
         display: none !important;
       }
@@ -904,18 +1367,20 @@
         flex-direction: column;
       }
 
+      .card-icon-btn {
+        width: var(--card-icon-btn-size-mobile);
+        height: var(--card-icon-btn-size-mobile);
+        min-width: var(--card-icon-btn-size-mobile);
+        min-height: var(--card-icon-btn-size-mobile);
+      }
+
       .sidebar-toggle-img {
         width: var(--sidebar-toggle-icon-size-mobile);
         height: var(--sidebar-toggle-icon-size-mobile);
+        min-width: var(--sidebar-toggle-icon-size-mobile);
+        min-height: var(--sidebar-toggle-icon-size-mobile);
       }
 
-      /* Mobile Workspace is a vertical stack:
-         1. Graph Card (top)
-         2. Horizontal splitter
-         3. Code / Algorithms Card (middle)
-         4. Horizontal pill splitter
-         5. Bottom side-by-side row: Traversal Card | vertical pill splitter | State Variables Card
-      */
       .workspace-container {
         flex-direction: column;
         padding: 0.25rem 0.35rem 0.35rem 0.35rem;
@@ -923,9 +1388,68 @@
         overflow: hidden;
       }
 
-      /* Compact headers, buttons, and paddings on phone */
+      .left-column {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: var(--mobile-graph-row-height);
+        min-height: var(--card-min-height-mobile);
+        max-height: calc(100% - (var(--card-min-height-mobile) * 2) - (var(--splitter-thickness-mobile) * 2));
+        flex: 0 0 auto;
+      }
+
+      .right-column {
+        width: 100%;
+        min-height: calc((var(--card-min-height-mobile) * 2) + var(--splitter-thickness-mobile));
+      }
+
+      .desktop-traversal-slot {
+        display: none;
+      }
+
+      #graph-card {
+        height: 100%;
+        min-height: var(--card-min-height-mobile);
+        max-height: none;
+        flex: 1 1 0%;
+      }
+
+      .right-top-row {
+        height: var(--mobile-code-row-height);
+        min-height: var(--right-top-row-min-height);
+        max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-mobile));
+      }
+
+      .bottom-split-row {
+        min-height: var(--bottom-row-min-height);
+      }
+
+      #algorithms-card {
+        width: var(--algorithms-default-width-mobile);
+        min-width: var(--algorithms-min-width-mobile);
+        max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-mobile));
+      }
+
+      #algorithms-card.is-collapsed {
+        width: var(--algorithms-collapsed-width-mobile) !important;
+        min-width: var(--algorithms-collapsed-width-mobile) !important;
+        max-width: var(--algorithms-collapsed-width-mobile) !important;
+      }
+
+      #log-card {
+        width: var(--mobile-traversal-width);
+        min-width: var(--bottom-cards-min-width);
+        max-width: calc(100% - var(--bottom-cards-min-width) - var(--splitter-thickness-mobile));
+        flex: 0 0 auto;
+      }
+
+      #splitter-bottom-mobile-v {
+        display: flex;
+      }
+
       .vscode-card {
         border-radius: 0.45rem;
+        min-height: var(--card-min-height-mobile);
       }
 
       .vscode-card-header {
@@ -936,6 +1460,7 @@
 
       .vscode-tab {
         height: var(--tab-height-mobile);
+        min-height: var(--tab-height-mobile);
         padding: 0 0.45rem;
         border-radius: 0.28rem;
       }
@@ -950,7 +1475,8 @@
         padding: 0.375rem;
       }
 
-      .vscode-btn-secondary {
+      .vscode-btn-secondary,
+      .algo-search-input {
         height: var(--control-btn-height-mobile);
         min-height: var(--control-btn-height-mobile);
         padding: 0 0.4rem;
@@ -960,17 +1486,20 @@
       .playback-icon-btn {
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
+        min-width: var(--playback-icon-btn-size-mobile);
         min-height: var(--playback-icon-btn-size-mobile);
-        padding: 0.2rem;
       }
 
       .playback-icon-img {
         width: var(--playback-icon-size-mobile);
         height: var(--playback-icon-size-mobile);
+        min-width: var(--playback-icon-size-mobile);
+        min-height: var(--playback-icon-size-mobile);
       }
 
       .lang-trigger-btn {
-        height: 1.3rem;
+        height: var(--tab-height-mobile);
+        min-height: var(--tab-height-mobile);
         padding: 0 0.35rem;
         gap: 0.25rem;
       }
@@ -980,31 +1509,20 @@
       }
 
       .playback-bar {
-        height: var(--playback-bar-height-mobile) !important;
-        min-height: var(--playback-bar-height-mobile) !important;
-        padding: 0 0.45rem !important;
-        gap: 0.3rem !important;
+        height: var(--playback-bar-height-mobile);
+        min-height: var(--playback-bar-height-mobile);
+        padding: 0 0.45rem;
+        gap: 0.3rem;
       }
 
-      /* Mobile Splitters with pill indicators */
       .splitter-h {
         height: var(--splitter-thickness-mobile);
         min-height: var(--splitter-thickness-mobile);
       }
 
-      .splitter-h::after {
-        width: 1.85rem;
-        height: 0.16rem;
-      }
-
       .splitter-v {
         width: var(--splitter-thickness-mobile);
         min-width: var(--splitter-thickness-mobile);
-      }
-
-      .splitter-v::after {
-        height: 1.85rem;
-        width: 0.16rem;
       }
 
       code[class*="language-"] {
@@ -1018,16 +1536,16 @@
 
   <!-- ================= UNIFIED TOP TITLE BAR ================= -->
   <header class="top-titlebar">
-    <!-- Left Group: Logo + Brand Name (hidden on mobile) + Former Sidebar Icons (except Profile) -->
-    <div style="display: flex; align-items: center; gap: 0.375rem; min-width: 0;">
-      <div class="brand-title" style="display: flex; align-items: center; gap: 0.45rem; min-width: 0;">
+    <!-- Left Group: Logo + Brand Name (hidden on mobile) + Workspace Action Icons -->
+    <div class="header-left-group">
+      <div class="brand-title">
         <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
         <span class="brand-name-text">Shard Spiral</span>
       </div>
 
       <div class="header-divider"></div>
 
-      <!-- Former Sidebar Icons Moved Near Logo (Fullscreen, New, Library) -->
+      <!-- Workspace Actions (Fullscreen, New, Library) -->
       <div class="header-actions-group" role="toolbar" aria-label="Workspace Actions">
         <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
           <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
@@ -1042,8 +1560,8 @@
     </div>
 
     <!-- Right Group: Theme Switcher + Reset Layout Icon + Profile Icon -->
-    <div style="display: flex; align-items: center; gap: 0.375rem; flex-shrink: 0;">
-      <!-- Desktop Theme Switcher (Icon-Only: images/system.png, images/light.png, images/dark.png) -->
+    <div class="header-right-group">
+      <!-- Desktop Theme Switcher -->
       <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
         <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
           <img src="images/system.png" alt="System Theme" class="theme-icon-img" />
@@ -1056,18 +1574,18 @@
         </button>
       </div>
 
-      <!-- Mobile Single-Icon Theme Toggle (Cycles System -> Light -> Dark using PNGs) -->
+      <!-- Mobile Single-Icon Theme Toggle -->
       <button type="button" id="mobile-theme-cycle-btn" class="mobile-theme-cycle-btn" title="Theme: System"
         aria-label="Cycle Color Theme">
         <img id="mobile-theme-cycle-img" src="images/system.png" alt="System Theme" class="theme-icon-img" />
       </button>
 
-      <!-- Reset Layout Icon Button (images/reset.png) -->
+      <!-- Reset Layout Icon Button -->
       <button type="button" id="reset-layout-btn" class="activity-btn" title="Reset panel proportions">
         <img src="images/reset-layout.png" alt="Reset Layout" class="activity-icon-img" />
       </button>
 
-      <!-- Profile Icon Kept on the Right -->
+      <!-- Profile Icon -->
       <button type="button" id="btnProfile" class="activity-btn" title="Profile">
         <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
       </button>
@@ -1081,36 +1599,36 @@
     <main id="workspace" class="workspace-container">
 
       <!-- ===============================================================
-           SECTION A: GRAPH CARD
-           (Desktop: Top of Left Column | Phone: Top Card, ~44% height)
+           SECTION A: GRAPH CARD & DESKTOP TRAVERSAL SLOT
            =============================================================== -->
-      <div id="left-column" style="display: flex; flex-direction: column; width: 50%; min-width: 0; min-height: 0;">
+      <div id="left-column" class="left-column">
 
-        <section id="graph-card" class="vscode-card" style="height: 67%; flex-shrink: 0;">
+        <section id="graph-card" class="vscode-card">
           <div class="vscode-card-header">
             <span>Graph</span>
           </div>
 
-          <div style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;">
+          <div class="graph-body-wrapper">
             <!-- Graph Content Area -->
-            <div
-              style="flex: 1 1 0%; padding: 0.625rem 0.75rem; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden;">
-              <span style="color: var(--text-primary); opacity: 0.9;">
-                Main content area.
-              </span>
+            <div class="graph-canvas-area">
+              <div class="graph-inner-pad">
+                <span class="graph-placeholder-text">
+                  Main content area.
+                </span>
+              </div>
             </div>
 
-            <!-- Compact Playback Controls Bar (Icon Buttons for Run, Step, Pause, Reset) -->
+            <!-- Compact Playback Controls Bar -->
             <div class="playback-bar">
-              <div style="display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;">
+              <div class="playback-controls-left">
                 <button type="button" class="playback-icon-btn" title="Run">
                   <img src="images/run.png" alt="Run" class="playback-icon-img" />
                 </button>
-                <button type="button" class="playback-icon-btn" title="Step">
-                  <img src="images/step-back.png" alt="Step" class="playback-icon-img" />
+                <button type="button" class="playback-icon-btn" title="Step Backward">
+                  <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
                 </button>
-                <button type="button" class="playback-icon-btn" title="Step">
-                  <img src="images/step-front.png" alt="Step" class="playback-icon-img" />
+                <button type="button" class="playback-icon-btn" title="Step Forward">
+                  <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
                 </button>
                 <button type="button" class="playback-icon-btn" title="Pause">
                   <img src="images/pause.png" alt="Pause" class="playback-icon-img" />
@@ -1119,16 +1637,16 @@
                   <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
                 </button>
 
-                <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: 0.25rem;">
-                  <span style="color: var(--text-muted);">Speed</span>
+                <div class="playback-speed-group">
+                  <span class="playback-muted-label">Speed</span>
                   <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
                     class="vscode-slider" />
-                  <span id="speed-label" style="color: var(--text-primary); min-width: 1.4rem;">1x</span>
+                  <span id="speed-label" class="playback-speed-value">1x</span>
                 </div>
               </div>
 
-              <div style="display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;">
-                <span style="color: var(--text-muted); white-space: nowrap;">0 / 0</span>
+              <div class="playback-controls-right">
+                <span class="playback-muted-label">0 / 0</span>
               </div>
             </div>
           </div>
@@ -1138,8 +1656,7 @@
         <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
 
         <!-- Desktop-Slot Placeholder for Traversal Card -->
-        <div id="desktop-traversal-slot" style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;">
-        </div>
+        <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
       </div>
 
       <!-- Desktop Main Vertical Splitter (Left Column <-> Right Column) -->
@@ -1148,42 +1665,36 @@
       <!-- ===============================================================
            SECTION B: RIGHT COLUMN (DESKTOP) / MIDDLE + BOTTOM ROWS (PHONE)
            =============================================================== -->
-      <div id="right-column" style="flex: 1 1 0%; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
+      <div id="right-column" class="right-column">
 
         <!-- TOP-RIGHT ROW / PHONE MIDDLE ROW (ALGORITHMS + CODE CARD) -->
-        <div id="right-top-row"
-          style="display: flex; min-height: var(--right-top-row-min-height); min-width: 0; height: 67%; flex-shrink: 0;">
+        <div id="right-top-row" class="right-top-row">
 
           <!-- COLLAPSIBLE ALGORITHMS CARD -->
-          <section id="algorithms-card" class="vscode-card" style="width: 30%; min-width: 1.5rem;">
+          <section id="algorithms-card" class="vscode-card">
             <div class="vscode-card-header" id="algo-card-header">
-              <span id="algo-title"
-                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Algorithms</span>
+              <span id="algo-title">Algorithms</span>
               <button type="button" id="toggle-algo-btn" class="card-icon-btn" title="Collapse Algorithms Panel"
                 aria-expanded="true">
                 <img id="algo-toggle-img" src="images/sidebar-close.png" alt="Collapse" class="sidebar-toggle-img"
-                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                  onerror="this.classList.add('has-error');" />
                 <span class="sidebar-fallback-box" aria-hidden="true"></span>
               </button>
             </div>
 
             <!-- Expanded Algorithms Content -->
-            <div id="algo-body"
-              style="flex: 1 1 0%; display: flex; flex-direction: column; padding: 0.45rem; gap: 0.45rem; overflow: auto;">
-              <input type="text" placeholder="Search algorithms..."
-                style="width: 100%; height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; background-color: var(--bg-input); border: 0.0625rem solid var(--border-color); color: var(--text-primary); outline: none;" />
-              <div
-                style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; border: 0.0625rem dashed var(--border-color); border-radius: 0.25rem; padding: 0.375rem; text-align: center;">
-                <span style="color: var(--text-muted);">Algorithms List</span>
+            <div id="algo-body">
+              <div class="algo-body-inner">
+                <input type="text" placeholder="Search algorithms..." class="algo-search-input" />
+                <div class="algo-list-placeholder">
+                  <span>Algorithms List</span>
+                </div>
               </div>
             </div>
 
             <!-- Collapsed Vertical Strip -->
-            <div id="algo-collapsed-strip"
-              style="display: none; flex: 1 1 0%; flex-direction: column; align-items: center; padding: 0.75rem 0; cursor: pointer;"
-              title="Click to expand Algorithms">
-              <span
-                style="font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); writing-mode: vertical-rl; transform: rotate(180deg);">
+            <div id="algo-collapsed-strip" title="Click to expand Algorithms">
+              <span class="algo-collapsed-label">
                 Algorithms
               </span>
             </div>
@@ -1192,10 +1703,10 @@
           <!-- Vertical Splitter (Algorithms <-> Code) -->
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
 
-          <!-- CODE / EXPLANATION / NOTES CARD -->
-          <section id="code-card" class="vscode-card" style="flex: 1 1 0%; min-width: var(--code-card-min-width);">
-            <div class="vscode-card-header" style="padding: 0 0.45rem;">
-              <div style="display: flex; align-items: center; gap: 0.25rem; min-width: 0; overflow-x: auto;">
+          <!-- CODE / EXPLANATION CARD -->
+          <section id="code-card" class="vscode-card">
+            <div class="vscode-card-header code-card-header">
+              <div class="card-tabs-group">
                 <button type="button" class="vscode-tab active" data-tab-group="right-top">Code</button>
                 <button type="button" class="vscode-tab" data-tab-group="right-top">Explanation</button>
               </div>
@@ -1204,10 +1715,9 @@
               <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
                 <button type="button" id="lang-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
                   aria-expanded="false">
-                  <span id="lang-active-dot" class="lang-badge-dot" style="background-color: #3572A5;"></span>
+                  <span id="lang-active-dot" class="lang-badge-dot dot-python"></span>
                   <span id="lang-active-label">Python</span>
-                  <svg style="width: 0.65rem; height: 0.65rem; color: var(--text-muted);" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2">
+                  <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
@@ -1216,34 +1726,34 @@
                   aria-label="Select Programming Language">
                   <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
                     data-color="#3572A5">
-                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                      <span class="lang-badge-dot" style="background-color: #3572A5;"></span>
+                    <span class="lang-option-label">
+                      <span class="lang-badge-dot dot-python"></span>
                       <span>Python</span>
                     </span>
-                    <span style="color: var(--text-muted);">.py</span>
+                    <span class="playback-muted-label">.py</span>
                   </div>
                   <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
                     data-color="#f34b7d">
-                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                      <span class="lang-badge-dot" style="background-color: #f34b7d;"></span>
+                    <span class="lang-option-label">
+                      <span class="lang-badge-dot dot-cpp"></span>
                       <span>C++</span>
                     </span>
-                    <span style="color: var(--text-muted);">.cpp</span>
+                    <span class="playback-muted-label">.cpp</span>
                   </div>
                   <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
                     data-color="#b07219">
-                    <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                      <span class="lang-badge-dot" style="background-color: #b07219;"></span>
+                    <span class="lang-option-label">
+                      <span class="lang-badge-dot dot-java"></span>
                       <span>Java</span>
                     </span>
-                    <span style="color: var(--text-muted);">.java</span>
+                    <span class="playback-muted-label">.java</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <!-- Code Content Surface -->
-            <div id="codeViewPane" style="flex: 1 1 0%; display: flex; flex-direction: column; overflow: auto;">
+            <div id="codeViewPane" class="card-scroll-body">
               <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
     flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
     max_flow = 0
@@ -1297,19 +1807,19 @@
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
 
         <!-- BOTTOM ROW: SIDE-BY-SIDE ON PHONE (TRAVERSAL | STATE VARIABLES) -->
-        <div id="bottom-split-row"
-          style="flex: 1 1 0%; display: flex; min-height: var(--bottom-row-min-height); min-width: 0;">
+        <div id="bottom-split-row" class="bottom-split-row">
 
           <!-- TRAVERSAL CARD (Moves between Desktop Left-Bottom and Phone Bottom-Left) -->
-          <section id="log-card" class="vscode-card"
-            style="width: 58%; min-width: var(--bottom-cards-min-width); flex: 1 1 0%;">
+          <section id="log-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Traversal</span>
             </div>
-            <div style="flex: 1 1 0%; padding: 0.625rem 0.65rem; overflow: auto;">
-              <span style="color: var(--text-primary); line-height: 1.35; display: block;">
-                Traversal section content goes here.
-              </span>
+            <div class="card-scroll-body">
+              <div class="card-inner-pad">
+                <span class="card-body-text">
+                  Traversal section content goes here.
+                </span>
+              </div>
             </div>
           </section>
 
@@ -1317,14 +1827,16 @@
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
           <!-- STATE VARIABLES CARD -->
-          <section id="state-card" class="vscode-card" style="flex: 1 1 0%; min-width: var(--bottom-cards-min-width);">
+          <section id="state-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>State variables</span>
             </div>
-            <div style="flex: 1 1 0%; padding: 0.625rem 0.65rem; overflow: auto;">
-              <span style="color: var(--text-primary); line-height: 1.35; display: block;">
-                State variables content goes here.
-              </span>
+            <div class="card-scroll-body">
+              <div class="card-inner-pad">
+                <span class="card-body-text">
+                  State variables content goes here.
+                </span>
+              </div>
             </div>
           </section>
 
@@ -1353,70 +1865,60 @@
 
         <div class="profile-modal-content">
           <!-- Account Tab Content -->
-          <div id="profile-pane-account" style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div
-              style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.625rem; border-bottom: 0.0625rem solid var(--border-color);">
-              <div
-                style="width: var(--profile-avatar-size); height: var(--profile-avatar-size); border-radius: 50%; background-color: var(--accent-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+          <div id="profile-pane-account" class="profile-pane active">
+            <div class="profile-user-header">
+              <div class="profile-avatar-badge">
                 SS
               </div>
-              <div style="display: flex; flex-direction: column; gap: 0.125rem;">
-                <span style="font-weight: 600; color: var(--text-bright);">alex.dev</span>
-                <span style="color: var(--text-muted);">alex.dev@shardspiral.io</span>
+              <div class="profile-user-meta">
+                <span class="profile-user-name">alex.dev</span>
+                <span class="playback-muted-label">alex.dev@shardspiral.io</span>
               </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 0.45rem;">
-              <div
-                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
-                <span style="color: var(--text-muted);">Plan Tier</span>
-                <span style="color: var(--text-bright); font-weight: 500;">Pro Workspace</span>
+            <div class="profile-info-list">
+              <div class="profile-info-row">
+                <span class="playback-muted-label">Plan Tier</span>
+                <span class="profile-val-bright">Pro Workspace</span>
               </div>
-              <div
-                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
-                <span style="color: var(--text-muted);">Cloud Sync</span>
-                <span style="color: var(--accent-primary); font-weight: 500;">Active &bull; Synced</span>
+              <div class="profile-info-row">
+                <span class="playback-muted-label">Cloud Sync</span>
+                <span class="profile-val-accent">Active &bull; Synced</span>
               </div>
-              <div
-                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
-                <span style="color: var(--text-muted);">Default Language</span>
-                <span style="color: var(--text-bright);">Python (.py)</span>
+              <div class="profile-info-row">
+                <span class="playback-muted-label">Default Language</span>
+                <span class="profile-val-bright">Python (.py)</span>
               </div>
             </div>
 
-            <div style="margin-top: 0.25rem; display: flex; justify-content: flex-end;">
+            <div class="profile-signout-row">
               <button type="button" class="vscode-btn-secondary">Sign Out</button>
             </div>
           </div>
 
           <!-- Keyboard Shortcuts Tab Content -->
-          <div id="profile-pane-shortcuts" style="display: none; flex-direction: column; gap: 0.45rem;">
-            <div
-              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+          <div id="profile-pane-shortcuts" class="profile-pane">
+            <div class="profile-info-row">
               <span>Run / Pause Simulation</span>
               <kbd class="kbd-badge">Space</kbd>
             </div>
-            <div
-              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div class="profile-info-row">
               <span>Step Forward</span>
               <kbd class="kbd-badge">&rarr;</kbd>
             </div>
-            <div
-              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div class="profile-info-row">
               <span>Step Backward</span>
               <kbd class="kbd-badge">&larr;</kbd>
             </div>
-            <div
-              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div class="profile-info-row">
               <span>Reset Graph</span>
               <kbd class="kbd-badge">R</kbd>
             </div>
-            <div
-              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div class="profile-info-row">
               <span>Toggle Algorithms Panel</span>
               <kbd class="kbd-badge">Ctrl + B</kbd>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0;">
+            <div class="profile-info-row no-border">
               <span>Toggle Fullscreen</span>
               <kbd class="kbd-badge">F11</kbd>
             </div>
@@ -1429,50 +1931,60 @@
   <script>
     // =========================================================================
     // 0. IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
-    // (Modify these constants to adjust responsive behavior, collapse thresholds,
-    // default panel proportions, and dragging limits)
+    // (Bound directly to :root CSS custom properties so changes in :root or here
+    // work consistently without inline override conflicts)
     // =========================================================================
     const LAYOUT_CONFIG = {
       /* --- Responsive Breakpoint & Persistence --- */
-      MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)', /* Media query string defining when the layout switches between Desktop and Phone modes */
-      THEME_STORAGE_KEY: 'shard-spiral-theme-preference', /* LocalStorage key used to persist the user's selected color theme */
-      THEME_CYCLE_ORDER: ['system', 'light', 'dark'], /* Cycling sequence when tapping the single-icon theme button on mobile */
+      MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)',
+      THEME_STORAGE_KEY: 'shard-spiral-theme-preference',
+      THEME_CYCLE_ORDER: ['system', 'light', 'dark'],
       THEME_ICONS: {
-        system: 'images/system.png', /* Icon path for System theme */
-        light: 'images/light.png',   /* Icon path for Light theme */
-        dark: 'images/dark.png'      /* Icon path for Dark theme */
+        system: 'images/system.png',
+        light: 'images/light.png',
+        dark: 'images/dark.png'
       },
 
-      /* --- Algorithms Panel Sizing & Collapse Thresholds --- */
-      ALGO_DEFAULT_WIDTH_DESKTOP: '30%', /* Default expanded width of the Algorithms card on desktop */
-      ALGO_DEFAULT_WIDTH_MOBILE: '38%', /* Default expanded width of the Algorithms card when opened on mobile */
-      ALGO_COLLAPSED_WIDTH_DESKTOP: 'var(--algorithms-collapsed-width-desktop)', /* Width of the Algorithms vertical strip when collapsed on desktop (3rem) */
-      ALGO_COLLAPSED_WIDTH_MOBILE: 'var(--algorithms-collapsed-width-mobile)', /* Width of the Algorithms vertical strip when collapsed on mobile/phone (2.25rem) */
-      ALGO_MIN_WIDTH_DESKTOP_REM: 8.5, /* Dragging the Algorithms splitter below this rem width on desktop collapses the panel */
-      ALGO_MIN_WIDTH_MOBILE_REM: 6.5, /* Dragging the Algorithms splitter below this rem width on mobile collapses the panel */
-      ALGO_MIN_PERCENT: 15, /* Minimum percentage width allowed when dragging the expanded Algorithms panel */
-      ALGO_MAX_PERCENT: 68, /* Maximum percentage width allowed when dragging the expanded Algorithms panel */
+      /* --- CSS Variable Bindings for Panel Proportions & Constraints --- */
+      ALGO_DEFAULT_WIDTH_DESKTOP: 'var(--algorithms-default-width-desktop)',
+      ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
+      ALGO_MIN_WIDTH_DESKTOP_VAR: '--algorithms-min-width-desktop',
+      ALGO_MIN_WIDTH_MOBILE_VAR: '--algorithms-min-width-mobile',
+      ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--algorithms-collapsed-width-desktop',
+      ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--algorithms-collapsed-width-mobile',
+      CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
+      LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
+      BOTTOM_CARDS_MIN_WIDTH_VAR: '--bottom-cards-min-width',
+      CARD_MIN_HEIGHT_DESKTOP_VAR: '--card-min-height-desktop',
+      CARD_MIN_HEIGHT_MOBILE_VAR: '--card-min-height-mobile',
+      RIGHT_TOP_ROW_MIN_HEIGHT_VAR: '--right-top-row-min-height',
+      BOTTOM_ROW_MIN_HEIGHT_VAR: '--bottom-row-min-height',
 
-      /* --- Default Desktop Proportions --- */
-      DESKTOP_LEFT_COL_WIDTH: '50%', /* Default width of the left column (Graph + Traversal) on desktop */
-      DESKTOP_GRAPH_HEIGHT: '67%', /* Default height of the Graph card inside the left column on desktop */
-      DESKTOP_RIGHT_TOP_HEIGHT: '67%', /* Default height of the Algorithms + Code row inside the right column on desktop */
-
-      /* --- Default Mobile / Phone Proportions --- */
-      MOBILE_GRAPH_ROW_HEIGHT: '44%', /* Default height of the top Graph row on mobile */
-      MOBILE_CODE_ROW_HEIGHT: '60%', /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
-      MOBILE_TRAVERSAL_WIDTH: '58%', /* Default width of the Traversal card in the bottom side-by-side row on mobile */
-
-      /* --- Splitter Dragging Percentage Limits --- */
-      MAIN_V_MIN_PERCENT: 20, /* Minimum width (%) for the left column when dragging the main desktop vertical splitter */
-      MAIN_V_MAX_PERCENT: 80, /* Maximum width (%) for the left column when dragging the main desktop vertical splitter */
-      LEFT_H_MIN_PERCENT: 18, /* Minimum height (%) for the Graph card when dragging the left horizontal splitter */
-      LEFT_H_MAX_PERCENT: 78, /* Maximum height (%) for the Graph card when dragging the left horizontal splitter */
-      RIGHT_H_MIN_PERCENT: 20, /* Minimum height (%) for the Code row when dragging the right horizontal splitter */
-      RIGHT_H_MAX_PERCENT: 80, /* Maximum height (%) for the Code row when dragging the right horizontal splitter */
-      BOTTOM_MOBILE_V_MIN_PERCENT: 22, /* Minimum width (%) for the Traversal card when dragging the mobile bottom vertical splitter */
-      BOTTOM_MOBILE_V_MAX_PERCENT: 78 /* Maximum width (%) for the Traversal card when dragging the mobile bottom vertical splitter */
+      /* --- Default Desktop & Mobile Proportions (Bound to :root variables) --- */
+      DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
+      DESKTOP_GRAPH_HEIGHT: 'var(--desktop-graph-height)',
+      DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
+      MOBILE_GRAPH_ROW_HEIGHT: 'var(--mobile-graph-row-height)',
+      MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
+      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)'
     };
+
+    // Helper to resolve a CSS variable on :root into rem (resolves nested var() references)
+    function getRootCssVarRem(varName, fallbackRem) {
+      let rawVal = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      while (rawVal.startsWith('var(')) {
+        const innerVar = rawVal.slice(4, -1).split(',')[0].trim();
+        rawVal = getComputedStyle(document.documentElement).getPropertyValue(innerVar).trim();
+      }
+      const parsed = parseFloat(rawVal);
+      return Number.isNaN(parsed) ? fallbackRem : parsed;
+    }
+
+    // Helper to convert a CSS variable's rem value to current viewport pixels for splitter math
+    function getRootCssVarUnits(varName, fallbackRem) {
+      const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      return getRootCssVarRem(varName, fallbackRem) * rootFontSize;
+    }
 
     // =========================================================================
     // 1. THEME MANAGEMENT (SYSTEM DEFAULT + DESKTOP & MOBILE SINGLE-ICON CYCLER)
@@ -1499,12 +2011,10 @@
       const effectiveTheme = resolveEffectiveTheme(pref);
       document.documentElement.setAttribute('data-theme', effectiveTheme);
 
-      // Update Desktop 3-icon segmented control
       themeOptionButtons.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-theme-pref') === pref);
       });
 
-      // Update Mobile single-icon button image & accessibility attributes
       const labelCapitalized = pref.charAt(0).toUpperCase() + pref.slice(1);
       mobileThemeCycleImg.src = LAYOUT_CONFIG.THEME_ICONS[pref] || LAYOUT_CONFIG.THEME_ICONS.system;
       mobileThemeCycleImg.alt = `${labelCapitalized} Theme`;
@@ -1532,7 +2042,6 @@
       });
     });
 
-    // Mobile single-icon click cycles: system -> light -> dark -> system
     mobileThemeCycleBtn.addEventListener('click', () => {
       const order = LAYOUT_CONFIG.THEME_CYCLE_ORDER;
       const nextIndex = (order.indexOf(currentThemePref) + 1) % order.length;
@@ -1562,7 +2071,6 @@
 
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
 
-    // Profile Floating Modal
     const btnProfile = document.getElementById('btnProfile');
     const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
     const closeProfileModalBtn = document.getElementById('close-profile-modal');
@@ -1575,8 +2083,7 @@
     }
 
     btnProfile.addEventListener('click', () => {
-      const isOpen = profileModalBackdrop.classList.contains('open');
-      setProfileModalOpen(!isOpen);
+      setProfileModalOpen(!profileModalBackdrop.classList.contains('open'));
     });
 
     closeProfileModalBtn.addEventListener('click', () => setProfileModalOpen(false));
@@ -1595,8 +2102,8 @@
       tab.addEventListener('click', () => {
         const target = tab.getAttribute('data-profile-tab');
         profileNavTabs.forEach(t => t.classList.toggle('active', t === tab));
-        profilePaneAccount.style.display = target === 'account' ? 'flex' : 'none';
-        profilePaneShortcuts.style.display = target === 'shortcuts' ? 'flex' : 'none';
+        profilePaneAccount.classList.toggle('active', target === 'account');
+        profilePaneShortcuts.classList.toggle('active', target === 'shortcuts');
       });
     });
 
@@ -1676,11 +2183,9 @@
     const logCard = document.getElementById('log-card');
     const stateCard = document.getElementById('state-card');
     const rightTopRow = document.getElementById('right-top-row');
+    const splitterRightH = document.getElementById('splitter-right-h');
 
     const algoCard = document.getElementById('algorithms-card');
-    const algoCardHeader = document.getElementById('algo-card-header');
-    const algoTitle = document.getElementById('algo-title');
-    const algoBody = document.getElementById('algo-body');
     const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
     const toggleAlgoBtn = document.getElementById('toggle-algo-btn');
     const algoToggleImg = document.getElementById('algo-toggle-img');
@@ -1692,110 +2197,53 @@
     function setAlgoCollapsed(collapse, customExpandedWidth) {
       isAlgoCollapsed = collapse;
       const isPhone = phoneMedia.matches;
-      const collapsedWidth = isPhone
-        ? LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE
-        : LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP;
 
       if (isAlgoCollapsed) {
-        if (
-          !customExpandedWidth &&
-          algoCard.style.width &&
-          algoCard.style.width !== LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP &&
-          algoCard.style.width !== LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE
-        ) {
+        if (!customExpandedWidth && algoCard.style.width) {
           savedAlgoWidth = algoCard.style.width;
         }
-        algoCard.style.display = 'flex';
-        algoCard.style.width = collapsedWidth;
-        algoCard.style.minWidth = collapsedWidth;
-        algoCard.style.flex = '0 0 auto';
-        algoCardHeader.style.justifyContent = 'center';
-        algoCardHeader.style.padding = '0';
-        algoTitle.style.display = 'none';
-        algoBody.style.display = 'none';
-        algoCollapsedStrip.style.display = 'flex';
-        splitterAlgoCode.style.display = 'flex';
-        splitterAlgoCode.style.pointerEvents = '';
-        splitterAlgoCode.style.opacity = '1';
+        algoCard.classList.add('is-collapsed');
+        algoCard.style.width = '';
         algoToggleImg.src = 'images/sidebar-open.png';
         toggleAlgoBtn.setAttribute('aria-expanded', 'false');
+        toggleAlgoBtn.setAttribute('title', 'Expand Algorithms Panel');
       } else {
-        const minRem = isPhone
-          ? `${LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_REM}rem`
-          : `${LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_REM}rem`;
-        algoCard.style.display = 'flex';
+        algoCard.classList.remove('is-collapsed');
         algoCard.style.width = customExpandedWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : savedAlgoWidth);
-        algoCard.style.minWidth = minRem;
-        algoCard.style.flex = '0 0 auto';
-        algoCardHeader.style.justifyContent = '';
-        algoCardHeader.style.padding = '';
-        algoTitle.style.display = '';
-        algoBody.style.display = 'flex';
-        algoCollapsedStrip.style.display = 'none';
-        splitterAlgoCode.style.display = 'flex';
-        splitterAlgoCode.style.pointerEvents = '';
-        splitterAlgoCode.style.opacity = '1';
         algoToggleImg.src = 'images/sidebar-close.png';
         toggleAlgoBtn.setAttribute('aria-expanded', 'true');
+        toggleAlgoBtn.setAttribute('title', 'Collapse Algorithms Panel');
       }
     }
 
     toggleAlgoBtn.addEventListener('click', () => setAlgoCollapsed(!isAlgoCollapsed));
     algoCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
 
-    // Synchronize DOM structure between Desktop 2-column layout and Phone 3-row layout
     function syncResponsiveStructure() {
       const isPhone = phoneMedia.matches;
 
+      // Clear any drag-applied inline overrides so CSS variables in :root take effect cleanly
+      leftColumn.style.width = '';
+      leftColumn.style.height = '';
+      graphCard.style.height = '';
+      rightTopRow.style.height = '';
+      logCard.style.width = '';
+
       if (isPhone) {
-        // Move Traversal Card into bottom-split-row beside State Variables
         if (logCard.parentElement !== bottomSplitRow) {
           bottomSplitRow.insertBefore(logCard, splitterBottomMobileV);
         }
-        splitterBottomMobileV.style.display = 'flex';
-        desktopTraversalSlot.style.display = 'none';
-
-        // Phone default heights
-        leftColumn.style.width = '100%';
-        leftColumn.style.height = LAYOUT_CONFIG.MOBILE_GRAPH_ROW_HEIGHT;
-        leftColumn.style.flex = '0 0 auto';
-        graphCard.style.height = '100%';
-        graphCard.style.flex = '1 1 0%';
-
-        // Move splitterLeftH between leftColumn (Graph) and rightColumn (Code + Bottom row)
         if (splitterLeftH.parentElement !== workspace) {
           workspace.insertBefore(splitterLeftH, rightColumn);
         }
-
-        rightTopRow.style.height = LAYOUT_CONFIG.MOBILE_CODE_ROW_HEIGHT;
-        logCard.style.width = LAYOUT_CONFIG.MOBILE_TRAVERSAL_WIDTH;
-        logCard.style.flex = '0 0 auto';
-        stateCard.style.flex = '1 1 0%';
-
-        // Default Algorithms collapsed on phone (uses mobile collapsed width)
         setAlgoCollapsed(true);
       } else {
-        // Desktop layout: Move splitterLeftH & logCard back inside leftColumn
         if (splitterLeftH.parentElement !== leftColumn) {
           leftColumn.insertBefore(splitterLeftH, desktopTraversalSlot);
         }
         if (logCard.parentElement !== desktopTraversalSlot) {
           desktopTraversalSlot.appendChild(logCard);
         }
-        desktopTraversalSlot.style.display = 'flex';
-        splitterBottomMobileV.style.display = 'none';
-
-        leftColumn.style.width = LAYOUT_CONFIG.DESKTOP_LEFT_COL_WIDTH;
-        leftColumn.style.height = '100%';
-        leftColumn.style.flex = '0 0 auto';
-        graphCard.style.height = LAYOUT_CONFIG.DESKTOP_GRAPH_HEIGHT;
-        graphCard.style.flex = '0 0 auto';
-
-        rightTopRow.style.height = LAYOUT_CONFIG.DESKTOP_RIGHT_TOP_HEIGHT;
-        logCard.style.width = '100%';
-        logCard.style.flex = '1 1 0%';
-        stateCard.style.flex = '1 1 0%';
-
         setAlgoCollapsed(false);
       }
     }
@@ -1804,13 +2252,12 @@
     syncResponsiveStructure();
 
     // =========================================================================
-    // 5. UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (ZERO PX UNITS)
+    // 5. UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (DYNAMIC CSS VAR BOUNDS)
     // =========================================================================
-    function makeResizable({ splitter, getContainer, getTargetPane, getDirection, minPercent = 15, maxPercent = 85, onBeforeResize }) {
+    function makeResizable({ splitter, getContainer, getTargetPane, getDirection, getMinUnits, getMaxReservedUnits }) {
       let isDragging = false;
 
       const startDrag = (e) => {
-        if (onBeforeResize && onBeforeResize() === false) return;
         isDragging = true;
         splitter.classList.add('dragging');
         const dir = getDirection();
@@ -1826,17 +2273,26 @@
         const targetPane = getTargetPane();
         const dir = getDirection();
         const rect = container.getBoundingClientRect();
+        const splitterRect = splitter.getBoundingClientRect();
 
         if (dir === 'horizontal') {
-          let newPercent = ((clientX - rect.left) / rect.width) * 100;
-          newPercent = Math.max(minPercent, Math.min(maxPercent, newPercent));
+          const totalWidth = rect.width;
+          if (totalWidth <= 0) return;
+          const minU = getMinUnits ? getMinUnits() : 0;
+          const maxReservedU = getMaxReservedUnits ? getMaxReservedUnits() : 0;
+          const maxU = Math.max(minU, totalWidth - maxReservedU - splitterRect.width);
+          const clampedU = Math.max(minU, Math.min(maxU, clientX - rect.left));
+          const newPercent = (clampedU / totalWidth) * 100;
           targetPane.style.width = `${newPercent.toFixed(2)}%`;
-          targetPane.style.flex = '0 0 auto';
         } else {
-          let newPercent = ((clientY - rect.top) / rect.height) * 100;
-          newPercent = Math.max(minPercent, Math.min(maxPercent, newPercent));
+          const totalHeight = rect.height;
+          if (totalHeight <= 0) return;
+          const minU = getMinUnits ? getMinUnits() : 0;
+          const maxReservedU = getMaxReservedUnits ? getMaxReservedUnits() : 0;
+          const maxU = Math.max(minU, totalHeight - maxReservedU - splitterRect.height);
+          const clampedU = Math.max(minU, Math.min(maxU, clientY - rect.top));
+          const newPercent = (clampedU / totalHeight) * 100;
           targetPane.style.height = `${newPercent.toFixed(2)}%`;
-          targetPane.style.flex = '0 0 auto';
         }
       };
 
@@ -1863,31 +2319,51 @@
       getContainer: () => workspace,
       getTargetPane: () => leftColumn,
       getDirection: () => 'horizontal',
-      minPercent: LAYOUT_CONFIG.MAIN_V_MIN_PERCENT,
-      maxPercent: LAYOUT_CONFIG.MAIN_V_MAX_PERCENT
+      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.LEFT_COL_MIN_WIDTH_DESKTOP_VAR, 12),
+      getMaxReservedUnits: () => {
+        const algoMin = isAlgoCollapsed
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 3)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 8.5);
+        const codeMin = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
+        const subSplitter = splitterAlgoCode.getBoundingClientRect().width;
+        return algoMin + codeMin + subSplitter;
+      }
     });
 
-    // 2. Top Horizontal Splitter (Desktop: Graph <-> Log | Phone: Graph <-> Lower Area)
+    // 2. Top Horizontal Splitter (Desktop: Graph <-> Traversal | Phone: Graph <-> Lower Area)
     makeResizable({
       splitter: splitterLeftH,
       getContainer: () => phoneMedia.matches ? workspace : leftColumn,
       getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
       getDirection: () => 'vertical',
-      minPercent: LAYOUT_CONFIG.LEFT_H_MIN_PERCENT,
-      maxPercent: LAYOUT_CONFIG.LEFT_H_MAX_PERCENT
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
+      getMaxReservedUnits: () => {
+        if (phoneMedia.matches) {
+          const cardMin = getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6);
+          const rightSplitterH = splitterRightH.getBoundingClientRect().height;
+          return (cardMin * 2) + rightSplitterH;
+        }
+        return getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75);
+      }
     });
 
     // 3. Middle Horizontal Pill Splitter (Code Row <-> Bottom Split Row)
     makeResizable({
-      splitter: document.getElementById('splitter-right-h'),
+      splitter: splitterRightH,
       getContainer: () => rightColumn,
       getTargetPane: () => rightTopRow,
       getDirection: () => 'vertical',
-      minPercent: LAYOUT_CONFIG.RIGHT_H_MIN_PERCENT,
-      maxPercent: LAYOUT_CONFIG.RIGHT_H_MAX_PERCENT
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.RIGHT_TOP_ROW_MIN_HEIGHT_VAR, 2.75),
+      getMaxReservedUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
     });
 
-    // 4. Algorithms <-> Code Vertical Splitter (Supports drag-to-collapse & drag-to-expand)
+    // 4. Algorithms <-> Code Vertical Splitter (Supports drag-to-collapse & drag-to-expand via :root variables)
     (function setupAlgoSplitter() {
       let isDragging = false;
 
@@ -1902,27 +2378,29 @@
         if (!isDragging) return;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const rect = rightTopRow.getBoundingClientRect();
-        const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-        const collapseThresholdRem = phoneMedia.matches
-          ? LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_REM
-          : LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_REM;
-        const desiredWidthRem = (clientX - rect.left) / rootFontSize;
+        if (rect.width <= 0) return;
 
-        if (desiredWidthRem < collapseThresholdRem) {
+        const collapseThresholdU = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 6.5)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 8.5);
+        const codeMinU = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
+        const splitterW = splitterAlgoCode.getBoundingClientRect().width;
+        const desiredWidthU = clientX - rect.left;
+
+        if (desiredWidthU < collapseThresholdU) {
           if (!isAlgoCollapsed) {
             setAlgoCollapsed(true);
           }
         } else {
-          let newPercent = ((clientX - rect.left) / rect.width) * 100;
-          newPercent = Math.max(LAYOUT_CONFIG.ALGO_MIN_PERCENT, Math.min(LAYOUT_CONFIG.ALGO_MAX_PERCENT, newPercent));
-          const widthStr = `${newPercent.toFixed(2)}%`;
+          const maxU = Math.max(collapseThresholdU, rect.width - codeMinU - splitterW);
+          const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
+          const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
           savedAlgoWidth = widthStr;
 
           if (isAlgoCollapsed) {
             setAlgoCollapsed(false, widthStr);
           } else {
             algoCard.style.width = widthStr;
-            algoCard.style.flex = '0 0 auto';
           }
         }
       };
@@ -1948,11 +2426,11 @@
       getContainer: () => bottomSplitRow,
       getTargetPane: () => logCard,
       getDirection: () => 'horizontal',
-      minPercent: LAYOUT_CONFIG.BOTTOM_MOBILE_V_MIN_PERCENT,
-      maxPercent: LAYOUT_CONFIG.BOTTOM_MOBILE_V_MAX_PERCENT
+      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5),
+      getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5)
     });
 
-    // Reset Layout Buttons (Desktop & Phone)
+    // Reset Layout Button
     function resetAllProportions() {
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       syncResponsiveStructure();
