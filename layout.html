@@ -1,18 +1,87 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shard Spiral - VS Code Modern Layout</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="prism.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.css" />
+  <title>Shard Spiral</title>
+  <script src="js/tailwind.js"></script>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/prism.css" />
   <style>
+    /* =========================================================================
+       0. IMPORTANT LAYOUT & SIZING CONFIGURATION VARIABLES
+       (Modify these values to adjust global sizing, breakpoints, and dimensions)
+       ========================================================================= */
+    :root {
+      /* --- Typography & Base Scaling --- */
+      --base-root-font-size: 0.9rem; /* Base root font scaling across the entire app */
+      --desktop-body-font-size: 1rem; /* Standard font size on desktop viewports */
+      --mobile-body-font-size: 0.8rem; /* Compact font size on mobile/phone viewports (<= 56.25rem) */
+
+      /* --- Header & Card Bar Heights --- */
+      --header-height-desktop: 2.75rem; /* Height of the top application header bar on desktop */
+      --header-height-mobile: 2.625rem; /* Height of the top application header bar on mobile */
+      --card-header-height-desktop: 2.75rem; /* Height of section card headers (Graph, Code, etc.) on desktop */
+      --card-header-height-mobile: 2.625rem; /* Height of section card headers on mobile */
+      --playback-bar-height-desktop: 2.375rem; /* Height of the bottom playback controls bar inside the Graph card on desktop */
+      --playback-bar-height-mobile: 2rem; /* Height of the bottom playback controls bar on mobile */
+
+      /* --- Icon & Action Button Sizes --- */
+      --brand-logo-size: 2rem; /* Width and height of the main Shard Spiral logo in the header */
+      --header-action-btn-size: 2.25rem; /* Hitbox width and height for the header action buttons (Fullscreen, New, Library, Reset, Profile) on desktop */
+      --header-action-btn-size-mobile: 1.9rem; /* Hitbox width and height for the header action buttons on mobile */
+      --header-action-icon-size: 1.5rem; /* Visual width and height of the PNG icons inside the header action buttons on desktop */
+      --header-action-icon-size-mobile: 1.3rem; /* Visual width and height of the PNG icons inside the header action buttons on mobile */
+      --card-icon-btn-size: 2.5rem; /* Hitbox width and height for icon buttons inside card headers (e.g., collapse toggle) */
+      --sidebar-toggle-icon-size: 2rem; /* Width and height of the collapse/expand image icon in the Algorithms header */
+      --theme-option-btn-size-desktop: 1.625rem; /* Width and height of each icon button inside the desktop 3-way theme switcher */
+      --theme-icon-size-desktop: 1rem; /* Width and height of the PNG icons (system.png, light.png, dark.png) inside the desktop theme switcher */
+      --theme-cycle-btn-size-mobile: 1.9rem; /* Width and height of the single-icon cycling theme toggle button on mobile */
+      --theme-cycle-icon-size-mobile: 1.25rem; /* Width and height of the active PNG icon inside the mobile theme toggle button */
+      --playback-icon-btn-size-desktop: 1.75rem; /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on desktop */
+      --playback-icon-btn-size-mobile: 1.5rem; /* Hitbox width and height of the Run, Step, Pause, Reset icon buttons on mobile */
+      --playback-icon-size-desktop: 1.15rem; /* Visual width and height of run.png, step.png, pause.png, reset.png on desktop */
+      --playback-icon-size-mobile: 1rem; /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
+
+      /* --- Algorithms & Code Card Constraints --- */
+      --algorithms-min-width-desktop: 8.5rem; /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
+      --algorithms-min-width-mobile: 6.5rem; /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
+      --algorithms-collapsed-width-desktop: 3rem; /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
+      --algorithms-collapsed-width-mobile: 2.25rem; /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
+      --code-card-min-width: 8rem; /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
+      --right-top-row-min-height: 5rem; /* Minimum height of the top-right row containing Algorithms and Code */
+      --bottom-row-min-height: 4.5rem; /* Minimum height of the bottom row containing Traversal and State Variables */
+      --bottom-cards-min-width: 6.5rem; /* Minimum width of the Traversal and State Variables cards when side-by-side */
+
+      /* --- Interactive Controls & Sliders --- */
+      --control-btn-height-desktop: 1.5625rem; /* Height of standard secondary buttons (e.g., <, >, Sign Out) on desktop */
+      --control-btn-height-mobile: 1.35rem; /* Height of standard secondary buttons on mobile */
+      --tab-height-desktop: 1.5rem; /* Height of card header tabs (Code, Explanation) on desktop */
+      --tab-height-mobile: 1.35rem; /* Height of card header tabs on mobile */
+      --lang-dropdown-width: 7.25rem; /* Width of the programming language dropdown menu */
+      --speed-slider-width-desktop: 4.5rem; /* Width of the playback speed range input on desktop */
+      --speed-slider-width-mobile: 3.25rem; /* Width of the playback speed range input on mobile */
+      --speed-slider-thumb-size: 0.6875rem; /* Diameter of the draggable thumb on the playback speed slider */
+
+      /* --- Resizer / Splitter Dimensions --- */
+      --splitter-thickness-desktop: 0.5rem; /* Interactive grab thickness of horizontal and vertical splitters on desktop */
+      --splitter-thickness-mobile: 0.45rem; /* Interactive grab thickness of horizontal and vertical splitters on mobile */
+      --splitter-pill-thickness: 0.1875rem; /* Thickness of the visual pill indicator inside splitters */
+      --splitter-v-pill-length: 1.75rem; /* Default vertical length of the pill inside vertical splitters */
+      --splitter-v-pill-hover-length: 3.25rem; /* Expanded vertical length of the pill when hovering/dragging a vertical splitter */
+      --splitter-h-pill-length: 2rem; /* Default horizontal length of the pill inside horizontal splitters */
+      --splitter-h-pill-hover-length: 3.5rem; /* Expanded horizontal length of the pill when hovering/dragging a horizontal splitter */
+
+      /* --- Profile Floating Modal Dimensions --- */
+      --profile-modal-max-width: 34rem; /* Maximum width of the floating Profile modal window */
+      --profile-modal-height-desktop: 22rem; /* Height of the Profile modal window on desktop */
+      --profile-modal-height-mobile: 20rem; /* Height of the Profile modal window on mobile */
+      --profile-sidebar-width-desktop: 10.5rem; /* Width of the left navigation sidebar inside the Profile modal on desktop */
+      --profile-sidebar-width-mobile: 7.75rem; /* Width of the left navigation sidebar inside the Profile modal on mobile */
+      --profile-avatar-size: 2.5rem; /* Width and height of the circular user avatar badge in the Profile modal */
+    }
+
     /* =========================================================================
        1. VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
        (Strictly zero px units anywhere in this document)
@@ -66,12 +135,11 @@
 
     * {
       box-sizing: border-box;
-      user-select: none;
       font-size: inherit;
     }
 
     html {
-      font-size: 1rem;
+      font-size: var(--base-root-font-size);
     }
 
     body {
@@ -79,16 +147,12 @@
       padding: 0;
       background-color: var(--bg-app);
       color: var(--text-primary);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 1rem;
+      font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: var(--desktop-body-font-size);
       height: 100dvh;
       width: 100vw;
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
-    }
-
-    .font-mono-code {
-      font-family: 'JetBrains Mono', monospace;
     }
 
     /* =========================================================================
@@ -103,8 +167,8 @@
     }
 
     .top-titlebar {
-      height: 2.75rem;
-      min-height: 2.75rem;
+      height: var(--header-height-desktop);
+      min-height: var(--header-height-desktop);
       padding: 0 0.625rem;
       display: flex;
       align-items: center;
@@ -124,32 +188,27 @@
       overflow: hidden;
     }
 
-    .activity-bar {
-      width: 3.25rem;
-      min-width: 3.25rem;
-      background-color: var(--bg-app);
-      border-right: 0.0625rem solid var(--border-color);
+    .header-actions-group {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 0.375rem 0;
-      flex-shrink: 0;
-      z-index: 25;
+      gap: 0.25rem;
     }
 
-    .activity-icons-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.375rem;
+    .header-divider {
+      width: 0.0625rem;
+      height: 1.25rem;
+      background-color: var(--border-color);
+      margin: 0 0.125rem;
+      flex-shrink: 0;
     }
 
     .activity-btn {
-      width: 2.5rem;
-      height: 2.5rem;
+      width: var(--header-action-btn-size);
+      height: var(--header-action-btn-size);
       padding: 0.25rem;
       border-radius: 0.5rem;
+      background: transparent;
+      border: none;
       color: var(--text-muted);
       display: flex;
       align-items: center;
@@ -157,11 +216,18 @@
       position: relative;
       cursor: pointer;
       transition: background-color 0.12s ease, color 0.12s ease;
+      flex-shrink: 0;
     }
 
     .activity-btn:hover {
       color: var(--text-primary);
       background-color: var(--bg-hover);
+    }
+
+    .brand-name-text {
+      font-weight: 600;
+      color: var(--text-bright);
+      white-space: nowrap;
     }
 
     /* Workspace Container */
@@ -190,8 +256,8 @@
     }
 
     .vscode-card-header {
-      height: 2.75rem;
-      min-height: 2.75rem;
+      height: var(--card-header-height-desktop);
+      min-height: var(--card-header-height-desktop);
       padding: 0 0.625rem;
       display: flex;
       align-items: center;
@@ -206,7 +272,7 @@
 
     /* Tabs */
     .vscode-tab {
-      height: 1.5rem;
+      height: var(--tab-height-desktop);
       padding: 0 0.5625rem;
       border-radius: 0.3125rem;
       display: inline-flex;
@@ -230,8 +296,8 @@
 
     /* Icon Action Button in Card Headers */
     .card-icon-btn {
-      width: 2.5rem;
-      height: 2.5rem;
+      width: var(--card-icon-btn-size);
+      height: var(--card-icon-btn-size);
       padding: 0.25rem;
       border-radius: 0.5rem;
       color: var(--text-muted);
@@ -250,16 +316,18 @@
 
     /* Sidebar Toggle Image Styling (images/sidebar-open.png & images/sidebar-close.png) */
     .sidebar-toggle-img {
-      width: 2rem;
-      height: 2rem;
+      width: var(--sidebar-toggle-icon-size);
+      height: var(--sidebar-toggle-icon-size);
+      padding: 0.125rem;
+      border-radius: 0.5rem;
       object-fit: contain;
       display: block;
       filter: var(--sidebar-icon-filter);
     }
 
     .brand-logo {
-      width: 2rem;
-      height: 2rem;
+      width: var(--brand-logo-size);
+      height: var(--brand-logo-size);
       padding: 0.25rem;
       border-radius: 0.5rem;
       object-fit: contain;
@@ -268,11 +336,53 @@
     }
 
     .activity-icon-img {
-      width: 2rem;
-      height: 2rem;
+      width: var(--header-action-icon-size);
+      height: var(--header-action-icon-size);
       object-fit: contain;
       display: block;
       filter: var(--sidebar-icon-filter);
+    }
+
+    /* Playback Icon Action Buttons (Run, Step, Pause, Reset) */
+    .playback-icon-btn {
+      width: var(--playback-icon-btn-size-desktop);
+      height: var(--playback-icon-btn-size-desktop);
+      min-height: var(--playback-icon-btn-size-desktop);
+      padding: 0.25rem;
+      border-radius: 0.3125rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .playback-icon-btn:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .playback-icon-btn.primary {
+      background-color: var(--accent-primary);
+      border-color: transparent;
+    }
+
+    .playback-icon-btn.primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    .playback-icon-img {
+      width: var(--playback-icon-size-desktop);
+      height: var(--playback-icon-size-desktop);
+      object-fit: contain;
+      display: block;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .playback-icon-btn.primary .playback-icon-img {
+      filter: brightness(0) invert(1);
     }
 
     /* Profile Floating Modal Window */
@@ -293,8 +403,8 @@
 
     .profile-modal {
       width: 100%;
-      max-width: 34rem;
-      height: 22rem;
+      max-width: var(--profile-modal-max-width);
+      height: var(--profile-modal-height-desktop);
       max-height: 85dvh;
       background-color: var(--bg-card);
       border: 0.0625rem solid var(--border-color);
@@ -326,8 +436,8 @@
     }
 
     .profile-modal-sidebar {
-      width: 10.5rem;
-      min-width: 10.5rem;
+      width: var(--profile-sidebar-width-desktop);
+      min-width: var(--profile-sidebar-width-desktop);
       background-color: var(--bg-elevated);
       border-right: 0.0625rem solid var(--border-color);
       padding: 0.5rem;
@@ -372,7 +482,7 @@
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.25rem;
       color: var(--text-bright);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Noto Sans Mono', monospace;
     }
 
     /* Fallback inline icon when external png is missing in preview */
@@ -387,6 +497,7 @@
       line-height: 1;
       color: var(--text-primary);
     }
+
     .sidebar-fallback-box::before {
       content: '';
       width: 0.22rem;
@@ -396,8 +507,8 @@
 
     /* Resizer / Splitter Bars */
     .splitter-v {
-      width: 0.5rem;
-      min-width: 0.5rem;
+      width: var(--splitter-thickness-desktop);
+      min-width: var(--splitter-thickness-desktop);
       cursor: col-resize;
       display: flex;
       align-items: center;
@@ -410,8 +521,8 @@
 
     .splitter-v::after {
       content: '';
-      width: 0.1875rem;
-      height: 1.75rem;
+      width: var(--splitter-pill-thickness);
+      height: var(--splitter-v-pill-length);
       border-radius: 0.25rem;
       background-color: var(--splitter-pill);
       opacity: 0.65;
@@ -420,14 +531,14 @@
 
     .splitter-v:hover::after,
     .splitter-v.dragging::after {
-      height: 3.25rem;
+      height: var(--splitter-v-pill-hover-length);
       opacity: 1;
       background-color: var(--accent-primary);
     }
 
     .splitter-h {
-      height: 0.5rem;
-      min-height: 0.5rem;
+      height: var(--splitter-thickness-desktop);
+      min-height: var(--splitter-thickness-desktop);
       cursor: row-resize;
       display: flex;
       align-items: center;
@@ -440,8 +551,8 @@
 
     .splitter-h::after {
       content: '';
-      height: 0.1875rem;
-      width: 2rem;
+      height: var(--splitter-pill-thickness);
+      width: var(--splitter-h-pill-length);
       border-radius: 0.25rem;
       background-color: var(--splitter-pill);
       opacity: 0.65;
@@ -450,7 +561,7 @@
 
     .splitter-h:hover::after,
     .splitter-h.dragging::after {
-      width: 3.5rem;
+      width: var(--splitter-h-pill-hover-length);
       opacity: 1;
       background-color: var(--accent-primary);
     }
@@ -460,8 +571,8 @@
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       color: var(--text-primary);
-      height: 1.5625rem;
-      min-height: 1.5625rem;
+      height: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
       padding: 0 0.5rem;
       border-radius: 0.25rem;
       font-weight: 500;
@@ -478,66 +589,80 @@
       background-color: var(--bg-hover);
     }
 
-    .vscode-btn-primary {
-      background-color: var(--accent-primary);
-      border: 0.0625rem solid transparent;
-      color: #ffffff;
-      height: 1.5625rem;
-      min-height: 1.5625rem;
-      padding: 0 0.625rem;
-      border-radius: 0.25rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.25rem;
-      cursor: pointer;
-      transition: background-color 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .vscode-btn-primary:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* Theme Segmented Switcher */
+    /* Desktop Theme Segmented Switcher (Icon-Only PNGs) */
     .theme-switcher {
       display: inline-flex;
       align-items: center;
       background-color: var(--bg-elevated);
       border: 0.0625rem solid var(--border-color);
-      border-radius: 0.25rem;
-      padding: 0.0625rem;
-      gap: 0.0625rem;
+      border-radius: 0.35rem;
+      padding: 0.125rem;
+      gap: 0.125rem;
     }
 
     .theme-option-btn {
-      height: 1.375rem;
-      padding: 0 0.4375rem;
-      border-radius: 0.1875rem;
-      font-weight: 500;
+      width: var(--theme-option-btn-size-desktop);
+      height: var(--theme-option-btn-size-desktop);
+      padding: 0.2rem;
+      border-radius: 0.25rem;
+      background: transparent;
+      border: none;
       color: var(--text-muted);
       display: inline-flex;
       align-items: center;
-      gap: 0.25rem;
+      justify-content: center;
       cursor: pointer;
       transition: all 0.12s ease;
     }
 
     .theme-option-btn:hover {
-      color: var(--text-primary);
+      background-color: var(--bg-hover);
     }
 
     .theme-option-btn.active {
       background-color: var(--bg-card);
+      box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.25);
+    }
+
+    .theme-icon-img {
+      width: var(--theme-icon-size-desktop);
+      height: var(--theme-icon-size-desktop);
+      object-fit: contain;
+      display: block;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    /* Mobile Single-Icon Cycling Theme Button (Hidden on Desktop) */
+    .mobile-theme-cycle-btn {
+      display: none;
+      width: var(--theme-cycle-btn-size-mobile);
+      height: var(--theme-cycle-btn-size-mobile);
+      padding: 0.2rem;
+      border-radius: 0.45rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
       color: var(--text-bright);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .mobile-theme-cycle-btn:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .mobile-theme-cycle-btn .theme-icon-img {
+      width: var(--theme-cycle-icon-size-mobile);
+      height: var(--theme-cycle-icon-size-mobile);
     }
 
     /* Custom Range Slider */
     input[type="range"].vscode-slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 4.5rem;
+      width: var(--speed-slider-width-desktop);
       height: 0.2rem;
       background: var(--border-color);
       border-radius: 0.125rem;
@@ -548,12 +673,11 @@
     input[type="range"].vscode-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 0.6875rem;
-      height: 0.6875rem;
+      width: var(--speed-slider-thumb-size);
+      height: var(--speed-slider-thumb-size);
       border-radius: 50%;
       background: var(--accent-primary);
       cursor: pointer;
-      border: 0.09375rem solid var(--text-bright);
     }
 
     /* Language Selector Dropdown */
@@ -585,7 +709,7 @@
       position: absolute;
       right: 0;
       top: calc(100% + 0.2rem);
-      width: 7.25rem;
+      width: var(--lang-dropdown-width);
       background-color: var(--bg-elevated);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.3125rem;
@@ -630,70 +754,18 @@
       flex-shrink: 0;
     }
 
-    /* Prism.js VS Code Theme & Zero-PX Unit Overrides */
-    /* #codeViewPane pre[class*="language-"] {
-      margin: 0;
-      padding: 0.75rem 0.75rem 0.75rem 3.25rem;
-      background: transparent !important;
-      font-family: 'JetBrains Mono', monospace;
-      line-height: 1.5;
-      color: var(--text-primary);
-      text-shadow: none;
-      border: none;
-      box-shadow: none;
-      min-height: 100%;
-    } */
-
-    /* #codeViewPane code[class*="language-"] {
-      font-family: 'JetBrains Mono', monospace;
-      line-height: 1.5;
-      color: var(--text-primary);
-      text-shadow: none;
-      background: transparent !important;
-    } */
-
-    /* #codeViewPane .line-numbers .line-numbers-rows {
-      top: 0.75rem;
-      left: 0;
-      width: 2.5rem;
-      border-right: 0.0625rem solid var(--border-color);
-      letter-spacing: -0.05em;
-    }
-
-    #codeViewPane .line-numbers-rows > span::before {
-      color: var(--text-muted);
-      padding-right: 0.5rem;
-    }
-
-    #codeViewPane .line-highlight {
-      background: var(--code-line-highlight) !important;
-      margin-top: 0.75rem;
-      left: 0;
-      right: 0;
-      pointer-events: none;
-    }
-
-    [data-theme="light"] #codeViewPane .token.keyword {
-      color: #0000ff;
-    }
-    [data-theme="light"] #codeViewPane .token.function {
-      color: #795e26;
-    }
-    [data-theme="light"] #codeViewPane .token.string {
-      color: #a31515;
-    }
-    [data-theme="light"] #codeViewPane .token.number,
-    [data-theme="light"] #codeViewPane .token.boolean {
-      color: #098658;
-    }
-    [data-theme="light"] #codeViewPane .token.operator,
-    [data-theme="light"] #codeViewPane .token.punctuation {
-      color: #3b3b3b;
-    } */
-
-    /* Desktop vs Mobile visibility helpers */
-    .mobile-only-flex {
-      display: none;
+    /* Playback Controls Bar */
+    .playback-bar {
+      height: var(--playback-bar-height-desktop);
+      min-height: var(--playback-bar-height-desktop);
+      padding: 0 0.625rem;
+      border-top: 0.0625rem solid var(--border-color);
+      background-color: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.375rem;
+      overflow-x: auto;
     }
 
     /* Scrollbars */
@@ -701,13 +773,16 @@
       width: 0.375rem;
       height: 0.375rem;
     }
+
     ::-webkit-scrollbar-track {
       background: transparent;
     }
+
     ::-webkit-scrollbar-thumb {
       background: var(--scrollbar-thumb);
       border-radius: 0.2rem;
     }
+
     ::-webkit-scrollbar-thumb:hover {
       background: var(--scrollbar-thumb-hover);
     }
@@ -717,48 +792,47 @@
        ========================================================================= */
     @media (max-width: 56.25rem) {
       body {
-        font-size: 0.8rem;
+        font-size: var(--mobile-body-font-size);
       }
 
       .desktop-only-el {
         display: none !important;
       }
 
-      /* Reorganize the exact same top-titlebar and activity-bar horizontally at the top */
+      /* Hide "Shard Spiral" text on mobile while keeping the logo visible */
+      .brand-name-text {
+        display: none !important;
+      }
+
       .top-titlebar {
-        height: 2.625rem;
-        min-height: 2.625rem;
+        height: var(--header-height-mobile);
+        min-height: var(--header-height-mobile);
         padding: 0 0.45rem;
         border-bottom: 0.0625rem solid var(--border-color);
+      }
+
+      .activity-btn {
+        width: var(--header-action-btn-size-mobile);
+        height: var(--header-action-btn-size-mobile);
+        padding: 0.2rem;
+      }
+
+      .activity-icon-img {
+        width: var(--header-action-icon-size-mobile);
+        height: var(--header-action-icon-size-mobile);
+      }
+
+      /* Hide the 3-button segmented theme bar on mobile and show the single-icon cycler */
+      .theme-switcher {
+        display: none !important;
+      }
+
+      .mobile-theme-cycle-btn {
+        display: inline-flex;
       }
 
       .main-area {
         flex-direction: column;
-      }
-
-      .activity-bar {
-        width: 100%;
-        min-width: 100%;
-        height: 3rem;
-        min-height: 3rem;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 0 0.45rem;
-        border-right: none;
-        border-bottom: 0.0625rem solid var(--border-color);
-      }
-
-      .activity-icons-group {
-        flex-direction: row;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .theme-option-btn {
-        height: 1.2rem;
-        padding: 0 0.32rem;
-        gap: 0.18rem;
       }
 
       /* Mobile Workspace is a vertical stack:
@@ -781,33 +855,44 @@
       }
 
       .vscode-card-header {
-        height: 2.625rem;
-        min-height: 2.625rem;
+        height: var(--card-header-height-mobile);
+        min-height: var(--card-header-height-mobile);
         padding: 0 0.5rem;
       }
 
       .vscode-tab {
-        height: 1.35rem;
+        height: var(--tab-height-mobile);
         padding: 0 0.45rem;
         border-radius: 0.28rem;
       }
 
       .profile-modal {
-        height: 20rem;
+        height: var(--profile-modal-height-mobile);
       }
 
       .profile-modal-sidebar {
-        width: 7.75rem;
-        min-width: 7.75rem;
+        width: var(--profile-sidebar-width-mobile);
+        min-width: var(--profile-sidebar-width-mobile);
         padding: 0.375rem;
       }
 
-      .vscode-btn-primary,
       .vscode-btn-secondary {
-        height: 1.35rem;
-        min-height: 1.35rem;
+        height: var(--control-btn-height-mobile);
+        min-height: var(--control-btn-height-mobile);
         padding: 0 0.4rem;
         gap: 0.2rem;
+      }
+
+      .playback-icon-btn {
+        width: var(--playback-icon-btn-size-mobile);
+        height: var(--playback-icon-btn-size-mobile);
+        min-height: var(--playback-icon-btn-size-mobile);
+        padding: 0.2rem;
+      }
+
+      .playback-icon-img {
+        width: var(--playback-icon-size-mobile);
+        height: var(--playback-icon-size-mobile);
       }
 
       .lang-trigger-btn {
@@ -817,86 +902,59 @@
       }
 
       input[type="range"].vscode-slider {
-        width: 3.25rem;
+        width: var(--speed-slider-width-mobile);
       }
 
       .playback-bar {
-        height: 2rem !important;
-        min-height: 2rem !important;
+        height: var(--playback-bar-height-mobile) !important;
+        min-height: var(--playback-bar-height-mobile) !important;
         padding: 0 0.45rem !important;
         gap: 0.3rem !important;
       }
 
-      /* Mobile Splitters with pill indicators matching screenshot */
+      /* Mobile Splitters with pill indicators */
       .splitter-h {
-        height: 0.45rem;
-        min-height: 0.45rem;
+        height: var(--splitter-thickness-mobile);
+        min-height: var(--splitter-thickness-mobile);
       }
+
       .splitter-h::after {
         width: 1.85rem;
         height: 0.16rem;
       }
 
       .splitter-v {
-        width: 0.45rem;
-        min-width: 0.45rem;
+        width: var(--splitter-thickness-mobile);
+        min-width: var(--splitter-thickness-mobile);
       }
+
       .splitter-v::after {
         height: 1.85rem;
         width: 0.16rem;
       }
+
+      code[class*="language-"] {
+        padding-top: 0.1em;
+      }
     }
   </style>
 </head>
+
 <body class="app-shell">
 
-  <!-- ================= DESKTOP TOP TITLE BAR ================= -->
+  <!-- ================= UNIFIED TOP TITLE BAR ================= -->
   <header class="top-titlebar">
-    <div class="brand-title" style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
-      <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
-      <span style="font-weight: 600; color: var(--text-bright); white-space: nowrap;">
-        Shard Spiral
-      </span>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 0.4375rem; flex-shrink: 0;">
-      <!-- Theme Switcher (System / Light / Dark) -->
-      <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
-        <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
-          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-          </svg>
-          <span>System</span>
-        </button>
-        <button type="button" class="theme-option-btn" data-theme-pref="light" title="VS Code Light Modern">
-          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-          </svg>
-          <span>Light</span>
-        </button>
-        <button type="button" class="theme-option-btn" data-theme-pref="dark" title="VS Code Dark Modern">
-          <svg style="width: 0.75rem; height: 0.75rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-          <span>Dark</span>
-        </button>
+    <!-- Left Group: Logo + Brand Name (hidden on mobile) + Former Sidebar Icons (except Profile) -->
+    <div style="display: flex; align-items: center; gap: 0.375rem; min-width: 0;">
+      <div class="brand-title" style="display: flex; align-items: center; gap: 0.45rem; min-width: 0;">
+        <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
+        <span class="brand-name-text">Shard Spiral</span>
       </div>
 
-      <button id="reset-layout-btn" class="vscode-btn-secondary" title="Reset panel proportions">
-        Reset Layout
-      </button>
-    </div>
-  </header>
+      <div class="header-divider"></div>
 
-  <!-- ================= MAIN BODY ================= -->
-  <div class="main-area">
-
-    <!-- ACTIVITY BAR (Vertical Left on Desktop, Horizontal Top Bar on Mobile) -->
-    <aside class="activity-bar" aria-label="Activity Bar">
-      <div class="activity-icons-group">
+      <!-- Former Sidebar Icons Moved Near Logo (Fullscreen, New, Library) -->
+      <div class="header-actions-group" role="toolbar" aria-label="Workspace Actions">
         <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
           <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
         </button>
@@ -906,18 +964,51 @@
         <button type="button" id="btnLibrary" class="activity-btn" title="Library">
           <img src="images/library.png" alt="Library" class="activity-icon-img" />
         </button>
-        <button type="button" id="btnProfile" class="activity-btn" title="Profile">
-          <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
+      </div>
+    </div>
+
+    <!-- Right Group: Theme Switcher + Reset Layout Icon + Profile Icon -->
+    <div style="display: flex; align-items: center; gap: 0.375rem; flex-shrink: 0;">
+      <!-- Desktop Theme Switcher (Icon-Only: images/system.png, images/light.png, images/dark.png) -->
+      <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
+        <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
+          <img src="images/system.png" alt="System Theme" class="theme-icon-img" />
+        </button>
+        <button type="button" class="theme-option-btn" data-theme-pref="light" title="VS Code Light Modern">
+          <img src="images/light.png" alt="Light Theme" class="theme-icon-img" />
+        </button>
+        <button type="button" class="theme-option-btn" data-theme-pref="dark" title="VS Code Dark Modern">
+          <img src="images/dark.png" alt="Dark Theme" class="theme-icon-img" />
         </button>
       </div>
-    </aside>
+
+      <!-- Mobile Single-Icon Theme Toggle (Cycles System -> Light -> Dark using PNGs) -->
+      <button type="button" id="mobile-theme-cycle-btn" class="mobile-theme-cycle-btn" title="Theme: System"
+        aria-label="Cycle Color Theme">
+        <img id="mobile-theme-cycle-img" src="images/system.png" alt="System Theme" class="theme-icon-img" />
+      </button>
+
+      <!-- Reset Layout Icon Button (images/reset.png) -->
+      <button type="button" id="reset-layout-btn" class="activity-btn" title="Reset panel proportions">
+        <img src="images/reset.png" alt="Reset Layout" class="activity-icon-img" />
+      </button>
+
+      <!-- Profile Icon Kept on the Right -->
+      <button type="button" id="btnProfile" class="activity-btn" title="Profile">
+        <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN BODY ================= -->
+  <div class="main-area">
 
     <!-- ================= ADAPTIVE WORKSPACE CONTAINER ================= -->
     <main id="workspace" class="workspace-container">
 
       <!-- ===============================================================
            SECTION A: GRAPH CARD
-           (Desktop: Top of Left Column | Phone: Top Card, ~43% height)
+           (Desktop: Top of Left Column | Phone: Top Card, ~44% height)
            =============================================================== -->
       <div id="left-column" style="display: flex; flex-direction: column; width: 50%; min-width: 0; min-height: 0;">
 
@@ -928,40 +1019,43 @@
 
           <div style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;">
             <!-- Graph Content Area -->
-            <div style="flex: 1 1 0%; padding: 0.625rem 0.75rem; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden;">
+            <div
+              style="flex: 1 1 0%; padding: 0.625rem 0.75rem; display: flex; align-items: flex-start; justify-content: flex-start; overflow: hidden;">
               <span style="color: var(--text-primary); opacity: 0.9;">
                 Main content area.
               </span>
             </div>
 
-            <!-- Compact Playback Controls Bar -->
-            <div class="playback-bar" style="height: 2.375rem; min-height: 2.375rem; padding: 0 0.625rem; border-top: 0.0625rem solid var(--border-color); background-color: var(--bg-card); display: flex; align-items: center; justify-content: space-between; gap: 0.375rem; overflow-x: auto;">
+            <!-- Compact Playback Controls Bar (Icon Buttons for Run, Step, Pause, Reset) -->
+            <div class="playback-bar">
               <div style="display: flex; align-items: center; gap: 0.25rem; flex-shrink: 0;">
-                <button type="button" class="vscode-btn-primary">
-                  <svg style="width: 0.625rem; height: 0.625rem; fill: currentColor;" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5-9-5.5z"/></svg>
-                  <span>Run</span>
+                <button type="button" class="playback-icon-btn primary" title="Run">
+                  <img src="images/run.png" alt="Run" class="playback-icon-img" />
                 </button>
-                <button type="button" class="vscode-btn-secondary">
-                  <span>Step</span>
+                <button type="button" class="playback-icon-btn" title="Step">
+                  <img src="images/step.png" alt="Step" class="playback-icon-img" />
                 </button>
-                <button type="button" class="vscode-btn-secondary">
-                  <span>Pause</span>
+                <button type="button" class="playback-icon-btn" title="Pause">
+                  <img src="images/pause.png" alt="Pause" class="playback-icon-img" />
                 </button>
-                <button type="button" class="vscode-btn-secondary">
-                  <span>Reset</span>
+                <button type="button" class="playback-icon-btn" title="Reset">
+                  <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
                 </button>
 
                 <div style="display: flex; align-items: center; gap: 0.3rem; margin-left: 0.25rem;">
                   <span style="color: var(--text-muted);">Speed</span>
-                  <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1" class="vscode-slider" />
+                  <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
+                    class="vscode-slider" />
                   <span id="speed-label" style="color: var(--text-primary); min-width: 1.4rem;">1x</span>
                 </div>
               </div>
 
               <div style="display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0;">
                 <span style="color: var(--text-muted); white-space: nowrap;">0 / 0</span>
-                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;" title="Previous Step">&lt;</button>
-                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;" title="Next Step">&gt;</button>
+                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;"
+                  title="Previous Step">&lt;</button>
+                <button type="button" class="vscode-btn-secondary" style="padding: 0 0.3rem;"
+                  title="Next Step">&gt;</button>
               </div>
             </div>
           </div>
@@ -970,8 +1064,9 @@
         <!-- Splitter: Desktop (Graph <-> Traversal) / Phone (Graph <-> Code) -->
         <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
 
-        <!-- Desktop-Slot Placeholder for Traversal Card (JS moves nodes seamlessly if needed, or CSS flex order handles it) -->
-        <div id="desktop-traversal-slot" style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;"></div>
+        <!-- Desktop-Slot Placeholder for Traversal Card -->
+        <div id="desktop-traversal-slot" style="flex: 1 1 0%; display: flex; flex-direction: column; min-height: 0;">
+        </div>
       </div>
 
       <!-- Desktop Main Vertical Splitter (Left Column <-> Right Column) -->
@@ -983,49 +1078,39 @@
       <div id="right-column" style="flex: 1 1 0%; display: flex; flex-direction: column; min-width: 0; min-height: 0;">
 
         <!-- TOP-RIGHT ROW / PHONE MIDDLE ROW (ALGORITHMS + CODE CARD) -->
-        <div id="right-top-row" style="display: flex; min-height: 5rem; min-width: 0; height: 67%; flex-shrink: 0;">
+        <div id="right-top-row"
+          style="display: flex; min-height: var(--right-top-row-min-height); min-width: 0; height: 67%; flex-shrink: 0;">
 
           <!-- COLLAPSIBLE ALGORITHMS CARD -->
-          <section id="algorithms-card" class="vscode-card" style="width: 30%; min-width: 8.5rem;">
-            <div class="vscode-card-header">
-              <span id="algo-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Algorithms</span>
-              <button
-                type="button"
-                id="toggle-algo-btn"
-                class="card-icon-btn"
-                title="Collapse Algorithms Panel"
-                aria-expanded="true"
-              >
-                <img
-                  id="algo-toggle-img"
-                  src="images/sidebar-close.png"
-                  alt="Collapse"
-                  class="sidebar-toggle-img"
-                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';"
-                />
+          <section id="algorithms-card" class="vscode-card" style="width: 30%; min-width: 1.5rem;">
+            <div class="vscode-card-header" id="algo-card-header">
+              <span id="algo-title"
+                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Algorithms</span>
+              <button type="button" id="toggle-algo-btn" class="card-icon-btn" title="Collapse Algorithms Panel"
+                aria-expanded="true">
+                <img id="algo-toggle-img" src="images/sidebar-close.png" alt="Collapse" class="sidebar-toggle-img"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
                 <span class="sidebar-fallback-box" aria-hidden="true"></span>
               </button>
             </div>
 
             <!-- Expanded Algorithms Content -->
-            <div id="algo-body" style="flex: 1 1 0%; display: flex; flex-direction: column; padding: 0.45rem; gap: 0.45rem; overflow: auto;">
-              <input
-                type="text"
-                placeholder="Search algorithms..."
-                style="width: 100%; height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; background-color: var(--bg-input); border: 0.0625rem solid var(--border-color); color: var(--text-primary); outline: none;"
-              />
-              <div style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; border: 0.0625rem dashed var(--border-color); border-radius: 0.25rem; padding: 0.375rem; text-align: center;">
+            <div id="algo-body"
+              style="flex: 1 1 0%; display: flex; flex-direction: column; padding: 0.45rem; gap: 0.45rem; overflow: auto;">
+              <input type="text" placeholder="Search algorithms..."
+                style="width: 100%; height: 1.5rem; padding: 0 0.5rem; border-radius: 0.25rem; background-color: var(--bg-input); border: 0.0625rem solid var(--border-color); color: var(--text-primary); outline: none;" />
+              <div
+                style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; border: 0.0625rem dashed var(--border-color); border-radius: 0.25rem; padding: 0.375rem; text-align: center;">
                 <span style="color: var(--text-muted);">Algorithms List</span>
               </div>
             </div>
 
             <!-- Collapsed Vertical Strip -->
-            <div
-              id="algo-collapsed-strip"
+            <div id="algo-collapsed-strip"
               style="display: none; flex: 1 1 0%; flex-direction: column; align-items: center; padding: 0.75rem 0; cursor: pointer;"
-              title="Click to expand Algorithms"
-            >
-              <span style="font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); writing-mode: vertical-rl; transform: rotate(180deg);">
+              title="Click to expand Algorithms">
+              <span
+                style="font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); writing-mode: vertical-rl; transform: rotate(180deg);">
                 Algorithms
               </span>
             </div>
@@ -1035,46 +1120,45 @@
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
 
           <!-- CODE / EXPLANATION / NOTES CARD -->
-          <section id="code-card" class="vscode-card" style="flex: 1 1 0%; min-width: 8rem;">
+          <section id="code-card" class="vscode-card" style="flex: 1 1 0%; min-width: var(--code-card-min-width);">
             <div class="vscode-card-header" style="padding: 0 0.45rem;">
               <div style="display: flex; align-items: center; gap: 0.25rem; min-width: 0; overflow-x: auto;">
                 <button type="button" class="vscode-tab active" data-tab-group="right-top">Code</button>
                 <button type="button" class="vscode-tab" data-tab-group="right-top">Explanation</button>
-                <button type="button" class="vscode-tab" data-tab-group="right-top">Notes</button>
               </div>
 
               <!-- Compact Language Selector: Python, C++, Java -->
               <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
-                <button
-                  type="button"
-                  id="lang-trigger-btn"
-                  class="lang-trigger-btn"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                >
+                <button type="button" id="lang-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
+                  aria-expanded="false">
                   <span id="lang-active-dot" class="lang-badge-dot" style="background-color: #3572A5;"></span>
                   <span id="lang-active-label">Python</span>
-                  <svg style="width: 0.65rem; height: 0.65rem; color: var(--text-muted);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9"/>
+                  <svg style="width: 0.65rem; height: 0.65rem; color: var(--text-muted);" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </button>
 
-                <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox" aria-label="Select Programming Language">
-                  <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python" data-color="#3572A5">
+                <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox"
+                  aria-label="Select Programming Language">
+                  <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
+                    data-color="#3572A5">
                     <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
                       <span class="lang-badge-dot" style="background-color: #3572A5;"></span>
                       <span>Python</span>
                     </span>
                     <span style="color: var(--text-muted);">.py</span>
                   </div>
-                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++" data-color="#f34b7d">
+                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
+                    data-color="#f34b7d">
                     <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
                       <span class="lang-badge-dot" style="background-color: #f34b7d;"></span>
                       <span>C++</span>
                     </span>
                     <span style="color: var(--text-muted);">.cpp</span>
                   </div>
-                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java" data-color="#b07219">
+                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
+                    data-color="#b07219">
                     <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
                       <span class="lang-badge-dot" style="background-color: #b07219;"></span>
                       <span>Java</span>
@@ -1087,8 +1171,7 @@
 
             <!-- Code Content Surface -->
             <div id="codeViewPane" style="flex: 1 1 0%; display: flex; flex-direction: column; overflow: auto;">
-              <pre class="line-numbers"
-                                    data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
+              <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
     flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
     max_flow = 0
     
@@ -1141,10 +1224,12 @@
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
 
         <!-- BOTTOM ROW: SIDE-BY-SIDE ON PHONE (TRAVERSAL | STATE VARIABLES) -->
-        <div id="bottom-split-row" style="flex: 1 1 0%; display: flex; min-height: 4.5rem; min-width: 0;">
+        <div id="bottom-split-row"
+          style="flex: 1 1 0%; display: flex; min-height: var(--bottom-row-min-height); min-width: 0;">
 
           <!-- TRAVERSAL CARD (Moves between Desktop Left-Bottom and Phone Bottom-Left) -->
-          <section id="log-card" class="vscode-card" style="width: 58%; min-width: 6.5rem; flex: 1 1 0%;">
+          <section id="log-card" class="vscode-card"
+            style="width: 58%; min-width: var(--bottom-cards-min-width); flex: 1 1 0%;">
             <div class="vscode-card-header">
               <span>Traversal</span>
             </div>
@@ -1159,7 +1244,8 @@
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
           <!-- STATE VARIABLES CARD -->
-          <section id="state-card" class="vscode-card" style="flex: 1 1 0%; min-width: 6.5rem;">
+          <section id="state-card" class="vscode-card"
+            style="flex: 1 1 0%; min-width: var(--bottom-cards-min-width);">
             <div class="vscode-card-header">
               <span>State variables</span>
             </div>
@@ -1178,7 +1264,8 @@
   </div>
 
   <!-- ================= PROFILE FLOATING WINDOW (MODAL) ================= -->
-  <div id="profile-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+  <div id="profile-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true"
+    aria-labelledby="profile-modal-title">
     <div class="profile-modal">
       <div class="profile-modal-header">
         <span id="profile-modal-title">Profile</span>
@@ -1195,8 +1282,10 @@
         <div class="profile-modal-content">
           <!-- Account Tab Content -->
           <div id="profile-pane-account" style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.625rem; border-bottom: 0.0625rem solid var(--border-color);">
-              <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--accent-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+            <div
+              style="display: flex; align-items: center; gap: 0.75rem; padding-bottom: 0.625rem; border-bottom: 0.0625rem solid var(--border-color);">
+              <div
+                style="width: var(--profile-avatar-size); height: var(--profile-avatar-size); border-radius: 50%; background-color: var(--accent-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600;">
                 SS
               </div>
               <div style="display: flex; flex-direction: column; gap: 0.125rem;">
@@ -1206,15 +1295,18 @@
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 0.45rem;">
-              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <div
+                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
                 <span style="color: var(--text-muted);">Plan Tier</span>
                 <span style="color: var(--text-bright); font-weight: 500;">Pro Workspace</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <div
+                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
                 <span style="color: var(--text-muted);">Cloud Sync</span>
                 <span style="color: var(--accent-primary); font-weight: 500;">Active &bull; Synced</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+              <div
+                style="display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
                 <span style="color: var(--text-muted);">Default Language</span>
                 <span style="color: var(--text-bright);">Python (.py)</span>
               </div>
@@ -1227,23 +1319,28 @@
 
           <!-- Keyboard Shortcuts Tab Content -->
           <div id="profile-pane-shortcuts" style="display: none; flex-direction: column; gap: 0.45rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
               <span>Run / Pause Simulation</span>
               <kbd class="kbd-badge">Space</kbd>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
               <span>Step Forward</span>
               <kbd class="kbd-badge">&rarr;</kbd>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
               <span>Step Backward</span>
               <kbd class="kbd-badge">&larr;</kbd>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
               <span>Reset Graph</span>
               <kbd class="kbd-badge">R</kbd>
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
+            <div
+              style="display: flex; align-items: center; justify-content: space-between; padding: 0.35rem 0; border-bottom: 0.0625rem solid var(--border-subtle);">
               <span>Toggle Algorithms Panel</span>
               <kbd class="kbd-badge">Ctrl + B</kbd>
             </div>
@@ -1259,15 +1356,63 @@
 
   <script>
     // =========================================================================
-    // 1. THEME MANAGEMENT (SYSTEM DEFAULT + LOCALSTORAGE PERSISTENCE)
+    // 0. IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
+    // (Modify these constants to adjust responsive behavior, collapse thresholds,
+    // default panel proportions, and dragging limits)
     // =========================================================================
-    const THEME_STORAGE_KEY = 'shard-spiral-theme-preference';
+    const LAYOUT_CONFIG = {
+      /* --- Responsive Breakpoint & Persistence --- */
+      MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)', /* Media query string defining when the layout switches between Desktop and Phone modes */
+      THEME_STORAGE_KEY: 'shard-spiral-theme-preference', /* LocalStorage key used to persist the user's selected color theme */
+      THEME_CYCLE_ORDER: ['system', 'light', 'dark'], /* Cycling sequence when tapping the single-icon theme button on mobile */
+      THEME_ICONS: {
+        system: 'images/system.png', /* Icon path for System theme */
+        light: 'images/light.png',   /* Icon path for Light theme */
+        dark: 'images/dark.png'      /* Icon path for Dark theme */
+      },
+
+      /* --- Algorithms Panel Sizing & Collapse Thresholds --- */
+      ALGO_DEFAULT_WIDTH_DESKTOP: '30%', /* Default expanded width of the Algorithms card on desktop */
+      ALGO_DEFAULT_WIDTH_MOBILE: '38%', /* Default expanded width of the Algorithms card when opened on mobile */
+      ALGO_COLLAPSED_WIDTH_DESKTOP: 'var(--algorithms-collapsed-width-desktop)', /* Width of the Algorithms vertical strip when collapsed on desktop (3rem) */
+      ALGO_COLLAPSED_WIDTH_MOBILE: 'var(--algorithms-collapsed-width-mobile)', /* Width of the Algorithms vertical strip when collapsed on mobile/phone (2.25rem) */
+      ALGO_MIN_WIDTH_DESKTOP_REM: 8.5, /* Dragging the Algorithms splitter below this rem width on desktop collapses the panel */
+      ALGO_MIN_WIDTH_MOBILE_REM: 6.5, /* Dragging the Algorithms splitter below this rem width on mobile collapses the panel */
+      ALGO_MIN_PERCENT: 15, /* Minimum percentage width allowed when dragging the expanded Algorithms panel */
+      ALGO_MAX_PERCENT: 68, /* Maximum percentage width allowed when dragging the expanded Algorithms panel */
+
+      /* --- Default Desktop Proportions --- */
+      DESKTOP_LEFT_COL_WIDTH: '50%', /* Default width of the left column (Graph + Traversal) on desktop */
+      DESKTOP_GRAPH_HEIGHT: '67%', /* Default height of the Graph card inside the left column on desktop */
+      DESKTOP_RIGHT_TOP_HEIGHT: '67%', /* Default height of the Algorithms + Code row inside the right column on desktop */
+
+      /* --- Default Mobile / Phone Proportions --- */
+      MOBILE_GRAPH_ROW_HEIGHT: '44%', /* Default height of the top Graph row on mobile */
+      MOBILE_CODE_ROW_HEIGHT: '60%', /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
+      MOBILE_TRAVERSAL_WIDTH: '58%', /* Default width of the Traversal card in the bottom side-by-side row on mobile */
+
+      /* --- Splitter Dragging Percentage Limits --- */
+      MAIN_V_MIN_PERCENT: 20, /* Minimum width (%) for the left column when dragging the main desktop vertical splitter */
+      MAIN_V_MAX_PERCENT: 80, /* Maximum width (%) for the left column when dragging the main desktop vertical splitter */
+      LEFT_H_MIN_PERCENT: 18, /* Minimum height (%) for the Graph card when dragging the left horizontal splitter */
+      LEFT_H_MAX_PERCENT: 78, /* Maximum height (%) for the Graph card when dragging the left horizontal splitter */
+      RIGHT_H_MIN_PERCENT: 20, /* Minimum height (%) for the Code row when dragging the right horizontal splitter */
+      RIGHT_H_MAX_PERCENT: 80, /* Maximum height (%) for the Code row when dragging the right horizontal splitter */
+      BOTTOM_MOBILE_V_MIN_PERCENT: 22, /* Minimum width (%) for the Traversal card when dragging the mobile bottom vertical splitter */
+      BOTTOM_MOBILE_V_MAX_PERCENT: 78 /* Maximum width (%) for the Traversal card when dragging the mobile bottom vertical splitter */
+    };
+
+    // =========================================================================
+    // 1. THEME MANAGEMENT (SYSTEM DEFAULT + DESKTOP & MOBILE SINGLE-ICON CYCLER)
+    // =========================================================================
     const systemDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
     const themeOptionButtons = document.querySelectorAll('.theme-option-btn');
+    const mobileThemeCycleBtn = document.getElementById('mobile-theme-cycle-btn');
+    const mobileThemeCycleImg = document.getElementById('mobile-theme-cycle-img');
 
     function getStoredThemePreference() {
       try {
-        return localStorage.getItem(THEME_STORAGE_KEY) || 'system';
+        return localStorage.getItem(LAYOUT_CONFIG.THEME_STORAGE_KEY) || 'system';
       } catch (err) {
         return 'system';
       }
@@ -1282,14 +1427,22 @@
       const effectiveTheme = resolveEffectiveTheme(pref);
       document.documentElement.setAttribute('data-theme', effectiveTheme);
 
+      // Update Desktop 3-icon segmented control
       themeOptionButtons.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-theme-pref') === pref);
       });
 
+      // Update Mobile single-icon button image & accessibility attributes
+      const labelCapitalized = pref.charAt(0).toUpperCase() + pref.slice(1);
+      mobileThemeCycleImg.src = LAYOUT_CONFIG.THEME_ICONS[pref] || LAYOUT_CONFIG.THEME_ICONS.system;
+      mobileThemeCycleImg.alt = `${labelCapitalized} Theme`;
+      mobileThemeCycleBtn.setAttribute('title', `Theme: ${labelCapitalized}`);
+      mobileThemeCycleBtn.setAttribute('aria-label', `Theme: ${labelCapitalized}`);
+
       if (save) {
         try {
-          localStorage.setItem(THEME_STORAGE_KEY, pref);
-        } catch (err) {}
+          localStorage.setItem(LAYOUT_CONFIG.THEME_STORAGE_KEY, pref);
+        } catch (err) { }
       }
     }
 
@@ -1307,6 +1460,14 @@
       });
     });
 
+    // Mobile single-icon click cycles: system -> light -> dark -> system
+    mobileThemeCycleBtn.addEventListener('click', () => {
+      const order = LAYOUT_CONFIG.THEME_CYCLE_ORDER;
+      const nextIndex = (order.indexOf(currentThemePref) + 1) % order.length;
+      currentThemePref = order[nextIndex];
+      applyThemePreference(currentThemePref, true);
+    });
+
     // =========================================================================
     // 1B. FULLSCREEN TOGGLE & PROFILE FLOATING MODAL WINDOW
     // =========================================================================
@@ -1321,9 +1482,9 @@
 
     btnFullscreen.addEventListener('click', () => {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
+        document.documentElement.requestFullscreen().catch(() => { });
       } else if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => { });
       }
     });
 
@@ -1335,7 +1496,7 @@
     const closeProfileModalBtn = document.getElementById('close-profile-modal');
     const profileNavTabs = document.querySelectorAll('.profile-nav-tab');
     const profilePaneAccount = document.getElementById('profile-pane-account');
-    const profilePaneShortcuts = document.querySelectorId ? document.getElementById('profile-pane-shortcuts') : document.querySelector('#profile-pane-shortcuts');
+    const profilePaneShortcuts = document.getElementById('profile-pane-shortcuts');
 
     function setProfileModalOpen(open) {
       profileModalBackdrop.classList.toggle('open', open);
@@ -1431,7 +1592,7 @@
     // =========================================================================
     // 4. COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
     // =========================================================================
-    const phoneMedia = window.matchMedia('(max-width: 56.25rem)');
+    const phoneMedia = window.matchMedia(LAYOUT_CONFIG.MOBILE_BREAKPOINT_QUERY);
     const workspace = document.getElementById('workspace');
     const leftColumn = document.getElementById('left-column');
     const rightColumn = document.getElementById('right-column');
@@ -1445,6 +1606,7 @@
     const rightTopRow = document.getElementById('right-top-row');
 
     const algoCard = document.getElementById('algorithms-card');
+    const algoCardHeader = document.getElementById('algo-card-header');
     const algoTitle = document.getElementById('algo-title');
     const algoBody = document.getElementById('algo-body');
     const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
@@ -1453,20 +1615,30 @@
     const splitterAlgoCode = document.getElementById('splitter-algo-code-v');
 
     let isAlgoCollapsed = false;
-    let savedAlgoWidth = '30%';
+    let savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
 
     function setAlgoCollapsed(collapse, customExpandedWidth) {
       isAlgoCollapsed = collapse;
       const isPhone = phoneMedia.matches;
+      const collapsedWidth = isPhone
+        ? LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE
+        : LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP;
 
       if (isAlgoCollapsed) {
-        if (!customExpandedWidth && algoCard.style.width && algoCard.style.width !== '3rem') {
+        if (
+          !customExpandedWidth &&
+          algoCard.style.width &&
+          algoCard.style.width !== LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP &&
+          algoCard.style.width !== LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE
+        ) {
           savedAlgoWidth = algoCard.style.width;
         }
         algoCard.style.display = 'flex';
-        algoCard.style.width = '3rem';
-        algoCard.style.minWidth = '3rem';
+        algoCard.style.width = collapsedWidth;
+        algoCard.style.minWidth = collapsedWidth;
         algoCard.style.flex = '0 0 auto';
+        algoCardHeader.style.justifyContent = 'center';
+        algoCardHeader.style.padding = '0';
         algoTitle.style.display = 'none';
         algoBody.style.display = 'none';
         algoCollapsedStrip.style.display = 'flex';
@@ -1476,10 +1648,15 @@
         algoToggleImg.src = 'images/sidebar-open.png';
         toggleAlgoBtn.setAttribute('aria-expanded', 'false');
       } else {
+        const minRem = isPhone
+          ? `${LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_REM}rem`
+          : `${LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_REM}rem`;
         algoCard.style.display = 'flex';
-        algoCard.style.width = customExpandedWidth || (isPhone ? '38%' : savedAlgoWidth);
-        algoCard.style.minWidth = isPhone ? '6.5rem' : '8.5rem';
+        algoCard.style.width = customExpandedWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : savedAlgoWidth);
+        algoCard.style.minWidth = minRem;
         algoCard.style.flex = '0 0 auto';
+        algoCardHeader.style.justifyContent = '';
+        algoCardHeader.style.padding = '';
         algoTitle.style.display = '';
         algoBody.style.display = 'flex';
         algoCollapsedStrip.style.display = 'none';
@@ -1506,9 +1683,9 @@
         splitterBottomMobileV.style.display = 'flex';
         desktopTraversalSlot.style.display = 'none';
 
-        // Phone default heights matching screenshot proportions
+        // Phone default heights
         leftColumn.style.width = '100%';
-        leftColumn.style.height = '44%';
+        leftColumn.style.height = LAYOUT_CONFIG.MOBILE_GRAPH_ROW_HEIGHT;
         leftColumn.style.flex = '0 0 auto';
         graphCard.style.height = '100%';
         graphCard.style.flex = '1 1 0%';
@@ -1518,12 +1695,12 @@
           workspace.insertBefore(splitterLeftH, rightColumn);
         }
 
-        rightTopRow.style.height = '60%';
-        logCard.style.width = '58%';
+        rightTopRow.style.height = LAYOUT_CONFIG.MOBILE_CODE_ROW_HEIGHT;
+        logCard.style.width = LAYOUT_CONFIG.MOBILE_TRAVERSAL_WIDTH;
         logCard.style.flex = '0 0 auto';
         stateCard.style.flex = '1 1 0%';
 
-        // Default Algorithms collapsed on phone to match screenshot
+        // Default Algorithms collapsed on phone (uses mobile collapsed width)
         setAlgoCollapsed(true);
       } else {
         // Desktop layout: Move splitterLeftH & logCard back inside leftColumn
@@ -1536,13 +1713,13 @@
         desktopTraversalSlot.style.display = 'flex';
         splitterBottomMobileV.style.display = 'none';
 
-        leftColumn.style.width = '50%';
+        leftColumn.style.width = LAYOUT_CONFIG.DESKTOP_LEFT_COL_WIDTH;
         leftColumn.style.height = '100%';
         leftColumn.style.flex = '0 0 auto';
-        graphCard.style.height = '67%';
+        graphCard.style.height = LAYOUT_CONFIG.DESKTOP_GRAPH_HEIGHT;
         graphCard.style.flex = '0 0 auto';
 
-        rightTopRow.style.height = '67%';
+        rightTopRow.style.height = LAYOUT_CONFIG.DESKTOP_RIGHT_TOP_HEIGHT;
         logCard.style.width = '100%';
         logCard.style.flex = '1 1 0%';
         stateCard.style.flex = '1 1 0%';
@@ -1614,8 +1791,8 @@
       getContainer: () => workspace,
       getTargetPane: () => leftColumn,
       getDirection: () => 'horizontal',
-      minPercent: 20,
-      maxPercent: 80
+      minPercent: LAYOUT_CONFIG.MAIN_V_MIN_PERCENT,
+      maxPercent: LAYOUT_CONFIG.MAIN_V_MAX_PERCENT
     });
 
     // 2. Top Horizontal Splitter (Desktop: Graph <-> Log | Phone: Graph <-> Lower Area)
@@ -1624,8 +1801,8 @@
       getContainer: () => phoneMedia.matches ? workspace : leftColumn,
       getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
       getDirection: () => 'vertical',
-      minPercent: 18,
-      maxPercent: 78
+      minPercent: LAYOUT_CONFIG.LEFT_H_MIN_PERCENT,
+      maxPercent: LAYOUT_CONFIG.LEFT_H_MAX_PERCENT
     });
 
     // 3. Middle Horizontal Pill Splitter (Code Row <-> Bottom Split Row)
@@ -1634,8 +1811,8 @@
       getContainer: () => rightColumn,
       getTargetPane: () => rightTopRow,
       getDirection: () => 'vertical',
-      minPercent: 20,
-      maxPercent: 80
+      minPercent: LAYOUT_CONFIG.RIGHT_H_MIN_PERCENT,
+      maxPercent: LAYOUT_CONFIG.RIGHT_H_MAX_PERCENT
     });
 
     // 4. Algorithms <-> Code Vertical Splitter (Supports drag-to-collapse & drag-to-expand)
@@ -1654,7 +1831,9 @@
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const rect = rightTopRow.getBoundingClientRect();
         const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-        const collapseThresholdRem = phoneMedia.matches ? 6.5 : 8.5;
+        const collapseThresholdRem = phoneMedia.matches
+          ? LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_REM
+          : LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_REM;
         const desiredWidthRem = (clientX - rect.left) / rootFontSize;
 
         if (desiredWidthRem < collapseThresholdRem) {
@@ -1663,7 +1842,7 @@
           }
         } else {
           let newPercent = ((clientX - rect.left) / rect.width) * 100;
-          newPercent = Math.max(15, Math.min(68, newPercent));
+          newPercent = Math.max(LAYOUT_CONFIG.ALGO_MIN_PERCENT, Math.min(LAYOUT_CONFIG.ALGO_MAX_PERCENT, newPercent));
           const widthStr = `${newPercent.toFixed(2)}%`;
           savedAlgoWidth = widthStr;
 
@@ -1697,22 +1876,19 @@
       getContainer: () => bottomSplitRow,
       getTargetPane: () => logCard,
       getDirection: () => 'horizontal',
-      minPercent: 22,
-      maxPercent: 78
+      minPercent: LAYOUT_CONFIG.BOTTOM_MOBILE_V_MIN_PERCENT,
+      maxPercent: LAYOUT_CONFIG.BOTTOM_MOBILE_V_MAX_PERCENT
     });
 
     // Reset Layout Buttons (Desktop & Phone)
     function resetAllProportions() {
-      savedAlgoWidth = '30%';
+      savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       syncResponsiveStructure();
     }
 
     document.getElementById('reset-layout-btn').addEventListener('click', resetAllProportions);
   </script>
-  <script src="prism.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.js"></script>
+  <script src="js/prism.js"></script>
 </body>
+
 </html>
