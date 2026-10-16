@@ -142,24 +142,24 @@
       --splitter-v-pill-length: 1.75rem;
       /* Default vertical length of the pill inside vertical splitters */
       --splitter-v-pill-hover-length: 3.25rem;
-      /* Expanded vertical length of the pill when hovering/dragging a vertical splitter */
+      /* Expanded vertical length of the pill of vertical splitters */
       --splitter-h-pill-length: 2rem;
       /* Default horizontal length of the pill inside horizontal splitters */
       --splitter-h-pill-hover-length: 3.5rem;
-      /* Expanded horizontal length of the pill when hovering/dragging a horizontal splitter */
+      /* Expanded horizontal length of the pill of horizontal splitters */
 
       /* --- Profile Floating Modal Dimensions --- */
-      --profile-modal-max-width: 34rem;
+      --profile-modal-max-width: 55rem;
       /* Maximum width of the floating Profile modal window */
-      --profile-modal-height-desktop: 22rem;
+      --profile-modal-height-desktop: 35rem;
       /* Height of the Profile modal window on desktop */
       --profile-modal-height-mobile: 20rem;
       /* Height of the Profile modal window on mobile */
-      --profile-modal-header-height: 2.25rem;
+      --profile-modal-header-height: 2.75rem;
       /* Height of the Profile modal top header bar */
-      --profile-sidebar-width-desktop: 10.5rem;
+      --profile-sidebar-width-desktop: 15rem;
       /* Width of the left navigation sidebar inside the Profile modal on desktop */
-      --profile-sidebar-width-mobile: 7.75rem;
+      --profile-sidebar-width-mobile: 15rem;
       /* Width of the left navigation sidebar inside the Profile modal on mobile */
       --profile-avatar-size: 2.5rem;
       /* Width and height of the circular user avatar badge in the Profile modal */
@@ -167,7 +167,6 @@
 
     /* =========================================================================
        1. VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
-       (Strictly zero px units anywhere in this document)
        ========================================================================= */
     :root,
     [data-theme="dark"] {
@@ -262,7 +261,6 @@
       background: transparent;
     }
 
-    /* Prism Line Highlight Binding */
     .line-highlight {
       background: var(--code-line-highlight) !important;
     }
@@ -510,7 +508,7 @@
       min-width: var(--bottom-cards-min-width);
     }
 
-    /* Card Internal Body Containers (0 padding on direct flex child so cards can shrink to header height) */
+    /* Card Internal Body Containers */
     .graph-body-wrapper {
       flex: 1 1 0%;
       display: flex;
@@ -671,7 +669,7 @@
       color: var(--text-bright);
     }
 
-    /* Icon Images (Explicitly unconstrained by Tailwind max-width: 100%) */
+    /* Icon Images */
     .sidebar-toggle-img {
       width: var(--sidebar-toggle-icon-size-desktop);
       height: var(--sidebar-toggle-icon-size-desktop);
@@ -691,7 +689,7 @@
       display: none;
     }
 
-    .sidebar-toggle-img.has-error + .sidebar-fallback-box {
+    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
       display: inline-flex;
     }
 
@@ -978,6 +976,8 @@
     .kbd-badge {
       display: inline-block;
       padding: 0.125rem 0.375rem;
+      min-width: 2rem;
+      text-align: center;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.25rem;
@@ -985,7 +985,6 @@
       font-family: 'Noto Sans Mono', monospace;
     }
 
-    /* Fallback inline icon when external png is missing in preview */
     .sidebar-fallback-box {
       width: 0.875rem;
       height: 0.8125rem;
@@ -1077,7 +1076,7 @@
       color: var(--text-primary);
       height: var(--control-btn-height-desktop);
       min-height: var(--control-btn-height-desktop);
-      padding: 0 0.5rem;
+      padding: 1rem;
       border-radius: 0.25rem;
       font-weight: 500;
       display: inline-flex;
@@ -1528,6 +1527,10 @@
       code[class*="language-"] {
         padding-top: 0.1em;
       }
+
+      .line-highlight {
+        margin-top: 0.93rem;
+      }
     }
   </style>
 </head>
@@ -1536,7 +1539,6 @@
 
   <!-- ================= UNIFIED TOP TITLE BAR ================= -->
   <header class="top-titlebar">
-    <!-- Left Group: Logo + Brand Name (hidden on mobile) + Workspace Action Icons -->
     <div class="header-left-group">
       <div class="brand-title">
         <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
@@ -1545,7 +1547,6 @@
 
       <div class="header-divider"></div>
 
-      <!-- Workspace Actions (Fullscreen, New, Library) -->
       <div class="header-actions-group" role="toolbar" aria-label="Workspace Actions">
         <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
           <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
@@ -1559,9 +1560,7 @@
       </div>
     </div>
 
-    <!-- Right Group: Theme Switcher + Reset Layout Icon + Profile Icon -->
     <div class="header-right-group">
-      <!-- Desktop Theme Switcher -->
       <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
         <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
           <img src="images/system.png" alt="System Theme" class="theme-icon-img" />
@@ -1574,18 +1573,15 @@
         </button>
       </div>
 
-      <!-- Mobile Single-Icon Theme Toggle -->
       <button type="button" id="mobile-theme-cycle-btn" class="mobile-theme-cycle-btn" title="Theme: System"
         aria-label="Cycle Color Theme">
         <img id="mobile-theme-cycle-img" src="images/system.png" alt="System Theme" class="theme-icon-img" />
       </button>
 
-      <!-- Reset Layout Icon Button -->
       <button type="button" id="reset-layout-btn" class="activity-btn" title="Reset panel proportions">
         <img src="images/reset-layout.png" alt="Reset Layout" class="activity-icon-img" />
       </button>
 
-      <!-- Profile Icon -->
       <button type="button" id="btnProfile" class="activity-btn" title="Profile">
         <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
       </button>
@@ -1609,7 +1605,6 @@
           </div>
 
           <div class="graph-body-wrapper">
-            <!-- Graph Content Area -->
             <div class="graph-canvas-area">
               <div class="graph-inner-pad">
                 <span class="graph-placeholder-text">
@@ -1618,7 +1613,6 @@
               </div>
             </div>
 
-            <!-- Compact Playback Controls Bar -->
             <div class="playback-bar">
               <div class="playback-controls-left">
                 <button type="button" class="playback-icon-btn" title="Run">
@@ -1652,14 +1646,11 @@
           </div>
         </section>
 
-        <!-- Splitter: Desktop (Graph <-> Traversal) / Phone (Graph <-> Code) -->
         <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
 
-        <!-- Desktop-Slot Placeholder for Traversal Card -->
         <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
       </div>
 
-      <!-- Desktop Main Vertical Splitter (Left Column <-> Right Column) -->
       <div id="splitter-main-v" class="splitter-v desktop-only-el" title="Drag to resize"></div>
 
       <!-- ===============================================================
@@ -1670,7 +1661,6 @@
         <!-- TOP-RIGHT ROW / PHONE MIDDLE ROW (ALGORITHMS + CODE CARD) -->
         <div id="right-top-row" class="right-top-row">
 
-          <!-- COLLAPSIBLE ALGORITHMS CARD -->
           <section id="algorithms-card" class="vscode-card">
             <div class="vscode-card-header" id="algo-card-header">
               <span id="algo-title">Algorithms</span>
@@ -1682,7 +1672,6 @@
               </button>
             </div>
 
-            <!-- Expanded Algorithms Content -->
             <div id="algo-body">
               <div class="algo-body-inner">
                 <input type="text" placeholder="Search algorithms..." class="algo-search-input" />
@@ -1692,7 +1681,6 @@
               </div>
             </div>
 
-            <!-- Collapsed Vertical Strip -->
             <div id="algo-collapsed-strip" title="Click to expand Algorithms">
               <span class="algo-collapsed-label">
                 Algorithms
@@ -1700,7 +1688,6 @@
             </div>
           </section>
 
-          <!-- Vertical Splitter (Algorithms <-> Code) -->
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
 
           <!-- CODE / EXPLANATION CARD -->
@@ -1711,44 +1698,56 @@
                 <button type="button" class="vscode-tab" data-tab-group="right-top">Explanation</button>
               </div>
 
-              <!-- Compact Language Selector: Python, C++, Java -->
-              <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
-                <button type="button" id="lang-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
-                  aria-expanded="false">
-                  <span id="lang-active-dot" class="lang-badge-dot dot-python"></span>
-                  <span id="lang-active-label">Python</span>
-                  <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
-                </button>
+              <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <!-- Compact Language Selector: Python, C++, Java -->
+                <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
+                  <button type="button" id="lang-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
+                    aria-expanded="false">
+                    <span id="lang-active-dot" class="lang-badge-dot dot-python"></span>
+                    <span id="lang-active-label">Python</span>
+                    <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
 
-                <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox"
-                  aria-label="Select Programming Language">
-                  <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
-                    data-color="#3572A5">
-                    <span class="lang-option-label">
-                      <span class="lang-badge-dot dot-python"></span>
-                      <span>Python</span>
-                    </span>
-                    <span class="playback-muted-label">.py</span>
-                  </div>
-                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
-                    data-color="#f34b7d">
-                    <span class="lang-option-label">
-                      <span class="lang-badge-dot dot-cpp"></span>
-                      <span>C++</span>
-                    </span>
-                    <span class="playback-muted-label">.cpp</span>
-                  </div>
-                  <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
-                    data-color="#b07219">
-                    <span class="lang-option-label">
-                      <span class="lang-badge-dot dot-java"></span>
-                      <span>Java</span>
-                    </span>
-                    <span class="playback-muted-label">.java</span>
+                  <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox"
+                    aria-label="Select Programming Language">
+                    <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
+                      data-color="#3572A5" data-ext=".py">
+                      <span class="lang-option-label">
+                        <span class="lang-badge-dot dot-python"></span>
+                        <span>Python</span>
+                      </span>
+                      <span class="playback-muted-label">.py</span>
+                    </div>
+                    <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
+                      data-color="#f34b7d" data-ext=".cpp">
+                      <span class="lang-option-label">
+                        <span class="lang-badge-dot dot-cpp"></span>
+                        <span>C++</span>
+                      </span>
+                      <span class="playback-muted-label">.cpp</span>
+                    </div>
+                    <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
+                      data-color="#b07219" data-ext=".java">
+                      <span class="lang-option-label">
+                        <span class="lang-badge-dot dot-java"></span>
+                        <span>Java</span>
+                      </span>
+                      <span class="playback-muted-label">.java</span>
+                    </div>
                   </div>
                 </div>
+                <!-- Copy and Download Buttons -->
+                <button type="button" id="btn-copy-code" class="card-icon-btn" title="Copy Code">
+                  <img id="img-copy-code" src="images/copy.png" alt="Copy Code" class="sidebar-toggle-img" />
+                </button>
+                <button type="button" id="btn-download-code" class="card-icon-btn" title="Download Code">
+                  <img src="images/download.png" alt="Download Code" class="sidebar-toggle-img" />
+                </button>
+
+                <div class="header-divider" style="height: 1rem; margin: 0 0.125rem;"></div>
               </div>
             </div>
 
@@ -1803,13 +1802,11 @@
 
         </div>
 
-        <!-- Horizontal Pill Splitter (Between Code Row and Bottom Row) -->
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
 
         <!-- BOTTOM ROW: SIDE-BY-SIDE ON PHONE (TRAVERSAL | STATE VARIABLES) -->
         <div id="bottom-split-row" class="bottom-split-row">
 
-          <!-- TRAVERSAL CARD (Moves between Desktop Left-Bottom and Phone Bottom-Left) -->
           <section id="log-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Traversal</span>
@@ -1823,10 +1820,8 @@
             </div>
           </section>
 
-          <!-- Vertical Pill Splitter between Traversal & State Variables (Phone Mode) -->
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
-          <!-- STATE VARIABLES CARD -->
           <section id="state-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>State variables</span>
@@ -1864,7 +1859,6 @@
         </nav>
 
         <div class="profile-modal-content">
-          <!-- Account Tab Content -->
           <div id="profile-pane-account" class="profile-pane active">
             <div class="profile-user-header">
               <div class="profile-avatar-badge">
@@ -1896,7 +1890,6 @@
             </div>
           </div>
 
-          <!-- Keyboard Shortcuts Tab Content -->
           <div id="profile-pane-shortcuts" class="profile-pane">
             <div class="profile-info-row">
               <span>Run / Pause Simulation</span>
@@ -1904,11 +1897,11 @@
             </div>
             <div class="profile-info-row">
               <span>Step Forward</span>
-              <kbd class="kbd-badge">&rarr;</kbd>
+              <kbd class="kbd-badge">&gt;</kbd>
             </div>
             <div class="profile-info-row">
               <span>Step Backward</span>
-              <kbd class="kbd-badge">&larr;</kbd>
+              <kbd class="kbd-badge">&lt;</kbd>
             </div>
             <div class="profile-info-row">
               <span>Reset Graph</span>
@@ -1931,11 +1924,8 @@
   <script>
     // =========================================================================
     // 0. IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
-    // (Bound directly to :root CSS custom properties so changes in :root or here
-    // work consistently without inline override conflicts)
     // =========================================================================
     const LAYOUT_CONFIG = {
-      /* --- Responsive Breakpoint & Persistence --- */
       MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)',
       THEME_STORAGE_KEY: 'shard-spiral-theme-preference',
       THEME_CYCLE_ORDER: ['system', 'light', 'dark'],
@@ -1945,7 +1935,6 @@
         dark: 'images/dark.png'
       },
 
-      /* --- CSS Variable Bindings for Panel Proportions & Constraints --- */
       ALGO_DEFAULT_WIDTH_DESKTOP: 'var(--algorithms-default-width-desktop)',
       ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
       ALGO_MIN_WIDTH_DESKTOP_VAR: '--algorithms-min-width-desktop',
@@ -1960,7 +1949,6 @@
       RIGHT_TOP_ROW_MIN_HEIGHT_VAR: '--right-top-row-min-height',
       BOTTOM_ROW_MIN_HEIGHT_VAR: '--bottom-row-min-height',
 
-      /* --- Default Desktop & Mobile Proportions (Bound to :root variables) --- */
       DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
       DESKTOP_GRAPH_HEIGHT: 'var(--desktop-graph-height)',
       DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
@@ -1969,7 +1957,6 @@
       MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)'
     };
 
-    // Helper to resolve a CSS variable on :root into rem (resolves nested var() references)
     function getRootCssVarRem(varName, fallbackRem) {
       let rawVal = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
       while (rawVal.startsWith('var(')) {
@@ -1980,7 +1967,6 @@
       return Number.isNaN(parsed) ? fallbackRem : parsed;
     }
 
-    // Helper to convert a CSS variable's rem value to current viewport pixels for splitter math
     function getRootCssVarUnits(varName, fallbackRem) {
       const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       return getRootCssVarRem(varName, fallbackRem) * rootFontSize;
@@ -2150,6 +2136,44 @@
     });
 
     // =========================================================================
+    // 2B. COPY & DOWNLOAD CODE BUTTONS
+    // =========================================================================
+    const btnCopyCode = document.getElementById('btn-copy-code');
+    const imgCopyCode = document.getElementById('img-copy-code');
+    const btnDownloadCode = document.getElementById('btn-download-code');
+
+    btnCopyCode.addEventListener('click', () => {
+      const codeElement = document.querySelector('#codeViewPane code');
+      if (!codeElement) return;
+
+      navigator.clipboard.writeText(codeElement.textContent).then(() => {
+        imgCopyCode.src = 'images/success.png';
+        setTimeout(() => {
+          imgCopyCode.src = 'images/copy.png';
+        }, 5000);
+      });
+    });
+
+    btnDownloadCode.addEventListener('click', () => {
+      const codeElement = document.querySelector('#codeViewPane code');
+      if (!codeElement) return;
+
+      const activeOption = document.querySelector('.lang-option-item.active');
+      const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
+      const codeText = codeElement.textContent;
+
+      const blob = new Blob([codeText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `algorithm${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // =========================================================================
     // 3. TAB SWITCHING & SPEED SLIDER
     // =========================================================================
     document.querySelectorAll('.vscode-tab').forEach(tab => {
@@ -2222,7 +2246,6 @@
     function syncResponsiveStructure() {
       const isPhone = phoneMedia.matches;
 
-      // Clear any drag-applied inline overrides so CSS variables in :root take effect cleanly
       leftColumn.style.width = '';
       leftColumn.style.height = '';
       graphCard.style.height = '';
@@ -2313,7 +2336,7 @@
       window.addEventListener('touchend', stopDrag);
     }
 
-    // 1. Desktop Main Vertical Splitter (Left Column <-> Right Column)
+    // 1. Desktop Main Vertical Splitter
     makeResizable({
       splitter: document.getElementById('splitter-main-v'),
       getContainer: () => workspace,
@@ -2330,7 +2353,7 @@
       }
     });
 
-    // 2. Top Horizontal Splitter (Desktop: Graph <-> Traversal | Phone: Graph <-> Lower Area)
+    // 2. Top Horizontal Splitter
     makeResizable({
       splitter: splitterLeftH,
       getContainer: () => phoneMedia.matches ? workspace : leftColumn,
@@ -2349,7 +2372,7 @@
       }
     });
 
-    // 3. Middle Horizontal Pill Splitter (Code Row <-> Bottom Split Row)
+    // 3. Middle Horizontal Pill Splitter
     makeResizable({
       splitter: splitterRightH,
       getContainer: () => rightColumn,
@@ -2363,7 +2386,7 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
     });
 
-    // 4. Algorithms <-> Code Vertical Splitter (Supports drag-to-collapse & drag-to-expand via :root variables)
+    // 4. Algorithms <-> Code Vertical Splitter
     (function setupAlgoSplitter() {
       let isDragging = false;
 
@@ -2420,7 +2443,7 @@
       window.addEventListener('touchend', stopDrag);
     })();
 
-    // 5. Phone Bottom Vertical Pill Splitter (Traversal <-> State variables)
+    // 5. Phone Bottom Vertical Pill Splitter
     makeResizable({
       splitter: splitterBottomMobileV,
       getContainer: () => bottomSplitRow,
@@ -2430,7 +2453,6 @@
       getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5)
     });
 
-    // Reset Layout Button
     function resetAllProportions() {
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       syncResponsiveStructure();
