@@ -553,7 +553,9 @@
       opacity: 0.9;
     }
 
-    /* Algorithms Card Internals */
+    /* =========================================================================
+       ALGORITHMS SEARCH, FILTER & TREE VIEW STYLES
+       ========================================================================= */
     #algo-title {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -565,7 +567,7 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      overflow: auto;
+      overflow: hidden;
     }
 
     .algo-body-inner {
@@ -575,29 +577,328 @@
       padding: 0.45rem;
       gap: 0.45rem;
       min-height: 0;
+      position: relative;
+    }
+
+    .algo-search-row {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+
+    .algo-search-input-wrapper {
+      position: relative;
+      flex: 1 1 0%;
+      display: flex;
+      min-width: 0;
     }
 
     .algo-search-input {
       width: 100%;
       height: var(--control-btn-height-desktop);
       min-height: var(--control-btn-height-desktop);
-      padding: 0 0.5rem;
+      padding: 0 1.5rem 0 0.5rem;
+      /* Extra right padding for the X */
       border-radius: 0.25rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       color: var(--text-primary);
       outline: none;
-      flex-shrink: 0;
     }
 
-    .algo-list-placeholder {
-      flex: 1 1 0%;
+    .algo-search-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .algo-search-clear-btn {
+      position: absolute;
+      right: 0.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 0.0625rem dashed var(--border-color);
+      width: 1.25rem;
+      height: 1.25rem;
+      padding: 0;
+      border-radius: 0.2rem;
+      transition: color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .algo-search-clear-btn:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-hover);
+    }
+
+    .algo-filter-btn {
+      width: var(--control-btn-height-desktop);
+      height: var(--control-btn-height-desktop);
+      min-width: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 0;
       border-radius: 0.25rem;
-      padding: 0.375rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .algo-filter-btn:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .algo-filter-btn.has-active-filter {
+      border-color: var(--accent-primary);
+      background-color: var(--bg-active-item);
+    }
+
+    .algo-filter-icon {
+      width: 0.95rem;
+      height: 0.95rem;
+      object-fit: contain;
+      display: block;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    /* Filter Dropdown / Collapsible Panel */
+    .algo-filter-panel {
+      display: none;
+      flex-direction: column;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      max-height: 48%;
+      min-height: 0;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
+    }
+
+    .algo-filter-panel.open {
+      display: flex;
+    }
+
+    .algo-filter-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.3rem 0.5rem;
+      border-bottom: 0.0625rem solid var(--border-color);
+      font-size: 0.8em;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .algo-filter-clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--accent-primary);
+      cursor: pointer;
+      padding: 0;
+      font-weight: 500;
+    }
+
+    .algo-filter-clear-btn:hover {
+      text-decoration: underline;
+    }
+
+    .algo-filter-tree-scroll {
+      overflow-y: auto;
+      padding: 0.25rem;
+      flex: 1 1 0%;
+      min-height: 0;
+    }
+
+    /* Main Tree Scroll Surface */
+    .algo-tree-container {
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      padding-right: 0.125rem;
+    }
+
+    .tree-node {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tree-row {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.22rem 0.35rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-primary);
+      transition: background-color 0.1s ease, color 0.1s ease;
+      min-width: 0;
+    }
+
+    .tree-row:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .tree-row.selected {
+      background-color: var(--bg-active-item);
+      color: var(--text-bright);
+    }
+
+    .tree-chevron {
+      width: 0.9rem;
+      height: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: transform 0.12s ease;
+    }
+
+    .tree-chevron.expanded {
+      transform: rotate(90deg);
+    }
+
+    .tree-chevron.empty {
+      visibility: hidden;
+    }
+
+    .tree-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1 1 0%;
+    }
+
+    .ds-label {
+      font-weight: 600;
+    }
+
+    .algo-label {
+      font-weight: 400;
+    }
+
+    .tree-children {
+      display: none;
+      flex-direction: column;
+      padding-left: 0.75rem;
+      border-left: 0.0625rem solid var(--border-color);
+      margin-left: 0.45rem;
+    }
+
+    .tree-children.expanded {
+      display: flex;
+    }
+
+    /* Algorithm Entry + Underneath Constraints & Tags */
+    .algo-item-wrapper {
+      display: flex;
+      flex-direction: column;
+      padding: 0.1rem 0;
+    }
+
+    .algo-meta-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding: 0.15rem 0.35rem 0.25rem 1.4rem;
+    }
+
+    .algo-meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      padding: 0.08rem 0.32rem;
+      border-radius: 0.2rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      font-size: 0.78em;
+      color: var(--text-muted);
+      line-height: 1.2;
+      max-width: 100%;
+    }
+
+    .algo-meta-badge.constraint-badge {
+      cursor: help;
+      color: var(--text-primary);
+    }
+
+    .algo-meta-icon {
+      width: 0.75rem;
+      height: 0.75rem;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    /* Custom Theme-Aware Checkbox */
+    .filter-checkbox {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1.1rem;
+      height: 1.1rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.2rem;
+      margin: 0;
+      cursor: pointer;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    /* Hover state */
+    .filter-checkbox:hover {
+      border-color: var(--accent-primary);
+      background-color: var(--bg-hover);
+    }
+
+    /* Checked state */
+    .filter-checkbox:checked {
+      background-color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    /* The checkmark (drawn with CSS borders) */
+    .filter-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      width: 0.25rem;
+      height: 0.5rem;
+      border: solid #ffffff;
+      /* Checkmark is always white to pop against the accent color */
+      border-width: 0 0.125rem 0.125rem 0;
+      transform: rotate(45deg);
+      margin-bottom: 0.1rem;
+      /* Optical centering */
+    }
+
+    /* Accessibility focus ring */
+    .filter-checkbox:focus-visible {
+      outline: 0.125rem solid var(--accent-primary);
+      outline-offset: 0.125rem;
+    }
+
+    .algo-empty-msg {
+      padding: 0.75rem 0.5rem;
       text-align: center;
       color: var(--text-muted);
     }
@@ -1482,6 +1783,13 @@
         gap: 0.2rem;
       }
 
+      .algo-filter-btn {
+        width: var(--control-btn-height-mobile);
+        height: var(--control-btn-height-mobile);
+        min-width: var(--control-btn-height-mobile);
+        min-height: var(--control-btn-height-mobile);
+      }
+
       .playback-icon-btn {
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
@@ -1674,10 +1982,30 @@
 
             <div id="algo-body">
               <div class="algo-body-inner">
-                <input type="text" placeholder="Search algorithms..." class="algo-search-input" />
-                <div class="algo-list-placeholder">
-                  <span>Algorithms List</span>
+                <div class="algo-search-row">
+                  <div class="algo-search-input-wrapper">
+                    <input type="text" id="algo-search-input" placeholder="Search algorithms..."
+                      class="algo-search-input" />
+                    <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
+                      aria-label="Clear search" style="display: none;">&times;</button>
+                  </div>
+                  <button type="button" id="algo-filter-btn" class="algo-filter-btn" title="Filter by data structure"
+                    aria-expanded="false">
+                    <img src="images/filter.png" alt="Filter" class="algo-filter-icon" />
+                  </button>
                 </div>
+
+                <!-- Collapsible Filter Panel (Data Structure Folder Tree Only) -->
+                <div id="algo-filter-panel" class="algo-filter-panel">
+                  <div class="algo-filter-panel-header">
+                    <span>Filter by Data Structure</span>
+                    <button type="button" id="algo-filter-clear-btn" class="algo-filter-clear-btn">Clear</button>
+                  </div>
+                  <div id="algo-filter-tree" class="algo-filter-tree-scroll"></div>
+                </div>
+
+                <!-- Main Collapsible Data Structure & Algorithm Tree -->
+                <div id="algo-tree-container" class="algo-tree-container"></div>
               </div>
             </div>
 
@@ -1690,12 +2018,20 @@
 
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
 
-          <!-- CODE / EXPLANATION CARD -->
+          <!-- CODE / EXPLANATION / NOTES CARD -->
           <section id="code-card" class="vscode-card">
             <div class="vscode-card-header code-card-header">
               <div class="card-tabs-group">
-                <button type="button" class="vscode-tab active" data-tab-group="right-top">Code</button>
-                <button type="button" class="vscode-tab" data-tab-group="right-top">Explanation</button>
+                <button type="button" class="vscode-tab active" data-tab-group="right-top" data-tab-type="code"
+                  title="Code"> Code
+                </button>
+                <button type="button" class="vscode-tab" data-tab-group="right-top" data-tab-type="explanation"
+                  title="Explanation">
+                  Explanation
+                </button>
+                <button type="button" class="vscode-tab" data-tab-group="right-top" data-tab-type="notes" title="Notes">
+                  Notes
+                </button>
               </div>
 
               <div style="display: flex; align-items: center; gap: 0.25rem;">
@@ -1714,7 +2050,7 @@
                   <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox"
                     aria-label="Select Programming Language">
                     <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
-                      data-color="#3572A5" data-ext=".py">
+                      data-color="#3572A5" data-ext=".py" data-prism="python">
                       <span class="lang-option-label">
                         <span class="lang-badge-dot dot-python"></span>
                         <span>Python</span>
@@ -1722,7 +2058,7 @@
                       <span class="playback-muted-label">.py</span>
                     </div>
                     <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
-                      data-color="#f34b7d" data-ext=".cpp">
+                      data-color="#f34b7d" data-ext=".cpp" data-prism="cpp">
                       <span class="lang-option-label">
                         <span class="lang-badge-dot dot-cpp"></span>
                         <span>C++</span>
@@ -1730,7 +2066,7 @@
                       <span class="playback-muted-label">.cpp</span>
                     </div>
                     <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
-                      data-color="#b07219" data-ext=".java">
+                      data-color="#b07219" data-ext=".java" data-prism="java">
                       <span class="lang-option-label">
                         <span class="lang-badge-dot dot-java"></span>
                         <span>Java</span>
@@ -1751,7 +2087,7 @@
               </div>
             </div>
 
-            <!-- Code Content Surface -->
+            <!-- Code / Explanation / Notes Content Surface -->
             <div id="codeViewPane" class="card-scroll-body">
               <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
     flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
@@ -2094,7 +2430,87 @@
     });
 
     // =========================================================================
-    // 2. LANGUAGE SELECTOR (PYTHON, C++, JAVA)
+    // 2. STATE FOR SELECTED DSA ITEM, ACTIVE TAB & LANGUAGE
+    // =========================================================================
+    const codeViewPane = document.getElementById('codeViewPane');
+    let selectedDsaName = null; // Stores exact DS or algorithm name when clicked
+    let activeRightTopTab = 'code'; // 'code' | 'explanation' | 'notes'
+    let currentLangExt = '.py';
+    let currentPrismLang = 'python';
+
+    async function updateCodeViewPane() {
+      if (activeRightTopTab === 'explanation') {
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Explanations not implemented yet</span>
+          </div>
+        `;
+        return;
+      }
+
+      if (!selectedDsaName) {
+        if (activeRightTopTab === 'notes') {
+          codeViewPane.innerHTML = `
+            <div class="card-inner-pad">
+              <span class="card-body-text">Algorithm/Data structure not implemented yet</span>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      const currentTarget = selectedDsaName;
+      const currentTab = activeRightTopTab;
+      const ext = currentTab === 'notes' ? '.html' : currentLangExt;
+      const filePath = `dsa/${currentTarget}${ext}`;
+
+      try {
+        const response = await fetch(filePath);
+        if (!response.ok) {
+          throw new Error('File not found');
+        }
+        const text = await response.text();
+
+        // Guard against race conditions if user clicked another item/tab while fetching
+        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
+
+        // Guard against SPA dev servers returning the main layout.html on 404
+        if (text.includes('<title>Shard Spiral</title>')) {
+          throw new Error('Fallback HTML returned');
+        }
+
+        if (currentTab === 'notes') {
+          codeViewPane.innerHTML = `<div class="card-inner-pad">${text}</div>`;
+        } else {
+          // If fetching .py/.cpp/.java but server returned an HTML error page
+          if (/^\s*<!doctype html/i.test(text) || /^\s*<html/i.test(text)) {
+            throw new Error('Unexpected HTML for code file');
+          }
+          const pre = document.createElement('pre');
+          pre.className = 'line-numbers';
+          const code = document.createElement('code');
+          code.className = `language-${currentPrismLang}`;
+          code.textContent = text;
+          pre.appendChild(code);
+          codeViewPane.innerHTML = '';
+          codeViewPane.appendChild(pre);
+
+          if (window.Prism) {
+            window.Prism.highlightElement(code);
+          }
+        }
+      } catch (err) {
+        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Algorithm/Data structure not implemented yet</span>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // 2A. LANGUAGE SELECTOR (PYTHON, C++, JAVA)
     // =========================================================================
     const langWrapper = document.getElementById('lang-dropdown-wrapper');
     const langTriggerBtn = document.getElementById('lang-trigger-btn');
@@ -2113,6 +2529,8 @@
       option.addEventListener('click', () => {
         const selectedLang = option.getAttribute('data-lang');
         const selectedColor = option.getAttribute('data-color');
+        currentLangExt = option.getAttribute('data-ext') || '.py';
+        currentPrismLang = option.getAttribute('data-prism') || 'python';
 
         langActiveLabel.textContent = selectedLang;
         langActiveDot.style.backgroundColor = selectedColor;
@@ -2125,6 +2543,10 @@
 
         langMenu.classList.remove('open');
         langTriggerBtn.setAttribute('aria-expanded', 'false');
+
+        if (activeRightTopTab === 'code' && selectedDsaName) {
+          updateCodeViewPane();
+        }
       });
     });
 
@@ -2161,12 +2583,13 @@
       const activeOption = document.querySelector('.lang-option-item.active');
       const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
       const codeText = codeElement.textContent;
+      const baseName = selectedDsaName || 'algorithm';
 
       const blob = new Blob([codeText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `algorithm${ext}`;
+      a.download = `${baseName}${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -2174,7 +2597,7 @@
     });
 
     // =========================================================================
-    // 3. TAB SWITCHING & SPEED SLIDER
+    // 3. TAB SWITCHING (CODE, EXPLANATION, NOTES) & SPEED SLIDER
     // =========================================================================
     document.querySelectorAll('.vscode-tab').forEach(tab => {
       tab.addEventListener('click', () => {
@@ -2183,6 +2606,12 @@
           t.classList.remove('active');
         });
         tab.classList.add('active');
+
+        const tabType = tab.getAttribute('data-tab-type');
+        if (tabType) {
+          activeRightTopTab = tabType;
+          updateCodeViewPane();
+        }
       });
     });
 
@@ -2191,6 +2620,451 @@
     speedSlider.addEventListener('input', (e) => {
       speedLabel.textContent = `${e.target.value}x`;
     });
+
+    // =========================================================================
+    // 3B. DYNAMIC DSA TREE, EXACT + SUBSEQUENCE SEARCH, AND DS FILTER
+    // =========================================================================
+    const algoSearchInput = document.getElementById('algo-search-input');
+    const algoFilterBtn = document.getElementById('algo-filter-btn');
+    const algoFilterPanel = document.getElementById('algo-filter-panel');
+    const algoFilterClearBtn = document.getElementById('algo-filter-clear-btn');
+    const algoFilterTreeEl = document.getElementById('algo-filter-tree');
+    const algoTreeContainer = document.getElementById('algo-tree-container');
+
+    let dataStructuresJson = {};
+    let algorithmsJson = {};
+    let constraintsJson = {};
+    // Map: dsName -> Array of { name: algoName, constraints: {...}, tags: [...] }
+    let dsDirectAlgorithmsMap = {};
+
+    // Track user-expanded folders in normal view & filter view
+    const expandedMainFolders = new Set();
+    const expandedFilterFolders = new Set();
+    // Track selected data structures in filter
+    const activeDsFilterSet = new Set();
+
+    function buildDirectAlgorithmsMap() {
+      dsDirectAlgorithmsMap = {};
+      for (const [algoName, algoData] of Object.entries(algorithmsJson)) {
+        const inputs = (algoData && algoData.inputs) || {};
+        const tags = Array.isArray(algoData && algoData.tags) ? algoData.tags : [];
+        // Rule 1: Associate ONLY with the exact data structure key in inputs (no bubbling to parent or child)
+        for (const [dsName, dsConstraints] of Object.entries(inputs)) {
+          if (!dsDirectAlgorithmsMap[dsName]) {
+            dsDirectAlgorithmsMap[dsName] = [];
+          }
+          dsDirectAlgorithmsMap[dsName].push({
+            name: algoName,
+            constraints: dsConstraints || {},
+            tags
+          });
+        }
+      }
+    }
+
+    // Exact / Contiguous match check
+    function isExactMatch(query, target) {
+      const q = query.toLowerCase();
+      const t = String(target).toLowerCase();
+      return t === q || t.includes(q);
+    }
+
+    // Order-of-letters subsequence fuzzy match (e.g. "minsptr" -> "minimum-spanning-tree", "divcon" -> "divide-and-conquer")
+    function isSubsequenceMatch(query, target) {
+      const cleanQuery = query.replace(/\s+/g, '').toLowerCase();
+      if (!cleanQuery) return true;
+      const cleanTarget = String(target).toLowerCase();
+      let qIdx = 0;
+      for (let i = 0; i < cleanTarget.length && qIdx < cleanQuery.length; i++) {
+        if (cleanTarget[i] === cleanQuery[qIdx]) {
+          qIdx++;
+        }
+      }
+      return qIdx === cleanQuery.length;
+    }
+
+    // Check if a DS node or any of its descendants is permitted by the active DS filter
+    function isNodeInFilterScope(dsName, dsObj) {
+      if (activeDsFilterSet.size === 0) return true;
+      if (activeDsFilterSet.has(dsName)) return true;
+      const children = (dsObj && dsObj.children) || {};
+      for (const [childName, childObj] of Object.entries(children)) {
+        if (isNodeInFilterScope(childName, childObj)) return true;
+      }
+      return false;
+    }
+
+    function isDirectDsAllowedByFilter(dsName) {
+      return activeDsFilterSet.size === 0 || activeDsFilterSet.has(dsName);
+    }
+
+    // Check if ANY visible node in the tree matches using `matchFn`
+    function treeHasMatchWithFn(nodesObj, query, matchFn) {
+      for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
+        if (!isNodeInFilterScope(dsName, dsObj)) continue;
+
+        if (isDirectDsAllowedByFilter(dsName)) {
+          if (matchFn(query, dsName)) return true;
+          const algos = dsDirectAlgorithmsMap[dsName] || [];
+          for (const algo of algos) {
+            if (matchFn(query, algo.name)) return true;
+            if (algo.tags.some(tag => matchFn(query, tag))) return true;
+          }
+        }
+
+        if (treeHasMatchWithFn(dsObj.children || {}, query, matchFn)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function createChevronSvg(isExpanded, isEmpty) {
+      const span = document.createElement('span');
+      span.className = `tree-chevron${isExpanded ? ' expanded' : ''}${isEmpty ? ' empty' : ''}`;
+      span.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polyline points="9 6 15 12 9 18"></polyline>
+        </svg>
+      `;
+      return span;
+    }
+
+    // Select a data structure or algorithm and load its Notes / Code / Explanation
+    function selectDsaItem(name) {
+      selectedDsaName = name;
+      algoTreeContainer.querySelectorAll('.tree-row[data-dsa-name]').forEach(row => {
+        row.classList.toggle('selected', row.getAttribute('data-dsa-name') === name);
+      });
+      updateCodeViewPane();
+    }
+
+    // Render the main collapsible Data Structures & Algorithms tree
+    function renderMainAlgoTree() {
+      const rawQuery = algoSearchInput.value.trim();
+      const isSearching = rawQuery.length > 0;
+
+      // Exact matching first; if not found anywhere in the tree, fall back to subsequence fuzzy matching
+      let matchFn = null;
+      if (isSearching) {
+        const hasExact = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactMatch);
+        matchFn = hasExact ? isExactMatch : isSubsequenceMatch;
+      }
+
+      algoTreeContainer.innerHTML = '';
+
+      function buildDsSubtree(dsName, dsObj, ancestorMatchedSearch = false) {
+        if (!isNodeInFilterScope(dsName, dsObj)) return null;
+
+        const directAllowed = isDirectDsAllowedByFilter(dsName);
+        const allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
+        const childEntries = Object.entries((dsObj && dsObj.children) || {});
+
+        const selfMatchesSearch = isSearching && directAllowed && matchFn(rawQuery, dsName);
+        const effectiveAncestorMatch = ancestorMatchedSearch || selfMatchesSearch;
+
+        // Filter direct algorithms
+        let visibleAlgos = allDirectAlgos;
+        let hasMatchingDirectAlgo = false;
+
+        if (isSearching) {
+          const matchedAlgos = allDirectAlgos.filter(algo =>
+            matchFn(rawQuery, algo.name) || algo.tags.some(tag => matchFn(rawQuery, tag))
+          );
+          hasMatchingDirectAlgo = matchedAlgos.length > 0;
+          visibleAlgos = hasMatchingDirectAlgo ? matchedAlgos : (effectiveAncestorMatch ? allDirectAlgos : []);
+        }
+
+        // Build child data structures recursively
+        const childFragment = document.createDocumentFragment();
+        let hasVisibleChildDs = false;
+        for (const [childName, childObj] of childEntries) {
+          const childNodeEl = buildDsSubtree(childName, childObj, effectiveAncestorMatch);
+          if (childNodeEl) {
+            hasVisibleChildDs = true;
+            childFragment.appendChild(childNodeEl);
+          }
+        }
+
+        // Determine if this DS node should be displayed
+        if (isSearching && !selfMatchesSearch && !hasMatchingDirectAlgo && !hasVisibleChildDs && !ancestorMatchedSearch) {
+          return null;
+        }
+
+        const hasAnyChildren = hasVisibleChildDs || visibleAlgos.length > 0;
+
+        // Requirement 2: Automatically expand folders that contain the keyword when searching
+        let isExpanded = expandedMainFolders.has(dsName);
+        if (isSearching && (hasMatchingDirectAlgo || hasVisibleChildDs || selfMatchesSearch)) {
+          isExpanded = true;
+        } else if (activeDsFilterSet.size > 0 && !activeDsFilterSet.has(dsName) && hasVisibleChildDs) {
+          isExpanded = true;
+        }
+
+        const nodeWrapper = document.createElement('div');
+        nodeWrapper.className = 'tree-node';
+
+        const dsRow = document.createElement('div');
+        dsRow.className = `tree-row${selectedDsaName === dsName ? ' selected' : ''}`;
+        dsRow.setAttribute('data-dsa-name', dsName);
+
+        const chevron = createChevronSvg(isExpanded, !hasAnyChildren);
+        const label = document.createElement('span');
+        label.className = 'tree-label ds-label';
+        label.textContent = dsName; // Requirement 4: Leave names exactly as such
+
+        dsRow.appendChild(chevron);
+        dsRow.appendChild(label);
+        nodeWrapper.appendChild(dsRow);
+
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
+
+        // 1. Append direct algorithms FIRST
+        for (const algo of visibleAlgos) {
+          const algoWrapper = document.createElement('div');
+          algoWrapper.className = 'algo-item-wrapper';
+
+          const algoRow = document.createElement('div');
+          algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
+          algoRow.setAttribute('data-dsa-name', algo.name);
+
+          const spacer = createChevronSvg(false, true);
+          const algoLabel = document.createElement('span');
+          algoLabel.className = 'tree-label algo-label';
+          algoLabel.textContent = algo.name;
+
+          algoRow.appendChild(spacer);
+          algoRow.appendChild(algoLabel);
+
+          algoRow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectDsaItem(algo.name);
+          });
+
+          algoWrapper.appendChild(algoRow);
+
+          // Render constraints and tags
+          const constraintEntries = Object.entries(algo.constraints || {});
+          const tagList = algo.tags || [];
+
+          if (constraintEntries.length > 0 || tagList.length > 0) {
+            const metaContainer = document.createElement('div');
+            metaContainer.className = 'algo-meta-container';
+
+            for (const [cKey, cVal] of constraintEntries) {
+              const cBadge = document.createElement('span');
+              cBadge.className = 'algo-meta-badge constraint-badge';
+              if (constraintsJson[cKey]) cBadge.setAttribute('title', constraintsJson[cKey]);
+
+              const cImg = document.createElement('img');
+              cImg.src = 'images/constraint.png';
+              cImg.alt = 'constraint';
+              cImg.className = 'algo-meta-icon';
+              if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
+
+              const cText = document.createElement('span');
+              cText.textContent = `${cKey}:${cVal}`;
+
+              cBadge.appendChild(cImg);
+              cBadge.appendChild(cText);
+              metaContainer.appendChild(cBadge);
+            }
+
+            for (const tagName of tagList) {
+              const tBadge = document.createElement('span');
+              tBadge.className = 'algo-meta-badge tag-badge';
+
+              const tImg = document.createElement('img');
+              tImg.src = 'images/tag.png';
+              tImg.alt = 'tag';
+              tImg.className = 'algo-meta-icon';
+
+              const tText = document.createElement('span');
+              tText.textContent = tagName;
+
+              tBadge.appendChild(tImg);
+              tBadge.appendChild(tText);
+              metaContainer.appendChild(tBadge);
+            }
+
+            algoWrapper.appendChild(metaContainer);
+          }
+
+          childrenContainer.appendChild(algoWrapper);
+        }
+
+        // 2. Append nested child data structures NEXT (after the loop)
+        childrenContainer.appendChild(childFragment);
+
+        nodeWrapper.appendChild(childrenContainer);
+
+        dsRow.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectDsaItem(dsName);
+          if (hasAnyChildren) {
+            const nowExpanded = !childrenContainer.classList.contains('expanded');
+            childrenContainer.classList.toggle('expanded', nowExpanded);
+            chevron.classList.toggle('expanded', nowExpanded);
+            if (nowExpanded) {
+              expandedMainFolders.add(dsName);
+            } else {
+              expandedMainFolders.delete(dsName);
+            }
+          }
+        });
+
+        return nodeWrapper;
+      }
+
+      let anyRendered = false;
+      for (const [dsName, dsObj] of Object.entries(dataStructuresJson)) {
+        const treeEl = buildDsSubtree(dsName, dsObj, false);
+        if (treeEl) {
+          anyRendered = true;
+          algoTreeContainer.appendChild(treeEl);
+        }
+      }
+
+      if (!anyRendered) {
+        const emptyEl = document.createElement('div');
+        emptyEl.className = 'algo-empty-msg';
+        emptyEl.textContent = 'No matching data structures or algorithms.';
+        algoTreeContainer.appendChild(emptyEl);
+      }
+    }
+
+    // Render the Filter Tree (All data structures in the same collapsible folder format, without algorithms)
+    function renderFilterDsTree() {
+      algoFilterTreeEl.innerHTML = '';
+      algoFilterBtn.classList.toggle('has-active-filter', activeDsFilterSet.size > 0);
+
+      function buildFilterNode(dsName, dsObj) {
+        const childEntries = Object.entries((dsObj && dsObj.children) || {});
+        const hasChildren = childEntries.length > 0;
+        const isExpanded = expandedFilterFolders.has(dsName);
+
+        const nodeWrapper = document.createElement('div');
+        nodeWrapper.className = 'tree-node';
+
+        const row = document.createElement('div');
+        row.className = `tree-row${activeDsFilterSet.has(dsName) ? ' selected' : ''}`;
+
+        const chevron = createChevronSvg(isExpanded, !hasChildren);
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'filter-checkbox';
+        checkbox.checked = activeDsFilterSet.has(dsName);
+
+        const label = document.createElement('span');
+        label.className = 'tree-label ds-label';
+        label.textContent = dsName; // Exact unformatted name
+
+        row.appendChild(chevron);
+        row.appendChild(checkbox);
+        row.appendChild(label);
+        nodeWrapper.appendChild(row);
+
+        const childrenContainer = document.createElement('div');
+        childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
+
+        for (const [childName, childObj] of childEntries) {
+          childrenContainer.appendChild(buildFilterNode(childName, childObj));
+        }
+
+        nodeWrapper.appendChild(childrenContainer);
+
+        // Clicking chevron toggles folder open/close
+        chevron.addEventListener('click', (e) => {
+          if (!hasChildren) return;
+          e.stopPropagation();
+          const nextState = !childrenContainer.classList.contains('expanded');
+          childrenContainer.classList.toggle('expanded', nextState);
+          chevron.classList.toggle('expanded', nextState);
+          if (nextState) {
+            expandedFilterFolders.add(dsName);
+          } else {
+            expandedFilterFolders.delete(dsName);
+          }
+        });
+
+        // Clicking checkbox or row toggles filter for this data structure
+        const toggleFilterSelection = () => {
+          if (activeDsFilterSet.has(dsName)) {
+            activeDsFilterSet.delete(dsName);
+          } else {
+            activeDsFilterSet.add(dsName);
+          }
+          renderFilterDsTree();
+          renderMainAlgoTree();
+        };
+
+        checkbox.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFilterSelection();
+        });
+
+        row.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFilterSelection();
+        });
+
+        return nodeWrapper;
+      }
+
+      for (const [dsName, dsObj] of Object.entries(dataStructuresJson)) {
+        algoFilterTreeEl.appendChild(buildFilterNode(dsName, dsObj));
+      }
+    }
+
+    const algoSearchClearBtn = document.getElementById('algo-search-clear-btn');
+
+    algoSearchInput.addEventListener('input', () => {
+      algoSearchClearBtn.style.display = algoSearchInput.value.length > 0 ? 'flex' : 'none';
+      renderMainAlgoTree();
+    });
+
+    algoSearchClearBtn.addEventListener('click', () => {
+      algoSearchInput.value = '';
+      algoSearchClearBtn.style.display = 'none';
+      algoSearchInput.focus();
+      renderMainAlgoTree();
+    });
+
+    algoFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = algoFilterPanel.classList.toggle('open');
+      algoFilterBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    algoFilterClearBtn.addEventListener('click', () => {
+      activeDsFilterSet.clear();
+      renderFilterDsTree();
+      renderMainAlgoTree();
+    });
+
+    // Dynamically load data-structures.json, algorithms.json, and constraints.json via fetch
+    async function loadDsaMetadata() {
+      try {
+        const [dsRes, algoRes, constRes] = await Promise.all([
+          fetch('data-structures.json'),
+          fetch('algorithms.json'),
+          fetch('constraints.json')
+        ]);
+
+        dataStructuresJson = dsRes.ok ? await dsRes.json() : {};
+        algorithmsJson = algoRes.ok ? await algoRes.json() : {};
+        constraintsJson = constRes.ok ? await constRes.json() : {};
+
+        buildDirectAlgorithmsMap();
+        renderFilterDsTree();
+        renderMainAlgoTree();
+      } catch (err) {
+        algoTreeContainer.innerHTML = `<div class="algo-empty-msg">Failed to load DSA JSON files.</div>`;
+      }
+    }
+
+    loadDsaMetadata();
 
     // =========================================================================
     // 4. COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
