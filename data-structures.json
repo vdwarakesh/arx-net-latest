@@ -1,0 +1,361 @@
+{
+    "array": {
+        "attributes": [],
+        "children": {
+            "static-array": {
+                "attributes": [],
+                "children": {}
+            },
+            "dynamic-array": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "linked-list": {
+        "attributes": [],
+        "children": {
+            "singly-linked-list": {
+                "attributes": [],
+                "children": {}
+            },
+            "doubly-linked-list": {
+                "attributes": [],
+                "children": {}
+            },
+            "circular-linked-list": {
+                "attributes": [],
+                "children": {
+                    "circular-singly-linked-list": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "circular-doubly-linked-list": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            }
+        }
+    },
+    "stack": {
+        "attributes": [],
+        "children": {}
+    },
+    "queue": {
+        "attributes": [],
+        "children": {
+            "circular-queue": {
+                "attributes": [],
+                "children": {}
+            },
+            "deque": {
+                "attributes": [],
+                "children": {}
+            },
+            "priority-queue": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "hash-based-structures": {
+        "attributes": [],
+        "children": {
+            "hash-table": {
+                "attributes": [],
+                "children": {
+                    "hash-map": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "hash-set": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            }
+        }
+    },
+    "tree": {
+        "attributes": [],
+        "children": {
+            "binary-tree": {
+                "attributes": [],
+                "children": {
+                    "binary-search-tree": {
+                        "attributes": [],
+                        "children": {
+                            "avl-tree": {
+                                "attributes": [],
+                                "children": {}
+                            },
+                            "red-black-tree": {
+                                "attributes": [],
+                                "children": {}
+                            },
+                            "splay-tree": {
+                                "attributes": [],
+                                "children": {}
+                            },
+                            "treap": {
+                                "attributes": [],
+                                "children": {
+                                    "implicit-treap": {
+                                        "attributes": [],
+                                        "children": {}
+                                    }
+                                }
+                            },
+                            "order-statistic-tree": {
+                                "attributes": [],
+                                "children": {}
+                            }
+                        }
+                    }
+                }
+            },
+            "heap": {
+                "attributes": [],
+                "children": {
+                    "binary-heap": {
+                        "attributes": [],
+                        "children": {
+                            "min-heap": {
+                                "attributes": [],
+                                "children": {}
+                            },
+                            "max-heap": {
+                                "attributes": [],
+                                "children": {}
+                            }
+                        }
+                    },
+                    "binomial-heap": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "fibonacci-heap": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            },
+            "trie": {
+                "attributes": [],
+                "children": {
+                    "compressed-trie": {
+                        "attributes": [],
+                        "children": {
+                            "radix-trie": {
+                                "attributes": [],
+                                "children": {}
+                            },
+                            "patricia-trie": {
+                                "attributes": [],
+                                "children": {}
+                            }
+                        }
+                    },
+                    "suffix-trie": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "xor-trie": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            },
+            "b-tree": {
+                "attributes": [],
+                "children": {
+                    "b-plus-tree": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            },
+            "2-3-tree": {
+                "attributes": [
+                    "max_degree_3",
+                    "perfectly_balanced",
+                    "multi_way_branching"
+                ],
+                "children": {}
+            },
+            "2-3-4-tree": {
+                "attributes": [
+                    "max_degree_4",
+                    "perfectly_balanced",
+                    "multi_way_branching",
+                    "isomorphic_to_red_black_tree"
+                ],
+                "children": {}
+            },
+            "segment-tree": {
+                "attributes": [],
+                "children": {
+                    "persistent-segment-tree": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "dynamic-segment-tree": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "li-chao-tree": {
+                        "attributes": [],
+                        "children": {}
+                    },
+                    "merge-sort-tree": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            },
+            "fenwick-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "suffix-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "wavelet-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "eertree": {
+                "attributes": [],
+                "children": {}
+            },
+            "link-cut-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "euler-tour-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "top-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "gomory-hu-tree": {
+                "attributes": [],
+                "children": {}
+            },
+            "dominator-tree": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "graph": {
+        "attributes": [],
+        "children": {}
+    },
+    "disjoint-set-union": {
+        "attributes": [],
+        "children": {}
+    },
+    "string": {
+        "attributes": [],
+        "children": {
+            "immutable-string": {
+                "attributes": [],
+                "children": {}
+            },
+            "mutable-string": {
+                "attributes": [],
+                "children": {}
+            },
+            "suffix-array": {
+                "attributes": [],
+                "children": {}
+            },
+            "suffix-automaton": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "matrix": {
+        "attributes": [],
+        "children": {
+            "dense-matrix": {
+                "attributes": [],
+                "children": {}
+            },
+            "sparse-matrix": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "bit-based-structures": {
+        "attributes": [],
+        "children": {
+            "bitset": {
+                "attributes": [],
+                "children": {}
+            },
+            "bit-vector": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "probabilistic-structures": {
+        "attributes": [],
+        "children": {
+            "bloom-filter": {
+                "attributes": [],
+                "children": {
+                    "counting-bloom-filter": {
+                        "attributes": [],
+                        "children": {}
+                    }
+                }
+            },
+            "count-min-sketch": {
+                "attributes": [],
+                "children": {}
+            },
+            "hyperloglog": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "skip-list": {
+        "attributes": [],
+        "children": {}
+    },
+    "cache-structures": {
+        "attributes": [],
+        "children": {
+            "lru-cache": {
+                "attributes": [],
+                "children": {}
+            },
+            "lfu-cache": {
+                "attributes": [],
+                "children": {}
+            },
+            "mru-cache": {
+                "attributes": [],
+                "children": {}
+            },
+            "fifo-cache": {
+                "attributes": [],
+                "children": {}
+            }
+        }
+    },
+    "sparse-table": {
+        "attributes": [],
+        "children": {}
+    }
+}
