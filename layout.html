@@ -357,6 +357,10 @@
       background-color: var(--bg-hover);
     }
 
+    #btnReload {
+      display: none;
+    }
+
     .brand-name-text {
       font-weight: 600;
       color: var(--text-bright);
@@ -1695,6 +1699,10 @@
         min-height: var(--header-action-icon-size-mobile);
       }
 
+      #btnReload {
+        display: block;
+      }
+
       .theme-switcher {
         display: none !important;
       }
@@ -1912,6 +1920,9 @@
         </button>
         <button type="button" id="btnLibrary" class="activity-btn" title="Library">
           <img src="images/library.png" alt="Library" class="activity-icon-img" />
+        </button>
+        <button type="button" id="btnReload" class="activity-btn" title="Reload page">
+          <img src="images/reload.png" alt="Reload" class="activity-icon-img" />
         </button>
       </div>
     </div>
@@ -2160,51 +2171,14 @@
 
             <!-- Code / Explanation / Notes Content Surface -->
             <div id="codeViewPane" class="card-scroll-body">
-              <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
-    flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
-    max_flow = 0
-    
-    while True:
-        parent = {u: None for u in graph.nodes}
-        parent[source] = source
-        queue = [source]
-        path_found = False
-        
-        while queue and not path_found:
-            u = queue.pop(0)
-            
-            for v in graph.adj[u]:
-                residual = graph.capacity[u][v] - flow[u][v]
-                if parent[v] is None and residual > 0:
-                    parent[v] = u
-                    if v == sink:
-                        path_found = True
-                        break
-                    queue.append(v)
-                    
-        if not path_found:
-            break
-            
-        bottleneck = float('inf')
-        curr = sink
-        path = []
-        
-        while curr != source:
-            p = parent[curr]
-            bottleneck = min(bottleneck, graph.capacity[p][curr] - flow[p][curr])
-            path.append((p, curr))
-            curr = p
-            
-        path.reverse()
-        
-        for u, v in path:
-            flow[u][v] += bottleneck
-            flow[v][u] -= bottleneck
-            
-        max_flow += bottleneck
-        
-    return max_flow</code></pre>
+              <div class="card-inner-pad">
+                <span class="card-body-text"
+                  style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">
+                  Pick an algorithm or data structure from the sidebar and explore how it works.
+                </span>
+              </div>
             </div>
+
           </section>
 
         </div>
@@ -2464,6 +2438,9 @@
 
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
 
+    const btnReload = document.getElementById('btnReload');
+    btnReload.addEventListener('click',()=>{window.location.reload();});
+
     const btnProfile = document.getElementById('btnProfile');
     const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
     const closeProfileModalBtn = document.getElementById('close-profile-modal');
@@ -2510,23 +2487,25 @@
     let currentPrismLang = 'python';
 
     async function updateCodeViewPane() {
+      // 1. If nothing is selected, show the placeholder universally across all tabs
+      if (!selectedDsaName) {
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">
+              Pick an algorithm or data structure from the sidebar and explore how it works.
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. If an item IS selected but we are on the Explanation tab
       if (activeRightTopTab === 'explanation') {
         codeViewPane.innerHTML = `
           <div class="card-inner-pad">
             <span class="card-body-text">Explanations not implemented yet</span>
           </div>
         `;
-        return;
-      }
-
-      if (!selectedDsaName) {
-        if (activeRightTopTab === 'notes') {
-          codeViewPane.innerHTML = `
-            <div class="card-inner-pad">
-              <span class="card-body-text">Algorithm/Data structure not implemented yet</span>
-            </div>
-          `;
-        }
         return;
       }
 
