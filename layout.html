@@ -1066,6 +1066,15 @@
       flex-shrink: 0;
     }
 
+    .visualization-options {
+      display: flex;
+      gap: 0.2rem;
+      margin: 0 0.25rem;
+      padding: 0 0.5rem;
+      border-left: 0.0375rem solid var(--splitter-pill);
+      align-items: center;
+    }
+
     .playback-speed-group {
       display: flex;
       align-items: center;
@@ -1108,6 +1117,18 @@
     }
 
     .playback-icon-btn:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .playback-text-btn {
+      height: var(--playback-icon-btn-size-desktop);
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      padding: 0 0.5625rem;
+    }
+
+    .playback-text-btn:hover {
       background-color: var(--bg-hover);
     }
 
@@ -1982,21 +2003,24 @@
 
             <div class="playback-bar">
               <div class="playback-controls-left">
-                <button type="button" class="playback-icon-btn" title="Run">
-                  <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                <button type="button" class="playback-text-btn" title="Run">
+                  Run
                 </button>
-                <button type="button" class="playback-icon-btn" title="Step Backward">
-                  <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
-                </button>
-                <button type="button" class="playback-icon-btn" title="Step Forward">
-                  <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
-                </button>
-                <button type="button" class="playback-icon-btn" title="Pause">
-                  <img src="images/pause.png" alt="Pause" class="playback-icon-img" />
-                </button>
-                <button type="button" class="playback-icon-btn" title="Reset">
-                  <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
-                </button>
+                <div class="visualization-options">
+                  Visualize&nbsp;
+                  <button type="button" class="playback-icon-btn" title="Step Backward">
+                    <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn" title="Visualize">
+                    <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn" title="Step Forward">
+                    <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn" title="Reset">
+                    <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
+                  </button>
+                </div>
 
                 <div class="playback-speed-group">
                   <span class="playback-muted-label">Speed</span>
@@ -2439,7 +2463,7 @@
     document.addEventListener('fullscreenchange', updateFullscreenIcon);
 
     const btnReload = document.getElementById('btnReload');
-    btnReload.addEventListener('click',()=>{window.location.reload();});
+    btnReload.addEventListener('click', () => { window.location.reload(); });
 
     const btnProfile = document.getElementById('btnProfile');
     const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
