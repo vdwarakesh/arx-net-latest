@@ -1633,6 +1633,27 @@
       background-color: #b07219;
     }
 
+    .code-tabs-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .tab-dropdown-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .mobile-tabs {
+      display: none;
+      /* Hidden by default on desktop */
+    }
+
+    /* Align the mobile tab dropdown to the left so it doesn't clip off-screen */
+    #tab-dropdown-menu {
+      right: auto;
+      left: 0;
+    }
+
     /* =========================================================================
        3. PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
        ========================================================================= */
@@ -1858,6 +1879,14 @@
       .line-highlight {
         margin-top: 0.7rem;
       }
+
+      .desktop-tabs {
+        display: none !important;
+      }
+
+      .mobile-tabs {
+        display: flex !important;
+      }
     }
   </style>
 </head>
@@ -2040,17 +2069,40 @@
           <!-- CODE / EXPLANATION / NOTES CARD -->
           <section id="code-card" class="vscode-card">
             <div class="vscode-card-header code-card-header">
-              <div class="card-tabs-group">
-                <button type="button" class="vscode-tab active" data-tab-group="right-top" data-tab-type="code"
-                  title="Code"> Code
-                </button>
-                <button type="button" class="vscode-tab" data-tab-group="right-top" data-tab-type="explanation"
-                  title="Explanation">
-                  Explanation
-                </button>
-                <button type="button" class="vscode-tab" data-tab-group="right-top" data-tab-type="notes" title="Notes">
-                  Notes
-                </button>
+              <div class="code-tabs-container">
+                <!-- Desktop Tabs (Hidden on Mobile) -->
+                <div class="card-tabs-group desktop-tabs">
+                  <button type="button" class="vscode-tab active" data-tab-group="right-top"
+                    data-tab-type="code">Code</button>
+                  <button type="button" class="vscode-tab" data-tab-group="right-top"
+                    data-tab-type="explanation">Explanation</button>
+                  <button type="button" class="vscode-tab" data-tab-group="right-top"
+                    data-tab-type="notes">Notes</button>
+                </div>
+
+                <!-- Mobile Tabs Dropdown (Hidden on Desktop) -->
+                <div class="tab-dropdown-wrapper mobile-tabs" id="tab-dropdown-wrapper">
+                  <button type="button" id="tab-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
+                    aria-expanded="false">
+                    <span id="tab-active-label">Code</span>
+                    <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  <div id="tab-dropdown-menu" class="lang-dropdown-menu" role="listbox" aria-label="Select Content Tab">
+                    <div class="lang-option-item active" role="option" aria-selected="true" data-tab-type="code">
+                      <span>Code</span>
+                    </div>
+                    <div class="lang-option-item" role="option" aria-selected="false" data-tab-type="explanation">
+                      <span>Explanation</span>
+                    </div>
+                    <div class="lang-option-item" role="option" aria-selected="false" data-tab-type="notes">
+                      <span>Notes</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div style="display: flex; align-items: center; gap: 0.25rem;">
@@ -2536,7 +2588,7 @@
     const langMenu = document.getElementById('lang-dropdown-menu');
     const langActiveDot = document.getElementById('lang-active-dot');
     const langActiveLabel = document.getElementById('lang-active-label');
-    const langOptions = document.querySelectorAll('.lang-option-item');
+    const langOptions = document.querySelectorAll('#lang-dropdown-menu .lang-option-item');
 
     langTriggerBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2618,27 +2670,82 @@
     // =========================================================================
     // 3. TAB SWITCHING (CODE, EXPLANATION, NOTES) & SPEED SLIDER
     // =========================================================================
-    document.querySelectorAll('.vscode-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const group = tab.getAttribute('data-tab-group');
-        document.querySelectorAll(`.vscode-tab[data-tab-group="${group}"]`).forEach(t => {
-          t.classList.remove('active');
-        });
-        tab.classList.add('active');
 
+    // --- Tab Switching Logic (Desktop & Mobile Sync) ---
+    const desktopTabs = document.querySelectorAll('.desktop-tabs .vscode-tab');
+    const tabWrapper = document.getElementById('tab-dropdown-wrapper');
+    const tabTriggerBtn = document.getElementById('tab-trigger-btn');
+    const tabMenu = document.getElementById('tab-dropdown-menu');
+    const tabActiveLabel = document.getElementById('tab-active-label');
+    const tabOptions = tabMenu ? tabMenu.querySelectorAll('.lang-option-item') : [];
+
+    // Helper to sync state and update content
+    function setActiveTab(tabType, tabText) {
+      activeRightTopTab = tabType;
+
+      // Update Desktop Tabs
+      desktopTabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
+      });
+
+      // Update Mobile Dropdown
+      if (tabActiveLabel) tabActiveLabel.textContent = tabText;
+      tabOptions.forEach(opt => {
+        const isActive = opt.getAttribute('data-tab-type') === tabType;
+        opt.classList.toggle('active', isActive);
+        opt.setAttribute('aria-selected', String(isActive));
+      });
+
+      updateCodeViewPane();
+    }
+
+    // Desktop Tab Clicks
+    desktopTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
         const tabType = tab.getAttribute('data-tab-type');
-        if (tabType) {
-          activeRightTopTab = tabType;
-          updateCodeViewPane();
-        }
+        const tabText = tab.textContent.trim();
+        setActiveTab(tabType, tabText);
       });
     });
 
+    // Mobile Dropdown Toggle
+    if (tabTriggerBtn) {
+      tabTriggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = tabMenu.classList.toggle('open');
+        tabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+
+    // Mobile Dropdown Selection
+    tabOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const tabType = option.getAttribute('data-tab-type');
+        const tabText = option.querySelector('span').textContent.trim();
+
+        tabMenu.classList.remove('open');
+        tabTriggerBtn.setAttribute('aria-expanded', 'false');
+
+        setActiveTab(tabType, tabText);
+      });
+    });
+
+    // Close Dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      if (tabWrapper && !tabWrapper.contains(e.target)) {
+        tabMenu.classList.remove('open');
+        if (tabTriggerBtn) tabTriggerBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // --- Speed Slider Logic ---
     const speedSlider = document.getElementById('speed-slider');
     const speedLabel = document.getElementById('speed-label');
-    speedSlider.addEventListener('input', (e) => {
-      speedLabel.textContent = `${e.target.value}x`;
-    });
+    if (speedSlider && speedLabel) {
+      speedSlider.addEventListener('input', (e) => {
+        speedLabel.textContent = `${e.target.value}x`;
+      });
+    }
 
     // =========================================================================
     // 3B. DYNAMIC DSA TREE, EXACT + SUBSEQUENCE SEARCH, AND DS FILTER
