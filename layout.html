@@ -1950,10 +1950,77 @@
         display: flex !important;
       }
     }
+
+    /* =========================================================================
+       4. LOADING SCREEN STYLES
+       ========================================================================= */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-app);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .loading-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .loading-spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 0.25rem solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin-anim 1s linear infinite;
+    }
+
+    .loading-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    @keyframes spin-anim {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
 <body class="app-shell">
+  <!-- ================= LOADING SCREEN ================= -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <h1 class="loading-title">Shard Spiral</h1>
+      <div class="loading-spinner"></div>
+      <p class="loading-subtitle">Visualization done differently</p>
+    </div>
+  </div>
 
   <!-- ================= UNIFIED TOP TITLE BAR ================= -->
   <header class="top-titlebar">
@@ -2417,6 +2484,20 @@
   </div>
 
   <script>
+    // =========================================================================
+    // ASSET LOADING SCREEN HANDLER
+    // =========================================================================
+    window.addEventListener('load', () => {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('fade-out');
+        // Remove it from the DOM completely after the fade transition finishes
+        setTimeout(() => {
+          loadingScreen.remove();
+        }, 400); 
+      }
+    });
+
     // =========================================================================
     // 0. IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
     // =========================================================================
