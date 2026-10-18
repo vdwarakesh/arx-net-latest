@@ -484,17 +484,33 @@
       width: var(--algorithms-collapsed-width-desktop) !important;
       min-width: var(--algorithms-collapsed-width-desktop) !important;
       max-width: var(--algorithms-collapsed-width-desktop) !important;
-    }
-
-    #algo-column.is-collapsed #algo-settings-card,
-    #algo-column.is-collapsed #splitter-algo-settings-h {
-      display: none;
+      gap: var(--splitter-thickness-desktop);
     }
 
     #algorithms-card {
       height: var(--algo-top-height);
       min-height: var(--card-min-height-desktop);
       flex: 0 0 auto;
+    }
+
+    #algo-column.is-collapsed .vscode-card-header {
+      justify-content: center;
+      padding: 0;
+      background-color: var(--bg-card);
+      border-bottom-color: transparent;
+    }
+
+    #algo-column.is-collapsed #algo-title,
+    #algo-column.is-collapsed #algo-body,
+    #algo-column.is-collapsed #algo-settings-title,
+    #algo-column.is-collapsed #algo-settings-body,
+    #algo-column.is-collapsed #splitter-algo-settings-h {
+      display: none;
+    }
+
+    #algo-column.is-collapsed #algo-collapsed-strip,
+    #algo-column.is-collapsed #algo-settings-collapsed-strip {
+      display: flex;
     }
 
     #algo-settings-card {
@@ -949,7 +965,8 @@
       color: var(--text-muted);
     }
 
-    #algo-collapsed-strip {
+    #algo-collapsed-strip,
+    #algo-settings-collapsed-strip {
       display: none;
       flex: 1 1 0%;
       min-height: 0;
@@ -2155,12 +2172,6 @@
             <section id="algorithms-card" class="vscode-card">
               <div class="vscode-card-header" id="algo-card-header">
                 <span id="algo-title">Algorithms</span>
-                <button type="button" id="toggle-algo-btn" class="card-icon-btn" title="Collapse Algorithms Panel"
-                  aria-expanded="true">
-                  <img id="algo-toggle-img" src="images/sidebar-close.png" alt="Collapse" class="sidebar-toggle-img"
-                    onerror="this.classList.add('has-error');" />
-                  <span class="sidebar-fallback-box" aria-hidden="true"></span>
-                </button>
               </div>
 
               <div id="algo-body">
@@ -2202,9 +2213,9 @@
 
             <section id="algo-settings-card" class="vscode-card">
               <div class="vscode-card-header">
-                <span>Algorithm Settings</span>
+                <span id="algo-settings-title">Algorithm Settings</span>
               </div>
-              <div class="card-scroll-body">
+              <div id="algo-settings-body" class="card-scroll-body">
                 <div class="card-inner-pad">
                   <!-- Parameters -->
                   <div style="margin-bottom: 0.75rem;">
@@ -2252,6 +2263,11 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              <div id="algo-settings-collapsed-strip" title="Click to expand Algorithms">
+                <span class="algo-collapsed-label">
+                  Settings
+                </span>
               </div>
             </section>
           </div>
@@ -2494,7 +2510,7 @@
         // Remove it from the DOM completely after the fade transition finishes
         setTimeout(() => {
           loadingScreen.remove();
-        }, 400); 
+        }, 400);
       }
     });
 
@@ -3434,8 +3450,6 @@
 
     const algoCard = document.getElementById('algorithms-card');
     const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
-    const toggleAlgoBtn = document.getElementById('toggle-algo-btn');
-    const algoToggleImg = document.getElementById('algo-toggle-img');
     const splitterAlgoCode = document.getElementById('splitter-algo-code-v');
     const algoColumn = document.getElementById('algo-column');
     const algoSettingsCard = document.getElementById('algo-settings-card');
@@ -3454,20 +3468,18 @@
         }
         algoColumn.classList.add('is-collapsed');
         algoColumn.style.width = '';
-        algoToggleImg.src = 'images/sidebar-open.png';
-        toggleAlgoBtn.setAttribute('aria-expanded', 'false');
-        toggleAlgoBtn.setAttribute('title', 'Expand Algorithms Panel');
       } else {
         algoColumn.classList.remove('is-collapsed');
         algoColumn.style.width = customExpandedWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : savedAlgoWidth);
-        algoToggleImg.src = 'images/sidebar-close.png';
-        toggleAlgoBtn.setAttribute('aria-expanded', 'true');
-        toggleAlgoBtn.setAttribute('title', 'Collapse Algorithms Panel');
       }
     }
 
-    toggleAlgoBtn.addEventListener('click', () => setAlgoCollapsed(!isAlgoCollapsed));
     algoCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
+
+    const algoSettingsCollapsedStrip = document.getElementById('algo-settings-collapsed-strip');
+    if (algoSettingsCollapsedStrip) {
+      algoSettingsCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
+    }
 
     function syncResponsiveStructure() {
       const isPhone = phoneMedia.matches;
