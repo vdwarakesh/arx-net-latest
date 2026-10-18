@@ -47,7 +47,7 @@
       /* Default height of the Graph card inside the left column on desktop */
       --desktop-right-top-height: 67%;
       /* Default height of the Algorithms + Code row inside the right column on desktop */
-      --algorithms-default-width-desktop: 30%;
+      --algorithms-default-width-desktop: 40%;
       /* Default expanded width of the Algorithms card on desktop */
       --algorithms-default-width-mobile: 38%;
       /* Default expanded width of the Algorithms card when opened on mobile */
@@ -735,6 +735,8 @@
     .tree-node {
       display: flex;
       flex-direction: column;
+      margin-bottom: 0.75rem;
+      /* Extra spacing between data structures */
     }
 
     .tree-row {
@@ -754,9 +756,13 @@
       background-color: var(--bg-hover);
     }
 
-    .tree-row.selected {
+    /* .tree-row.selected {
       background-color: var(--bg-active-item);
       color: var(--text-bright);
+    } */
+
+    .tree-row.selected .algo-dot {
+      background-color: var(--text-bright);
     }
 
     .tree-chevron {
@@ -810,6 +816,19 @@
       display: flex;
       flex-direction: column;
       padding: 0.1rem 0;
+      margin-bottom: 0.75rem;
+      /* Extra spacing between algorithms */
+    }
+
+    .algo-dot {
+      width: 0.35rem;
+      height: 0.35rem;
+      background-color: var(--text-muted);
+      border-radius: 50%;
+      margin: 0 0.5rem 0 0.65rem;
+      /* Positions the dot nicely under the DS chevron */
+      flex-shrink: 0;
+      transition: background-color 0.12s ease;
     }
 
     .algo-meta-container {
@@ -2662,14 +2681,22 @@
       }
     }
 
-    // Exact / Contiguous match check
-    function isExactMatch(query, target) {
-      const q = query.toLowerCase();
+    // Exact / Contiguous match AND Acronym match check
+    function isExactOrAcronymMatch(query, target) {
+      const q = query.toLowerCase().trim();
       const t = String(target).toLowerCase();
-      return t === q || t.includes(q);
+
+      // 1. Direct substring match
+      if (t.includes(q)) return true;
+
+      // 2. Acronym match (e.g. "mst" -> "minimum-spanning-tree", "bst" -> "binary-search-tree")
+      const initials = t.split(/[-_\s]+/).map(w => w[0] || '').join('');
+      if (initials.includes(q.replace(/\s+/g, ''))) return true;
+
+      return false;
     }
 
-    // Order-of-letters subsequence fuzzy match (e.g. "minsptr" -> "minimum-spanning-tree", "divcon" -> "divide-and-conquer")
+    // Order-of-letters subsequence fuzzy match (e.g. "minsptr" -> "minimum-spanning-tree")
     function isSubsequenceMatch(query, target) {
       const cleanQuery = query.replace(/\s+/g, '').toLowerCase();
       if (!cleanQuery) return true;
@@ -2744,11 +2771,11 @@
       const rawQuery = algoSearchInput.value.trim();
       const isSearching = rawQuery.length > 0;
 
-      // Exact matching first; if not found anywhere in the tree, fall back to subsequence fuzzy matching
+      // Exact & Acronym matching first; if not found anywhere, fall back to subsequence fuzzy matching
       let matchFn = null;
       if (isSearching) {
-        const hasExact = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactMatch);
-        matchFn = hasExact ? isExactMatch : isSubsequenceMatch;
+        const hasExactOrAcronym = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactOrAcronymMatch);
+        matchFn = hasExactOrAcronym ? isExactOrAcronymMatch : isSubsequenceMatch;
       }
 
       algoTreeContainer.innerHTML = '';
@@ -2829,12 +2856,15 @@
           algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
           algoRow.setAttribute('data-dsa-name', algo.name);
 
-          const spacer = createChevronSvg(false, true);
+          // Create the bullet dot instead of an empty chevron space
+          const dot = document.createElement('span');
+          dot.className = 'algo-dot';
+
           const algoLabel = document.createElement('span');
           algoLabel.className = 'tree-label algo-label';
           algoLabel.textContent = algo.name;
 
-          algoRow.appendChild(spacer);
+          algoRow.appendChild(dot);
           algoRow.appendChild(algoLabel);
 
           algoRow.addEventListener('click', (e) => {
