@@ -93,6 +93,9 @@
       /* Visual width and height of run.png, step.png, pause.png, reset.png on desktop */
       --playback-icon-size-mobile: 1rem;
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
+      /* --playback-label-img-size-desktop: 1.75rem; */
+      /* Visual width and height of speed.png on desktop */
+
 
       /* --- Algorithms, Code & Row Constraints --- */
       --left-col-min-width-desktop: 12rem;
@@ -1129,6 +1132,15 @@
       white-space: nowrap;
     }
 
+    .playback-label-img {
+      width: var(--playback-icon-btn-size-desktop);
+      height: var(--playback-icon-btn-size-desktop);
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+      filter: var(--sidebar-icon-filter);
+    }
+
     .playback-speed-value {
       color: var(--text-primary);
       min-width: 1.4rem;
@@ -1925,6 +1937,11 @@
         min-height: var(--playback-icon-size-mobile);
       }
 
+      .playback-label-img {
+        width: var(--playback-icon-btn-size-mobile);
+        height: var(--playback-icon-btn-size-mobile);
+      }
+
       .lang-trigger-btn {
         height: var(--tab-height-mobile);
         min-height: var(--tab-height-mobile);
@@ -2142,7 +2159,7 @@
 
 
                   <div class="playback-speed-group">
-                    <span class="playback-muted-label">Speed</span>
+                    <img src="images/speed.png" class="playback-label-img" />
                     <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
                       class="vscode-slider" />
                     <span id="speed-label" class="playback-speed-value">1x</span>
@@ -2255,7 +2272,7 @@
                       </button>
 
                       <div class="playback-speed-group" style="margin: 0;">
-                        <span class="playback-muted-label">Speed</span>
+                        <img src="images/speed.png" class="playback-label-img" />
                         <input type="range" min="0.25" max="4" step="0.25" value="1"
                           class="vscode-slider sync-speed-slider" />
                         <span class="playback-speed-value sync-speed-label">1x</span>
