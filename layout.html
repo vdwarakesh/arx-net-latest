@@ -1862,6 +1862,11 @@
       #algorithms-card {
         width: 100%;
         max-width: none;
+        min-height: var(--card-min-height-mobile);
+      }
+
+      #algo-settings-card {
+        min-height: var(--card-min-height-mobile);
       }
 
       #log-card {
@@ -3712,8 +3717,12 @@
       getContainer: () => algoColumn,
       getTargetPane: () => algoCard,
       getDirection: () => 'vertical',
-      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
-      getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
+      getMinUnits: () => phoneMedia.matches 
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6) 
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
+      getMaxReservedUnits: () => phoneMedia.matches 
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6) 
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 
     function resetAllProportions() {
