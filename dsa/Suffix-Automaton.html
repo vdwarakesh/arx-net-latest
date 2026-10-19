@@ -1,31 +1,48 @@
 <h1>Suffix Automaton</h1>
 
-<p>A Suffix Automaton (SAM, also known as a **Directed Acyclic Word Graph**, or **DAWG**) is a special type of string data structure that acts as the smallest possible deterministic finite state machine capable of recognizing every suffix—and every substring—of a string in linear $\mathcal{O}(n)$ time and space.</p>
+<p>A Suffix Automaton (SAM, also known as a **Directed Acyclic Word Graph**, or **DAWG**) is a special type of string
+    data structure that acts as the smallest possible deterministic finite state machine capable of recognizing every
+    suffix-and every substring-of a string in linear $\mathcal{O}(n)$ time and space.</p>
 
-<p>Imagine compressing a massive flowchart of every possible phrase in a book by merging together any two boxes that have the exact same set of valid continuations. The resulting ultra-compact state diagram has at most $2n - 1$ states and $3n - 4$ arrows, yet walking from the start state along the arrows can spell out every single substring in the book.</p><br>
+<p>Imagine compressing a massive flowchart of every possible phrase in a book by merging together any two boxes that
+    have the exact same set of valid continuations. The resulting ultra-compact state diagram has at most $2n - 1$
+    states and $3n - 4$ arrows, yet walking from the start state along the arrows can spell out every single substring
+    in the book.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>`endpos` Equivalence Class:</strong> The mathematical heart of a Suffix Automaton: two substrings belong to the exact same state node if and only if they always appear at the exact same set of ending positions (`endpos`) throughout the text.</p>
+<p><strong>`endpos` Equivalence Class:</strong> The mathematical heart of a Suffix Automaton: two substrings belong to
+    the exact same state node if and only if they always appear at the exact same set of ending positions (`endpos`)
+    throughout the text.</p>
 
-<p><strong>Transition Edges (DAWG):</strong> Forward directed edges labeled with single characters; following any path from the initial state $t_0$ spells out a valid substring of the text.</p>
+<p><strong>Transition Edges (DAWG):</strong> Forward directed edges labeled with single characters; following any path
+    from the initial state $t_0$ spells out a valid substring of the text.</p>
 
-<p><strong>Suffix Links (Parent Tree):</strong> Backward links connecting each state to the state representing the longest suffix that appears in a *strictly larger* set of positions (`endpos`), forming a tree of states.</p><br>
+<p><strong>Suffix Links (Parent Tree):</strong> Backward links connecting each state to the state representing the
+    longest suffix that appears in a *strictly larger* set of positions (`endpos`), forming a tree of states.</p><br>
 
 <h2>How Does a Suffix Automaton Work Conceptually?</h2>
 
-<p>Built online character by character from left to right (via Blumer's algorithm), a Suffix Automaton groups substrings that always travel together into single state nodes. Each state covers a contiguous range of substring lengths $[\text{minlen}(v), \text{maxlen}(v)]$.</p>
+<p>Built online character by character from left to right (via Blumer's algorithm), a Suffix Automaton groups substrings
+    that always travel together into single state nodes. Each state covers a contiguous range of substring lengths
+    $[\text{minlen}(v), \text{maxlen}(v)]$.</p>
 
-<p>Because every path in the automaton corresponds to a substring and the suffix links form a clean tree, counting the total number of distinct substrings in a string is as simple as summing $\text{maxlen}(v) - \text{maxlen}(\text{link}(v))$ across all states in linear time.</p><br>
+<p>Because every path in the automaton corresponds to a substring and the suffix links form a clean tree, counting the
+    total number of distinct substrings in a string is as simple as summing $\text{maxlen}(v) -
+    \text{maxlen}(\text{link}(v))$ across all states in linear time.</p><br>
 
 <h2>Where Are Suffix Automata Used in the Real World?</h2>
 
-<p><strong>Advanced String Analytics & Substring Counting:</strong> Compute the number of distinct substrings, shortest non-occurring string, or $k$-th lexicographical substring in $\mathcal{O}(n)$ time.</p>
+<p><strong>Advanced String Analytics & Substring Counting:</strong> Compute the number of distinct substrings, shortest
+    non-occurring string, or $k$-th lexicographical substring in $\mathcal{O}(n)$ time.</p>
 
-<p><strong>Longest Common Substring Across Multiple Texts:</strong> Stream a second text through the first text's automaton using transition edges and suffix links to find maximal matches at line speed.</p>
+<p><strong>Longest Common Substring Across Multiple Texts:</strong> Stream a second text through the first text's
+    automaton using transition edges and suffix links to find maximal matches at line speed.</p>
 
-<p><strong>Compact Dictionary and Text Indexing:</strong> Represent massive word sets and text patterns as minimal state machines.</p><br>
+<p><strong>Compact Dictionary and Text Indexing:</strong> Represent massive word sets and text patterns as minimal state
+    machines.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Suffix Automaton is a minimal state machine that folds all substrings of a text into at most $2n - 1$ states, combining the power of a suffix tree with the clean transitions of a finite automaton.</p>
+<p>A Suffix Automaton is a minimal state machine that folds all substrings of a text into at most $2n - 1$ states,
+    combining the power of a suffix tree with the clean transitions of a finite automaton.</p>

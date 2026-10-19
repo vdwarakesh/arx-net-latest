@@ -1,31 +1,46 @@
 <h1>Immutable String</h1>
 
-<p>An Immutable String is a special type of string whose contents are permanently locked and cannot be altered in place once the string is created in memory. Any operation that appears to modify the string—such as uppercase conversion or appending a letter—actually creates and returns a brand-new string object.</p>
+<p>An Immutable String is a special type of string whose contents are permanently locked and cannot be altered in place
+    once the string is created in memory. Any operation that appears to modify the string-such as uppercase conversion
+    or appending a letter-actually creates and returns a brand-new string object.</p>
 
-<p>Imagine a printed page laminated in plastic. You can read it as many times as you like, and you can hand the same laminated sheet to ten different coworkers without worrying that someone will erase a word. If you want to fix a typo, you don't scrape the ink off the plastic; you print a fresh laminated sheet with the correction.</p><br>
+<p>Imagine a printed page laminated in plastic. You can read it as many times as you like, and you can hand the same
+    laminated sheet to ten different coworkers without worrying that someone will erase a word. If you want to fix a
+    typo, you don't scrape the ink off the plastic; you print a fresh laminated sheet with the correction.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Read-Only Memory Buffer:</strong> The underlying character array that forbids any write or index-assignment operation (`s[0] = 'X'` is disallowed).</p>
+<p><strong>Read-Only Memory Buffer:</strong> The underlying character array that forbids any write or index-assignment
+    operation (`s[0] = 'X'` is disallowed).</p>
 
-<p><strong>String Interning (String Pool):</strong> A memory optimization where identical immutable string literals (like `"status"`) share a single physical copy in RAM across the entire program.</p>
+<p><strong>String Interning (String Pool):</strong> A memory optimization where identical immutable string literals
+    (like `"status"`) share a single physical copy in RAM across the entire program.</p>
 
-<p><strong>Hash Caching:</strong> Computing a string's hash code once and saving it permanently inside the string object, since the characters can never change.</p><br>
+<p><strong>Hash Caching:</strong> Computing a string's hash code once and saving it permanently inside the string
+    object, since the characters can never change.</p><br>
 
 <h2>How Does an Immutable String Work Conceptually?</h2>
 
-<p>Because the computer has an ironclad guarantee that an immutable string's bytes will never change, it unlocks major safety and speed benefits: multiple threads can read the same string simultaneously without locks, hash maps can use strings as keys without fear of the key mutating and breaking its bucket location, and identical strings can be deduplicated automatically.</p>
+<p>Because the computer has an ironclad guarantee that an immutable string's bytes will never change, it unlocks major
+    safety and speed benefits: multiple threads can read the same string simultaneously without locks, hash maps can use
+    strings as keys without fear of the key mutating and breaking its bucket location, and identical strings can be
+    deduplicated automatically.</p>
 
-<p>The one pitfall to watch for is concatenating immutable strings inside a loop (`s = s + "a"` repeated 10,000 times), which allocates and copies 10,000 temporary strings unless a mutable builder buffer is used.</p><br>
+<p>The one pitfall to watch for is concatenating immutable strings inside a loop (`s = s + "a"` repeated 10,000 times),
+    which allocates and copies 10,000 temporary strings unless a mutable builder buffer is used.</p><br>
 
 <h2>Where Are Immutable Strings Used in the Real World?</h2>
 
-<p><strong>Core String Types in Modern Languages:</strong> Power standard strings in Python (`str`), Java (`String`), JavaScript, C#, Go, and Rust (`&str`).</p>
+<p><strong>Core String Types in Modern Languages:</strong> Power standard strings in Python (`str`), Java (`String`),
+    JavaScript, C#, Go, and Rust (`&str`).</p>
 
-<p><strong>Hash Map Keys and Identifiers:</strong> Safely serve as dictionary keys, file paths, and configuration names with cached $\mathcal{O}(1)$ hash lookups.</p>
+<p><strong>Hash Map Keys and Identifiers:</strong> Safely serve as dictionary keys, file paths, and configuration names
+    with cached $\mathcal{O}(1)$ hash lookups.</p>
 
-<p><strong>Multi-Threaded Server Applications:</strong> Share URL paths, headers, and templates across worker threads with zero synchronization overhead.</p><br>
+<p><strong>Multi-Threaded Server Applications:</strong> Share URL paths, headers, and templates across worker threads
+    with zero synchronization overhead.</p><br>
 
 <h2>Summary</h2>
 
-<p>An immutable string is a write-protected character sequence that guarantees thread safety, reliable hash keys, and safe memory sharing across an application.</p>
+<p>An immutable string is a write-protected character sequence that guarantees thread safety, reliable hash keys, and
+    safe memory sharing across an application.</p>

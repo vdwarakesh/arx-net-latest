@@ -1,31 +1,46 @@
 <h1>Binomial Heap</h1>
 
-<p>A Binomial Heap is a special type of heap composed of a collection (forest) of **Binomial Trees** that enables two entire heaps to be merged together in fast logarithmic time—something a standard array-based binary heap cannot do efficiently.</p>
+<p>A Binomial Heap is a special type of heap composed of a collection (forest) of **Binomial Trees** that enables two
+    entire heaps to be merged together in fast logarithmic time-something a standard array-based binary heap cannot do
+    efficiently.</p>
 
-<p>Imagine representing the number 13 in binary (`1101` in base 2) using exact coin pouches of sizes 8, 4, and 1. If someone hands you another set of pouches totaling 5 (`0101`—pouches of size 4 and 1), you combine them just like binary addition: the two size-1 pouches combine into a size-2 pouch, and the two size-4 pouches combine into a size-8 pouch. A binomial heap merges priority queues using this exact binary-addition trick.</p><br>
+<p>Imagine representing the number 13 in binary (`1101` in base 2) using exact coin pouches of sizes 8, 4, and 1. If
+    someone hands you another set of pouches totaling 5 (`0101`-pouches of size 4 and 1), you combine them just like
+    binary addition: the two size-1 pouches combine into a size-2 pouch, and the two size-4 pouches combine into a
+    size-8 pouch. A binomial heap merges priority queues using this exact binary-addition trick.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Binomial Tree of Order $k$ ($B_k$):</strong> A recursive tree containing exactly $2^k$ nodes, formed by linking the root of one $B_{k-1}$ tree as the leftmost child of another $B_{k-1}$ tree.</p>
+<p><strong>Binomial Tree of Order $k$ ($B_k$):</strong> A recursive tree containing exactly $2^k$ nodes, formed by
+    linking the root of one $B_{k-1}$ tree as the leftmost child of another $B_{k-1}$ tree.</p>
 
-<p><strong>Binomial Forest:</strong> A sorted list of binomial trees where at most one tree of each order ($2^0, 2^1, 2^2, \dots$) exists at any time, mirroring the binary representation of the total node count $n$.</p>
+<p><strong>Binomial Forest:</strong> A sorted list of binomial trees where at most one tree of each order ($2^0, 2^1,
+    2^2, \dots$) exists at any time, mirroring the binary representation of the total node count $n$.</p>
 
-<p><strong>Meld (Union) Operation:</strong> Combining two binomial heaps by linking trees of equal order in $\mathcal{O}(\log n)$ time, identical to adding two binary numbers with carry-over.</p><br>
+<p><strong>Meld (Union) Operation:</strong> Combining two binomial heaps by linking trees of equal order in
+    $\mathcal{O}(\log n)$ time, identical to adding two binary numbers with carry-over.</p><br>
 
 <h2>How Does a Binomial Heap Work Conceptually?</h2>
 
-<p>Instead of forcing all $n$ elements into one single binary tree, a binomial heap breaks $n$ into powers of two. For example, a binomial heap with 13 items consists of three heap-ordered binomial trees of sizes 8, 4, and 1.</p>
+<p>Instead of forcing all $n$ elements into one single binary tree, a binomial heap breaks $n$ into powers of two. For
+    example, a binomial heap with 13 items consists of three heap-ordered binomial trees of sizes 8, 4, and 1.</p>
 
-<p>Even inserting a single new item is treated as merging a 1-node binomial heap into the existing forest. Because there are at most $\log_2 n$ trees in the forest and linking two equal-sized trees takes just one pointer update, merging two massive heaps takes only $\mathcal{O}(\log n)$ steps.</p><br>
+<p>Even inserting a single new item is treated as merging a 1-node binomial heap into the existing forest. Because there
+    are at most $\log_2 n$ trees in the forest and linking two equal-sized trees takes just one pointer update, merging
+    two massive heaps takes only $\mathcal{O}(\log n)$ steps.</p><br>
 
 <h2>Where Are Binomial Heaps Used in the Real World?</h2>
 
-<p><strong>Parallel and Distributed Task Queues:</strong> Merge work queues from two different processor threads or cluster nodes without copying all elements one by one.</p>
+<p><strong>Parallel and Distributed Task Queues:</strong> Merge work queues from two different processor threads or
+    cluster nodes without copying all elements one by one.</p>
 
-<p><strong>Minimum Spanning Tree Algorithms:</strong> Merge edge priority queues when two connected components unite during graph contraction.</p>
+<p><strong>Minimum Spanning Tree Algorithms:</strong> Merge edge priority queues when two connected components unite
+    during graph contraction.</p>
 
-<p><strong>Functional Programming Priority Queues:</strong> Provide clean, pointer-based mergeable heaps in immutable languages.</p><br>
+<p><strong>Functional Programming Priority Queues:</strong> Provide clean, pointer-based mergeable heaps in immutable
+    languages.</p><br>
 
 <h2>Summary</h2>
 
-<p>A binomial heap organizes data into a forest of power-of-two trees, turning heap merging into fast binary addition.</p>
+<p>A binomial heap organizes data into a forest of power-of-two trees, turning heap merging into fast binary addition.
+</p>

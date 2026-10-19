@@ -1,29 +1,42 @@
 <h1>Compressed Trie</h1>
 
-<p>A Compressed Trie is a special type of trie that saves memory and speeds up traversal by merging any single-file chain of one-child nodes into a single edge labeled with an entire substring rather than a single character.</p>
+<p>A Compressed Trie is a special type of trie that saves memory and speeds up traversal by merging any single-file
+    chain of one-child nodes into a single edge labeled with an entire substring rather than a single character.</p>
 
-<p>Imagine driving down a long country road with no intersections for ten miles. Instead of putting up a street sign every ten feet reading `"M"`, `"A"`, `"I"`, `"N"`, the highway department puts up one sign reading `"MAIN"` and only places new signs when the road actually forks. A compressed trie cleans up a standard trie in the exact same way.</p><br>
+<p>Imagine driving down a long country road with no intersections for ten miles. Instead of putting up a street sign
+    every ten feet reading `"M"`, `"A"`, `"I"`, `"N"`, the highway department puts up one sign reading `"MAIN"` and only
+    places new signs when the road actually forks. A compressed trie cleans up a standard trie in the exact same way.
+</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Path Compression (Chain Contraction):</strong> Collapsing a sequence of non-branching nodes into a single edge carrying a multi-character label.</p>
+<p><strong>Path Compression (Chain Contraction):</strong> Collapsing a sequence of non-branching nodes into a single
+    edge carrying a multi-character label.</p>
 
-<p><strong>Explicit Branching Nodes:</strong> Guaranteeing that every internal node in the tree has at least two children (unless it marks the end of a stored word).</p>
+<p><strong>Explicit Branching Nodes:</strong> Guaranteeing that every internal node in the tree has at least two
+    children (unless it marks the end of a stored word).</p>
 
-<p><strong>Edge Splitting:</strong> Breaking a multi-character edge in two when a newly inserted word diverges in the middle of an existing label (for example, inserting `"TOAST"` when `"TOASTER"` is stored as one edge).</p><br>
+<p><strong>Edge Splitting:</strong> Breaking a multi-character edge in two when a newly inserted word diverges in the
+    middle of an existing label (for example, inserting `"TOAST"` when `"TOASTER"` is stored as one edge).</p><br>
 
 <h2>How Does a Compressed Trie Work Conceptually?</h2>
 
-<p>Standard tries waste huge amounts of memory when storing long strings that rarely branch—storing the word `"INTERNATIONALIZATION"` alone creates 20 separate node objects in a chain. A compressed trie eliminates every non-branching intermediate node by labeling edges with strings (or start/end indices into a master string).</p>
+<p>Standard tries waste huge amounts of memory when storing long strings that rarely branch-storing the word
+    `"INTERNATIONALIZATION"` alone creates 20 separate node objects in a chain. A compressed trie eliminates every
+    non-branching intermediate node by labeling edges with strings (or start/end indices into a master string).</p>
 
-<p>Because every internal node now represents a true fork in the road, a compressed trie storing $n$ words is guaranteed to have at most $2n$ nodes total, no matter how long the words are.</p><br>
+<p>Because every internal node now represents a true fork in the road, a compressed trie storing $n$ words is guaranteed
+    to have at most $2n$ nodes total, no matter how long the words are.</p><br>
 
 <h2>Where Are Compressed Tries Used in the Real World?</h2>
 
-<p><strong>Memory-Efficient Dictionaries:</strong> Store massive vocabularies of long words, file paths, or URLs in a fraction of the RAM required by a standard trie.</p>
+<p><strong>Memory-Efficient Dictionaries:</strong> Store massive vocabularies of long words, file paths, or URLs in a
+    fraction of the RAM required by a standard trie.</p>
 
-<p><strong>Foundation for Suffix Trees and Radix Trees:</strong> Provide the core structural compression used in genomics, web servers, and IP routing tables.</p><br>
+<p><strong>Foundation for Suffix Trees and Radix Trees:</strong> Provide the core structural compression used in
+    genomics, web servers, and IP routing tables.</p><br>
 
 <h2>Summary</h2>
 
-<p>A compressed trie eliminates redundant one-child chains in a prefix tree, shrinking memory usage dramatically while jumping across multi-character segments in a single step.</p>
+<p>A compressed trie eliminates redundant one-child chains in a prefix tree, shrinking memory usage dramatically while
+    jumping across multi-character segments in a single step.</p>

@@ -1,29 +1,40 @@
 <h1>Max-Heap</h1>
 
-<p>A Max-Heap is a special type of binary heap in which every parent node has a value **greater than or equal to** the values of its children. Consequently, the largest element in the entire collection always sits at the root node.</p>
+<p>A Max-Heap is a special type of binary heap in which every parent node has a value **greater than or equal to** the
+    values of its children. Consequently, the largest element in the entire collection always sits at the root node.</p>
 
-<p>Imagine an auction house where bids are organized in a pyramid. The highest bid currently on the floor is displayed at the very peak, while lower bids sit beneath it. The auctioneer never has to scan the room to know the top offer—it is always right at the root.</p><br>
+<p>Imagine an auction house where bids are organized in a pyramid. The highest bid currently on the floor is displayed
+    at the very peak, while lower bids sit beneath it. The auctioneer never has to scan the room to know the top
+    offer-it is always right at the root.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
 <p><strong>Max-Heap Property:</strong> The rule that `parent >= child` for every node in the heap.</p>
 
-<p><strong>Extract-Max:</strong> Removing and returning the maximum element from the root in $\mathcal{O}(\log n)$ time.</p>
+<p><strong>Extract-Max:</strong> Removing and returning the maximum element from the root in $\mathcal{O}(\log n)$ time.
+</p>
 
-<p><strong>Increase-Key:</strong> Raising the value of an existing node, causing it to bubble upward toward the root if it exceeds its parent.</p><br>
+<p><strong>Increase-Key:</strong> Raising the value of an existing node, causing it to bubble upward toward the root if
+    it exceeds its parent.</p><br>
 
 <h2>How Does a Max-Heap Work Conceptually?</h2>
 
-<p>When a new element is added to a max-heap, it starts at the bottom leaf position and bubbles upward whenever its value is *larger* than its parent's value. When the maximum root element is removed, the bottom-most leaf takes the root spot and sifts downward, swapping with the *larger* of its two children at each step until it settles into a spot where it is larger than both of its children.</p><br>
+<p>When a new element is added to a max-heap, it starts at the bottom leaf position and bubbles upward whenever its
+    value is *larger* than its parent's value. When the maximum root element is removed, the bottom-most leaf takes the
+    root spot and sifts downward, swapping with the *larger* of its two children at each step until it settles into a
+    spot where it is larger than both of its children.</p><br>
 
 <h2>Where Are Max-Heaps Used in the Real World?</h2>
 
-<p><strong>In-Place Ascending Heapsort:</strong> Repeatedly pluck the largest element from the root of a max-heap and place it at the back of an array to sort data from smallest to largest.</p>
+<p><strong>In-Place Ascending Heapsort:</strong> Repeatedly pluck the largest element from the root of a max-heap and
+    place it at the back of an array to sort data from smallest to largest.</p>
 
 <p><strong>Priority Job Queues:</strong> Always execute the job assigned the highest numerical urgency score next.</p>
 
-<p><strong>Streaming Median Calculation:</strong> Work alongside a min-heap to track the lower half of numbers in a live data stream.</p><br>
+<p><strong>Streaming Median Calculation:</strong> Work alongside a min-heap to track the lower half of numbers in a live
+    data stream.</p><br>
 
 <h2>Summary</h2>
 
-<p>A max-heap keeps the largest value crowned at the root at all times, making it ideal for highest-priority scheduling, auction systems, and in-place sorting.</p>
+<p>A max-heap keeps the largest value crowned at the root at all times, making it ideal for highest-priority scheduling,
+    auction systems, and in-place sorting.</p>

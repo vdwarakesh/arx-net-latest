@@ -1,7 +1,7 @@
 // ============================================================
 // SETTINGS CONFIG
 // Pure data: the tabs/panes shown inside the Settings modal. To add,
-// remove, or reword a settings section, edit this file only — the
+// remove, or reword a settings section, edit this file only - the
 // rendering logic lives in SettingsModal.js.
 // ============================================================
 

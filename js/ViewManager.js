@@ -14,7 +14,7 @@
 //
 // Also keeps the "Object metadata" card (#metadataCard, static markup
 // in layout.html) in sync with whichever container is currently
-// focused — see _updateMetadata() and focusContainer() below.
+// focused - see _updateMetadata() and focusContainer() below.
 //
 // Also toggles #empty-state vs. (#focused-container-slot + .algorithm):
 // with nothing focused, #focused-view shows the "Arx Net" empty state
@@ -22,7 +22,7 @@
 // _showFocusedContent() below.
 //
 // Also handles the DOM/view-state side of deleting a container (the
-// registry side — confirmation + removing it from the name map — is
+// registry side - confirmation + removing it from the name map - is
 // ContainerRegistry's job). See deleteContainer() below.
 // ============================================================
 
@@ -47,7 +47,7 @@ export class ViewManager {
         this.currentFocused = null;
         this.lastFocused = null;
 
-        // Nothing is focused yet — #focused-view is visible by default
+        // Nothing is focused yet - #focused-view is visible by default
         // (before anything's been created), so start on the empty state
         // rather than showing two empty/irrelevant panes.
         this._showEmptyState();
@@ -89,7 +89,7 @@ export class ViewManager {
         this.btnList.addEventListener('click', () => this.toggleList());
 
         // Keep the mobile list, and the metadata card's displayed name, in
-        // sync with every add/rename the registry sees — not just the ones
+        // sync with every add/rename the registry sees - not just the ones
         // that happen to go through createNewContainer below (a rename
         // happens entirely inside ContainerRegistry, for example, including
         // while the renamed container is the one currently focused).
@@ -107,7 +107,7 @@ export class ViewManager {
         return container;
     }
 
-    // Kept intentionally reusable even though nothing currently calls it —
+    // Kept intentionally reusable even though nothing currently calls it -
     // Container.js no longer has a delete button wired to it (see the
     // comment there), but this method plus
     // ContainerRegistry.confirmDelete() are the full delete mechanism,
@@ -119,7 +119,7 @@ export class ViewManager {
     // modal (the registry has already removed the name by that point).
     // .remove() takes the container and everything inside it with it,
     // regardless of whether it currently lives in the grid or the
-    // focused slot — no gridPlaceholder bookkeeping needed either way,
+    // focused slot - no gridPlaceholder bookkeeping needed either way,
     // since there's a single reused placeholder node (see focusContainer)
     // that simply relocates itself the next time something is focused.
     deleteContainer(containerElement) {
@@ -141,7 +141,7 @@ export class ViewManager {
 
     // Rebuilds the mobile name list from scratch. Cheap and infrequent
     // enough (only on add/rename) that a full rebuild is simpler than
-    // diffing — see the HoverPopover discussion for where that tradeoff
+    // diffing - see the HoverPopover discussion for where that tradeoff
     // does and doesn't hold.
     renderMobileList() {
         this.mobileListEl.innerHTML = this.registry.size === 0
@@ -171,9 +171,9 @@ export class ViewManager {
         this._updateMetadata(containerElement);
     }
 
-    // Reads the name straight off the container's own title element — the
+    // Reads the name straight off the container's own title element - the
     // single place that name is already kept up to date by
-    // ContainerRegistry — rather than tracking a second copy of it here.
+    // ContainerRegistry - rather than tracking a second copy of it here.
     _updateMetadata(containerElement) {
         const name = containerElement.querySelector('.container-title').textContent;
         this.metadataNameValue.textContent = name;

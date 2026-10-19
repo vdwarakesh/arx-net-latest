@@ -1,31 +1,46 @@
 <h1>Singly Linked List</h1>
 
-<p>A Singly Linked List is a special type of linked list in which each node contains only one pointer that directs traffic strictly forward to the next node in the sequence. Once you move from one node to the next, there is no built-in link to step backward.</p>
+<p>A Singly Linked List is a special type of linked list in which each node contains only one pointer that directs
+    traffic strictly forward to the next node in the sequence. Once you move from one node to the next, there is no
+    built-in link to step backward.</p>
 
-<p>Imagine a one-way street with a series of stops. You can drive forward from Stop A to Stop B, and from Stop B to Stop C, following the directional signs. However, if you are at Stop C and realize you dropped your keys at Stop B, you cannot reverse—you must loop all the way back to the entrance of the street and drive forward again.</p><br>
+<p>Imagine a one-way street with a series of stops. You can drive forward from Stop A to Stop B, and from Stop B to Stop
+    C, following the directional signs. However, if you are at Stop C and realize you dropped your keys at Stop B, you
+    cannot reverse-you must loop all the way back to the entrance of the street and drive forward again.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Next Pointer:</strong> The single directional link inside each node that holds the address of the following node.</p>
+<p><strong>Next Pointer:</strong> The single directional link inside each node that holds the address of the following
+    node.</p>
 
-<p><strong>Unidirectional Traversal:</strong> Moving through the data in one direction only—from the head toward the tail.</p>
+<p><strong>Unidirectional Traversal:</strong> Moving through the data in one direction only-from the head toward the
+    tail.</p>
 
-<p><strong>Null Terminator:</strong> The special empty marker at the end of the final node's `next` pointer that signals the list has ended.</p><br>
+<p><strong>Null Terminator:</strong> The special empty marker at the end of the final node's `next` pointer that signals
+    the list has ended.</p><br>
 
 <h2>How Does a Singly Linked List Work Conceptually?</h2>
 
-<p>Because each node only stores a single pointer alongside its data, a singly linked list is the most memory-efficient member of the linked list family. Inserting or removing an element at the very front (the head) is instantaneous: a new node simply points to the current head and becomes the new head.</p>
+<p>Because each node only stores a single pointer alongside its data, a singly linked list is the most memory-efficient
+    member of the linked list family. Inserting or removing an element at the very front (the head) is instantaneous: a
+    new node simply points to the current head and becomes the new head.</p>
 
-<p>However, deleting a specific node in the middle or at the tail requires you to keep track of the *previous* node as you walk forward, because once you land on the target node, it has no way of telling you who points to it from behind.</p><br>
+<p>However, deleting a specific node in the middle or at the tail requires you to keep track of the *previous* node as
+    you walk forward, because once you land on the target node, it has no way of telling you who points to it from
+    behind.</p><br>
 
 <h2>Where Are Singly Linked Lists Used in the Real World?</h2>
 
-<p><strong>Hash Table Chaining:</strong> Store multiple key-value pairs that land in the same hash bucket using minimal memory overhead.</p>
+<p><strong>Hash Table Chaining:</strong> Store multiple key-value pairs that land in the same hash bucket using minimal
+    memory overhead.</p>
 
-<p><strong>Implementing Stacks:</strong> Power Last-In, First-Out (LIFO) structures where items are only ever added and removed from the front head.</p>
+<p><strong>Implementing Stacks:</strong> Power Last-In, First-Out (LIFO) structures where items are only ever added and
+    removed from the front head.</p>
 
-<p><strong>Lightweight Network Packet Queues:</strong> Buffer incoming data packets in routers where packets are processed strictly from front to back.</p><br>
+<p><strong>Lightweight Network Packet Queues:</strong> Buffer incoming data packets in routers where packets are
+    processed strictly from front to back.</p><br>
 
 <h2>Summary</h2>
 
-<p>A singly linked list is a lean, one-way chain of nodes. It provides ultra-fast additions at the front and minimal pointer overhead whenever backward navigation isn't required.</p>
+<p>A singly linked list is a lean, one-way chain of nodes. It provides ultra-fast additions at the front and minimal
+    pointer overhead whenever backward navigation isn't required.</p>

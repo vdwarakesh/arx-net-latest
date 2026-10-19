@@ -9,10 +9,10 @@
 //   - click, for .list-jump-btn (its buttons are rebuilt from scratch
 //     every time the object-list popover reopens, so a listener
 //     attached once to a specific button would miss ones created
-//     later — see sidebarPopovers.js)
+//     later - see sidebarPopovers.js)
 // Everything else (pick-graph/pick-tree, sidebar buttons, modal
 // buttons, etc.) has a fixed DOM and gets a direct listener on its
-// own element, attached where that element is created — see
+// own element, attached where that element is created - see
 // ViewManager.js, SettingsModal.js, FullscreenToggle.js.
 // ============================================================
 
@@ -35,7 +35,7 @@ export class AppController {
         this.fullscreenToggle = new FullscreenToggle();
 
         // Code/Explanation <-> Traversal row (vertical drag, grows/shrinks
-        // the Code/Explanation card). Unchanged behavior from before —
+        // the Code/Explanation card). Unchanged behavior from before -
         // just renamed topCardId -> targetId to match ResizablePanel's
         // now-generalized options.
         this.codeResizer = new ResizablePanel({
@@ -46,7 +46,7 @@ export class AppController {
 
         // Container <-> Object metadata (vertical drag). Object metadata is
         // "after" the divider, so dragging down shrinks it rather than
-        // growing it — see ResizablePanel's targetPosition doc comment.
+        // growing it - see ResizablePanel's targetPosition doc comment.
         this.metadataResizer = new ResizablePanel({
             panelId: 'focused-container-slot',
             targetId: 'metadataCard',
@@ -55,7 +55,7 @@ export class AppController {
         });
 
         // Traversal <-> State variables (horizontal drag) + the "rotate to
-        // a vertical tab at 3rem" behavior — see initTraversalResize.js.
+        // a vertical tab at 3rem" behavior - see initTraversalResize.js.
         this.traversalResizer = initTraversalResize();
 
         this.codePanel = new CodePanel();
@@ -75,7 +75,7 @@ export class AppController {
     // GLOBAL EVENT DELEGATION
     // Only "list-jump-btn" lives here, because its buttons are regenerated
     // from scratch every time the "Show object list" popover reopens
-    // (see sidebarPopovers.js) — a direct listener would miss buttons
+    // (see sidebarPopovers.js) - a direct listener would miss buttons
     // created after the listener was attached. Everything with a fixed,
     // one-time DOM (pick-graph/pick-tree, modal buttons, etc.) gets a
     // direct listener instead; see ViewManager.js.

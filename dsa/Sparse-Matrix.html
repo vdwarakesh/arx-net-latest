@@ -1,31 +1,48 @@
 <h1>Sparse Matrix</h1>
 
-<p>A Sparse Matrix is a special type of matrix in which the overwhelming majority of cells are empty (`0`), so the structure compresses memory dramatically by storing **only the non-zero values** alongside their `(row, column)` coordinates.</p>
+<p>A Sparse Matrix is a special type of matrix in which the overwhelming majority of cells are empty (`0`), so the
+    structure compresses memory dramatically by storing **only the non-zero values** alongside their `(row, column)`
+    coordinates.</p>
 
-<p>Imagine a grid tracking which of Netflix's 250 million users have watched which of its 15,000 movies. A full grid would have 3.75 trillion cells, yet 99.9% of them would be zero because no single person has watched every movie. Instead of wasting terabytes of RAM storing trillions of zeros, a sparse matrix simply records a tidy list of the movies each user *actually* watched.</p><br>
+<p>Imagine a grid tracking which of Netflix's 250 million users have watched which of its 15,000 movies. A full grid
+    would have 3.75 trillion cells, yet 99.9% of them would be zero because no single person has watched every movie.
+    Instead of wasting terabytes of RAM storing trillions of zeros, a sparse matrix simply records a tidy list of the
+    movies each user *actually* watched.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Sparsity vs. Density:</strong> Sparsity is the fraction of cells that are zero (`0`), while density ($nnz / (M \times N)$) is the tiny fraction of cells holding non-zero values ($nnz$).</p>
+<p><strong>Sparsity vs. Density:</strong> Sparsity is the fraction of cells that are zero (`0`), while density ($nnz /
+    (M \times N)$) is the tiny fraction of cells holding non-zero values ($nnz$).</p>
 
-<p><strong>Coordinate List (COO):</strong> Storing three parallel arrays—`row_index`, `col_index`, and `value`—one entry per non-zero element.</p>
+<p><strong>Coordinate List (COO):</strong> Storing three parallel arrays-`row_index`, `col_index`, and `value`-one entry
+    per non-zero element.</p>
 
-<p><strong>Compressed Sparse Row (CSR):</strong> The industry-standard format that compresses row indices into a compact row-offset array (`row_ptr`) plus `col_idx` and `values` arrays for fast row slicing and matrix-vector multiplication.</p><br>
+<p><strong>Compressed Sparse Row (CSR):</strong> The industry-standard format that compresses row indices into a compact
+    row-offset array (`row_ptr`) plus `col_idx` and `values` arrays for fast row slicing and matrix-vector
+    multiplication.</p><br>
 
 <h2>How Does a Sparse Matrix Work Conceptually?</h2>
 
-<p>Instead of allocating $M \times N$ space, a sparse matrix uses space proportional only to $nnz$ (the number of non-zero entries). In **CSR (Compressed Sparse Row)** format, all non-zero values are packed into a `values` array, their column numbers sit in a matching `col_idx` array, and a small `row_ptr` array of size $M + 1$ tells you exactly where each row's non-zero entries start and stop.</p>
+<p>Instead of allocating $M \times N$ space, a sparse matrix uses space proportional only to $nnz$ (the number of
+    non-zero entries). In **CSR (Compressed Sparse Row)** format, all non-zero values are packed into a `values` array,
+    their column numbers sit in a matching `col_idx` array, and a small `row_ptr` array of size $M + 1$ tells you
+    exactly where each row's non-zero entries start and stop.</p>
 
-<p>When multiplying a sparse matrix by a vector, the computer completely skips all the billions of zeros and only performs math on the non-zero entries—turning impossible terabyte calculations into millisecond operations.</p><br>
+<p>When multiplying a sparse matrix by a vector, the computer completely skips all the billions of zeros and only
+    performs math on the non-zero entries-turning impossible terabyte calculations into millisecond operations.</p><br>
 
 <h2>Where Are Sparse Matrices Used in the Real World?</h2>
 
-<p><strong>Recommendation Systems (Collaborative Filtering):</strong> Represent user-item interaction grids across e-commerce and streaming platforms.</p>
+<p><strong>Recommendation Systems (Collaborative Filtering):</strong> Represent user-item interaction grids across
+    e-commerce and streaming platforms.</p>
 
-<p><strong>Finite Element Engineering & Physics Simulations:</strong> Solve structural stress, fluid dynamics, and electrical circuit meshes where each node only touches its immediate physical neighbors.</p>
+<p><strong>Finite Element Engineering & Physics Simulations:</strong> Solve structural stress, fluid dynamics, and
+    electrical circuit meshes where each node only touches its immediate physical neighbors.</p>
 
-<p><strong>Web Search Engine PageRank & Graph Adjacency:</strong> Represent the link graph of billions of web pages where each page only links to a few dozen others.</p><br>
+<p><strong>Web Search Engine PageRank & Graph Adjacency:</strong> Represent the link graph of billions of web pages
+    where each page only links to a few dozen others.</p><br>
 
 <h2>Summary</h2>
 
-<p>A sparse matrix skips storing zeros and records only non-zero entries and their coordinates, making it possible to store and compute over massive, mostly-empty grids in minimal memory.</p>
+<p>A sparse matrix skips storing zeros and records only non-zero entries and their coordinates, making it possible to
+    store and compute over massive, mostly-empty grids in minimal memory.</p>

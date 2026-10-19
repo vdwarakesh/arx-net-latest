@@ -1,31 +1,48 @@
 <h1>Cache Structures</h1>
 
-<p>Cache Structures are a family of specialized high-speed data structures that store a limited subset of frequently or recently used data in fast memory, paired with an automatic **eviction policy** that decides which item to discard whenever the cache becomes full.</p>
+<p>Cache Structures are a family of specialized high-speed data structures that store a limited subset of frequently or
+    recently used data in fast memory, paired with an automatic **eviction policy** that decides which item to discard
+    whenever the cache becomes full.</p>
 
-<p>Imagine a chef's small countertop spice rack that only has room for 10 jars, while the main pantry down in the basement holds 500 ingredients. Keeping the 10 most useful spices right at arm's reach saves the chef from running down the stairs for every dish. When the chef brings up an 11th jar from the basement, a smart rule decides which of the 10 jars currently on the counter gets sent back downstairs. Cache structures manage fast computer memory using this exact strategy.</p><br>
+<p>Imagine a chef's small countertop spice rack that only has room for 10 jars, while the main pantry down in the
+    basement holds 500 ingredients. Keeping the 10 most useful spices right at arm's reach saves the chef from running
+    down the stairs for every dish. When the chef brings up an 11th jar from the basement, a smart rule decides which of
+    the 10 jars currently on the counter gets sent back downstairs. Cache structures manage fast computer memory using
+    this exact strategy.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Cache Hit:</strong> Finding the requested data immediately inside the fast cache, avoiding a slow trip to the database, disk, or network.</p>
+<p><strong>Cache Hit:</strong> Finding the requested data immediately inside the fast cache, avoiding a slow trip to the
+    database, disk, or network.</p>
 
-<p><strong>Cache Miss:</strong> Discovering the requested data is not in the cache, requiring a slow fetch from the main source followed by inserting it into the cache.</p>
+<p><strong>Cache Miss:</strong> Discovering the requested data is not in the cache, requiring a slow fetch from the main
+    source followed by inserting it into the cache.</p>
 
-<p><strong>Hit Ratio (Hit Rate):</strong> The percentage of total requests served directly from the cache—the primary measure of a cache's effectiveness.</p>
+<p><strong>Hit Ratio (Hit Rate):</strong> The percentage of total requests served directly from the cache-the primary
+    measure of a cache's effectiveness.</p>
 
-<p><strong>Eviction Policy (Replacement Policy):</strong> The algorithm (such as LRU, LFU, MRU, or FIFO) used to choose which existing entry gets kicked out when the cache reaches maximum capacity.</p><br>
+<p><strong>Eviction Policy (Replacement Policy):</strong> The algorithm (such as LRU, LFU, MRU, or FIFO) used to choose
+    which existing entry gets kicked out when the cache reaches maximum capacity.</p><br>
 
 <h2>How Do Cache Structures Work Conceptually?</h2>
 
-<p>To be useful, a cache structure must do two things in **constant $\mathcal{O}(1)$ time**: look up any item by its key, and update/evict items according to its eviction order. To achieve both simultaneously, almost all cache structures combine a **Hash Map** (for instant $\mathcal{O}(1)$ key lookups) with an ordering structure like a **Doubly Linked List** or **Queue** (for instant $\mathcal{O}(1)$ reordering and eviction).</p><br>
+<p>To be useful, a cache structure must do two things in **constant $\mathcal{O}(1)$ time**: look up any item by its
+    key, and update/evict items according to its eviction order. To achieve both simultaneously, almost all cache
+    structures combine a **Hash Map** (for instant $\mathcal{O}(1)$ key lookups) with an ordering structure like a
+    **Doubly Linked List** or **Queue** (for instant $\mathcal{O}(1)$ reordering and eviction).</p><br>
 
 <h2>Where Are Cache Structures Used in the Real World?</h2>
 
-<p><strong>CPU Hardware Caches (L1 / L2 / L3):</strong> Keep active instructions and memory words nanoseconds away from processor cores.</p>
+<p><strong>CPU Hardware Caches (L1 / L2 / L3):</strong> Keep active instructions and memory words nanoseconds away from
+    processor cores.</p>
 
-<p><strong>Web Application & API Caching (Redis, Memcached):</strong> Store rendered HTML fragments, user profiles, and expensive SQL query results in RAM.</p>
+<p><strong>Web Application & API Caching (Redis, Memcached):</strong> Store rendered HTML fragments, user profiles, and
+    expensive SQL query results in RAM.</p>
 
-<p><strong>Operating System Page & Buffer Caches:</strong> Keep recently read disk blocks in free system memory so repeat file reads are instantaneous.</p><br>
+<p><strong>Operating System Page & Buffer Caches:</strong> Keep recently read disk blocks in free system memory so
+    repeat file reads are instantaneous.</p><br>
 
 <h2>Summary</h2>
 
-<p>Cache structures combine instant hash lookups with automated eviction queues, keeping the most valuable data in fast memory to dramatically accelerate software and hardware systems.</p>
+<p>Cache structures combine instant hash lookups with automated eviction queues, keeping the most valuable data in fast
+    memory to dramatically accelerate software and hardware systems.</p>

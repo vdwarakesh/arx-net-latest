@@ -1,31 +1,49 @@
 <h1>Gomory-Hu Tree</h1>
 
-<p>A Gomory-Hu Tree (also called a **Cut Tree**) is a special type of weighted tree built over all $V$ vertices of an undirected capacitated graph that compactly encodes the **Minimum $s$-$t$ Cut (and Maximum Flow)** between **all $\binom{V}{2}$ pairs of vertices** using only $V - 1$ tree edges.</p>
+<p>A Gomory-Hu Tree (also called a **Cut Tree**) is a special type of weighted tree built over all $V$ vertices of an
+    undirected capacitated graph that compactly encodes the **Minimum $s$-$t$ Cut (and Maximum Flow)** between **all
+    $\binom{V}{2}$ pairs of vertices** using only $V - 1$ tree edges.</p>
 
-<p>Imagine a country with 1,000 cities connected by a complex web of highways. Calculating the worst traffic bottleneck between every possible pair of cities would normally require nearly 500,000 separate traffic simulations. A Gomory-Hu Tree distills that entire tangled highway web into a simple tree of just 999 roads where the smallest road along the tree path between any two cities tells you their exact bottleneck capacity—and removing that single tree road splits the country into the exact two halves of the real-world cut!</p><br>
+<p>Imagine a country with 1,000 cities connected by a complex web of highways. Calculating the worst traffic bottleneck
+    between every possible pair of cities would normally require nearly 500,000 separate traffic simulations. A
+    Gomory-Hu Tree distills that entire tangled highway web into a simple tree of just 999 roads where the smallest road
+    along the tree path between any two cities tells you their exact bottleneck capacity-and removing that single tree
+    road splits the country into the exact two halves of the real-world cut!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Minimum $s$-$t$ Cut (Max-Flow Value):</strong> The smallest total edge capacity that, if severed in the original graph, completely disconnects vertex $s$ from vertex $t$.</p>
+<p><strong>Minimum $s$-$t$ Cut (Max-Flow Value):</strong> The smallest total edge capacity that, if severed in the
+    original graph, completely disconnects vertex $s$ from vertex $t$.</p>
 
-<p><strong>Flow Equivalence:</strong> For any two vertices $u$ and $v$, the minimum edge weight along the unique path between $u$ and $v$ in the Gomory-Hu Tree equals the exact Max-Flow / Min-Cut value between $u$ and $v$ in the original graph.</p>
+<p><strong>Flow Equivalence:</strong> For any two vertices $u$ and $v$, the minimum edge weight along the unique path
+    between $u$ and $v$ in the Gomory-Hu Tree equals the exact Max-Flow / Min-Cut value between $u$ and $v$ in the
+    original graph.</p>
 
-<p><strong>Cut-Set Partition Equivalence:</strong> Removing that minimum-weight edge from the Gomory-Hu Tree splits the tree's vertices into the exact two sets $(S, T)$ that form the minimum cut in the original graph.</p><br>
+<p><strong>Cut-Set Partition Equivalence:</strong> Removing that minimum-weight edge from the Gomory-Hu Tree splits the
+    tree's vertices into the exact two sets $(S, T)$ that form the minimum cut in the original graph.</p><br>
 
 <h2>How Does a Gomory-Hu Tree Work Conceptually?</h2>
 
-<p>Even though the edges of a Gomory-Hu Tree do not have to exist in the original graph, Gomory and Hu proved in 1961 that any undirected graph with $V$ vertices has at most $V - 1$ numerically distinct non-crossing minimum cuts among all $\frac{V(V-1)}{2}$ pairs.</p>
+<p>Even though the edges of a Gomory-Hu Tree do not have to exist in the original graph, Gomory and Hu proved in 1961
+    that any undirected graph with $V$ vertices has at most $V - 1$ numerically distinct non-crossing minimum cuts among
+    all $\frac{V(V-1)}{2}$ pairs.</p>
 
-<p>Instead of running $\mathcal{O}(V^2)$ max-flow calculations, the Gomory-Hu algorithm starts with all vertices clumped in one super-node and performs **only $V - 1$ minimum cut splits**, expanding the tree one edge at a time. Once built, any all-pairs max-flow query reduces to finding the minimum edge on a tree path.</p><br>
+<p>Instead of running $\mathcal{O}(V^2)$ max-flow calculations, the Gomory-Hu algorithm starts with all vertices clumped
+    in one super-node and performs **only $V - 1$ minimum cut splits**, expanding the tree one edge at a time. Once
+    built, any all-pairs max-flow query reduces to finding the minimum edge on a tree path.</p><br>
 
 <h2>Where Are Gomory-Hu Trees Used in the Real World?</h2>
 
-<p><strong>Telecommunications & Power Grid Vulnerability Analysis:</strong> Identify the weakest communication or electrical bottlenecks between any pair of substations instantaneously.</p>
+<p><strong>Telecommunications & Power Grid Vulnerability Analysis:</strong> Identify the weakest communication or
+    electrical bottlenecks between any pair of substations instantaneously.</p>
 
-<p><strong>Image Segmentation & Computer Vision:</strong> Partition pixel graphs into foreground and background clusters across multiple sensitivity thresholds.</p>
+<p><strong>Image Segmentation & Computer Vision:</strong> Partition pixel graphs into foreground and background clusters
+    across multiple sensitivity thresholds.</p>
 
-<p><strong>Network Design & Clustering:</strong> Group tightly connected communities in social or biological networks based on multi-terminal cut capacities.</p><br>
+<p><strong>Network Design & Clustering:</strong> Group tightly connected communities in social or biological networks
+    based on multi-terminal cut capacities.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Gomory-Hu Tree compresses all $\binom{V}{2}$ pairwise minimum cuts of a complex undirected network into a single weighted tree of $V - 1$ edges, turning expensive max-flow calculations into instant tree path lookups.</p>
+<p>A Gomory-Hu Tree compresses all $\binom{V}{2}$ pairwise minimum cuts of a complex undirected network into a single
+    weighted tree of $V - 1$ edges, turning expensive max-flow calculations into instant tree path lookups.</p>

@@ -1,29 +1,43 @@
 <h1>MRU Cache</h1>
 
-<p>An MRU Cache (**Most Recently Used** Cache) is a special type of cache structure that intentionally does the exact opposite of an LRU cache: when the cache becomes full, it evicts the item that was **accessed most recently**.</p>
+<p>An MRU Cache (**Most Recently Used** Cache) is a special type of cache structure that intentionally does the exact
+    opposite of an LRU cache: when the cache becomes full, it evicts the item that was **accessed most recently**.</p>
 
-<p>At first glance, throwing away the item you just used sounds backwards—until you imagine flipping through a stacked deck of 1,000 flashcards from top to bottom in a repeating loop, when your desk can only hold 50 cards at a time. The card you *just* finished reading won't be needed again for another 999 steps! Evicting the card you just read leaves the other 49 cards untouched on your desk ready for the next cycle.</p><br>
+<p>At first glance, throwing away the item you just used sounds backwards-until you imagine flipping through a stacked
+    deck of 1,000 flashcards from top to bottom in a repeating loop, when your desk can only hold 50 cards at a time.
+    The card you *just* finished reading won't be needed again for another 999 steps! Evicting the card you just read
+    leaves the other 49 cards untouched on your desk ready for the next cycle.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Cyclic Scan Resistance:</strong> When looping sequentially through a dataset of size $N$ that is slightly larger than the cache capacity $C$ ($N > C$), an LRU cache suffers a **0% hit rate** (evicting every item right before the next loop needs it), whereas an MRU cache preserves $C - 1$ items and achieves a high hit rate.</p>
+<p><strong>Cyclic Scan Resistance:</strong> When looping sequentially through a dataset of size $N$ that is slightly
+    larger than the cache capacity $C$ ($N > C$), an LRU cache suffers a **0% hit rate** (evicting every item right
+    before the next loop needs it), whereas an MRU cache preserves $C - 1$ items and achieves a high hit rate.</p>
 
-<p><strong>MRU Eviction Slot:</strong> The position of the most recently touched item, which becomes the immediate candidate for replacement on the next cache miss.</p><br>
+<p><strong>MRU Eviction Slot:</strong> The position of the most recently touched item, which becomes the immediate
+    candidate for replacement on the next cache miss.</p><br>
 
 <h2>How Does an MRU Cache Work Conceptually?</h2>
 
-<p>Built with the exact same **Hash Map + Doubly Linked List** architecture as an LRU cache, an MRU cache moves every accessed item to the front (MRU head) of the list. However, when the cache reaches capacity and needs to evict an entry to make room for a new arrival, it evicts from the **MRU end** rather than the LRU tail.</p>
+<p>Built with the exact same **Hash Map + Doubly Linked List** architecture as an LRU cache, an MRU cache moves every
+    accessed item to the front (MRU head) of the list. However, when the cache reaches capacity and needs to evict an
+    entry to make room for a new arrival, it evicts from the **MRU end** rather than the LRU tail.</p>
 
-<p>This shines whenever access patterns follow predictable sequential scans or random lookups over large files where recently examined records are the *least* likely to be requested again soon.</p><br>
+<p>This shines whenever access patterns follow predictable sequential scans or random lookups over large files where
+    recently examined records are the *least* likely to be requested again soon.</p><br>
 
 <h2>Where Are MRU Caches Used in the Real World?</h2>
 
-<p><strong>Database Full-Table & Index Scans (Chou-DeWitt DBMIN):</strong> Cache pages during sequential loop joins in relational databases where a table slightly larger than RAM is scanned repeatedly.</p>
+<p><strong>Database Full-Table & Index Scans (Chou-DeWitt DBMIN):</strong> Cache pages during sequential loop joins in
+    relational databases where a table slightly larger than RAM is scanned repeatedly.</p>
 
-<p><strong>File System Sequential Read Buffers:</strong> Immediately recycle memory pages holding video or backup file chunks the moment the sequential reader finishes passing over them.</p>
+<p><strong>File System Sequential Read Buffers:</strong> Immediately recycle memory pages holding video or backup file
+    chunks the moment the sequential reader finishes passing over them.</p>
 
-<p><strong>Scroll-Through Media Galleries:</strong> Free high-resolution bitmap buffers of photos a user has just scrolled past while keeping upcoming or pinned items in memory.</p><br>
+<p><strong>Scroll-Through Media Galleries:</strong> Free high-resolution bitmap buffers of photos a user has just
+    scrolled past while keeping upcoming or pinned items in memory.</p><br>
 
 <h2>Summary</h2>
 
-<p>An MRU cache evicts the most recently accessed item first, defeating the "thrashing" trap of LRU caches during sequential scans and cyclic loops over large datasets.</p>
+<p>An MRU cache evicts the most recently accessed item first, defeating the "thrashing" trap of LRU caches during
+    sequential scans and cyclic loops over large datasets.</p>

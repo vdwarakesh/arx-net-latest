@@ -1,31 +1,47 @@
 <h1>Radix Trie</h1>
 
-<p>A Radix Trie (also called a **Radix Tree** or **Compact Prefix Tree**) is a special type of compressed trie in which keys are broken into chunks of a fixed radix (base)—such as bytes, nibbles, or multi-character substrings—and stored along compressed edges for high-performance associative lookups.</p>
+<p>A Radix Trie (also called a **Radix Tree** or **Compact Prefix Tree**) is a special type of compressed trie in which
+    keys are broken into chunks of a fixed radix (base)-such as bytes, nibbles, or multi-character substrings-and stored
+    along compressed edges for high-performance associative lookups.</p>
 
-<p>Imagine sorting mail first by 3-digit region code, then by 2-digit post office code, and skipping intermediate sorting bins entirely whenever an entire zip code goes to a single corporate building. A radix trie adapts its branching depth dynamically to the density of the keys stored inside it.</p><br>
+<p>Imagine sorting mail first by 3-digit region code, then by 2-digit post office code, and skipping intermediate
+    sorting bins entirely whenever an entire zip code goes to a single corporate building. A radix trie adapts its
+    branching depth dynamically to the density of the keys stored inside it.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Radix ($r$):</strong> The base or chunk size used to slice keys at each branching level (for example, $r=2$ for single bits, $r=16$ for 4-bit hex nibbles, or $r=256$ for full bytes).</p>
+<p><strong>Radix ($r$):</strong> The base or chunk size used to slice keys at each branching level (for example, $r=2$
+    for single bits, $r=16$ for 4-bit hex nibbles, or $r=256$ for full bytes).</p>
 
-<p><strong>Adaptive Node Sizing:</strong> A common optimization (used in Adaptive Radix Trees) where nodes dynamically switch between small 4-slot, 16-slot, 48-slot, and 256-slot arrays depending on how many children actually branch out.</p>
+<p><strong>Adaptive Node Sizing:</strong> A common optimization (used in Adaptive Radix Trees) where nodes dynamically
+    switch between small 4-slot, 16-slot, 48-slot, and 256-slot arrays depending on how many children actually branch
+    out.</p>
 
-<p><strong>Longest Prefix Match:</strong> Finding the stored key that shares the longest matching beginning with a query key.</p><br>
+<p><strong>Longest Prefix Match:</strong> Finding the stored key that shares the longest matching beginning with a query
+    key.</p><br>
 
 <h2>How Does a Radix Trie Work Conceptually?</h2>
 
-<p>While "compressed trie" describes the general concept of collapsing single-child chains, a radix trie applies this principle to arbitrary binary keys, integers, and strings divided into fixed-base chunks. When you search for a key, you compare the multi-byte prefix stored on an edge in a single CPU instruction, then use the next byte to index into the child array.</p>
+<p>While "compressed trie" describes the general concept of collapsing single-child chains, a radix trie applies this
+    principle to arbitrary binary keys, integers, and strings divided into fixed-base chunks. When you search for a key,
+    you compare the multi-byte prefix stored on an edge in a single CPU instruction, then use the next byte to index
+    into the child array.</p>
 
-<p>This gives radix tries hash-table-like lookup speeds while still keeping keys sorted in lexicographical order and supporting instant prefix scans.</p><br>
+<p>This gives radix tries hash-table-like lookup speeds while still keeping keys sorted in lexicographical order and
+    supporting instant prefix scans.</p><br>
 
 <h2>Where Are Radix Tries Used in the Real World?</h2>
 
-<p><strong>Web Server URL Routers:</strong> Match incoming HTTP paths like `/api/v2/users/profile` to their handler functions in frameworks across Go, Rust, and Node.js.</p>
+<p><strong>Web Server URL Routers:</strong> Match incoming HTTP paths like `/api/v2/users/profile` to their handler
+    functions in frameworks across Go, Rust, and Node.js.</p>
 
-<p><strong>In-Memory Databases (Redis & ART):</strong> Store Redis Streams, Cluster slot keys, and high-speed database indexes.</p>
+<p><strong>In-Memory Databases (Redis & ART):</strong> Store Redis Streams, Cluster slot keys, and high-speed database
+    indexes.</p>
 
-<p><strong>Operating System Page Caches:</strong> Map file offsets to cached memory pages inside the Linux kernel (`XArray` / radix tree).</p><br>
+<p><strong>Operating System Page Caches:</strong> Map file offsets to cached memory pages inside the Linux kernel
+    (`XArray` / radix tree).</p><br>
 
 <h2>Summary</h2>
 
-<p>A radix trie is a practical, chunk-oriented compressed trie that powers modern web routers, operating system kernels, and in-memory databases.</p>
+<p>A radix trie is a practical, chunk-oriented compressed trie that powers modern web routers, operating system kernels,
+    and in-memory databases.</p>

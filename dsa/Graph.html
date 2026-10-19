@@ -1,39 +1,59 @@
 <h1>Graph</h1>
 
-<p>A Graph is a non-linear data structure consisting of a collection of objects called vertices (or nodes) connected by links called edges. Unlike a tree, which enforces a strict top-down hierarchy with no loops, a graph allows any node to connect to any other node in arbitrary, web-like networks.</p>
+<p>A Graph is a non-linear data structure consisting of a collection of objects called vertices (or nodes) connected by
+    links called edges. Unlike a tree, which enforces a strict top-down hierarchy with no loops, a graph allows any node
+    to connect to any other node in arbitrary, web-like networks.</p>
 
-<p>Imagine an airline route map spanning the globe. Cities are the vertices, and direct flight paths between cities are the edges. There is no single "top" city, you can fly in circles from London to Paris to Rome and back to London, and some remote island airports might connect only to each other. A graph models these complex, interconnected relationships.</p><br>
+<p>Imagine an airline route map spanning the globe. Cities are the vertices, and direct flight paths between cities are
+    the edges. There is no single "top" city, you can fly in circles from London to Paris to Rome and back to London,
+    and some remote island airports might connect only to each other. A graph models these complex, interconnected
+    relationships.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Vertex (or Node):</strong> An individual entity or point in the network, such as a city on a map or a user in a social network.</p>
+<p><strong>Vertex (or Node):</strong> An individual entity or point in the network, such as a city on a map or a user in
+    a social network.</p>
 
-<p><strong>Edge:</strong> A connection between two vertices representing a relationship, road, or communication link.</p>
+<p><strong>Edge:</strong> A connection between two vertices representing a relationship, road, or communication link.
+</p>
 
-<p><strong>Directed vs. Undirected:</strong> In an undirected graph, edges are two-way streets; in a directed graph (digraph), edges have arrows pointing strictly one way.</p>
+<p><strong>Directed vs. Undirected:</strong> In an undirected graph, edges are two-way streets; in a directed graph
+    (digraph), edges have arrows pointing strictly one way.</p>
 
-<p><strong>Weighted Graph:</strong> A graph where every edge carries a numerical cost, distance, or capacity (such as miles between cities).</p>
+<p><strong>Weighted Graph:</strong> A graph where every edge carries a numerical cost, distance, or capacity (such as
+    miles between cities).</p>
 
-<p><strong>Cycle:</strong> A closed path that starts and ends at the exact same vertex after visiting other vertices.</p>
+<p><strong>Cycle:</strong> A closed path that starts and ends at the exact same vertex after visiting other vertices.
+</p>
 
-<p><strong>Degree:</strong> The number of edges connected to a vertex (split into In-Degree and Out-Degree in directed graphs).</p><br>
+<p><strong>Degree:</strong> The number of edges connected to a vertex (split into In-Degree and Out-Degree in directed
+    graphs).</p><br>
 
 <h2>How Does a Graph Work Conceptually?</h2>
 
-<p>In computer memory, a graph is usually stored in one of two ways: an **Adjacency List** (where every vertex keeps a lightweight list of its direct neighbors) or an **Adjacency Matrix** (a 2D grid where row `u`, column `v` marks whether an edge exists between `u` and `v`).</p>
+<p>In computer memory, a graph is usually stored in one of two ways: an **Adjacency List** (where every vertex keeps a
+    lightweight list of its direct neighbors) or an **Adjacency Matrix** (a 2D grid where row `u`, column `v` marks
+    whether an edge exists between `u` and `v`).</p>
 
-<p>Algorithms explore graphs by walking along edges from neighbor to neighbor—either fanning out wave by wave using **Breadth-First Search (BFS)** to find shortest paths, or diving deep down paths using **Depth-First Search (DFS)** to detect cycles and connected islands.</p><br>
+<p>Algorithms explore graphs by walking along edges from neighbor to neighbor-either fanning out wave by wave using
+    **Breadth-First Search (BFS)** to find shortest paths, or diving deep down paths using **Depth-First Search (DFS)**
+    to detect cycles and connected islands.</p><br>
 
 <h2>Where Are Graphs Used in the Real World?</h2>
 
-<p><strong>GPS and Mapping Apps:</strong> Model road intersections and highways to calculate the fastest driving route through traffic.</p>
+<p><strong>GPS and Mapping Apps:</strong> Model road intersections and highways to calculate the fastest driving route
+    through traffic.</p>
 
-<p><strong>Social Networks:</strong> Represent friendships and follower networks on platforms like LinkedIn, Instagram, and X.</p>
+<p><strong>Social Networks:</strong> Represent friendships and follower networks on platforms like LinkedIn, Instagram,
+    and X.</p>
 
-<p><strong>The World Wide Web:</strong> Treat web pages as vertices and clickable hyperlinks as directed edges for search engine ranking.</p>
+<p><strong>The World Wide Web:</strong> Treat web pages as vertices and clickable hyperlinks as directed edges for
+    search engine ranking.</p>
 
-<p><strong>Recommendation Engines:</strong> Connect users to movies, songs, and products they have interacted with to suggest similar items.</p><br>
+<p><strong>Recommendation Engines:</strong> Connect users to movies, songs, and products they have interacted with to
+    suggest similar items.</p><br>
 
 <h2>Summary</h2>
 
-<p>A graph is the ultimate general-purpose network structure, capable of representing any web of many-to-many relationships without hierarchical restrictions.</p>
+<p>A graph is the ultimate general-purpose network structure, capable of representing any web of many-to-many
+    relationships without hierarchical restrictions.</p>

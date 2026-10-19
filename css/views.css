@@ -65,7 +65,7 @@
    Mobile-only list of container names, prepended inside #multi-view by
    ViewManager so it always renders as the first grid item (list, then
    container 1, container 2, ...). Hidden here because on desktop the
-   sidebar's hover popover already covers "show me the names" — see
+   sidebar's hover popover already covers "show me the names" - see
    css/responsive.css for where this becomes visible and how it gets an
    auto-height grid row instead of the fixed container-sized one.
 */
@@ -89,7 +89,7 @@
 /*
    The wrapper slot for the currently focused container.
    flex: 47 dynamically takes 47% of available space.
-   No gap here — #metadataDividerH (a real .divider-h, see
+   No gap here - #metadataDividerH (a real .divider-h, see
    css/resize-divider.css) sits between the container and
    .card.metadata and provides the spacing itself, the same way
    .divider-h already does between Code/Explanation and the Traversal
@@ -105,7 +105,7 @@
 
 /*
    The container fills whatever height .card.metadata (see
-   containers-cards.css) doesn't take — flex: 1 1 0 instead of a fixed
+   containers-cards.css) doesn't take - flex: 1 1 0 instead of a fixed
    height so it automatically absorbs the space freed up by changing
    .card.metadata's percentage.
 */
@@ -134,7 +134,7 @@
    below: without it, .traversal-row's content (specifically Traversal,
    once ResizablePanel sets its width directly) can push .algorithm
    itself wider than its 53% share, which then lets .traversal-row
-   measure a too-large "available width" on the very next pointermove —
+   measure a too-large "available width" on the very next pointermove -
    the row's own min-width: 0 alone isn't enough if its parent can
    still be inflated the same way.
 */
@@ -149,7 +149,7 @@
 /*
    Wraps Traversal + State variables side by side. Takes over the "fill
    whatever .card.code doesn't use" role .card.traversal used to play on
-   its own. No gap here — #dividerV (a .divider-v, see
+   its own. No gap here - #dividerV (a .divider-v, see
    css/resize-divider.css) provides the spacing itself and is also the
    drag handle between them; see js/initTraversalResize.js. The 60/40
    default split and 3rem minimums live in css/containers-cards.css,
@@ -162,7 +162,7 @@
    width gets large, .traversal-row's own width would grow to
    accommodate it instead of staying fixed, which inflates the
    "available space" ResizablePanel measures on the very next
-   pointermove — a feedback loop that lets Traversal grow unbounded
+   pointermove - a feedback loop that lets Traversal grow unbounded
    and defeats State variables' 3rem floor. See .main-content's own
    min-width: 0 in css/layout.css for the same trick on the other axis.
 */
@@ -178,11 +178,11 @@
    Explanation mode (js/CodePanel.js toggles this class on #algorithm):
    hide the resize handle and the Traversal/State variables row, and let
    whichever of #codeCard/#explanationCard is visible fill the full
-   height. The !important on .card.code is deliberate — it has to beat
+   height. The !important on .card.code is deliberate - it has to beat
    the inline flex-basis ResizablePanel sets while dragging, without
    ResizablePanel needing to know this mode exists. The normal
-   (non-important) inline style — whatever height the user last dragged
-   to, or the stylesheet's 60% default if they never did — takes back
+   (non-important) inline style - whatever height the user last dragged
+   to, or the stylesheet's 60% default if they never did - takes back
    over automatically the instant this class is removed.
 */
 .algorithm.explanation-active .divider-h,
@@ -211,7 +211,7 @@
 /*
    Shown instead of #focused-container-slot + .algorithm whenever nothing
    is focused (see ViewManager: constructor + focusContainer/toggleList).
-   Hidden by default — JS flips this to "flex" the moment something IS
+   Hidden by default - JS flips this to "flex" the moment something IS
    focused, and back to "none" the moment it isn't.
 */
 .empty-state {
@@ -226,7 +226,8 @@
 }
 
 .empty-state-title {
-    font-size: 3rem; /* Arx Net title in new page */
+    font-size: 3rem;
+    /* Arx Net title in new page */
     font-weight: 700;
     color: var(--text-color);
 }

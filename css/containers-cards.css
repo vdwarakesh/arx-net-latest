@@ -30,7 +30,7 @@
 }
 
 /* Code/Explanation card takes 70% of the vertical space by default (the
-   Traversal row fills the remaining 30%) — only one of #codeCard/
+   Traversal row fills the remaining 30%) - only one of #codeCard/
    #explanationCard is ever visible at once (see css/views.css), so this
    rule effectively sizes whichever one is shown.
    max-height protects against extreme JS resize values pushing the
@@ -144,7 +144,8 @@
     opacity: 0.4;
     margin-left: 0.35rem;
     margin-right: 0.05rem;
-    flex-shrink: 0; /* Prevents the dot from squishing when text is long */
+    flex-shrink: 0;
+    /* Prevents the dot from squishing when text is long */
 }
 
 /* A diamond indicator alternative to the dot */
@@ -155,8 +156,10 @@
     opacity: 0.4;
     margin-left: 0.35rem;
     margin-right: 0.05rem;
-    flex-shrink: 0; /* Prevents squishing */
-    transform: rotate(45deg); /* Rotates the square 45 degrees to form a diamond */
+    flex-shrink: 0;
+    /* Prevents squishing */
+    transform: rotate(45deg);
+    /* Rotates the square 45 degrees to form a diamond */
 }
 
 /* Wrapper takes the remaining 70% and stacks its children vertically */
@@ -170,7 +173,7 @@
 
 /*
    Traversal (60% default) and State variables (fills whatever Traversal
-   doesn't use), the two cards inside .traversal-row — dragged via
+   doesn't use), the two cards inside .traversal-row - dragged via
    #dividerV, see js/initTraversalResize.js. min-width is a CSS-level
    floor matching the var(--base-header-size) one that resizer enforces in JS; min-height
    already comes from the shared .container, .card rule above. See
@@ -179,7 +182,7 @@
 
    state-variables is flex: 1 1 0 (fill-remaining), NOT a fixed
    percentage, specifically so it can't fight with the pixel value
-   ResizablePanel sets on .card.traversal while dragging — a fixed
+   ResizablePanel sets on .card.traversal while dragging - a fixed
    basis on both sides at once would either overflow the row or leave a
    gap. Same reasoning as .algorithm's Code card + Traversal row pair.
 */
@@ -196,7 +199,7 @@
 /*
    Object metadata card (left side, below the focused container).
    Starts at its var(--base-header-size) minimum (same value as min-height below, and as
-   ResizablePanel's own minRem for #metadataDividerH in AppController) —
+   ResizablePanel's own minRem for #metadataDividerH in AppController) -
    change this one value to change the default, same as .card.code's
    70% above. The container above it (flex: 1 1 0 in css/views.css)
    absorbs whatever this doesn't use, same as always.
@@ -237,8 +240,8 @@
    Groups action icons at the right end of a container-header (currently
    just focus-btn), so justify-content: space-between on the header above
    pushes the title left and this whole group right as one unit. Built to
-   hold more than one icon — see the removed delete-btn comment in
-   layout.html — so a second icon added later just slots in here.
+   hold more than one icon - see the removed delete-btn comment in
+   layout.html - so a second icon added later just slots in here.
 */
 .header-actions {
     display: flex;
@@ -247,7 +250,7 @@
     flex-shrink: 0;
 }
 
-/* Header icon styling — used for the focus icon in every container-header */
+/* Header icon styling - used for the focus icon in every container-header */
 .header-icon {
     width: 2rem;
     /* Expanded slightly to match sidebar icons */
@@ -270,7 +273,7 @@
 }
 
 /*
-   Code/language select/Explanation/Notes, all in one row — the
+   Code/language select/Explanation/Notes, all in one row - the
    language select sits right next to Code for easy access rather than
    off at the header's far edge. .code-tabs is the sole child of
    .card-header now, so that rule's justify-content: space-between has
@@ -286,11 +289,11 @@
 
 /*
    The language <select> is a sibling of the tab buttons here (see
-   layout.html), not nested inside any of them — that's what keeps
+   layout.html), not nested inside any of them - that's what keeps
    "change the language" and "switch tabs" from ever being the same
    click, regardless of which tab it happens to sit next to. See
    js/CodePanel.js, which only listens for clicks on .code-tab[data-tab]
-   — Notes has no data-tab and is deliberately excluded, same reasoning.
+   - Notes has no data-tab and is deliberately excluded, same reasoning.
 */
 .code-tab {
     background: none;
@@ -325,7 +328,7 @@
 
 /*
    Active state is opacity-only, deliberately not the accent (blue)
-   color used elsewhere in the app — matches the flat, no-blue look of
+   color used elsewhere in the app - matches the flat, no-blue look of
    .language-select / .custom-select-* below.
 */
 .code-tab.active {
@@ -334,7 +337,7 @@
 }
 
 /*
-   COLLAPSED (vertical tab) — applied by initTraversalResize.js to
+   COLLAPSED (vertical tab) - applied by initTraversalResize.js to
    whichever of Traversal/State variables is currently at its var(--base-header-size)
    minimum width. The header rotates to fill that var(--base-header-size) strip top-to-
    bottom instead of trying to lay itself out horizontally with no

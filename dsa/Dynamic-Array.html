@@ -1,33 +1,48 @@
 <h1>Dynamic Array</h1>
 
-<p>A Dynamic Array is a special type of array that automatically resizes itself when it runs out of room. While it still stores elements in a contiguous block of memory for instant index lookups, it removes the fixed-size limitation of a static array by expanding behind the scenes as new items are added.</p>
+<p>A Dynamic Array is a special type of array that automatically resizes itself when it runs out of room. While it still
+    stores elements in a contiguous block of memory for instant index lookups, it removes the fixed-size limitation of a
+    static array by expanding behind the scenes as new items are added.</p>
 
-<p>Imagine a notebook with a sturdy binder. It starts with room for 50 pages. You can flip directly to any page number instantly. If you fill up all 50 pages, an assistant quietly moves all your pages into a bigger 100-page binder so you can keep writing without interruption. A dynamic array manages your data in the exact same way.</p><br>
+<p>Imagine a notebook with a sturdy binder. It starts with room for 50 pages. You can flip directly to any page number
+    instantly. If you fill up all 50 pages, an assistant quietly moves all your pages into a bigger 100-page binder so
+    you can keep writing without interruption. A dynamic array manages your data in the exact same way.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
 <p><strong>Logical Size (Length):</strong> The number of elements currently stored and actively used by the user.</p>
 
-<p><strong>Physical Capacity:</strong> The actual size of the underlying contiguous memory block currently reserved, including empty spare slots at the end.</p>
+<p><strong>Physical Capacity:</strong> The actual size of the underlying contiguous memory block currently reserved,
+    including empty spare slots at the end.</p>
 
-<p><strong>Growth Factor:</strong> The multiplier (commonly `1.5x` or `2x`) by which the array expands its physical capacity when it becomes completely full.</p>
+<p><strong>Growth Factor:</strong> The multiplier (commonly `1.5x` or `2x`) by which the array expands its physical
+    capacity when it becomes completely full.</p>
 
-<p><strong>Amortized Constant Time:</strong> The concept that while an occasional resize operation takes time to copy elements, the average cost of adding an item to the end remains extremely fast over many operations.</p><br>
+<p><strong>Amortized Constant Time:</strong> The concept that while an occasional resize operation takes time to copy
+    elements, the average cost of adding an item to the end remains extremely fast over many operations.</p><br>
 
 <h2>How Does a Dynamic Array Work Conceptually?</h2>
 
-<p>Under the hood, a dynamic array wraps a standard static array that is intentionally created with extra empty slots at the end. When you append a new element, it simply drops into the next available empty slot—an instant operation.</p>
+<p>Under the hood, a dynamic array wraps a standard static array that is intentionally created with extra empty slots at
+    the end. When you append a new element, it simply drops into the next available empty slot-an instant operation.</p>
 
-<p>Once the logical size catches up to the physical capacity, the array triggers a resize: it allocates a brand-new memory block double the current size, copies all existing elements into the new block, frees the old block, and then adds your new item. Because this doubling happens less and less frequently as the array grows, appending stays remarkably fast.</p><br>
+<p>Once the logical size catches up to the physical capacity, the array triggers a resize: it allocates a brand-new
+    memory block double the current size, copies all existing elements into the new block, frees the old block, and then
+    adds your new item. Because this doubling happens less and less frequently as the array grows, appending stays
+    remarkably fast.</p><br>
 
 <h2>Where Are Dynamic Arrays Used in the Real World?</h2>
 
-<p><strong>Default Lists in Programming Languages:</strong> Power everyday collections like Python's `list`, C++'s `std::vector`, and Java's `ArrayList`.</p>
+<p><strong>Default Lists in Programming Languages:</strong> Power everyday collections like Python's `list`, C++'s
+    `std::vector`, and Java's `ArrayList`.</p>
 
-<p><strong>Shopping Carts and Feeds:</strong> Hold a user's selected items or loaded social media posts where the total count grows unpredictably during a session.</p>
+<p><strong>Shopping Carts and Feeds:</strong> Hold a user's selected items or loaded social media posts where the total
+    count grows unpredictably during a session.</p>
 
-<p><strong>Text Editors:</strong> Store lines of text or document history as a user continuously types and adds content.</p><br>
+<p><strong>Text Editors:</strong> Store lines of text or document history as a user continuously types and adds content.
+</p><br>
 
 <h2>Summary</h2>
 
-<p>A dynamic array combines the instant lookup speed of a traditional array with the flexibility to grow on demand, making it the most widely used general-purpose list structure in modern software.</p>
+<p>A dynamic array combines the instant lookup speed of a traditional array with the flexibility to grow on demand,
+    making it the most widely used general-purpose list structure in modern software.</p>

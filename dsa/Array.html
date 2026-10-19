@@ -1,37 +1,53 @@
 <h1>Array</h1>
 
-<p>An Array is a fundamental linear data structure that stores a collection of elements in a single, contiguous block of memory. Unlike structures where items are scattered and connected by links, an array places elements directly side by side in a strict, sequential order.</p>
+<p>An Array is a fundamental linear data structure that stores a collection of elements in a single, contiguous block of
+    memory. Unlike structures where items are scattered and connected by links, an array places elements directly side
+    by side in a strict, sequential order.</p>
 
-<p>Imagine a row of numbered post office boxes or lockers in a school hallway. Every locker is the exact same size, sits right next to its neighbor, and has a permanent number painted on the door. If you know the locker number, you can walk straight to it without checking the ones before it. An array organizes data in much the same way.</p><br>
+<p>Imagine a row of numbered post office boxes or lockers in a school hallway. Every locker is the exact same size, sits
+    right next to its neighbor, and has a permanent number painted on the door. If you know the locker number, you can
+    walk straight to it without checking the ones before it. An array organizes data in much the same way.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Element:</strong> An individual item or value stored within the array. For example, a single letter or number sitting inside one of the lockers.</p>
+<p><strong>Element:</strong> An individual item or value stored within the array. For example, a single letter or number
+    sitting inside one of the lockers.</p>
 
-<p><strong>Index:</strong> The numerical position assigned to each element, usually starting at zero (`0`). It acts as the exact address needed to locate an item immediately.</p>
+<p><strong>Index:</strong> The numerical position assigned to each element, usually starting at zero (`0`). It acts as
+    the exact address needed to locate an item immediately.</p>
 
 <p><strong>Length (or Capacity):</strong> The total number of elements the array is capable of holding.</p>
 
-<p><strong>Contiguous Memory:</strong> A continuous, unbroken block of computer memory where elements sit physically adjacent to one another.</p>
+<p><strong>Contiguous Memory:</strong> A continuous, unbroken block of computer memory where elements sit physically
+    adjacent to one another.</p>
 
-<p><strong>Base Address:</strong> The memory location of the very first element (at index `0`), which the computer uses as a reference point to calculate the location of all other elements.</p><br>
+<p><strong>Base Address:</strong> The memory location of the very first element (at index `0`), which the computer uses
+    as a reference point to calculate the location of all other elements.</p><br>
 
 <h2>How Does an Array Work Conceptually?</h2>
 
-<p>When an array is created, the computer reserves a solid block of memory large enough to hold its elements. Because every element takes up the exact same amount of space, the computer can find any item instantly using simple arithmetic: it takes the base address and adds the index multiplied by the size of one element.</p>
+<p>When an array is created, the computer reserves a solid block of memory large enough to hold its elements. Because
+    every element takes up the exact same amount of space, the computer can find any item instantly using simple
+    arithmetic: it takes the base address and adds the index multiplied by the size of one element.</p>
 
-<p>This gives arrays **constant-time random access**—looking up the first element takes the exact same effort as looking up the ten-thousandth element. However, because the memory block is fixed and unbroken, inserting or deleting an item in the middle requires shifting all subsequent elements over to fill the gap or make room.</p><br>
+<p>This gives arrays **constant-time random access**-looking up the first element takes the exact same effort as looking
+    up the ten-thousandth element. However, because the memory block is fixed and unbroken, inserting or deleting an
+    item in the middle requires shifting all subsequent elements over to fill the gap or make room.</p><br>
 
 <h2>Where Are Arrays Used in the Real World?</h2>
 
-<p><strong>Image Processing:</strong> Represent grids of pixels on a screen, where each pixel's color value sits at a specific coordinate.</p>
+<p><strong>Image Processing:</strong> Represent grids of pixels on a screen, where each pixel's color value sits at a
+    specific coordinate.</p>
 
 <p><strong>Leaderboards and High Scores:</strong> Store fixed-size lists of top rankings in games or competitions.</p>
 
-<p><strong>Lookup Tables:</strong> Provide instant translations or configurations, such as mapping month numbers (0 to 11) to month names.</p>
+<p><strong>Lookup Tables:</strong> Provide instant translations or configurations, such as mapping month numbers (0 to
+    11) to month names.</p>
 
-<p><strong>Building Other Data Structures:</strong> Serve as the underlying storage engine for heaps, hash tables, strings, and matrices.</p><br>
+<p><strong>Building Other Data Structures:</strong> Serve as the underlying storage engine for heaps, hash tables,
+    strings, and matrices.</p><br>
 
 <h2>Summary</h2>
 
-<p>An array is like a numbered row of identical containers. It offers unbeatable speed when you need to look up items by their position, making it the foundational building block for fast, predictable data storage.</p>
+<p>An array is like a numbered row of identical containers. It offers unbeatable speed when you need to look up items by
+    their position, making it the foundational building block for fast, predictable data storage.</p>

@@ -77,7 +77,7 @@
                     <div class="card metadata" id="metadataCard">
                         <div class="card-header">Object metadata</div>
                         <div class="card-body">
-                            <p>Name: <span id="metadata-name-value">—</span></p>
+                            <p>Name: <span id="metadata-name-value">-</span></p>
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                     <!--
                         CODE and EXPLANATION are two separate cards (see
                         #explanationCard below), not one card with two
-                        panels — but their header markup is deliberately
+                        panels - but their header markup is deliberately
                         duplicated so both always show the same Code /
                         language / Explanation controls, regardless of
                         which card is currently visible. js/CodePanel.js
@@ -146,8 +146,7 @@
                             </div>
 
                             <div class="card-body" id="codeSection">
-                                <pre class="line-numbers"
-                                    data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
+                                <pre class="line-numbers" data-line="1,4,32"><code class="language-python">def edmonds_karp(graph, source, sink):
     flow = {u: {v: 0 for v in graph.nodes} for u in graph.nodes}
     max_flow = 0
     
@@ -212,7 +211,7 @@
                     <div class="divider-h" id="dividerH"></div> <!-- Card traversal vertical split -->
 
                     <!-- Traversal (60%) + State variables (40%), side by side.
-                         Hidden entirely while Explanation is active — see
+                         Hidden entirely while Explanation is active - see
                          css/views.css's .explanation-active rules. -->
                     <div class="traversal-row" id="traversalRow">
                         <div class="card traversal" id="traversalCard">
@@ -222,7 +221,7 @@
                             </div>
                         </div>
 
-                        <!-- Horizontal drag handle — see css/resize-divider.css's .divider-v
+                        <!-- Horizontal drag handle - see css/resize-divider.css's .divider-v
                              and js/initTraversalResize.js. Minimum width on both sides is
                              2rem; at that minimum a card's header rotates into a vertical
                              tab (see the .collapsed rules in css/containers-cards.css). -->
@@ -246,7 +245,7 @@
             <div class="container-header">
                 <span class="container-title">Container</span>
                 <div class="header-actions">
-                    <!-- Delete button intentionally removed — see Container.js and
+                    <!-- Delete button intentionally removed - see Container.js and
                          ContainerRegistry.confirmDelete() for why the underlying
                          delete mechanism is still fully intact and ready to wire
                          up to whatever replaces this. -->

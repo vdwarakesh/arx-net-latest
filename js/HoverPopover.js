@@ -3,11 +3,11 @@
 // Used for the sidebar tooltips/menus (New / List / Settings icons),
 // AND for the small "Focus" tooltip on each container's focus icon
 // (see Container.js, which passes an element directly instead of an
-// id — there's no stable id to give a per-container, template-cloned
+// id - there's no stable id to give a per-container, template-cloned
 // icon).
 //
 // MOBILE_QUERY (from utils.js) must stay in sync with the breakpoint in
-// css/responsive.css — js/CustomSelect.js shares the same constant.
+// css/responsive.css - js/CustomSelect.js shares the same constant.
 // Hover popovers rely on mouseenter/mouseleave, which touch devices don't
 // fire reliably, so they are intentionally disabled below this breakpoint
 // rather than left to misbehave (get stuck open, never close, etc).
@@ -55,7 +55,7 @@ export class HoverPopover {
         // Delegated once here, rather than re-attached to every .popover-btn
         // inside show(). The content (and its buttons) gets rebuilt on every
         // open, but this listener on the stable popover container doesn't
-        // need to be — it just checks what was actually clicked.
+        // need to be - it just checks what was actually clicked.
         this.popover.addEventListener('click', (e) => {
             if (e.target.classList.contains('popover-btn')) this.hide();
         });

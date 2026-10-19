@@ -1,33 +1,50 @@
 <h1>LRU Cache</h1>
 
-<p>An LRU Cache (**Least Recently Used** Cache) is a special type of cache structure that always evicts the item that has gone the **longest time without being accessed** whenever the cache runs out of room.</p>
+<p>An LRU Cache (**Least Recently Used** Cache) is a special type of cache structure that always evicts the item that
+    has gone the **longest time without being accessed** whenever the cache runs out of room.</p>
 
-<p>Imagine organizing the clothes in your closet using a simple rule: every time you wear a jacket and put it back, you hang it on the far-left end of the rod. Over the months, the clothes you wear every week stay clustered on the left, while the jacket you haven't touched in two years slowly drifts all the way to the far-right end. When your closet is completely full and you buy a new shirt, you simply donate the single item hanging at the far-right end.</p><br>
+<p>Imagine organizing the clothes in your closet using a simple rule: every time you wear a jacket and put it back, you
+    hang it on the far-left end of the rod. Over the months, the clothes you wear every week stay clustered on the left,
+    while the jacket you haven't touched in two years slowly drifts all the way to the far-right end. When your closet
+    is completely full and you buy a new shirt, you simply donate the single item hanging at the far-right end.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Temporal Locality:</strong> The real-world principle that an item accessed just moments ago is very likely to be accessed again soon.</p>
+<p><strong>Temporal Locality:</strong> The real-world principle that an item accessed just moments ago is very likely to
+    be accessed again soon.</p>
 
-<p><strong>Most Recently Used (MRU) Head:</strong> The front of the internal doubly linked list where newly inserted or freshly read items are placed.</p>
+<p><strong>Most Recently Used (MRU) Head:</strong> The front of the internal doubly linked list where newly inserted or
+    freshly read items are placed.</p>
 
-<p><strong>Least Recently Used (LRU) Tail:</strong> The back end of the internal doubly linked list where the oldest, stalest item waits to be evicted first.</p>
+<p><strong>Least Recently Used (LRU) Tail:</strong> The back end of the internal doubly linked list where the oldest,
+    stalest item waits to be evicted first.</p>
 
-<p><strong>Hash Map + Doubly Linked List Hybrid:</strong> The classic dual-structure design where the Hash Map maps keys directly to Doubly Linked List node pointers.</p><br>
+<p><strong>Hash Map + Doubly Linked List Hybrid:</strong> The classic dual-structure design where the Hash Map maps keys
+    directly to Doubly Linked List node pointers.</p><br>
 
 <h2>How Does an LRU Cache Work Conceptually?</h2>
 
-<p>A plain hash map can find items in $\mathcal{O}(1)$ time, but has no idea which item was used longest ago. A plain doubly linked list keeps items in chronological order, but takes $\mathcal{O}(n)$ time to search. An LRU cache wires them together: every key in the Hash Map points directly to its node inside a Doubly Linked List.</p>
+<p>A plain hash map can find items in $\mathcal{O}(1)$ time, but has no idea which item was used longest ago. A plain
+    doubly linked list keeps items in chronological order, but takes $\mathcal{O}(n)$ time to search. An LRU cache wires
+    them together: every key in the Hash Map points directly to its node inside a Doubly Linked List.</p>
 
-<p>When you read (`Get`) or update (`Put`) a key, the Hash Map locates its node in $\mathcal{O}(1)$ time, unclips it from the middle of the Doubly Linked List in $\mathcal{O}(1)$ time, and moves it straight to the front head. When the cache exceeds capacity, it simply drops the node sitting at the back tail—making every operation strictly $\mathcal{O}(1)$.</p><br>
+<p>When you read (`Get`) or update (`Put`) a key, the Hash Map locates its node in $\mathcal{O}(1)$ time, unclips it
+    from the middle of the Doubly Linked List in $\mathcal{O}(1)$ time, and moves it straight to the front head. When
+    the cache exceeds capacity, it simply drops the node sitting at the back tail-making every operation strictly
+    $\mathcal{O}(1)$.</p><br>
 
 <h2>Where Are LRU Caches Used in the Real World?</h2>
 
-<p><strong>Web Browsers & Smartphone Apps:</strong> Cache downloaded images and assets on device storage, automatically purging the oldest unused images when space runs low.</p>
+<p><strong>Web Browsers & Smartphone Apps:</strong> Cache downloaded images and assets on device storage, automatically
+    purging the oldest unused images when space runs low.</p>
 
-<p><strong>Database Buffer Pools (MySQL InnoDB, PostgreSQL):</strong> Keep active table and index pages in RAM while evicting cold pages.</p>
+<p><strong>Database Buffer Pools (MySQL InnoDB, PostgreSQL):</strong> Keep active table and index pages in RAM while
+    evicting cold pages.</p>
 
-<p><strong>Function Memoization (`@functools.lru_cache` in Python):</strong> Remember the outputs of expensive function calls for recently seen inputs.</p><br>
+<p><strong>Function Memoization (`@functools.lru_cache` in Python):</strong> Remember the outputs of expensive function
+    calls for recently seen inputs.</p><br>
 
 <h2>Summary</h2>
 
-<p>An LRU cache marries a Hash Map with a Doubly Linked List to keep recently touched items at the front and automatically evict the stalest item at the back in constant time.</p>
+<p>An LRU cache marries a Hash Map with a Doubly Linked List to keep recently touched items at the front and
+    automatically evict the stalest item at the back in constant time.</p>

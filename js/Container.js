@@ -3,7 +3,7 @@
 // Represents one draggable/focusable "object" box built from the
 // #container-template in layout.html: its DOM, its focus button (with
 // its hover tooltip), and its double-click-to-rename behavior.
-// Naming/rename-conflict logic lives in ContainerRegistry.js — this
+// Naming/rename-conflict logic lives in ContainerRegistry.js - this
 // class just asks for it.
 //
 // There is deliberately no delete button or delete-click binding here.

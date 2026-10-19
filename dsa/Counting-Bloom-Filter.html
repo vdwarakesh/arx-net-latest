@@ -1,33 +1,50 @@
 <h1>Counting Bloom Filter</h1>
 
-<p>A Counting Bloom Filter is a special type of Bloom filter that replaces each single bit in the underlying array with a **small multi-bit counter** (typically 3 or 4 bits wide), unlocking the ability to **delete** elements safely without breaking the filter.</p>
+<p>A Counting Bloom Filter is a special type of Bloom filter that replaces each single bit in the underlying array with
+    a **small multi-bit counter** (typically 3 or 4 bits wide), unlocking the ability to **delete** elements safely
+    without breaking the filter.</p>
 
-<p>Imagine upgrading our grid of black-or-white ink squares into a grid of small tally boxes. When a book arrives, you add `+1` to its 3 boxes. Even if two different books overlap on Box #42 (making its tally `2`), when one of those books is removed and you subtract `-1` from Box #42, its tally drops to `1`—so the second book isn't accidentally erased!</p><br>
+<p>Imagine upgrading our grid of black-or-white ink squares into a grid of small tally boxes. When a book arrives, you
+    add `+1` to its 3 boxes. Even if two different books overlap on Box #42 (making its tally `2`), when one of those
+    books is removed and you subtract `-1` from Box #42, its tally drops to `1`-so the second book isn't accidentally
+    erased!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Counter Bucket (typically 4-bit nibble):</strong> A small integer slot (counting from `0` to `15`) standing in for each single bit of a standard Bloom filter.</p>
+<p><strong>Counter Bucket (typically 4-bit nibble):</strong> A small integer slot (counting from `0` to `15`) standing
+    in for each single bit of a standard Bloom filter.</p>
 
-<p><strong>Increment on Insert (`+1`):</strong> Adding `1` to each of the $k$ hashed bucket positions when an item is inserted.</p>
+<p><strong>Increment on Insert (`+1`):</strong> Adding `1` to each of the $k$ hashed bucket positions when an item is
+    inserted.</p>
 
-<p><strong>Decrement on Delete (`-1`):</strong> Subtracting `1` from each of the $k$ hashed bucket positions when a known item is removed.</p>
+<p><strong>Decrement on Delete (`-1`):</strong> Subtracting `1` from each of the $k$ hashed bucket positions when a
+    known item is removed.</p>
 
-<p><strong>Saturating Arithmetic:</strong> Stopping a counter at its maximum value (e.g., `15`) if an unlikely overflow occurs so it never wraps around to `0`.</p><br>
+<p><strong>Saturating Arithmetic:</strong> Stopping a counter at its maximum value (e.g., `15`) if an unlikely overflow
+    occurs so it never wraps around to `0`.</p><br>
 
 <h2>How Does a Counting Bloom Filter Work Conceptually?</h2>
 
-<p>In a standard Bloom filter, flipping a `1` bit back to `0` during a deletion is forbidden because you have no idea whether two or three other items also hashed to that same bit. By spending 4 bits per slot instead of 1 bit, a Counting Bloom Filter tracks the exact number of inserted items currently claiming each slot.</p>
+<p>In a standard Bloom filter, flipping a `1` bit back to `0` during a deletion is forbidden because you have no idea
+    whether two or three other items also hashed to that same bit. By spending 4 bits per slot instead of 1 bit, a
+    Counting Bloom Filter tracks the exact number of inserted items currently claiming each slot.</p>
 
-<p>A membership query simply checks whether all $k$ counters for an item are strictly greater than `0` (`> 0`). Mathematical analysis shows that 4 bits per counter (max value 15) is more than enough to make counter overflow virtually impossible in practice.</p><br>
+<p>A membership query simply checks whether all $k$ counters for an item are strictly greater than `0` (`> 0`).
+    Mathematical analysis shows that 4 bits per counter (max value 15) is more than enough to make counter overflow
+    virtually impossible in practice.</p><br>
 
 <h2>Where Are Counting Bloom Filters Used in the Real World?</h2>
 
-<p><strong>Dynamic Cache Directories (Web Proxies & CDNs):</strong> Track which files are currently stored in neighbouring cache servers as old files are constantly evicted and new ones added.</p>
+<p><strong>Dynamic Cache Directories (Web Proxies & CDNs):</strong> Track which files are currently stored in
+    neighbouring cache servers as old files are constantly evicted and new ones added.</p>
 
-<p><strong>Network Connection State Tracking:</strong> Monitor active TCP flows where connections open (`Insert`) and close (`Delete`) millions of times per minute.</p>
+<p><strong>Network Connection State Tracking:</strong> Monitor active TCP flows where connections open (`Insert`) and
+    close (`Delete`) millions of times per minute.</p>
 
-<p><strong>Distributed Set Synchronization:</strong> Reconcile differences between two dynamic sets of keys across server nodes.</p><br>
+<p><strong>Distributed Set Synchronization:</strong> Reconcile differences between two dynamic sets of keys across
+    server nodes.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Counting Bloom Filter upgrades each bit of a Bloom filter into a tiny tally counter, giving you all the space-saving benefits of a Bloom filter plus full support for deletions.</p>
+<p>A Counting Bloom Filter upgrades each bit of a Bloom filter into a tiny tally counter, giving you all the
+    space-saving benefits of a Bloom filter plus full support for deletions.</p>

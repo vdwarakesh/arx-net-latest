@@ -16,7 +16,7 @@ export class ContainerRegistry {
     constructor() {
         this.containers = new Map();
         this.warningModal = new FloatingWindow('Name Conflict', 'min(50rem, 95vw)', 'auto');
-        // Separate instance from warningModal — different content/buttons,
+        // Separate instance from warningModal - different content/buttons,
         // and keeping them distinct avoids one workflow's leftover button
         // handlers ever firing for the other.
         this.deleteModal = new FloatingWindow('Delete Object', 'min(50rem, 95vw)', 'auto');
@@ -57,7 +57,7 @@ export class ContainerRegistry {
         );
     }
 
-    // Shared markup for "jump to this container" buttons — used by both the
+    // Shared markup for "jump to this container" buttons - used by both the
     // desktop hover popover (sidebarPopovers.js) and the mobile name list
     // (ViewManager.renderMobileList), so both always agree on naming/order.
     // Clicking a button here is handled by AppController's delegated
@@ -148,7 +148,7 @@ export class ContainerRegistry {
         };
     }
 
-    // The delete entry point — currently not called from anywhere (there's
+    // The delete entry point - currently not called from anywhere (there's
     // no delete button in the UI right now; see Container.js), but kept
     // fully intact and reusable: wiring a future delete trigger to it is
     // just registry.confirmDelete(containerInstance, onConfirmed). Shows a
@@ -156,7 +156,7 @@ export class ContainerRegistry {
     // notifies subscribers) if the user actually confirms. The caller
     // (ViewManager.deleteContainer, via the onConfirmed callback) is
     // responsible for removing the container's DOM element and any
-    // view-state cleanup — this class only owns naming/registry state,
+    // view-state cleanup - this class only owns naming/registry state,
     // never the DOM.
     confirmDelete(container, onConfirmed) {
         this.deleteModal.setContent(`

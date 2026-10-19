@@ -2,13 +2,13 @@
 // TRAVERSAL / STATE VARIABLES RESIZE
 // Wires the horizontal divider between Traversal and State variables.
 // Also keeps each card's "collapsed" class in sync with whether it's
-// actually sitting at its 3rem minimum width right now — that class
+// actually sitting at its 3rem minimum width right now - that class
 // is what css/containers-cards.css uses to rotate the header into a
 // vertical tab. ResizablePanel's onResize hook reports live sizes on
 // every drag step; checkSizes() reports them once up front too, in
 // case a narrow screen starts below 3rem before any drag happens.
 //
-// ResizablePanel itself has no idea "collapsed" exists — that's kept
+// ResizablePanel itself has no idea "collapsed" exists - that's kept
 // here, specific to this one pair of cards, rather than baked into the
 // generic resize class.
 // ============================================================

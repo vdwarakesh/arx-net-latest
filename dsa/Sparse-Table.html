@@ -1,31 +1,51 @@
 <h1>Sparse Table</h1>
 
-<p>A Sparse Table is a 2D array-based data structure designed for **immutable (static) arrays** that precalculates answers over power-of-two interval lengths ($2^0, 2^1, 2^2, 2^3, \dots$) so it can answer **Range Minimum Queries (RMQ)** and **Range Maximum Queries** in **constant $\mathcal{O}(1)$ time**.</p>
+<p>A Sparse Table is a 2D array-based data structure designed for **immutable (static) arrays** that precalculates
+    answers over power-of-two interval lengths ($2^0, 2^1, 2^2, 2^3, \dots$) so it can answer **Range Minimum Queries
+    (RMQ)** and **Range Maximum Queries** in **constant $\mathcal{O}(1)$ time**.</p>
 
-<p>Imagine wanting to know the lowest daily temperature over a 12-day vacation from Day 3 to Day 14. Instead of checking all 12 days one by one, you have a reference chart that already lists the lowest temperature for every 8-day block starting on any day. You simply check two overlapping 8-day blocks: **Days 3–10** (8 days) and **Days 7–14** (8 days). Even though Days 7–10 overlap in the middle, taking the minimum of those two precalculated numbers gives you the exact lowest temperature across all 12 days in a single step!</p><br>
+<p>Imagine wanting to know the lowest daily temperature over a 12-day vacation from Day 3 to Day 14. Instead of checking
+    all 12 days one by one, you have a reference chart that already lists the lowest temperature for every 8-day block
+    starting on any day. You simply check two overlapping 8-day blocks: **Days 3–10** (8 days) and **Days 7–14** (8
+    days). Even though Days 7–10 overlap in the middle, taking the minimum of those two precalculated numbers gives you
+    the exact lowest temperature across all 12 days in a single step!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Idempotent Operation:</strong> A mathematical operation where overlapping the same element twice does not change the answer—such as $\min(x, x) = x$, $\max(x, x) = x$, $\gcd(x, x) = x$, or bitwise `AND` / `OR` (unlike addition `+`, where overlapping double-counts the middle).</p>
+<p><strong>Idempotent Operation:</strong> A mathematical operation where overlapping the same element twice does not
+    change the answer-such as $\min(x, x) = x$, $\max(x, x) = x$, $\gcd(x, x) = x$, or bitwise `AND` / `OR` (unlike
+    addition `+`, where overlapping double-counts the middle).</p>
 
-<p><strong>Power-of-Two Table (`st[k][i]`):</strong> A 2D table of size $(\lfloor \log_2 n \rfloor + 1) \times n$ where `st[k][i]` stores the answer for the interval of length $2^k$ starting at index `i` (covering $[i, i + 2^k - 1]$).</p>
+<p><strong>Power-of-Two Table (`st[k][i]`):</strong> A 2D table of size $(\lfloor \log_2 n \rfloor + 1) \times n$ where
+    `st[k][i]` stores the answer for the interval of length $2^k$ starting at index `i` (covering $[i, i + 2^k - 1]$).
+</p>
 
-<p><strong>Overlapping Two-Block Query:</strong> Covering any interval $[L, R]$ of length $len = R - L + 1$ using two blocks of size $2^k$ (where $k = \lfloor \log_2(len) \rfloor$): `min(st[k][L], st[k][R - 2^k + 1])`.</p><br>
+<p><strong>Overlapping Two-Block Query:</strong> Covering any interval $[L, R]$ of length $len = R - L + 1$ using two
+    blocks of size $2^k$ (where $k = \lfloor \log_2(len) \rfloor$): `min(st[k][L], st[k][R - 2^k + 1])`.</p><br>
 
 <h2>How Does a Sparse Table Work Conceptually?</h2>
 
-<p>Building the Sparse Table uses dynamic programming row by row: Row `0` (`st[0][i]`) is just the original array (blocks of length $2^0 = 1$). Every higher row `k` is computed by combining two adjacent halves of length $2^{k-1}$ from the row below: `st[k][i] = min(st[k-1][i], st[k-1][i + 2^(k-1)])`, taking $\mathcal{O}(n \log n)$ time and space total.</p>
+<p>Building the Sparse Table uses dynamic programming row by row: Row `0` (`st[0][i]`) is just the original array
+    (blocks of length $2^0 = 1$). Every higher row `k` is computed by combining two adjacent halves of length $2^{k-1}$
+    from the row below: `st[k][i] = min(st[k-1][i], st[k-1][i + 2^(k-1)])`, taking $\mathcal{O}(n \log n)$ time and
+    space total.</p>
 
-<p>Once built, any range minimum or maximum query $[L, R]$ of *any* length is answered in **strictly $\mathcal{O}(1)$ time** by comparing just two cells in the table—beating even a Segment Tree's $\mathcal{O}(\log n)$ query speed when the underlying array doesn't change.</p><br>
+<p>Once built, any range minimum or maximum query $[L, R]$ of *any* length is answered in **strictly $\mathcal{O}(1)$
+    time** by comparing just two cells in the table-beating even a Segment Tree's $\mathcal{O}(\log n)$ query speed when
+    the underlying array doesn't change.</p><br>
 
 <h2>Where Are Sparse Tables Used in the Real World?</h2>
 
-<p><strong>Lowest Common Ancestor (LCA) in Trees:</strong> Convert tree LCA queries into $\mathcal{O}(1)$ Range Minimum Queries over the tree's flattened Euler Tour depth array.</p>
+<p><strong>Lowest Common Ancestor (LCA) in Trees:</strong> Convert tree LCA queries into $\mathcal{O}(1)$ Range Minimum
+    Queries over the tree's flattened Euler Tour depth array.</p>
 
-<p><strong>Suffix Array Longest Common Prefix (LCP) Queries:</strong> Find the longest common prefix between any two substrings of a text in $\mathcal{O}(1)$ time by querying the RMQ of the static LCP array.</p>
+<p><strong>Suffix Array Longest Common Prefix (LCP) Queries:</strong> Find the longest common prefix between any two
+    substrings of a text in $\mathcal{O}(1)$ time by querying the RMQ of the static LCP array.</p>
 
-<p><strong>Static Historical Analytics:</strong> Answer millions of instant min/max range queries over archived sensor logs or historical financial datasets.</p><br>
+<p><strong>Static Historical Analytics:</strong> Answer millions of instant min/max range queries over archived sensor
+    logs or historical financial datasets.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Sparse Table precomputes power-of-two blocks across a static array, using the clever overlap of two blocks to answer range minimum, maximum, and GCD queries in constant $\mathcal{O}(1)$ time.</p>
+<p>A Sparse Table precomputes power-of-two blocks across a static array, using the clever overlap of two blocks to
+    answer range minimum, maximum, and GCD queries in constant $\mathcal{O}(1)$ time.</p>

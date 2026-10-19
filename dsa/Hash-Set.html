@@ -1,29 +1,43 @@
 <h1>Hash Set</h1>
 
-<p>A Hash Set is a special type of hash table that stores a collection of unique elements without any associated values or duplicate entries. Rather than mapping a key to a value, it focuses purely on answering one question as fast as possible: *"Is this item present in the collection?"*</p>
+<p>A Hash Set is a special type of hash table that stores a collection of unique elements without any associated values
+    or duplicate entries. Rather than mapping a key to a value, it focuses purely on answering one question as fast as
+    possible: *"Is this item present in the collection?"*</p>
 
-<p>Imagine an exclusive VIP guest list at an event entrance, backed by a fast digital scanner. A guest's name is either on the list or it isn't—adding the same name five times doesn't put them on the list five times. When someone walks up to the door, the scanner checks in a split second whether their name is in the set.</p><br>
+<p>Imagine an exclusive VIP guest list at an event entrance, backed by a fast digital scanner. A guest's name is either
+    on the list or it isn't-adding the same name five times doesn't put them on the list five times. When someone walks
+    up to the door, the scanner checks in a split second whether their name is in the set.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Uniqueness Invariant:</strong> The strict rule that no two identical elements can exist in the set at the same time.</p>
+<p><strong>Uniqueness Invariant:</strong> The strict rule that no two identical elements can exist in the set at the
+    same time.</p>
 
-<p><strong>Membership Test (`Contains`):</strong> Checking whether a specific element exists inside the set in constant $O(1)$ average time.</p>
+<p><strong>Membership Test (`Contains`):</strong> Checking whether a specific element exists inside the set in constant
+    $O(1)$ average time.</p>
 
-<p><strong>Set Operations:</strong> Combining or comparing sets using mathematical operations like Union (all items from both), Intersection (only shared items), and Difference.</p><br>
+<p><strong>Set Operations:</strong> Combining or comparing sets using mathematical operations like Union (all items from
+    both), Intersection (only shared items), and Difference.</p><br>
 
 <h2>How Does a Hash Set Work Conceptually?</h2>
 
-<p>Under the hood, a hash set works just like a hash map where only keys are stored (or where every key points to a dummy placeholder value). When you add an item, the set hashes the item and checks its target bucket. If an identical item is already sitting there, the addition is quietly ignored; otherwise, the item is stored. This makes deduplicating large lists automatic and effortless.</p><br>
+<p>Under the hood, a hash set works just like a hash map where only keys are stored (or where every key points to a
+    dummy placeholder value). When you add an item, the set hashes the item and checks its target bucket. If an
+    identical item is already sitting there, the addition is quietly ignored; otherwise, the item is stored. This makes
+    deduplicating large lists automatic and effortless.</p><br>
 
 <h2>Where Are Hash Sets Used in the Real World?</h2>
 
-<p><strong>Removing Duplicates:</strong> Clean up a mailing list of millions of email addresses so no customer receives duplicate emails.</p>
+<p><strong>Removing Duplicates:</strong> Clean up a mailing list of millions of email addresses so no customer receives
+    duplicate emails.</p>
 
-<p><strong>Graph and Web Crawler Visited Tracking:</strong> Remember which web pages or graph nodes have already been explored so the program never gets stuck in an infinite loop.</p>
+<p><strong>Graph and Web Crawler Visited Tracking:</strong> Remember which web pages or graph nodes have already been
+    explored so the program never gets stuck in an infinite loop.</p>
 
-<p><strong>Blacklist / Whitelist Filtering:</strong> Instantly check whether an incoming IP address or file hash is on a blocked security list.</p><br>
+<p><strong>Blacklist / Whitelist Filtering:</strong> Instantly check whether an incoming IP address or file hash is on a
+    blocked security list.</p><br>
 
 <h2>Summary</h2>
 
-<p>A hash set is a high-speed uniqueness filter. It guarantees that every stored element appears only once and lets you verify membership in an instant.</p>
+<p>A hash set is a high-speed uniqueness filter. It guarantees that every stored element appears only once and lets you
+    verify membership in an instant.</p>

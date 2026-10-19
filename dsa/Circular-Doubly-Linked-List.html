@@ -1,27 +1,40 @@
 <h1>Circular Doubly Linked List</h1>
 
-<p>A Circular Doubly Linked List is a special type of circular linked list in which every node has both a forward (`next`) and backward (`prev`) pointer, with the last node linking forward to the first node and the first node linking backward to the last node.</p>
+<p>A Circular Doubly Linked List is a special type of circular linked list in which every node has both a forward
+    (`next`) and backward (`prev`) pointer, with the last node linking forward to the first node and the first node
+    linking backward to the last node.</p>
 
-<p>Imagine a rotating lazy Susan turntable on a dining table. You can spin the tray clockwise or counterclockwise to bring any dish in front of you, and the first and last dishes sit right next to each other in a seamless two-way circle.</p><br>
+<p>Imagine a rotating lazy Susan turntable on a dining table. You can spin the tray clockwise or counterclockwise to
+    bring any dish in front of you, and the first and last dishes sit right next to each other in a seamless two-way
+    circle.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Wrap-Around Links:</strong> The pair of connections where `head.prev` points to the tail and `tail.next` points to the head.</p>
+<p><strong>Wrap-Around Links:</strong> The pair of connections where `head.prev` points to the tail and `tail.next`
+    points to the head.</p>
 
-<p><strong>Sentinel Node (Dummy Head):</strong> An optional placeholder node often used in circular doubly linked lists to eliminate special cases when the list is empty.</p><br>
+<p><strong>Sentinel Node (Dummy Head):</strong> An optional placeholder node often used in circular doubly linked lists
+    to eliminate special cases when the list is empty.</p><br>
 
 <h2>How Does a Circular Doubly Linked List Work Conceptually?</h2>
 
-<p>Because the ring is wired in both directions, standing at the head node gives you immediate, one-step access to the tail node (by stepping backward once via `head.prev`). You can traverse the entire ring clockwise or counterclockwise, and you can insert or delete nodes at either end—or anywhere in the middle—in constant time without ever checking for `null` pointers.</p><br>
+<p>Because the ring is wired in both directions, standing at the head node gives you immediate, one-step access to the
+    tail node (by stepping backward once via `head.prev`). You can traverse the entire ring clockwise or
+    counterclockwise, and you can insert or delete nodes at either end-or anywhere in the middle-in constant time
+    without ever checking for `null` pointers.</p><br>
 
 <h2>Where Are Circular Doubly Linked Lists Used in the Real World?</h2>
 
-<p><strong>Application Switchers (`Alt+Tab` / `Cmd+Tab`):</strong> Let users cycle forward or backward through open windows on their computer screen, wrapping around smoothly from the last window to the first.</p>
+<p><strong>Application Switchers (`Alt+Tab` / `Cmd+Tab`):</strong> Let users cycle forward or backward through open
+    windows on their computer screen, wrapping around smoothly from the last window to the first.</p>
 
-<p><strong>Advanced Heap Structures (Fibonacci Heaps):</strong> Connect root lists of trees so two heaps can be spliced together in constant time.</p>
+<p><strong>Advanced Heap Structures (Fibonacci Heaps):</strong> Connect root lists of trees so two heaps can be spliced
+    together in constant time.</p>
 
-<p><strong>Audio/Video Editing Timelines:</strong> Navigate and splice looping media clips smoothly in either direction.</p><br>
+<p><strong>Audio/Video Editing Timelines:</strong> Navigate and splice looping media clips smoothly in either direction.
+</p><br>
 
 <h2>Summary</h2>
 
-<p>A circular doubly linked list is the most flexible member of the linked list family, offering instant two-way navigation and seamless wrap-around access from any point in the ring.</p>
+<p>A circular doubly linked list is the most flexible member of the linked list family, offering instant two-way
+    navigation and seamless wrap-around access from any point in the ring.</p>

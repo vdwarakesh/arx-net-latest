@@ -1,33 +1,50 @@
 <h1>Skip List</h1>
 
-<p>A Skip List (invented by William Pugh in 1989) is a probabilistic multi-layered data structure built from stacked, sorted linked lists that achieves the same $\mathcal{O}(\log n)$ search, insertion, and deletion speeds as a balanced Binary Search Tree—without ever performing complex tree rotations.</p>
+<p>A Skip List (invented by William Pugh in 1989) is a probabilistic multi-layered data structure built from stacked,
+    sorted linked lists that achieves the same $\mathcal{O}(\log n)$ search, insertion, and deletion speeds as a
+    balanced Binary Search Tree-without ever performing complex tree rotations.</p>
 
-<p>Imagine a subway line with 100 stations in a straight row. If there is only a local train that stops at every single station (`Level 0`), riding from Station 1 to Station 89 is painfully slow. So the transit authority adds an Express layer (`Level 1`) that stops every 2nd station, a Super-Express layer (`Level 2`) that stops every 4th station, and a Bullet Train (`Level 3`) at the top. You ride the Bullet Train as far as you can without overshooting Station 89, step down one platform to the Express, and finally step down to the local train for the last stop!</p><br>
+<p>Imagine a subway line with 100 stations in a straight row. If there is only a local train that stops at every single
+    station (`Level 0`), riding from Station 1 to Station 89 is painfully slow. So the transit authority adds an Express
+    layer (`Level 1`) that stops every 2nd station, a Super-Express layer (`Level 2`) that stops every 4th station, and
+    a Bullet Train (`Level 3`) at the top. You ride the Bullet Train as far as you can without overshooting Station 89,
+    step down one platform to the Express, and finally step down to the local train for the last stop!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Bottom Layer (`Level 0`):</strong> An ordinary sorted linked list containing every single element in the collection.</p>
+<p><strong>Bottom Layer (`Level 0`):</strong> An ordinary sorted linked list containing every single element in the
+    collection.</p>
 
-<p><strong>Express Lanes (`Level 1, 2, ...`):</strong> Progressively sparser upper linked lists that skip over multiple intermediate nodes at once.</p>
+<p><strong>Express Lanes (`Level 1, 2, ...`):</strong> Progressively sparser upper linked lists that skip over multiple
+    intermediate nodes at once.</p>
 
-<p><strong>Tower Height (Coin-Flip Promotion):</strong> When a new node is inserted at `Level 0`, it flips a virtual coin (`p = 0.5`): for every "Heads" it flips, its tower grows one level taller to join the next express lane up.</p>
+<p><strong>Tower Height (Coin-Flip Promotion):</strong> When a new node is inserted at `Level 0`, it flips a virtual
+    coin (`p = 0.5`): for every "Heads" it flips, its tower grows one level taller to join the next express lane up.</p>
 
-<p><strong>Top-Left Search Walk:</strong> Starting at the highest express layer's head, moving right as long as the next key is smaller than the target, and dropping down one level whenever the next key would overshoot.</p><br>
+<p><strong>Top-Left Search Walk:</strong> Starting at the highest express layer's head, moving right as long as the next
+    key is smaller than the target, and dropping down one level whenever the next key would overshoot.</p><br>
 
 <h2>How Does a Skip List Work Conceptually?</h2>
 
-<p>Because each node has a $50\%$ chance of reaching Level 1, a $25\%$ chance of reaching Level 2, and a $1/2^k$ chance of reaching Level $k$, the upper layers naturally form an exponentially thinning hierarchy just like a balanced binary search tree—with $\approx \log_2 n$ levels total.</p>
+<p>Because each node has a $50\%$ chance of reaching Level 1, a $25\%$ chance of reaching Level 2, and a $1/2^k$ chance
+    of reaching Level $k$, the upper layers naturally form an exponentially thinning hierarchy just like a balanced
+    binary search tree-with $\approx \log_2 n$ levels total.</p>
 
-<p>Inserting or deleting a node only requires updating the local forward pointers in that node's tower, with **zero global tree rotations**. This makes skip lists dramatically easier to implement and much friendlier for lock-free concurrent access by multiple CPU threads.</p><br>
+<p>Inserting or deleting a node only requires updating the local forward pointers in that node's tower, with **zero
+    global tree rotations**. This makes skip lists dramatically easier to implement and much friendlier for lock-free
+    concurrent access by multiple CPU threads.</p><br>
 
 <h2>Where Are Skip Lists Used in the Real World?</h2>
 
 <p><strong>In-Memory Sorted Sets (Redis `ZSET`):</strong> Power live leaderboards and sorted range queries in Redis.</p>
 
-<p><strong>Database MemTables (LevelDB, RocksDB, Apache HBase):</strong> Buffer incoming sorted writes in memory with high-concurrency, lock-free thread access before flushing to disk.</p>
+<p><strong>Database MemTables (LevelDB, RocksDB, Apache HBase):</strong> Buffer incoming sorted writes in memory with
+    high-concurrency, lock-free thread access before flushing to disk.</p>
 
-<p><strong>Concurrent Standard Libraries:</strong> Power Java's thread-safe `ConcurrentSkipListMap` and `ConcurrentSkipListSet`.</p><br>
+<p><strong>Concurrent Standard Libraries:</strong> Power Java's thread-safe `ConcurrentSkipListMap` and
+    `ConcurrentSkipListSet`.</p><br>
 
 <h2>Summary</h2>
 
-<p>A skip list stacks randomized express lanes on top of a sorted linked list, delivering balanced-tree search speeds and effortless range scans with simple linked-list pointer updates.</p>
+<p>A skip list stacks randomized express lanes on top of a sorted linked list, delivering balanced-tree search speeds
+    and effortless range scans with simple linked-list pointer updates.</p>

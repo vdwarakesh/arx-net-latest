@@ -1,29 +1,43 @@
 <h1>Hash Table</h1>
 
-<p>A Hash Table is a special type of hash-based structure that stores data in an array of buckets and resolves collisions systematically to guarantee fast average-case lookups, insertions, and deletions.</p>
+<p>A Hash Table is a special type of hash-based structure that stores data in an array of buckets and resolves
+    collisions systematically to guarantee fast average-case lookups, insertions, and deletions.</p>
 
-<p>Imagine a coat check room at a theater with 100 numbered hooks. When you hand over your coat, the attendant uses the last two digits of your phone number to pick a hook. If someone else's coat is already on Hook #42, the attendant simply hangs your coat on a secondary hanger clipped right below it on Hook #42. When you return, they go straight to Hook #42 and hand you your coat.</p><br>
+<p>Imagine a coat check room at a theater with 100 numbered hooks. When you hand over your coat, the attendant uses the
+    last two digits of your phone number to pick a hook. If someone else's coat is already on Hook #42, the attendant
+    simply hangs your coat on a secondary hanger clipped right below it on Hook #42. When you return, they go straight
+    to Hook #42 and hand you your coat.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Separate Chaining:</strong> A collision strategy where each bucket holds a small linked list of all items that hashed to that same index.</p>
+<p><strong>Separate Chaining:</strong> A collision strategy where each bucket holds a small linked list of all items
+    that hashed to that same index.</p>
 
-<p><strong>Open Addressing (Probing):</strong> A collision strategy where all items live directly in the main array; if a slot is occupied, the table checks the next open slot according to a fixed pattern.</p>
+<p><strong>Open Addressing (Probing):</strong> A collision strategy where all items live directly in the main array; if
+    a slot is occupied, the table checks the next open slot according to a fixed pattern.</p>
 
-<p><strong>Rehashing:</strong> Creating a larger bucket array and recalculating the position of every stored item when the load factor exceeds a safe threshold (commonly `0.75`).</p><br>
+<p><strong>Rehashing:</strong> Creating a larger bucket array and recalculating the position of every stored item when
+    the load factor exceeds a safe threshold (commonly `0.75`).</p><br>
 
 <h2>How Does a Hash Table Work Conceptually?</h2>
 
-<p>A hash table combines an underlying dynamic array of buckets with a hash function and a collision handler. When an item is inserted, its hash code is divided by the number of buckets to find the remainder—its home index. As long as the hash function spreads items evenly across the buckets and the table rehashes before getting too crowded, almost every bucket contains zero or one item, making operations run in constant $O(1)$ time on average.</p><br>
+<p>A hash table combines an underlying dynamic array of buckets with a hash function and a collision handler. When an
+    item is inserted, its hash code is divided by the number of buckets to find the remainder-its home index. As long as
+    the hash function spreads items evenly across the buckets and the table rehashes before getting too crowded, almost
+    every bucket contains zero or one item, making operations run in constant $O(1)$ time on average.</p><br>
 
 <h2>Where Are Hash Tables Used in the Real World?</h2>
 
-<p><strong>Compiler Symbol Tables:</strong> Track variable names and function definitions while translating source code into machine programs.</p>
+<p><strong>Compiler Symbol Tables:</strong> Track variable names and function definitions while translating source code
+    into machine programs.</p>
 
-<p><strong>DNS (Domain Name System) Caches:</strong> Translate human-readable website names like `example.com` into numerical IP addresses.</p>
+<p><strong>DNS (Domain Name System) Caches:</strong> Translate human-readable website names like `example.com` into
+    numerical IP addresses.</p>
 
-<p><strong>Spell Checkers:</strong> Verify whether every typed word in a document exists in a dictionary of hundreds of thousands of words in real time.</p><br>
+<p><strong>Spell Checkers:</strong> Verify whether every typed word in a document exists in a dictionary of hundreds of
+    thousands of words in real time.</p><br>
 
 <h2>Summary</h2>
 
-<p>A hash table is the concrete engine behind fast associative data storage, combining hash math, bucket arrays, and collision handling to make data retrieval virtually instantaneous.</p>
+<p>A hash table is the concrete engine behind fast associative data storage, combining hash math, bucket arrays, and
+    collision handling to make data retrieval virtually instantaneous.</p>

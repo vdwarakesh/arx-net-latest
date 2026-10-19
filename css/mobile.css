@@ -52,7 +52,7 @@
     /*
        Collapses the grid view from 2 columns to 1 single vertical column.
        Also prepends an "auto" sized row ahead of the usual fixed-height
-       container rows, reserved for .mobile-object-list below — so the
+       container rows, reserved for .mobile-object-list below - so the
        name list gets exactly the height its content needs instead of
        being stretched to a container-sized 50% row.
     */
@@ -65,7 +65,7 @@
        The mobile name list itself: list -> container 1 -> container 2 -> ...
        Hover popovers don't work via touch (see css/popover.css /
        js/HoverPopover.js), so this is the mobile replacement for the
-       sidebar's "Show object list" popover — same names, same
+       sidebar's "Show object list" popover - same names, same
        .list-jump-btn click behavior, just laid out inline instead of
        in a hover popup.
     */
@@ -101,7 +101,7 @@
     /*
        Allows the cards to distribute space properly on mobile.
        .traversal-row takes over the "fill whatever .card.code doesn't
-       use" role .card.traversal used to play directly — Traversal and
+       use" role .card.traversal used to play directly - Traversal and
        State variables keep their 60/40 split inside it (same values as
        desktop; neither was asked to change on mobile).
     */
@@ -123,7 +123,7 @@
     }
 
     /*
-       Object metadata isn't shown on mobile — the container itself and
+       Object metadata isn't shown on mobile - the container itself and
        the Code/Traversal cards already compete for limited vertical
        space there, and .card.metadata's one piece of content (the name)
        is already visible in the container's own header. The container
@@ -140,7 +140,7 @@
 
     /*
        Halves card/container header height and shrinks their text to
-       match — .icon above already shrinks the focus-btn that sits
+       match - .icon above already shrinks the focus-btn that sits
        inside .container-header, so this is the other half of "fit
        everything into a shorter header."
     */
@@ -187,7 +187,7 @@
 
     /*
        Hover popovers (sidebar tooltips/menus) are driven by mouseenter/mouseleave,
-       which touchscreens don't reliably fire — they'd otherwise get stuck open or
+       which touchscreens don't reliably fire - they'd otherwise get stuck open or
        never appear. js/HoverPopover.js already refuses to open below this
        breakpoint; this rule is a belt-and-suspenders guard so no popover can ever
        render on mobile, even if something else tries to add .active to it.

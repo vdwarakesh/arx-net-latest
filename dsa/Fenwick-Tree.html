@@ -1,33 +1,50 @@
 <h1>Fenwick Tree</h1>
 
-<p>A Fenwick Tree (also known as a **Binary Indexed Tree**, or **BIT**) is a special type of implicit tree structure stored inside a flat 1D array that computes **prefix sums** and applies **point updates** in $\mathcal{O}(\log n)$ time using clever binary bit manipulation.</p>
+<p>A Fenwick Tree (also known as a **Binary Indexed Tree**, or **BIT**) is a special type of implicit tree structure
+    stored inside a flat 1D array that computes **prefix sums** and applies **point updates** in $\mathcal{O}(\log n)$
+    time using clever binary bit manipulation.</p>
 
-<p>Imagine measuring a distance of 13 meters using only rulers of power-of-two lengths: an 8-meter ruler, a 4-meter ruler, and a 1-meter ruler ($8 + 4 + 1 = 13$). In a Fenwick tree, slot 13 stores 1 item, slot 12 stores 4 items, and slot 8 stores 8 items. By stripping off the lowest `1`-bit in the binary representation of 13 (`1101` $\rightarrow$ `1100` $\rightarrow$ `1000`), you add up all 13 items in just three hops.</p><br>
+<p>Imagine measuring a distance of 13 meters using only rulers of power-of-two lengths: an 8-meter ruler, a 4-meter
+    ruler, and a 1-meter ruler ($8 + 4 + 1 = 13$). In a Fenwick tree, slot 13 stores 1 item, slot 12 stores 4 items, and
+    slot 8 stores 8 items. By stripping off the lowest `1`-bit in the binary representation of 13 (`1101` $\rightarrow$
+    `1100` $\rightarrow$ `1000`), you add up all 13 items in just three hops.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Least Significant Bit (`LSB` / `lowbit`):</strong> The value of the rightmost `1`-bit in an index's binary number, calculated instantly in hardware via the bitwise trick `i & -i`.</p>
+<p><strong>Least Significant Bit (`LSB` / `lowbit`):</strong> The value of the rightmost `1`-bit in an index's binary
+    number, calculated instantly in hardware via the bitwise trick `i & -i`.</p>
 
-<p><strong>Responsibility Range:</strong> Each 1-based array slot `i` stores the sum of exactly `lowbit(i)` elements ending at position `i`.</p>
+<p><strong>Responsibility Range:</strong> Each 1-based array slot `i` stores the sum of exactly `lowbit(i)` elements
+    ending at position `i`.</p>
 
-<p><strong>Prefix Sum Query:</strong> Summing elements from index `1` to `i` by repeatedly subtracting `lowbit(i)` from `i` until `i` reaches `0`.</p>
+<p><strong>Prefix Sum Query:</strong> Summing elements from index `1` to `i` by repeatedly subtracting `lowbit(i)` from
+    `i` until `i` reaches `0`.</p>
 
-<p><strong>Point Update:</strong> Adding a delta to index `i` by repeatedly *adding* `lowbit(i)` to `i` up to $n$ to update all covering intervals.</p><br>
+<p><strong>Point Update:</strong> Adding a delta to index `i` by repeatedly *adding* `lowbit(i)` to `i` up to $n$ to
+    update all covering intervals.</p><br>
 
 <h2>How Does a Fenwick Tree Work Conceptually?</h2>
 
-<p>While a Segment Tree requires $4n$ memory slots and recursive tree navigation, a Fenwick tree requires an array of size **just $n$**—the exact same size as the original data! Every index `i` implicitly acts as a tree node whose parent is found by flipping or adding its lowest set bit.</p>
+<p>While a Segment Tree requires $4n$ memory slots and recursive tree navigation, a Fenwick tree requires an array of
+    size **just $n$**-the exact same size as the original data! Every index `i` implicitly acts as a tree node whose
+    parent is found by flipping or adding its lowest set bit.</p>
 
-<p>Because both queries and updates consist of a tiny three-line `while` loop using `i += i & -i` or `i -= i & -i`, a Fenwick tree has virtually zero constant-factor overhead and runs several times faster than a full segment tree for cumulative sum and frequency tasks.</p><br>
+<p>Because both queries and updates consist of a tiny three-line `while` loop using `i += i & -i` or `i -= i & -i`, a
+    Fenwick tree has virtually zero constant-factor overhead and runs several times faster than a full segment tree for
+    cumulative sum and frequency tasks.</p><br>
 
 <h2>Where Are Fenwick Trees Used in the Real World?</h2>
 
-<p><strong>Arithmetic Coding in Data Compression:</strong> Maintain live cumulative symbol frequencies in high-speed compression codecs (the exact problem Peter Fenwick invented the structure to solve in 1994).</p>
+<p><strong>Arithmetic Coding in Data Compression:</strong> Maintain live cumulative symbol frequencies in high-speed
+    compression codecs (the exact problem Peter Fenwick invented the structure to solve in 1994).</p>
 
-<p><strong>Counting Inversions & Ranking Streams:</strong> Count how many numbers arrived out of order or maintain dynamic cumulative distribution tables.</p>
+<p><strong>Counting Inversions & Ranking Streams:</strong> Count how many numbers arrived out of order or maintain
+    dynamic cumulative distribution tables.</p>
 
-<p><strong>Real-Time Financial Ledger Balances:</strong> Update transaction buckets and compute running year-to-date totals in microseconds.</p><br>
+<p><strong>Real-Time Financial Ledger Balances:</strong> Update transaction buckets and compute running year-to-date
+    totals in microseconds.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Fenwick tree packs the power of a dynamic range-sum tree into a flat array of size $n$, using binary bit jumps (`i & -i`) for ultra-compact, lightning-fast prefix sums and updates.</p>
+<p>A Fenwick tree packs the power of a dynamic range-sum tree into a flat array of size $n$, using binary bit jumps (`i
+    & -i`) for ultra-compact, lightning-fast prefix sums and updates.</p>

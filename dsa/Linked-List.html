@@ -1,33 +1,51 @@
 <h1>Linked List</h1>
 
-<p>A Linked List is a linear data structure where elements, called nodes, are stored at scattered locations in memory and connected together like a chain using pointers. Unlike an array, which forces elements to sit side by side in a single block, a linked list lets elements live anywhere as long as each node knows where to find the next one.</p>
+<p>A Linked List is a linear data structure where elements, called nodes, are stored at scattered locations in memory
+    and connected together like a chain using pointers. Unlike an array, which forces elements to sit side by side in a
+    single block, a linked list lets elements live anywhere as long as each node knows where to find the next one.</p>
 
-<p>Imagine a treasure hunt across a city. The first clue is in your hand; it contains a piece of the puzzle and the exact street address of the second clue. The second clue holds another piece and the address of the third. You cannot jump straight to the fifth clue without visiting the first four in order, but you can easily slip a new clue into the middle of the hunt just by updating a single address card.</p><br>
+<p>Imagine a treasure hunt across a city. The first clue is in your hand; it contains a piece of the puzzle and the
+    exact street address of the second clue. The second clue holds another piece and the address of the third. You
+    cannot jump straight to the fifth clue without visiting the first four in order, but you can easily slip a new clue
+    into the middle of the hunt just by updating a single address card.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Node:</strong> The basic building block of the list, containing both the actual data value and one or more reference pointers.</p>
+<p><strong>Node:</strong> The basic building block of the list, containing both the actual data value and one or more
+    reference pointers.</p>
 
-<p><strong>Pointer (or Reference / Next Link):</strong> The memory address stored inside a node that points to the next node in the sequence.</p>
+<p><strong>Pointer (or Reference / Next Link):</strong> The memory address stored inside a node that points to the next
+    node in the sequence.</p>
 
-<p><strong>Head:</strong> The very first node in the linked list. Losing track of the head means losing access to the entire chain.</p>
+<p><strong>Head:</strong> The very first node in the linked list. Losing track of the head means losing access to the
+    entire chain.</p>
 
-<p><strong>Tail:</strong> The final node in the sequence, whose pointer typically points to `null` (nothing) to mark the end of the list.</p><br>
+<p><strong>Tail:</strong> The final node in the sequence, whose pointer typically points to `null` (nothing) to mark the
+    end of the list.</p><br>
 
 <h2>How Does a Linked List Work Conceptually?</h2>
 
-<p>Every time a new item is added to a linked list, the computer grabs a small, individual piece of memory just big enough for that single node and links it into the chain. There is never any need to reserve a massive block of memory up front or copy existing items when the list grows.</p>
+<p>Every time a new item is added to a linked list, the computer grabs a small, individual piece of memory just big
+    enough for that single node and links it into the chain. There is never any need to reserve a massive block of
+    memory up front or copy existing items when the list grows.</p>
 
-<p>Inserting or deleting a node at a known position is effortless: you simply redirect the pointers of the neighboring nodes, much like unclasping a chain link and clipping in a new one. The trade-off is that linked lists do not support instant random access—to reach the hundredth item, you must start at the head and follow the pointers one by one.</p><br>
+<p>Inserting or deleting a node at a known position is effortless: you simply redirect the pointers of the neighboring
+    nodes, much like unclasping a chain link and clipping in a new one. The trade-off is that linked lists do not
+    support instant random access-to reach the hundredth item, you must start at the head and follow the pointers one by
+    one.</p><br>
 
 <h2>Where Are Linked Lists Used in the Real World?</h2>
 
-<p><strong>Music and Media Playlists:</strong> Link songs together so a player can smoothly transition from one track to the next or rearrange upcoming tracks.</p>
+<p><strong>Music and Media Playlists:</strong> Link songs together so a player can smoothly transition from one track to
+    the next or rearrange upcoming tracks.</p>
 
-<p><strong>Undo/Redo History:</strong> Track sequential actions in design software or word processors where steps are dynamically added and pruned.</p>
+<p><strong>Undo/Redo History:</strong> Track sequential actions in design software or word processors where steps are
+    dynamically added and pruned.</p>
 
-<p><strong>Operating System Memory Management:</strong> Keep track of scattered free blocks of RAM ("free lists") available for programs to use.</p><br>
+<p><strong>Operating System Memory Management:</strong> Keep track of scattered free blocks of RAM ("free lists")
+    available for programs to use.</p><br>
 
 <h2>Summary</h2>
 
-<p>A linked list is a flexible chain of data nodes. While it trades away instant index lookups, it excels at growing dynamically and inserting or removing items without shifting memory around.</p>
+<p>A linked list is a flexible chain of data nodes. While it trades away instant index lookups, it excels at growing
+    dynamically and inserting or removing items without shifting memory around.</p>

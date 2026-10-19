@@ -1,31 +1,46 @@
 <h1>Suffix Array</h1>
 
-<p>A Suffix Array is a special type of string data structure that consists of a flat array of integers representing the **starting indices of all suffixes** of a string, arranged in sorted **lexicographical (alphabetical) order**.</p>
+<p>A Suffix Array is a special type of string data structure that consists of a flat array of integers representing the
+    **starting indices of all suffixes** of a string, arranged in sorted **lexicographical (alphabetical) order**.</p>
 
-<p>Imagine wanting all the search power of a massive Suffix Tree without paying for all its complex pointers and tree nodes. Instead, you list the starting page and character position of every suffix in a text, and sort those position numbers alphabetically by the text that starts there. Because every matching phrase now clusters together in one contiguous block of the sorted array, simple binary search can find any substring in an instant!</p><br>
+<p>Imagine wanting all the search power of a massive Suffix Tree without paying for all its complex pointers and tree
+    nodes. Instead, you list the starting page and character position of every suffix in a text, and sort those position
+    numbers alphabetically by the text that starts there. Because every matching phrase now clusters together in one
+    contiguous block of the sorted array, simple binary search can find any substring in an instant!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Suffix Index (`SA[i]`):</strong> An integer stored at position `i` of the suffix array indicating that the $i$-th alphabetically smallest suffix begins at character index `SA[i]` in the original text.</p>
+<p><strong>Suffix Index (`SA[i]`):</strong> An integer stored at position `i` of the suffix array indicating that the
+    $i$-th alphabetically smallest suffix begins at character index `SA[i]` in the original text.</p>
 
-<p><strong>LCP Array (Longest Common Prefix Array):</strong> A companion array of size $n$ where `LCP[i]` stores how many starting characters the sorted suffix `SA[i]` shares with its immediate neighbor `SA[i-1]`.</p>
+<p><strong>LCP Array (Longest Common Prefix Array):</strong> A companion array of size $n$ where `LCP[i]` stores how
+    many starting characters the sorted suffix `SA[i]` shares with its immediate neighbor `SA[i-1]`.</p>
 
-<p><strong>SA-IS / Prefix-Doubling Algorithms:</strong> Fast construction methods that sort all $n$ suffixes in $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$ time without comparing full strings from scratch.</p><br>
+<p><strong>SA-IS / Prefix-Doubling Algorithms:</strong> Fast construction methods that sort all $n$ suffixes in
+    $\mathcal{O}(n)$ or $\mathcal{O}(n \log n)$ time without comparing full strings from scratch.</p><br>
 
 <h2>How Does a Suffix Array Work Conceptually?</h2>
 
-<p>Take the string `"BANANA"`. Its suffixes start at indices `0` (`"BANANA"`), `1` (`"ANANA"`), `2` (`"NANA"`), `3` (`"ANA"`), `4` (`"NA"`), and `5` (`"A"`). Sorting those suffixes alphabetically gives `"A"`, `"ANA"`, `"ANANA"`, `"BANANA"`, `"NA"`, `"NANA"`—so the Suffix Array is simply the integer list `[5, 3, 1, 0, 4, 2]`.</p>
+<p>Take the string `"BANANA"`. Its suffixes start at indices `0` (`"BANANA"`), `1` (`"ANANA"`), `2` (`"NANA"`), `3`
+    (`"ANA"`), `4` (`"NA"`), and `5` (`"A"`). Sorting those suffixes alphabetically gives `"A"`, `"ANA"`, `"ANANA"`,
+    `"BANANA"`, `"NA"`, `"NANA"`-so the Suffix Array is simply the integer list `[5, 3, 1, 0, 4, 2]`.</p>
 
-<p>Because every substring is a prefix of some suffix, all occurrences of any pattern (like `"AN"`) sit right next to each other in the Suffix Array (`3` and `1`). Two quick binary searches locate the exact range of matches, using 5x to 10x less memory than a pointer-heavy Suffix Tree.</p><br>
+<p>Because every substring is a prefix of some suffix, all occurrences of any pattern (like `"AN"`) sit right next to
+    each other in the Suffix Array (`3` and `1`). Two quick binary searches locate the exact range of matches, using 5x
+    to 10x less memory than a pointer-heavy Suffix Tree.</p><br>
 
 <h2>Where Are Suffix Arrays Used in the Real World?</h2>
 
-<p><strong>Bioinformatics Read Alignment (Bowtie, BWA, STAR):</strong> Map millions of short DNA sequencing reads against the 3-billion-letter human genome on a standard desktop computer.</p>
+<p><strong>Bioinformatics Read Alignment (Bowtie, BWA, STAR):</strong> Map millions of short DNA sequencing reads
+    against the 3-billion-letter human genome on a standard desktop computer.</p>
 
-<p><strong>Data Compression (Burrows-Wheeler Transform / `bzip2`):</strong> Generate the BWT permutation directly from the sorted suffix order to cluster identical characters for compression.</p>
+<p><strong>Data Compression (Burrows-Wheeler Transform / `bzip2`):</strong> Generate the BWT permutation directly from
+    the sorted suffix order to cluster identical characters for compression.</p>
 
-<p><strong>Full-Text Search Engines:</strong> Index large source-code repositories and offline encyclopedias for instant substring queries.</p><br>
+<p><strong>Full-Text Search Engines:</strong> Index large source-code repositories and offline encyclopedias for instant
+    substring queries.</p><br>
 
 <h2>Summary</h2>
 
-<p>A suffix array replaces the bulky pointers of a suffix tree with a clean, sorted array of starting indices, delivering full-text substring search in a tiny fraction of the memory.</p>
+<p>A suffix array replaces the bulky pointers of a suffix tree with a clean, sorted array of starting indices,
+    delivering full-text substring search in a tiny fraction of the memory.</p>

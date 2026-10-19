@@ -1,29 +1,43 @@
 <h1>Priority Queue</h1>
 
-<p>A Priority Queue is a special type of queue where every element is assigned a priority score, and the element with the highest priority is always served first—regardless of when it arrived. Instead of strictly following arrival order, importance dictates who steps out of line next.</p>
+<p>A Priority Queue is a special type of queue where every element is assigned a priority score, and the element with
+    the highest priority is always served first-regardless of when it arrived. Instead of strictly following arrival
+    order, importance dictates who steps out of line next.</p>
 
-<p>Imagine a hospital emergency room waiting area. A patient arriving with a scraped knee waits quietly, while a patient arriving twenty minutes later with a life-threatening emergency is taken straight in to see the doctor first. If two patients have the exact same urgency, they are seen in the order they arrived. A priority queue manages tasks using this exact triage system.</p><br>
+<p>Imagine a hospital emergency room waiting area. A patient arriving with a scraped knee waits quietly, while a patient
+    arriving twenty minutes later with a life-threatening emergency is taken straight in to see the doctor first. If two
+    patients have the exact same urgency, they are seen in the order they arrived. A priority queue manages tasks using
+    this exact triage system.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Priority Key:</strong> The numerical score or weight attached to an item that determines its urgency relative to other items.</p>
+<p><strong>Priority Key:</strong> The numerical score or weight attached to an item that determines its urgency relative
+    to other items.</p>
 
-<p><strong>Extract-Max / Extract-Min:</strong> Removing and returning the item with the highest (or lowest) priority value from the queue.</p>
+<p><strong>Extract-Max / Extract-Min:</strong> Removing and returning the item with the highest (or lowest) priority
+    value from the queue.</p>
 
 <p><strong>Peek:</strong> Inspecting the most urgent item waiting at the front without removing it.</p><br>
 
 <h2>How Does a Priority Queue Work Conceptually?</h2>
 
-<p>While a priority queue is conceptually a waiting line, it is rarely built with a simple flat list because scanning for the most urgent item every time would be too slow. Instead, it is almost always powered under the hood by a **Heap** tree structure. When a new item is inserted, it bubbles up to its proper urgency level so that the highest-priority item is always sitting right at the top, ready for instant retrieval.</p><br>
+<p>While a priority queue is conceptually a waiting line, it is rarely built with a simple flat list because scanning
+    for the most urgent item every time would be too slow. Instead, it is almost always powered under the hood by a
+    **Heap** tree structure. When a new item is inserted, it bubbles up to its proper urgency level so that the
+    highest-priority item is always sitting right at the top, ready for instant retrieval.</p><br>
 
 <h2>Where Are Priority Queues Used in the Real World?</h2>
 
-<p><strong>GPS Navigation (Dijkstra's Algorithm):</strong> Always explore the shortest, most promising road segment next when calculating driving directions.</p>
+<p><strong>GPS Navigation (Dijkstra's Algorithm):</strong> Always explore the shortest, most promising road segment next
+    when calculating driving directions.</p>
 
-<p><strong>Network Traffic Shaping (QoS):</strong> Prioritize real-time video call packets ahead of background file downloads so calls don't freeze.</p>
+<p><strong>Network Traffic Shaping (QoS):</strong> Prioritize real-time video call packets ahead of background file
+    downloads so calls don't freeze.</p>
 
-<p><strong>Operating System Task Management:</strong> Ensure critical system interrupts and user mouse movements run before background disk indexing.</p><br>
+<p><strong>Operating System Task Management:</strong> Ensure critical system interrupts and user mouse movements run
+    before background disk indexing.</p><br>
 
 <h2>Summary</h2>
 
-<p>A priority queue is an urgency-driven waiting line. Rather than serving items strictly by arrival time, it ensures the most important item is always processed next.</p>
+<p>A priority queue is an urgency-driven waiting line. Rather than serving items strictly by arrival time, it ensures
+    the most important item is always processed next.</p>
