@@ -1,0 +1,35 @@
+<h1>Matrix</h1>
+
+<p>A Matrix (or **2D Array / Grid**) is a data structure that organizes elements into a rectangular two-dimensional table of horizontal **rows** and vertical **columns**, where every cell is uniquely identified by a pair of coordinates `(row, column)`.</p>
+
+<p>Imagine a spreadsheet or a chessboard. Instead of lining items up in a single hallway like a 1D array, a matrix arranges data across a flat grid where you locate any square by naming its row number and column number. Every row has the exact same width, and every column has the exact same height.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Dimensions ($M \times N$):</strong> The size of the matrix, expressed as $M$ horizontal rows by $N$ vertical columns.</p>
+
+<p><strong>Cell (Element $A[i][j]$):</strong> The value sitting at the intersection of row index `i` and column index `j`.</p>
+
+<p><strong>Row-Major vs. Column-Major Order:</strong> How a 2D grid is flattened into 1D computer memory—either laying out complete rows one after another (Row-Major, used in C/Python) or complete columns one after another (Column-Major, used in Fortran/MATLAB).</p>
+
+<p><strong>Main Diagonal:</strong> The line of cells where the row index equals the column index (`i == j`), running from top-left to bottom-right.</p><br>
+
+<h2>How Does a Matrix Work Conceptually?</h2>
+
+<p>Although we picture a matrix as a two-dimensional rectangle, computer RAM is actually a single one-dimensional strip of addresses. To store an $M \times N$ matrix in row-major order, the computer places Row 0 first, immediately followed by Row 1, Row 2, and so on.</p>
+
+<p>When you ask for cell `(i, j)`, the computer calculates the exact 1D memory offset using the formula $\text{base} + (i \times N + j) \times \text{element\_size}$, giving you instant $\mathcal{O}(1)$ access to any cell in the grid.</p><br>
+
+<h2>Where Are Matrices Used in the Real World?</h2>
+
+<p><strong>3D Graphics and Game Engines:</strong> Rotate, scale, and project 3D models onto your 2D screen using $4 \times 4$ transformation matrices on the GPU.</p>
+
+<p><strong>Artificial Intelligence & Deep Learning:</strong> Store neural network weights and process batches of data through high-speed matrix multiplications.</p>
+
+<p><strong>Digital Images and Video Frames:</strong> Represent every frame of video as a 2D grid of pixel brightness and color values.</p>
+
+<p><strong>Tabular Spreadsheets & Scientific Computing:</strong> Model systems of linear equations, weather grids, and financial tables.</p><br>
+
+<h2>Summary</h2>
+
+<p>A matrix organizes data into a structured 2D grid of rows and columns, serving as the mathematical and computational backbone of computer graphics, image processing, and modern AI.</p>

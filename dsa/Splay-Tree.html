@@ -1,17 +1,33 @@
 <h1>Splay Tree</h1>
 
-<p>A Splay Tree is a type of Binary Search Tree (BST) that rearranges itself whenever a node is accessed, bringing that node to the root through a process called splaying.</p>
+<p>A Splay Tree is a special type of binary search tree that automatically moves any accessed, inserted, or searched node all the way up to the root of the tree using a sequence of rotations called **splaying**.</p>
 
-<p>Its central idea is that recently accessed values are often likely to be accessed again. Instead of keeping every value in a fixed position, the tree adapts to the access pattern by moving frequently used values closer to the top.</p>
+<p>Imagine a stack of folders on your desk. Every time you pull out a folder to read or update it—even if it was buried near the bottom—you place it right back on the very top of the pile when you finish. The folders you use every five minutes stay right at your fingertips at the top, while old folders naturally sink toward the bottom. A splay tree reorganizes its branches using this exact habit.</p><br>
 
-<p>Imagine a desk drawer where you keep your everyday essentials. Whenever you use an item, you place it near the front so it is easier to reach next time. Over time, the items you use most often become the easiest to access.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Unlike AVL and Red-Black Trees, a Splay Tree does not maintain a strict balance condition. Its shape changes according to which values are accessed, so an individual operation can sometimes be expensive even though its performance over a sequence of operations has useful guarantees.</p><br>
+<p><strong>Splaying:</strong> The process of rotating a target node up to the root position after every search, insertion, or deletion.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Zig, Zig-Zig, and Zig-Zag Steps:</strong> Specialized double-rotation patterns used during splaying that not only bring the target node to the root, but also roughly halve the depth of every node along the path.</p>
 
-<p>Splay Trees can be useful in caches, frequently accessed dictionaries, and systems where access patterns tend to repeat.</p><br>
+<p><strong>Temporal Locality:</strong> The real-world pattern where data accessed once is highly likely to be accessed again in the near future.</p>
+
+<p><strong>Amortized $\mathcal{O}(\log n)$ Complexity:</strong> The mathematical guarantee that even if a single deep search takes time, it flattens the tree along the way so any long sequence of operations averages out to fast logarithmic time.</p><br>
+
+<h2>How Does a Splay Tree Work Conceptually?</h2>
+
+<p>Unlike AVL or Red-Black trees, a splay tree stores **zero** extra balance metadata—no height counts and no color bits. Instead, every time you touch a node, the tree performs `Zig-Zig` and `Zig-Zag` rotations until that node sits at the root.</p>
+
+<p>This makes the tree self-optimizing: frequently searched items cluster near the top for near-instant access, while deep branches get folded and shortened automatically whenever someone visits them.</p><br>
+
+<h2>Where Are Splay Trees Used in the Real World?</h2>
+
+<p><strong>Network Routers and Firewalls:</strong> Look up active IP addresses where a small burst of active connections accounts for 90% of current traffic.</p>
+
+<p><strong>Memory Allocators and Caches:</strong> Keep recently requested memory block sizes or cached items at the root without spending extra RAM on balance pointers.</p>
+
+<p><strong>Data Compression and Dynamic Trees:</strong> Serve as the underlying engine inside Link-Cut Trees and adaptive compression algorithms.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Splay Tree adapts to usage by bringing recently accessed values to the top, making frequently revisited data more convenient to reach.</p>
+<p>A splay tree is an adaptive, cache-like binary search tree. Without storing any extra balance numbers, it constantly promotes recently used items to the root for ultra-fast repeat access.</p>

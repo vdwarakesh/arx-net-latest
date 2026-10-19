@@ -1,17 +1,33 @@
 <h1>Suffix Trie</h1>
 
-<p>A Suffix Trie is a type of Trie that stores all the suffixes of a given string. A suffix is any sequence of characters that starts at a particular position and continues to the end of the string.</p>
+<p>A Suffix Trie is a special type of trie that stores every possible suffix of a single string rather than a dictionary of separate words. By inserting the full string and every progressively shorter ending of that string into one prefix tree, it turns any substring search into a simple prefix walk from the root.</p>
 
-<p>For example, the string “banana” has suffixes such as “banana,” “anana,” “nana,” “ana,” “na,” and “a.” A Suffix Trie organizes these suffixes so that different starting positions can share common character paths.</p>
+<p>Imagine taking the word `"BANANA"` and writing down all its endings on separate index cards: `"BANANA"`, `"ANANA"`, `"NANA"`, `"ANA"`, `"NA"`, and `"A"`. If you organize all six endings inside a standard trie, any smaller piece of the word—like `"NAN"`—is guaranteed to appear right at the beginning of one of those cards. A suffix trie indexes text using this exact insight.</p><br>
 
-<p>Imagine a book index that lets you search for a phrase beginning at any position in a sentence, not just at the first word. By organizing every possible starting point, the structure helps locate occurrences of a pattern within the original text.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Because it stores every suffix, a Suffix Trie can require substantial memory, especially for long strings. Even so, it provides a useful way to understand and perform substring-related searches.</p><br>
+<p><strong>Suffix:</strong> Any contiguous ending slice of a string that extends all the way to the final character (including the full string itself).</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Substring as a Prefix of a Suffix:</strong> The fundamental rule of string indexing: every substring inside a text is simply the starting prefix of at least one suffix of that text.</p>
 
-<p>Suffix Tries are useful in text searching, DNA sequence analysis, pattern matching, and applications that need to find whether a particular sequence occurs within a larger string.</p><br>
+<p><strong>Terminal Marker (`$`):</strong> A special end-of-string symbol appended to the text (such as `"BANANA$"`) to ensure no suffix is hidden inside a longer suffix without its own distinct leaf node.</p>
+
+<p><strong>Suffix Link:</strong> An auxiliary shortcut pointer leading from a node representing string `c + S` to the node representing `S`, used to speed up construction and traversal.</p><br>
+
+<h2>How Does a Suffix Trie Work Conceptually?</h2>
+
+<p>To build a suffix trie for a string of length $n$, you insert all $n$ suffixes into a standard character-by-character trie. Once constructed, checking whether a pattern of length $m$ appears anywhere inside the huge original text takes only $O(m)$ steps—you simply start at the root and follow the letters of your pattern.</p>
+
+<p>While conceptually simple and blazingly fast for queries, an uncompressed suffix trie can require up to $O(n^2)$ nodes in memory for long strings, which is why large-scale systems often compress its single-child chains into a **Suffix Tree**.</p><br>
+
+<h2>Where Are Suffix Tries Used in the Real World?</h2>
+
+<p><strong>Educational String Indexing & Pattern Matching:</strong> Teach and prototype exact substring matching, longest repeated substring detection, and counting pattern occurrences.</p>
+
+<p><strong>Small-Scale Text & Bioinformatics Analysis:</strong> Quickly query short genetic motifs or recurring patterns in compact character sequences.</p>
+
+<p><strong>Stepping Stone to Suffix Automata and Suffix Trees:</strong> Serve as the conceptual blueprint behind industrial full-text search engines.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Suffix Trie organizes every suffix of a string, making it easier to search for patterns that may begin anywhere within the original text.</p>
+<p>A suffix trie indexes every ending of a string inside a prefix tree, turning slow full-text substring searches into direct, character-by-character walks from the root.</p>

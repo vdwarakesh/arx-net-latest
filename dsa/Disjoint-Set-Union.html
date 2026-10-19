@@ -1,0 +1,35 @@
+<h1>Disjoint Set Union</h1>
+
+<p>A Disjoint Set Union (DSU, also known as **Union-Find**) is a data structure that keeps track of a collection of elements partitioned into a number of non-overlapping (disjoint) groups, supporting near-instantaneous group merging and membership checks.</p>
+
+<p>Imagine a room full of strangers where each person starts in their own solo club. Whenever two people shake hands, their two clubs merge into one larger club, and one person is chosen as the club president. If you want to know whether Alice and Bob are in the same club, you simply ask both of them, *"Who is your club president?"* If they name the same president, they are in the same group.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Representative (Root / Leader):</strong> The single designated boss element at the top of a group's internal tree that uniquely identifies the entire set.</p>
+
+<p><strong>`Find(x)` Operation:</strong> Following parent pointers upward from element `x` until reaching the group's representative leader.</p>
+
+<p><strong>`Union(x, y)` Operation:</strong> Merging the group containing `x` and the group containing `y` by making one group's leader point to the other group's leader.</p>
+
+<p><strong>Path Compression:</strong> A speed optimization during `Find(x)` that rewires every visited node along the path to point directly to the root leader, flattening the tree for future lookups.</p>
+
+<p><strong>Union by Rank / Size:</strong> Always attaching the smaller tree under the root of the larger tree during a `Union` so the structure stays extremely flat.</p><br>
+
+<h2>How Does a Disjoint Set Union Work Conceptually?</h2>
+
+<p>All elements live inside a simple parent array where `parent[i]` records who `i` reports to. Initially, everyone is their own boss (`parent[i] = i`). When you merge two sets, you find the root boss of each set and make the smaller boss report to the larger boss.</p>
+
+<p>When both **Path Compression** and **Union by Size** are combined, the trees stay so flat that every `Find` and `Union` operation runs in $\mathcal{O}(\alpha(n))$ time—the Inverse Ackermann function, which is $\le 4$ for any number of elements that could fit in the observable universe. Practically, it operates in constant $\mathcal{O}(1)$ time.</p><br>
+
+<h2>Where Are Disjoint Set Unions Used in the Real World?</h2>
+
+<p><strong>Network Connectivity Checks:</strong> Instantly determine whether two computers, power stations, or cities are connected through a chain of active links.</p>
+
+<p><strong>Minimum Spanning Trees (Kruskal's Algorithm):</strong> Build the cheapest wiring network across nodes without ever creating a redundant loop.</p>
+
+<p><strong>Image Connected-Component Labeling:</strong> Group touching pixels of the same color into distinct objects during computer vision analysis.</p><br>
+
+<h2>Summary</h2>
+
+<p>A Disjoint Set Union is a blazingly fast grouping tracker that merges sets and checks whether two items belong to the same group in effectively constant time.</p>

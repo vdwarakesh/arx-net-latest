@@ -1,17 +1,29 @@
 <h1>Fibonacci Heap</h1>
 
-<p>A Fibonacci Heap is a type of Heap designed to make certain priority-queue operations especially efficient by postponing some of its structural adjustments until they are needed.</p>
+<p>A Fibonacci Heap is a special type of heap that consists of a flexible collection of heap-ordered trees and uses "lazy" consolidation to achieve **constant $\mathcal{O}(1)$ amortized time** for insertions, merges, and decreasing a node's key.</p>
 
-<p>It maintains a collection of heap-ordered trees and allows the structure to remain relatively flexible after many updates. Rather than immediately reorganizing everything after every change, it performs much of its consolidation when extracting the highest-priority element.</p>
+<p>Imagine throwing dirty dishes into a sink throughout the day (`Insert` in 1 second) rather than washing and stacking each dish the moment you use it. Only when you actually need to pull out the cleanest plate (`Extract-Min`) do you organize and stack the dishes neatly into racks. By deferring cleanup work until an extraction happens, almost every everyday action becomes instantaneous.</p><br>
 
-<p>Imagine a warehouse where incoming items are placed into available storage areas without constantly reorganizing the entire building. A major reorganization happens only when an important retrieval requires it. This reduces the need for repeated adjustments.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Fibonacci heaps are known for their theoretical efficiency in applications involving frequent priority updates, particularly when existing priorities need to be decreased. However, their implementation is more complicated than that of simpler heap structures, and their practical performance depends on the application.</p><br>
+<p><strong>Lazy Insertion and Merging:</strong> Adding new nodes or splicing two heaps together simply by dropping them into a circular doubly linked root list without cleaning up right away.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Consolidation:</strong> The cleanup phase triggered during `Extract-Min`, where trees of equal degree are linked together just like in a Binomial Heap.</p>
 
-<p>Fibonacci heaps are particularly relevant in graph-processing applications, network optimization, and other computational problems that repeatedly update priorities and manage collections of candidate values.</p><br>
+<p><strong>Cascading Cut:</strong> When `Decrease-Key` violates heap order, the node is simply snipped from its parent and tossed into the root list; if a parent loses two children, it gets cut too, keeping trees wide and flat.</p>
+
+<p><strong>Fibonacci Bounding:</strong> The mathematical property that a tree of degree $k$ in the heap always contains at least $F_{k+2}$ nodes (from the Fibonacci sequence), guaranteeing logarithmic tree degrees.</p><br>
+
+<h2>How Does a Fibonacci Heap Work Conceptually?</h2>
+
+<p>A Fibonacci heap pushes laziness to the theoretical limit. It maintains a pointer to the minimum root in a circular doubly linked list of trees. Inserting a node, merging two heaps, or cutting a node whose key decreased and dropping it into the root list all take $\mathcal{O}(1)$ amortized time. The accumulated mess is only consolidated when `Extract-Min` is called.</p><br>
+
+<h2>Where Are Fibonacci Heaps Used in the Real World?</h2>
+
+<p><strong>Asymptotically Fastest Dijkstra and Prim Algorithms:</strong> Reduce the theoretical runtime of shortest-path and minimum spanning tree algorithms on dense graphs where `Decrease-Key` is called millions of times.</p>
+
+<p><strong>Network Optimization and Routing Research:</strong> Benchmark theoretical lower bounds in dense graph flow problems.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Fibonacci Heap delays some structural maintenance to make selected operations more efficient, trading implementation simplicity for stronger theoretical performance in suitable applications.</p>
+<p>A Fibonacci heap is the theoretical speed champion of priority queues, deferring tree cleanup work so insertions, merges, and priority boosts happen in amortized constant time.</p>

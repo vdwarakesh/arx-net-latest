@@ -1,0 +1,33 @@
+<h1>Probabilistic Structures</h1>
+
+<p>Probabilistic Structures (often called **Data Sketches**) are a family of specialized data structures that trade a tiny, mathematically controlled margin of approximation or false-positive probability in exchange for **massive reductions in memory** and constant-time processing over infinite data streams.</p>
+
+<p>Imagine counting the crowd at a massive music festival. Writing down the full legal name and ID number of all 500,000 attendees in a ledger takes huge binders and hours of work. Instead, a probabilistic structure uses clever hash sampling to tell you *"There are $498,200 \pm 1\%$ unique people here"* using a sticky note that fits in your pocket.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Exact vs. Approximate Queries:</strong> Deterministic structures (like Hash Sets) demand 100% precision at the cost of storing every single item; probabilistic structures store compact hash fingerprints instead of raw items.</p>
+
+<p><strong>False Positive vs. False Negative:</strong> Reporting that an unseen item *might* be present (False Positive) versus failing to recognize an item that *was* seen (False Negative—which most sketches strictly forbid).</p>
+
+<p><strong>Error Bounds ($\epsilon, \delta$):</strong> Tunable mathematical guarantees allowing engineers to pick the exact accuracy-versus-memory trade-off (for example, $1\%$ error using 12 KB of RAM).</p>
+
+<p><strong>Sublinear Space ($o(n)$):</strong> Using an amount of memory that is vastly smaller than the number of items processed.</p><br>
+
+<h2>How Do Probabilistic Structures Work Conceptually?</h2>
+
+<p>Instead of storing raw keys (which could be long URLs, user IDs, or IP addresses), probabilistic structures pass each incoming item through multiple independent **hash functions** to update a fixed-size array of bits, counters, or register buckets.</p>
+
+<p>Because the raw keys are immediately discarded after hashing, the structure's memory footprint never grows beyond its tiny fixed table—even as billions of events stream through it at line speed.</p><br>
+
+<h2>Where Are Probabilistic Structures Used in the Real World?</h2>
+
+<p><strong>Big Data & Streaming Analytics (Apache Spark, Flink, Kafka):</strong> Track unique visitors, top trending topics, and traffic spikes across petabyte streams in real time.</p>
+
+<p><strong>Database Storage Engines (LSM-Trees):</strong> Avoid millions of pointless disk reads for keys that don't exist.</p>
+
+<p><strong>Network Security & DDoS Mitigation:</strong> Detect high-frequency attack flows inside router hardware with kilobytes of high-speed SRAM.</p><br>
+
+<h2>Summary</h2>
+
+<p>Probabilistic structures sacrifice a tiny, predictable sliver of exactness to summarize billions of data points inside kilobytes of memory at blinding speed.</p>

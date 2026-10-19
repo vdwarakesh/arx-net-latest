@@ -1,15 +1,29 @@
 <h1>Compressed Trie</h1>
 
-<p>A Compressed Trie is a type of Trie that reduces unnecessary nodes by combining chains of nodes with only one child into a single edge labeled with a sequence of characters.</p>
+<p>A Compressed Trie is a special type of trie that saves memory and speeds up traversal by merging any single-file chain of one-child nodes into a single edge labeled with an entire substring rather than a single character.</p>
 
-<p>In a regular Trie, a long word can create many individual nodes, one for each character. A Compressed Trie simplifies these paths by storing groups of characters together. Branching points and word endings remain distinguishable, so the structure can still represent the stored strings correctly.</p>
+<p>Imagine driving down a long country road with no intersections for ten miles. Instead of putting up a street sign every ten feet reading `"M"`, `"A"`, `"I"`, `"N"`, the highway department puts up one sign reading `"MAIN"` and only places new signs when the road actually forks. A compressed trie cleans up a standard trie in the exact same way.</p><br>
 
-<p>Imagine a road map where several stretches of road have no intersections. Instead of marking every tiny stretch separately, the map combines them into one longer road between important junctions. The map becomes less cluttered while preserving the routes that matter.</p><br>
+<h2>Understanding the Basic Terminology</h2>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Path Compression (Chain Contraction):</strong> Collapsing a sequence of non-branching nodes into a single edge carrying a multi-character label.</p>
 
-<p>Compressed Tries are useful in dictionaries, search indexes, network routing tables, and applications that need prefix-based lookups while reducing the memory overhead of storing many strings.</p><br>
+<p><strong>Explicit Branching Nodes:</strong> Guaranteeing that every internal node in the tree has at least two children (unless it marks the end of a stored word).</p>
+
+<p><strong>Edge Splitting:</strong> Breaking a multi-character edge in two when a newly inserted word diverges in the middle of an existing label (for example, inserting `"TOAST"` when `"TOASTER"` is stored as one edge).</p><br>
+
+<h2>How Does a Compressed Trie Work Conceptually?</h2>
+
+<p>Standard tries waste huge amounts of memory when storing long strings that rarely branch—storing the word `"INTERNATIONALIZATION"` alone creates 20 separate node objects in a chain. A compressed trie eliminates every non-branching intermediate node by labeling edges with strings (or start/end indices into a master string).</p>
+
+<p>Because every internal node now represents a true fork in the road, a compressed trie storing $n$ words is guaranteed to have at most $2n$ nodes total, no matter how long the words are.</p><br>
+
+<h2>Where Are Compressed Tries Used in the Real World?</h2>
+
+<p><strong>Memory-Efficient Dictionaries:</strong> Store massive vocabularies of long words, file paths, or URLs in a fraction of the RAM required by a standard trie.</p>
+
+<p><strong>Foundation for Suffix Trees and Radix Trees:</strong> Provide the core structural compression used in genomics, web servers, and IP routing tables.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Compressed Trie saves space by merging long, non-branching character paths into longer labeled edges, keeping the useful structure without all the extra stops.</p>
+<p>A compressed trie eliminates redundant one-child chains in a prefix tree, shrinking memory usage dramatically while jumping across multi-character segments in a single step.</p>

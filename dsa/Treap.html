@@ -1,17 +1,31 @@
 <h1>Treap</h1>
 
-<p>A Treap is a type of Binary Search Tree (BST) that combines two ordering rules: one based on the stored values and another based on assigned priorities.</p>
+<p>A Treap (a portmanteau of **Tree** and **Heap**) is a special type of binary search tree that stays balanced by assigning every node a random numerical priority and maintaining two rules simultaneously: Binary Search Tree order on the keys, and Heap order on the random priorities.</p>
 
-<p>Each node contains a value and a priority. The values follow the BST ordering rule, while the priorities follow a heap-ordering rule. Together, these rules determine the tree's arrangement.</p>
+<p>Imagine organizing a company chart where every employee has both an alphabetical last name (their **Key**) and a randomly drawn lottery number (their **Priority**). Whoever draws the highest lottery number becomes the root node, everyone whose name comes alphabetically before them goes into the left department, and everyone whose name comes after goes into the right department—repeating down the line.</p><br>
 
-<p>Priorities are often assigned randomly, which helps the tree maintain a reasonably balanced shape in typical situations without relying on a strict height-balancing condition.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Imagine organizing a competition where every participant has a unique name and a randomly assigned ranking number. Names determine where participants belong alphabetically, while their ranking numbers influence their positions in the overall hierarchy. The two rules work together to shape the arrangement.</p><br>
+<p><strong>Search Key:</strong> The actual data value stored in the node, which obeys the standard left-is-smaller, right-is-larger Binary Search Tree rule.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Random Priority:</strong> A randomly generated number attached to the node upon insertion, which obeys the Heap rule (a parent's priority is always greater than its children's priorities).</p>
 
-<p>Treaps are useful in ordered collections, randomized data structures, and applications that need a relatively simple way to maintain sorted values with flexible structural changes.</p><br>
+<p><strong>Split and Merge Operations:</strong> Two powerful primitives that allow a treap to be sliced into two separate trees around a key value, or glued back together in logarithmic time.</p><br>
+
+<h2>How Does a Treap Work Conceptually?</h2>
+
+<p>A binary search tree only becomes unbalanced when items are inserted in a predictable, sorted pattern. By giving every new node a completely random priority and rotating it upward until its priority is smaller than its parent's, a treap simulates the exact shape of a tree built in a completely random order—regardless of the order in which the user actually inserts keys.</p>
+
+<p>With high probability, the resulting tree has a balanced logarithmic height, while being much simpler to code and supporting clean `Split` and `Merge` operations that complex balanced trees struggle with.</p><br>
+
+<h2>Where Are Treaps Used in the Real World?</h2>
+
+<p><strong>Competitive Programming and Interval Management:</strong> Quickly split, merge, and rearrange ordered sets of data.</p>
+
+<p><strong>Randomized Database Indexes:</strong> Maintain balanced search trees without complex multi-case rebalancing logic.</p>
+
+<p><strong>Authenticated Data Structures:</strong> Provide uniquely shaped randomized trees for cryptographic verification.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Treap blends BST ordering with priority-based ordering, using two complementary rules to organize its nodes.</p>
+<p>A treap marries the sorted order of a binary search tree with the priority rules of a heap, using simple randomness to guarantee a balanced tree with effortless splitting and merging.</p>

@@ -1,0 +1,31 @@
+<h1>FIFO Cache</h1>
+
+<p>A FIFO Cache (**First-In, First-Out** Cache) is a special type of cache structure that evicts items strictly in the **chronological order they were first inserted**, completely ignoring how often or how recently an item has been read since it arrived.</p>
+
+<p>Imagine a rolling 30-day security camera DVR buffer or a bakery display shelf. Every new tray of bread goes in on the left pushing older trays to the right, and when the shelf is full, the oldest tray on the far right is removed—even if five customers just looked at that tray ten seconds ago. Arrival time alone decides when an item leaves.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Arrival Order (Insertion Timestamp):</strong> The strict queue order determined solely by when a key was first added to the cache.</p>
+
+<p><strong>Zero Read-Update Overhead:</strong> Reading an existing key (`Get`) never moves pointers or updates counters, making read hits completely lock-free and ultra-fast.</p>
+
+<p><strong>Hash Map + Circular Queue Architecture:</strong> Combining a Hash Map for $\mathcal{O}(1)$ lookups with a simple FIFO Queue (or ring buffer) tracking insertion order.</p><br>
+
+<h2>How Does a FIFO Cache Work Conceptually?</h2>
+
+<p>In an LRU or LFU cache, every single read (`Get`) has to mutate pointers in a doubly linked list—which writes to memory and causes CPU threads to fight over locks. A FIFO cache eliminates all work during reads: when a key is read, the Hash Map simply returns the value without touching the queue at all!</p>
+
+<p>Only when a brand-new key is inserted (`Put`) does it join the back of the queue, while the oldest key at the front of the queue is dequeued and deleted from the Hash Map.</p><br>
+
+<h2>Where Are FIFO Caches Used in the Real World?</h2>
+
+<p><strong>High-Throughput Read-Only Network Caches:</strong> Serve millions of concurrent read requests per second without mutex lock contention on read hits.</p>
+
+<p><strong>Time-Windowed Packet & Log Deduplication:</strong> Remember the last 10,000 message IDs seen over the network to drop duplicate packets.</p>
+
+<p><strong>Modern S3-FIFO & Second-Chance Caches:</strong> Serve as the fast probationary front queue in state-of-the-art cache algorithms (like S3-FIFO and Clock).</p><br>
+
+<h2>Summary</h2>
+
+<p>A FIFO cache is a lightweight, arrival-ordered cache that evicts the oldest inserted item first, trading usage tracking for zero-overhead, contention-free reads.</p>

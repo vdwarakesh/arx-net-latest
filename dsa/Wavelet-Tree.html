@@ -1,21 +1,31 @@
 <h1>Wavelet Tree</h1>
 
-<p>A <b>Wavelet Tree</b> is a tree-based data structure that organizes a sequence of values to support queries involving both their positions and their numerical ranges.</p>
+<p>A Wavelet Tree is a special type of binary tree that recursively partitions a sequence of values by their **alphabet range** (rather than by array position) while preserving their original left-to-right order using compact bitvectors at every node.</p>
 
-<p>It recursively divides values into groups according to their value ranges while preserving enough information about their original positions to answer questions about selected portions of the sequence.</p>
+<p>Imagine sorting a deck of cards numbered 1 through 8 without losing track of how the deck was originally shuffled. At the top node, you don't move the cards; you simply write down a `0` for every card $\le 4$ and a `1` for every card $> 4$, then deal the `0` cards to the left child and the `1` cards to the right child in their exact original order, repeating until each leaf holds a single card value.</p><br>
 
-<p>For example, imagine a list of exam scores. You may want to know the third-smallest score among students numbered 10 through 30, or count how many students in that section scored below 70. A Wavelet Tree is designed to answer this kind of question without fully sorting the selected portion each time.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Think of a library that organizes books by value categories while still remembering their original shelf positions. You can ask both where a book originally appeared and how its value compares with other books in a selected section.</p>
+<p><strong>Alphabet Partitioning:</strong> Unlike a Segment Tree (which splits array *positions* $[L, R]$ in half), a Wavelet Tree splits the *value range* $[\sigma_{low}, \sigma_{high}]$ in half at each level.</p>
 
-<br>
+<p><strong>Node Bitvector:</strong> A compact array of `0`s and `1`s at each node recording whether each element fell into the lower half (`0`) or upper half (`1`) of the current value range.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Constant-Time `Rank` Queries on Bitvectors:</strong> Counting how many `0`s or `1`s appear up to index $i$ in $\mathcal{O}(1)$ time, which lets you map any subarray $[L, R]$ down to a child node in a single step.</p><br>
 
-<p>Wavelet Trees are useful for range-quantile queries, finding the kth-smallest value in a subarray, counting values within a range, compressed data processing, and sequence analysis.</p>
+<h2>How Does a Wavelet Tree Work Conceptually?</h2>
 
-<br>
+<p>Because each node's bitvector supports $\mathcal{O}(1)$ `rank` queries (counting `0`s and `1`s up to any position), you can translate any subarray range $[L, R]$ at the root into the corresponding range of elements in the left or right child instantaneously—without storing full subarrays or doing binary searches.</p>
+
+<p>Walking down the $\mathcal{O}(\log \Sigma)$ levels of the alphabet lets you answer three kinds of queries on any arbitrary subarray $[L, R]$ in $\mathcal{O}(\log \Sigma)$ time: finding the value at index $i$ (`Access`), counting occurrences of character $c$ (`Rank`), and finding the **$k$-th smallest value** (`Quantile`).</p><br>
+
+<h2>Where Are Wavelet Trees Used in the Real World?</h2>
+
+<p><strong>Compressed Full-Text Indexes (FM-Index):</strong> Store and search massive compressed text corpora and Burrows-Wheeler Transforms without decompressing them first.</p>
+
+<p><strong>Information Retrieval & Search Engines:</strong> Intersect inverted document lists and perform ranked range searches over document IDs.</p>
+
+<p><strong>2D Spatial & Range Quantile Queries:</strong> Find medians and percentiles over arbitrary slices of large datasets using minimal memory.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Wavelet Tree connects positional information with value-based organization, making it useful for answering detailed questions about values inside a particular part of a sequence.</p>
+<p>A wavelet tree splits data by value ranges using compact bitvectors, enabling fast range quantile, frequency, and compressed-text queries in minimal space.</p>

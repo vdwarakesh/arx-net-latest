@@ -1,21 +1,31 @@
 <h1>Implicit Treap</h1>
 
-<p>An <b>Implicit Treap</b> is a type of Treap that organizes elements by their positions in a sequence rather than by explicit key values. It combines the structural ideas of a Treap with the ability to determine each element’s position from the sizes of the subtrees.</p>
+<p>An Implicit Treap is a special type of treap that removes explicit search keys altogether and instead uses each node's **current array index (position)**—calculated on the fly from subtree sizes—as its implicit key. It behaves like a dynamic array on steroids.</p>
 
-<p>Unlike a conventional search tree, where you locate an element using its stored key, an Implicit Treap treats the sequence order itself as the key. Each node maintains the size of its subtree, helping determine where an element sits in the sequence.</p>
+<p>Imagine a deck of 1,000 numbered cards where you can instantly cut the deck at any position, reverse the order of cards 200 through 700, or paste a whole packet of cards into the middle—all in a fraction of a millisecond, without ever renumbering the cards that follow.</p><br>
 
-<p>Imagine a playlist containing 100 songs. You want to insert a new song at position 20, remove the song at position 45, or rearrange a section of the playlist. You care about each song's position, not whether its title is alphabetically larger or smaller than another song's title. An Implicit Treap is designed for this kind of sequence manipulation.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Its randomized priorities help maintain a balanced structure in typical situations, while subtree sizes keep track of positions as the sequence changes.</p>
+<p><strong>Implicit Key (Index):</strong> A node's position in the sequence, determined dynamically by counting how many nodes sit to its left during an in-order traversal.</p>
 
-<br>
+<p><strong>Subtree Size (`sz`):</strong> A counter stored in every node recording the total number of nodes in its subtree, enabling instant index calculation.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Lazy Propagation Tags:</strong> Delayed operation markers stored on nodes that let you reverse or add values to an entire range of thousands of elements in one step.</p><br>
 
-<p>Implicit Treaps are useful for editable sequences, text editors, playlist management, dynamic arrays, and competitive programming problems involving frequent insertions, deletions, and rearrangements at arbitrary positions.</p>
+<h2>How Does an Implicit Treap Work Conceptually?</h2>
 
-<br>
+<p>In a normal array, inserting an item at index `5` forces every index after `5` to shift over in memory. An implicit treap never stores explicit index numbers inside nodes. Instead, each node remembers only the size of its left and right subtrees. To find the item at index `k`, you look at the left subtree's size: if the left subtree has `k` nodes, the current node *is* index `k`!</p>
+
+<p>When you cut out a slice of the sequence using `Split` and paste it somewhere else using `Merge`, all array indices update automatically just by recalculating subtree sizes along the split path.</p><br>
+
+<h2>Where Are Implicit Treaps Used in the Real World?</h2>
+
+<p><strong>Text Editors (Ropes):</strong> Cut, copy, and paste massive blocks of text in the middle of a multi-megabyte document instantaneously.</p>
+
+<p><strong>Sequence Manipulation Algorithms:</strong> Reverse, rotate, or sum arbitrary sub-segments of an array in $\mathcal{O}(\log n)$ time per operation.</p>
+
+<p><strong>DNA and Genome Assembly Tools:</strong> Splice and invert long sequences of genetic data efficiently.</p><br>
 
 <h2>Summary</h2>
 
-<p>An Implicit Treap treats a sequence’s positions as its ordering system, making it useful when elements must be inserted, removed, or rearranged without losing track of their relative order.</p>
+<p>An implicit treap turns a balanced tree into a supercharged array, allowing you to cut, paste, insert, delete, and reverse massive slices of a sequence in logarithmic time.</p>

@@ -1,0 +1,29 @@
+<h1>Dense Matrix</h1>
+
+<p>A Dense Matrix is a special type of matrix in which the vast majority of cells contain meaningful, non-zero values, so the structure explicitly allocates memory for **every single `(row, column)` cell** in one contiguous block.</p>
+
+<p>Imagine a completely sold-out movie theater where almost every seat in every row is occupied. Rather than keeping a handwritten list of which seats have people in them, it makes total sense to simply install every seat in the grid and check any seat directly by its row and seat number. A dense matrix stores 2D data with this exact full-grid layout.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Full $M \times N$ Allocation:</strong> Reserving memory for all $M \times N$ cells unconditionally, regardless of whether individual values happen to be zero or non-zero.</p>
+
+<p><strong>Stride (Leading Dimension):</strong> The number of memory steps required to step from one row (or column) to the same position in the next row (or column).</p>
+
+<p><strong>SIMD & Cache Locality:</strong> Packing cells contiguously so modern CPUs and GPUs can load and multiply dozens of adjacent numbers in a single hardware instruction.</p><br>
+
+<h2>How Does a Dense Matrix Work Conceptually?</h2>
+
+<p>Because a dense matrix stores all $M \times N$ numbers side by side with zero extra metadata (no coordinate labels or pointers), it achieves unbeatable hardware speed. Looking up or updating any cell `(i, j)` takes a single arithmetic calculation, and scanning across a row streams data sequentially through the CPU cache at maximum memory bandwidth.</p><br>
+
+<h2>Where Are Dense Matrices Used in the Real World?</h2>
+
+<p><strong>Large Language Models (LLMs) & Deep Neural Networks:</strong> Store dense weight layers and token embeddings multiplied on GPUs and TPUs.</p>
+
+<p><strong>High-Resolution Photographs and Textures:</strong> Store every single `(x, y)` pixel of an uncompressed bitmap image.</p>
+
+<p><strong>Dense Linear Algebra (BLAS / LAPACK / NumPy):</strong> Solve physics simulations, covariance tables, and dense distance matrices.</p><br>
+
+<h2>Summary</h2>
+
+<p>A dense matrix stores every cell of a 2D grid in a solid block of memory, providing instant coordinate lookups and maximum hardware throughput when most cells hold active data.</p>

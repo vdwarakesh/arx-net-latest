@@ -1,15 +1,31 @@
 <h1>Min-Heap</h1>
 
-<p>A Min-Heap is a type of Binary Heap in which every parent node contains a value less than or equal to the values of its children. Consequently, the smallest value in the collection is always at the root.</p>
+<p>A Min-Heap is a special type of binary heap in which every parent node has a value **less than or equal to** the values of its children. As a result, the smallest element in the entire collection always sits at the root node.</p>
 
-<p>The important point is that the entire collection is not necessarily sorted. The structure only guarantees that each parent is no greater than its children, so smaller values can be found deeper in different branches.</p>
+<p>Imagine a golf tournament leaderboard where the lowest score wins. The player with the lowest strokes sits at the very top of the pyramid, and every bracket level below holds players with progressively higher stroke counts. Whenever you want to know who is in first place with the lowest number, you just look at the top.</p><br>
 
-<p>Imagine a collection of pending bills where the smallest amount must be identified first. A min-heap keeps the smallest amount at the top, making it immediately accessible whenever needed.</p><br>
+<h2>Understanding the Basic Terminology</h2>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Min-Heap Property:</strong> The rule that `parent <= child` for every node in the heap.</p>
 
-<p>Min-heaps are useful for processing the earliest scheduled event, selecting the smallest available value, managing jobs by ascending cost, and handling tasks where the lowest numerical priority value should be selected first.</p><br>
+<p><strong>Extract-Min:</strong> Removing and returning the minimum element from the root in $\mathcal{O}(\log n)$ time.</p>
+
+<p><strong>Decrease-Key:</strong> Lowering the value of an existing node, which may cause it to bubble upward toward the root.</p><br>
+
+<h2>How Does a Min-Heap Work Conceptually?</h2>
+
+<p>When a new value is inserted at the bottom of a min-heap, it compares itself against its parent. If the new value is *smaller* than its parent, they swap places, and the new value continues bubbling up until it meets a parent that is smaller than or equal to it.</p>
+
+<p>When the minimum value at the root is extracted, the last element in the array moves to the root and sifts downward, always swapping with whichever of its two children is *smaller* until order is restored.</p><br>
+
+<h2>Where Are Min-Heaps Used in the Real World?</h2>
+
+<p><strong>Shortest-Path Navigation (Dijkstra's Algorithm):</strong> Always expand the closest unvisited intersection with the smallest cumulative travel time.</p>
+
+<p><strong>Task Timers and Cron Schedulers:</strong> Keep the event with the earliest upcoming timestamp at the root so the system knows exactly how long to sleep.</p>
+
+<p><strong>Merging $K$ Sorted Streams:</strong> Combine dozens of sorted log files in chronological order by always pulling the earliest timestamp from a min-heap.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Min-Heap keeps the smallest value at the top, making it ideal when the next item to process is the one with the lowest value.</p>
+<p>A min-heap keeps the smallest value permanently stationed at the root, making it the go-to structure for finding shortest paths, earliest deadlines, and minimum costs.</p>

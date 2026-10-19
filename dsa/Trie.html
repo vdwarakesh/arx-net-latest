@@ -1,15 +1,33 @@
 <h1>Trie</h1>
 
-<p>A Trie is a tree-based data structure designed to store and retrieve strings by organizing them around their shared prefixes. Instead of treating each word as one indivisible value, it represents words through paths formed by their characters.</p>
+<p>A Trie (pronounced "try" or "tree", derived from re**trie**val, and also called a **Prefix Tree**) is a special type of tree that stores strings character by character along its branches so that words sharing a common prefix share the exact same path from the root.</p>
 
-<p>For example, the words “cat,” “car,” and “care” share the prefix “ca.” A Trie can share the path for those common characters and branch when the words begin to differ. A marker indicates where a complete word ends, distinguishing a stored word from a prefix that continues into other words.</p>
+<p>Imagine looking up words in a road atlas where the first intersection asks for the 1st letter (`C`), the next fork asks for the 2nd letter (`A`), and the third fork splits into `T` ("CAT"), `R` ("CAR"), and `P` ("CAP"). All three words travel down the exact same `C -> A` highway before branching off at the very last letter.</p><br>
 
-<p>Imagine a dictionary where words are organized letter by letter. When you type “ca” into a search bar, the system can use that shared beginning to narrow down possible suggestions.</p><br>
+<h2>Understanding the Basic Terminology</h2>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Root Node:</strong> The topmost node representing an empty string (`""`), from which all first-letter branches originate.</p>
 
-<p>Tries are used in autocomplete systems, search suggestions, spell-checking tools, dictionaries, and applications that need to locate strings by their prefixes.</p><br>
+<p><strong>Character Edge / Child Map:</strong> A link from a parent node to a child node labeled with a single character of the alphabet.</p>
+
+<p><strong>Prefix Path:</strong> The sequence of characters formed by walking from the root down to any internal node.</p>
+
+<p><strong>End-of-Word Marker (`isEnd`):</strong> A boolean flag (or terminal marker) on a node indicating that the path from the root to this node spells out a complete, valid word—not just a prefix of a longer word.</p><br>
+
+<h2>How Does a Trie Work Conceptually?</h2>
+
+<p>Unlike a Binary Search Tree or Hash Table, which compares or hashes entire strings at once, a trie breaks each string into individual characters. To look up a 5-letter word like `"APPLE"`, you start at the root and take five steps: `A -> P -> P -> L -> E`.</p>
+
+<p>The lookup speed depends **only on the length of the word** ($L$), completely independent of whether the trie stores 100 words or 100 million words! Furthermore, once you walk to the node for `"APP"`, every single word starting with `"APP"` sits directly inside the subtree beneath you.</p><br>
+
+<h2>Where Are Tries Used in the Real World?</h2>
+
+<p><strong>Search Engine Auto-Complete:</strong> Instantly suggest `"weather today"`, `"weather tomorrow"`, and `"weather radar"` the moment a user types `"weath"`.</p>
+
+<p><strong>Smartphone Keyboard Predictive Text and Spell Check:</strong> Validate words and suggest completions as fingers tap each letter.</p>
+
+<p><strong>Contact Book Prefix Search:</strong> Filter contacts in real time as you type the first few letters of a name or digits of a phone number.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Trie organizes strings around shared prefixes, making it especially useful when matching the beginnings of words matters more than treating each word as an unrelated item.</p>
+<p>A trie is a character-by-character prefix tree that merges shared word beginnings, making prefix searches and auto-complete suggestions blazingly fast regardless of dictionary size.</p>

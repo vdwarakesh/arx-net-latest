@@ -1,21 +1,29 @@
 <h1>Euler Tour Tree</h1>
 
-<p>An <b>Euler Tour Tree</b> is a specialized data structure used to maintain a changing forest of trees and efficiently answer questions about its connectivity and structure.</p>
+<p>An Euler Tour Tree (ETT) is a special type of dynamic tree data structure that represents an entire tree by flattening its **Euler tour**—the cyclic walk that traverses every edge once downward and once upward—into a balanced binary search tree (such as a Treap or Splay Tree), enabling fast **subtree aggregations** along with dynamic link and cut operations.</p>
 
-<p>It represents each tree using a sequence based on an Euler tour: a traversal that records visits to vertices and edges as the tree is explored. The sequence is stored in a form that supports changes when connections are added or removed, allowing the data structure to manage the forest without rebuilding everything from scratch.</p>
+<p>Imagine walking around the outside perimeter of a fenced garden shaped like a branching tree, keeping your right hand touching the fence the entire time until you return to the front gate. Notice that whenever you step into a branch, you trace that entire sub-branch completely before stepping back out. Because of that, every subtree in the garden corresponds to one contiguous, unbroken stretch of your perimeter walk!</p><br>
 
-<p>Imagine a park with walking trails connecting different areas. Some trails may be built, while others are closed. You need to keep track of which areas remain connected as the trail network changes. An Euler Tour Tree helps maintain this information dynamically.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Unlike a simple traversal performed once, this data structure is designed for situations where the underlying tree connections change repeatedly.</p>
+<p><strong>Euler Tour Sequence:</strong> The sequence of vertices (or directed edges) visited during a depth-first walk around the tree, recording each node both when entering its subtree and when returning from each child.</p>
 
-<br>
+<p><strong>Subtree Contiguity:</strong> Every subtree rooted at $v$ appears as one contiguous interval between the *first* appearance of $v$ and the *last* appearance of $v$ in the flattened tour sequence.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Cyclic Shift (Re-Rooting):</strong> Changing the root of the tree simply by cutting the Euler tour sequence before the new root's first occurrence and pasting the front slice onto the back.</p><br>
 
-<p>Euler Tour Trees are used in dynamic connectivity problems, changing network structures, and advanced graph algorithms that need to maintain connected components in a forest.</p>
+<h2>How Does an Euler Tour Tree Work Conceptually?</h2>
 
-<br>
+<p>While a Link-Cut Tree excels at *path* queries (from a node to the root), it struggles with *subtree* queries when a node has thousands of children. An Euler Tour Tree solves this by storing the flattened Euler tour inside a balanced sequence BST (like an Implicit Treap or Splay Tree).</p>
+
+<p>Cutting an edge between $u$ and $v$ simply means slicing the contiguous segment of $v$'s subtree out of $u$'s tour and stitching the two outer ends of $u$'s tour back together (`Split` and `Merge`). Linking two trees is just splicing one tour into the middle of another—all in $\mathcal{O}(\log n)$ time.</p><br>
+
+<h2>Where Are Euler Tour Trees Used in the Real World?</h2>
+
+<p><strong>Fully Dynamic Graph Connectivity (Holm-de Lichtenberg-Thorup Algorithm):</strong> Maintain a spanning forest of a graph where edges are both inserted and deleted, checking component sizes in $\mathcal{O}(\log n)$ time.</p>
+
+<p><strong>Dynamic Subtree Aggregations:</strong> Compute the sum, minimum, or node count of any whole subtree while the tree's root and edges are dynamically rewired.</p><br>
 
 <h2>Summary</h2>
 
-<p>An Euler Tour Tree maintains a changing forest through a sequence-based representation, making it useful for tracking connectivity as tree connections change.</p>
+<p>An Euler Tour Tree flattens a tree's perimeter walk into a balanced sequence tree, turning dynamic tree links, cuts, re-rootings, and whole-subtree queries into simple array-slice splits and merges.</p>

@@ -1,15 +1,31 @@
 <h1>AVL Tree</h1>
 
-<p>An AVL Tree is a type of Binary Search Tree (BST) that keeps itself balanced as values are inserted or removed. It prevents the tree from becoming excessively tilted to one side, helping maintain efficient data access.</p>
+<p>An AVL Tree (named after inventors Adelson-Velsky and Landis) is a special type of binary search tree that automatically balances itself so that the heights of the left and right subtrees of any node never differ by more than one.</p>
 
-<p>Its defining feature is the balance factor, which measures the difference between the heights of a node’s left and right subtrees. For every node, this difference must be -1, 0, or +1. When an update disrupts this balance, the tree rearranges some of its connections through a process called rotation.</p>
+<p>Imagine a hanging mobile sculpture above a baby's crib. Every time you hang a new ornament on one side, if that arm dips too low compared to the other side, you immediately shift the hanging hook over by one notch so the mobile stays perfectly level. An AVL tree constantly monitors and adjusts its branches in the exact same way.</p><br>
 
-<p>Imagine a bookshelf where books are organized by number. If too many books end up arranged along one side, the shelves are reorganized to keep the overall arrangement balanced and accessible.</p><br>
+<h2>Understanding the Basic Terminology</h2>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Balance Factor:</strong> The height of a node's left subtree minus the height of its right subtree. In a valid AVL tree, every node's balance factor must be `-1`, `0`, or `+1`.</p>
 
-<p>AVL trees are useful in applications that require frequent lookups and consistently balanced data, such as in-memory indexes, dictionaries, and ordered collections.</p><br>
+<p><strong>Tree Rotation:</strong> A fast, local pointer-swapping operation (Left, Right, Left-Right, or Right-Left) that shifts a heavy branch upward and a light branch downward without breaking the sorted BST order.</p>
+
+<p><strong>Strict Height Balance:</strong> The guarantee that the overall height of an AVL tree with $n$ nodes never exceeds roughly $1.44 \log_2(n)$.</p><br>
+
+<h2>How Does an AVL Tree Work Conceptually?</h2>
+
+<p>Standard binary search trees have a major weakness: if you insert numbers in sorted order (`1, 2, 3, 4, 5`), the tree grows into a lopsided straight line and slows down to a crawl. An AVL tree prevents this by storing each node's height and checking the balance factor along the path back to the root after every insertion or deletion.</p>
+
+<p>The moment any node's balance factor reaches `-2` or `+2`, the AVL tree performs one or two crisp rotations at that spot to restore balance immediately. Because it stays so tightly balanced, lookups in an AVL tree are exceptionally fast.</p><br>
+
+<h2>Where Are AVL Trees Used in the Real World?</h2>
+
+<p><strong>Read-Heavy In-Memory Databases:</strong> Store indexed records that are inserted once and searched millions of times, where strict balance pays off with faster lookups.</p>
+
+<p><strong>Dictionary and Contact Lookups:</strong> Provide guaranteed worst-case search times in real-time embedded systems.</p>
+
+<p><strong>Computational Geometry:</strong> Maintain ordered active line segments during sweep-line intersection algorithms.</p><br>
 
 <h2>Summary</h2>
 
-<p>An AVL Tree is a self-balancing BST that prioritizes strict balance to keep its structure from becoming lopsided.</p>
+<p>An AVL tree is a strictly disciplined self-balancing binary search tree. By keeping every branch within one level of its sibling, it guarantees lightning-fast lookups no matter what order data arrives in.</p>

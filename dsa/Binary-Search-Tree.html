@@ -1,25 +1,33 @@
-<h1>Binary Search Tree (BST)</h1>
+<h1>Binary Search Tree</h1>
 
-<p>A Binary Search Tree (BST) is a type of binary tree that organizes values according to a specific ordering rule, making it easier to locate, insert, and remove data while maintaining that order.</p>
+<p>A Binary Search Tree (BST) is a special type of binary tree that enforces a strict ordering rule across all its nodes: for any given node, every value in its entire left subtree is smaller, and every value in its entire right subtree is larger.</p>
 
-<p>The defining rule is simple: for any node, values smaller than it are placed in its left subtree, while values greater than it are placed in its right subtree. This rule applies throughout the structure, not just to the immediate children.</p>
+<p>Imagine playing a "higher or lower" number-guessing game between 1 and 100. You start at the root by guessing 50. If the target number is smaller than 50, you step left and immediately eliminate 50 through 100 from consideration; if it is larger, you step right and eliminate 1 through 50. A binary search tree turns this guessing game into a physical structure.</p><br>
 
-<p>Imagine a library where books are arranged according to their identification numbers. If you are looking for book 50, you check a book labeled 50. If the current book is numbered 70, you know your target belongs on the lower-numbered side. If it is numbered 30, you know to look on the higher-numbered side. Each comparison helps you choose the appropriate direction.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>For example, imagine inserting the values 50, 30, 70, 20, and 40 into a BST. The value 50 becomes the starting value, 30 belongs to its left, and 70 belongs to its right. The values 20 and 40 are then positioned according to the same ordering rule.</p>
+<p><strong>BST Ordering Property:</strong> The core invariant that `left_descendants < parent < right_descendants` holds true for every single node in the tree.</p>
 
-<p>One important distinction: a BST does not automatically keep itself balanced. If values are inserted in an unfortunate order, its shape can become highly uneven. The ordering rule still holds, but the structure may lose much of its practical advantage.</p><br>
+<p><strong>In-Order Traversal:</strong> Visiting the left subtree first, then the current node, and finally the right subtree—which automatically reads out all stored values in sorted ascending order.</p>
 
-<h2>Where Are BSTs Useful?</h2>
+<p><strong>In-Order Successor / Predecessor:</strong> The node with the next largest (or next smallest) value in the tree, used to replace a node when it is deleted.</p>
 
-<p><strong>Ordered Data Management:</strong> Useful when information needs to remain organized by keys, such as employee IDs or product codes.</p>
+<p><strong>Skewed (Degenerate) Tree:</strong> An unbalanced binary search tree where items were inserted in already-sorted order, causing the tree to stretch into a slow, single-file chain.</p><br>
 
-<p><strong>Lookup Systems:</strong> Can help locate a particular value without having to examine every stored value in a well-shaped tree.</p>
+<h2>How Does a Binary Search Tree Work Conceptually?</h2>
 
-<p><strong>Range-Based Queries:</strong> Useful when you need values within a particular interval, such as product prices between two amounts.</p>
+<p>Whenever you search for or insert a value, you compare your value against the current node starting at the root. If your value is smaller, you move to the left child; if larger, you move to the right child. At every step down the tree, you cut the remaining search space roughly in half.</p>
 
-<p><strong>Dynamic Collections:</strong> Suitable when values are frequently added or removed while their ordering must be preserved.</p><br>
+<p>As long as the tree remains reasonably balanced, searching, inserting, and deleting take time proportional to the tree's height ($\mathcal{O}(\log n)$) rather than scanning through every item. Plus, unlike a hash table, a binary search tree keeps all its data in sorted order at all times.</p><br>
+
+<h2>Where Are Binary Search Trees Used in the Real World?</h2>
+
+<p><strong>Sorted Map and Set Libraries:</strong> Power ordered data collections where users need to iterate through keys alphabetically or numerically.</p>
+
+<p><strong>Range Queries in Databases:</strong> Quickly find all records whose prices fall between $20 and $50 without scanning the entire database.</p>
+
+<p><strong>Auto-Complete and Leaderboards:</strong> Maintain live rankings where scores are constantly updated and queried by rank or range.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Binary Search Tree is like a carefully organized filing system where smaller values go to the left and larger values go to the right. Its defining strength is that every value has a predictable position based on its relationship to other values.</p>
+<p>A binary search tree combines the dynamic flexibility of a linked structure with the speed of binary search, keeping elements continuously sorted as items are added and removed.</p>

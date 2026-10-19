@@ -1,21 +1,33 @@
 <h1>Suffix Tree</h1>
 
-<p>A <b>Suffix Tree</b> is a compressed tree-based data structure that represents all suffixes of a string. Each suffix starts at a different position in the original string and continues to its end.</p>
+<p>A Suffix Tree is a special type of tree—specifically a **compressed suffix trie**—that stores all suffixes of a string of length $n$ in just $\mathcal{O}(n)$ space and can be constructed in linear $\mathcal{O}(n)$ time by collapsing non-branching character chains into index-pair edges.</p>
 
-<p>Its edges are labeled with sequences of characters rather than necessarily one character per node. Shared portions of suffixes can use common paths, while branching points distinguish different sequences. This organization makes it possible to search for patterns within the original text without storing every suffix as a completely separate path.</p>
+<p>Imagine an index for an entire 500-page novel that doesn't just list major words, but indexes *every single phrase, sentence fragment, and character sequence* in the book—yet instead of copying paragraphs into the index, each branch simply lists `(Page 42, Character 10 to 85)`. That compact pointer trick shrinks a massive quadratic trie down to the size of the book itself.</p><br>
 
-<p>For example, consider the word <b>“banana.”</b> Its suffixes include “banana,” “anana,” “nana,” “ana,” “na,” and “a.” A Suffix Tree organizes these suffixes in a shared structure, allowing a search for “ana” to locate its occurrences in the original string.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Imagine a massive digital library where you need to find a particular phrase inside documents, even when the phrase begins halfway through a sentence. A Suffix Tree acts like a specialized index built to locate such patterns.</p>
+<p><strong>Edge Index Labels `(start, end)`:</strong> Instead of storing actual string copies on compressed edges, each edge stores two integer indices pointing directly into the original master text, keeping every edge $\mathcal{O}(1)$ in size.</p>
 
-<br>
+<p><strong>Ukkonen's Algorithm:</strong> The famous online algorithm that builds a full suffix tree character by character from left to right in linear $\mathcal{O}(n)$ time.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Suffix Links:</strong> Internal shortcut pointers connecting a node for string `c + S` to the node for `S`, enabling linear-time construction and cross-string comparisons.</p>
 
-<p>Suffix Trees are useful in text searching, DNA sequence analysis, plagiarism detection, and applications that need to locate repeated substrings or compare sequences.</p>
+<p><strong>Generalized Suffix Tree:</strong> A single suffix tree built over multiple distinct strings (each terminated by a unique symbol `#`, `$`, `%`) to find shared substrings across documents.</p><br>
 
-<br>
+<h2>How Does a Suffix Tree Work Conceptually?</h2>
+
+<p>An uncompressed Suffix Trie for a 1-million-character genome would require roughly 500 billion nodes and crash any server. A Suffix Tree solves this in two steps: first, it collapses every chain of one-child nodes into a single edge (guaranteeing at most $2n$ nodes total); second, it replaces the text on every edge with a pair of `[start, end]` numbers referencing the original string.</p>
+
+<p>Once built in $\mathcal{O}(n)$ time, it acts as a Swiss Army knife for strings: you can find any substring of length $m$ in $\mathcal{O}(m)$ time, find the longest repeated substring via the deepest internal node, or find the longest common substring of multiple texts.</p><br>
+
+<h2>Where Are Suffix Trees Used in the Real World?</h2>
+
+<p><strong>Whole-Genome Bioinformatics (MUMmer):</strong> Align massive DNA sequences and locate maximal unique matches across chromosomes in seconds.</p>
+
+<p><strong>Plagiarism & Code Clone Detection:</strong> Identify copied passages or duplicated source code blocks across large document repositories.</p>
+
+<p><strong>Data Compression (LZ77 / Deflate):</strong> Locate the longest previously seen matching byte sequence during file compression.</p><br>
 
 <h2>Summary</h2>
 
-<p>A Suffix Tree indexes every suffix of a string in a compressed structure, making complex substring searches practical on large texts.</p>
+<p>A suffix tree compresses all suffixes of a text into linear space and time, providing one of computer science's most powerful engines for instant full-text and genomic pattern analysis.</p>

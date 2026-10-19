@@ -1,0 +1,33 @@
+<h1>HyperLogLog</h1>
+
+<p>A HyperLogLog (HLL) is a special type of probabilistic structure that estimates the **cardinality (the exact number of unique, distinct elements)** in a massive dataset using only around **1.5 to 12 kilobytes of memory**, regardless of whether there are a thousand or a百 billion unique items.</p>
+
+<p>Imagine someone tells you they spent all afternoon flipping a coin, and at one point they flipped **10 heads in a row**. Even without seeing their notebook, you can guess they must have flipped the coin roughly $2^{10} \approx 1,024$ times—because a 10-heads streak only happens once every thousand tries! HyperLogLog hashes every incoming item into a random-looking binary number and tracks the **longest streak of leading `0`-bits** ever seen to estimate how many unique items have passed by.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Cardinality (Count-Distinct):</strong> The number of *unique* elements in a collection (ignoring how many times each element is repeated).</p>
+
+<p><strong>Leading Zeros Observation ($\rho$):</strong> In a uniformly random binary hash, a pattern starting with $k - 1$ zeros followed by a `1` (`000...01`) occurs on average once every $2^k$ distinct items.</p>
+
+<p><strong>Stochastic Averaging ($m$ Registers):</strong> Splitting the stream into $m$ sub-streams (typically $m = 1,024$ to $16,384$ registers) using the first few bits of the hash so a single lucky streak doesn't skew the estimate.</p>
+
+<p><strong>Harmonic Mean:</strong> Combining the estimates across all $m$ registers using a harmonic average to suppress extreme outliers and achieve $\approx 0.8\%\text{–}2\%$ standard error.</p><br>
+
+<h2>How Does HyperLogLog Work Conceptually?</h2>
+
+<p>Because identical items always produce the exact same hash code, seeing the same user ID a million times doesn't change the longest leading-zero streak at all—only *new, unique* items give you a new roll of the dice! Each register only needs to store a tiny number between `0` and `64` (requiring just 6 bits per register).</p>
+
+<p>Even better, two HyperLogLog sketches from different servers or different days can be **merged in an instant** simply by taking the maximum value of each corresponding register (`max(HLL_A[i], HLL_B[i])`), giving you the exact unique count across both sets combined.</p><br>
+
+<h2>Where Is HyperLogLog Used in the Real World?</h2>
+
+<p><strong>Web & App Analytics (Redis `PFADD` / `PFCOUNT`, Google BigQuery):</strong> Count daily, weekly, and monthly unique visitors across millions of web pages using 12 KB per counter.</p>
+
+<p><strong>AdTech Reach Estimation:</strong> Merge daily audience sketches to calculate how many *unique* people saw an ad campaign across a whole month without double-counting repeat viewers.</p>
+
+<p><strong>SQL `APPROX_COUNT_DISTINCT` Queries:</strong> Speed up massive data warehouse dashboards in Snowflake, Presto, ClickHouse, and PostgreSQL by 100x.</p><br>
+
+<h2>Summary</h2>
+
+<p>HyperLogLog is a mathematical marvel of data sketching, counting billions of unique items within $\approx 1\%$ accuracy inside a few kilobytes of memory by tracking leading-zero streaks in hashes.</p>

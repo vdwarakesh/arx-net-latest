@@ -1,21 +1,31 @@
 <h1>Eertree</h1>
 
-<p>An <b>Eertree</b>, also called a palindromic tree, is a specialized data structure designed to represent the distinct palindromic substrings of a string.</p>
+<p>An Eertree (also known as a **Palindromic Tree**; its name is a playful palindrome-style reversal of "tree") is a special type of tree-like graph structure that stores every distinct **palindromic substring** of a string in linear $\mathcal{O}(n)$ space and time.</p>
 
-<p>A palindrome is a sequence that reads the same forward and backward, such as “level,” “madam,” or “abba.” An Eertree maintains a compact structure representing the distinct palindromes found in the text, along with information that connects longer palindromes to smaller ones.</p>
+<p>Imagine building snowmen from the inside out: you start with either a single snowball in the center (for odd-length palindromes like `"ABA"`) or two touching snowballs (for even-length palindromes like `"ABBA"`). Every time you step down a branch in an eertree, you wrap the exact same matching letter onto *both* the front and the back of the current palindrome (`P` $\rightarrow$ `x + P + x`).</p><br>
 
-<p>For example, in the string <b>“ababa,”</b> palindromic substrings include “a,” “b,” “aba,” “bab,” and “ababa.” An Eertree organizes these distinct patterns and can be updated as new characters are added to the string.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>Imagine a language researcher studying a long passage and wanting to discover every distinct word pattern that reads identically in both directions. An Eertree acts like a specialized index that keeps track of these patterns as the passage grows.</p>
+<p><strong>Dual Roots (Length `-1` and Length `0`):</strong> An eertree actually has **two roots**: an imaginary root of length `-1` (so wrapping `'a'` around it yields the 1-letter palindrome `"a"`, since `-1 + 2 = 1`) and an empty-string root of length `0` (so wrapping `'a'` around it yields `"aa"`).</p>
 
-<br>
+<p><strong>Palindrome Extension Edge (`x`):</strong> A directed edge labeled with character `x` from node `P` to node `xPx`, adding `x` to both ends simultaneously.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Suffix Link (Longest Palindromic Proper Suffix):</strong> A fallback pointer from each palindrome node to the longest smaller palindrome that sits at its right end, similar to failure links in Aho-Corasick or Suffix Trees.</p><br>
 
-<p>Eertrees are useful in string analysis, competitive programming, palindrome-related text processing, and applications that need to track palindromic patterns in sequences.</p>
+<h2>How Does an Eertree Work Conceptually?</h2>
 
-<br>
+<p>A fundamental theorem of string theory states that adding one character to the end of a string can create **at most one new distinct palindrome**, which means a string of length $n$ contains at most $n$ distinct palindromic substrings total!</p>
+
+<p>As you process a string character by character from left to right, the eertree follows suffix links from the longest palindrome ending at the previous position until it finds one preceded by the new character `c`. It then either steps along an existing `c` edge or creates one new node—constructing the entire catalog of all palindromes in $\mathcal{O}(n)$ time.</p><br>
+
+<h2>Where Are Eertrees Used in the Real World?</h2>
+
+<p><strong>RNA Secondary Structure & Genomic Hairpin Analysis:</strong> Detect palindromic and inverted-repeat sequences in DNA and RNA strands where molecules fold back on themselves.</p>
+
+<p><strong>Palindrome Partitioning & Counting:</strong> Count total palindromic substrings, find longest common palindromes, or factor strings into minimal palindromic pieces.</p>
+
+<p><strong>Text Compression & Formal Language Theory:</strong> Analyze symmetric structural symmetries in strings and biological sequences.</p><br>
 
 <h2>Summary</h2>
 
-<p>An Eertree is a specialized structure for organizing distinct palindromic substrings, making it useful when symmetrical character patterns are the focus.</p>
+<p>An eertree is a compact dual-rooted structure where edges wrap matching characters around both ends of a center, indexing every distinct palindrome of a string in linear time and space.</p>

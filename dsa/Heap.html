@@ -1,15 +1,33 @@
 <h1>Heap</h1>
 
-<p>A Heap is a specialized tree-based data structure designed to keep the highest-priority or lowest-priority element readily accessible. It follows a specific ordering rule between connected elements, making it particularly useful when you need to repeatedly identify the next most important item.</p>
+<p>A Heap is a special type of tree-based data structure that satisfies the **Heap Property**: every parent node is ordered by priority relative to its children, ensuring that the single highest-priority (or lowest-priority) element in the entire collection always sits right at the root.</p>
 
-<p>Unlike a structure designed to keep every element fully sorted, a heap focuses on maintaining the relationship needed to identify its priority element efficiently. The remaining elements do not necessarily appear in complete sorted order.</p>
+<p>Imagine a corporate championship ladder where the only rule is that every manager must have a higher skill rating than the people reporting directly to them. Two managers on different branches don't have to be compared against each other, as long as everyone is stronger than their own subordinates. That single rule guarantees that the #1 highest-rated person in the entire company is always sitting in the CEO seat at the root.</p><br>
 
-<p>Imagine an emergency room where patients are attended to according to urgency rather than arrival time. The hospital needs to identify the most urgent patient quickly without arranging every patient in a complete priority order. A heap follows a similar principle.</p><br>
+<h2>Understanding the Basic Terminology</h2>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Heap Property (Heap Invariant):</strong> The ordering rule stating that a parent node's key is always greater than or equal to (in a Max-Heap) or less than or equal to (in a Min-Heap) the keys of its children.</p>
 
-<p>Heaps are used in task scheduling, event management, resource allocation, and systems that repeatedly need to select the most important item from a collection.</p><br>
+<p><strong>Peek (Find-Min / Find-Max):</strong> Reading the extreme element at the root node in constant $\mathcal{O}(1)$ time without modifying the heap.</p>
+
+<p><strong>Heapify (Sift-Up / Sift-Down):</strong> Restoring the heap property after adding or removing an element by swapping out-of-order nodes up or down the tree.</p>
+
+<p><strong>Merge (Meld):</strong> Combining two separate heaps into a single valid heap.</p><br>
+
+<h2>How Does a Heap Work Conceptually?</h2>
+
+<p>Unlike a Binary Search Tree, which works hard to keep left and right siblings strictly sorted relative to each other, a heap intentionally relaxes horizontal ordering. It only cares about vertical parent-child priority.</p>
+
+<p>By only enforcing vertical order, a heap avoids expensive full-tree sorting while keeping the single most important element immediately accessible at the top. When the root is removed, the heap promotes the most extreme child to take its place and ripples the change down a single path.</p><br>
+
+<h2>Where Are Heaps Used in the Real World?</h2>
+
+<p><strong>Priority Queues:</strong> Serve as the primary engine behind task schedulers, hospital triage systems, and event-driven simulations.</p>
+
+<p><strong>Top-$K$ Queries:</strong> Find the 10 bestselling products or 100 highest-traffic search terms out of billions of entries without sorting the whole dataset.</p>
+
+<p><strong>Graph Shortest-Path & Spanning Tree Algorithms:</strong> Power Dijkstra's algorithm, A* search, and Prim's algorithm.</p><br>
 
 <h2>Summary</h2>
 
-<p>A heap is a priority-focused structure that keeps the most important element easy to access without requiring the entire collection to remain sorted.</p>
+<p>A heap is a priority-focused tree structure that keeps the single largest or smallest item permanently stationed at the root for instant retrieval and efficient updates.</p>

@@ -1,0 +1,33 @@
+<h1>Hash-Based Structures</h1>
+
+<p>Hash-Based Structures are a family of data structures that organize and locate information instantly by converting a piece of data into a numerical array index using a mathematical formula called a hash function. Instead of searching through elements one by one or following tree branches, they jump straight to where an item belongs.</p>
+
+<p>Imagine a massive library where, instead of browsing aisles alphabetically, you type a book's title into a calculator and it instantly outputs the exact shelf and slot number where that book sits. Hash-based structures turn data values directly into storage addresses in the same way.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Hash Function:</strong> A deterministic mathematical algorithm that takes an input of any size (like a word or file) and transforms it into a fixed-size integer called a hash code.</p>
+
+<p><strong>Bucket (or Slot):</strong> An individual storage compartment in the underlying array where items are placed based on their calculated hash code.</p>
+
+<p><strong>Collision:</strong> A situation where two different inputs produce the exact same bucket index and must share or negotiate space.</p>
+
+<p><strong>Load Factor:</strong> The ratio of stored items to total available buckets, indicating how full the structure has become.</p><br>
+
+<h2>How Do Hash-Based Structures Work Conceptually?</h2>
+
+<p>Whenever you want to store, check, or delete an item, the structure feeds that item into its hash function. The resulting number is mapped to a slot inside an internal array. Because math calculations and array index lookups are both instantaneous, finding an item among ten million entries takes the exact same fraction of a millisecond as finding it among ten entries.</p>
+
+<p>Because different items can occasionally land on the same slot (a collision), hash-based structures include built-in conflict resolution rules—such as linking items in a mini-list at that slot or probing nearby empty slots—to ensure no data is ever lost.</p><br>
+
+<h2>Where Are Hash-Based Structures Used in the Real World?</h2>
+
+<p><strong>Database Indexing:</strong> Locate a customer's record immediately by their unique account ID or email address.</p>
+
+<p><strong>Password Verification:</strong> Store and compare scrambled hashes of user passwords so systems can verify logins instantly.</p>
+
+<p><strong>High-Speed Caching:</strong> Remember recently computed web pages or API responses keyed by their request URL.</p><br>
+
+<h2>Summary</h2>
+
+<p>Hash-based structures trade ordered organization for raw speed. By turning data directly into memory addresses through math, they deliver near-instantaneous lookups, insertions, and deletions.</p>

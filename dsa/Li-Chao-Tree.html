@@ -1,21 +1,31 @@
 <h1>Li Chao Tree</h1>
 
-<p>A <b>Li Chao Tree</b> is a specialized tree-based data structure designed to maintain a collection of linear functions and efficiently determine which function produces the minimum or maximum value at a given point.</p>
+<p>A Li Chao Tree is a special type of segment tree that stores mathematical functions (most commonly linear lines of the form $y = mx + b$) rather than raw numbers, allowing you to insert new lines dynamically and query the maximum or minimum $y$-value at any $x$-coordinate in $\mathcal{O}(\log X)$ time.</p>
 
-<p>A linear function describes a straight line, commonly written as <b>y = mx + b</b>, where m is the slope and b is the intercept. Different lines may produce the best result at different positions. A Li Chao Tree organizes these lines so that queries can identify the best available value at a particular coordinate.</p>
+<p>Imagine comparing dozens of competing mobile phone plans, where each plan has a different base monthly fee ($b$) and per-gigabyte rate ($m$). A Li Chao tree divides all possible data usage amounts ($x$) into intervals and records which phone plan is the cheapest at the midpoint of each interval—so for any data amount you ask about, it can immediately name the winning plan.</p><br>
 
-<p>Imagine a delivery company comparing several pricing plans. Each plan has a fixed starting cost and a different cost per kilometer. The cheapest plan may depend on the delivery distance. Rather than comparing every plan from scratch for every distance, the company needs a structure that helps identify the cheapest option at the requested point.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>That is the kind of problem a Li Chao Tree is designed to handle. It is particularly useful when lines are added over time and queries ask for the minimum or maximum value at a particular coordinate.</p>
+<p><strong>Dominant Line at Midpoint:</strong> Each node in the Li Chao tree stores the single line that currently gives the best (highest or lowest) value at the exact middle $x$-coordinate ($mid$) of that node's interval $[L, R]$.</p>
 
-<br>
+<p><strong>Single-Intersection Property:</strong> Because two straight lines can cross each other at most once, one line is guaranteed to beat the other across at least one entire half of the interval ($[L, mid]$ or $[mid+1, R]$).</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Convex Hull Trick (CHT) Generalization:</strong> Solving dynamic linear optimization problems without requiring slopes or query coordinates to arrive in sorted order.</p><br>
 
-<p>Li Chao Trees are used in competitive programming, dynamic optimization problems, cost-minimization models, and certain scheduling and planning problems involving linear functions.</p>
+<h2>How Does a Li Chao Tree Work Conceptually?</h2>
 
-<br>
+<p>When you insert a new line into a node covering $[L, R]$, you compare the new line against the node's currently stored line at $x = mid$. Whichever line wins at $mid$ stays at this node! The losing line isn't thrown away, though—because the two lines cross at most once, the loser can only possibly beat the winner on either the left half *or* the right half (never both). So you push the losing line down into that single child half where it crosses over, taking at most $\mathcal{O}(\log X)$ steps.</p>
+
+<p>To find the best $y$-value at a specific $x$, you simply walk from the root down to the leaf for $x$, evaluating the $\mathcal{O}(\log X)$ lines stored along that path and taking the best result.</p><br>
+
+<h2>Where Are Li Chao Trees Used in the Real World?</h2>
+
+<p><strong>Dynamic Programming Optimization:</strong> Speed up cost-minimization algorithms in logistics, scheduling, and resource allocation from $\mathcal{O}(n^2)$ to $\mathcal{O}(n \log n)$.</p>
+
+<p><strong>Real-Time Pricing and Tariff Engines:</strong> Evaluate the optimal linear rate plan or shipping curve at any given quantity or distance.</p>
+
+<p><strong>Kinetic Data Structures:</strong> Track the frontmost or highest moving object when objects move at constant velocities ($position = v \cdot t + x_0$).</p><br>
 
 <h2>Summary</h2>
 
-<p>A Li Chao Tree organizes linear functions to help identify the best-performing line at a given point, making it useful for problems where the optimal choice changes with the input value.</p>
+<p>A Li Chao tree adapts the segment tree to store competing lines instead of static numbers, using the geometry of line intersections to find the best function at any point in logarithmic time.</p>

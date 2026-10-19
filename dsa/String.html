@@ -1,0 +1,33 @@
+<h1>String</h1>
+
+<p>A String is a linear data structure that stores an ordered sequence of characters—such as letters, digits, punctuation marks, and emojis—used to represent human-readable text or raw symbol sequences in a computer.</p>
+
+<p>Imagine a beaded necklace where each bead has a single letter etched onto it. The order of the beads matters completely—swapping the letters in `"LISTEN"` turns it into `"SILENT"`—and the necklace as a whole forms a single meaningful word or sentence. A string organizes characters in this exact sequential chain.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Character & Character Encoding:</strong> A single symbol mapped to a numerical code in memory using standards like ASCII (1 byte per character) or UTF-8 / Unicode (1 to 4 bytes per character).</p>
+
+<p><strong>Substring:</strong> Any contiguous slice of characters taken from inside a string (for example, `"GRAM"` inside `"PROGRAM"`).</p>
+
+<p><strong>Prefix and Suffix:</strong> A substring that starts at the very first character (prefix) or ends at the very last character (suffix) of the string.</p>
+
+<p><strong>Concatenation:</strong> Joining two strings end-to-end to form a longer string.</p>
+
+<p><strong>Lexicographical Order:</strong> Alphabetical dictionary ordering determined by comparing two strings character by character from left to right.</p><br>
+
+<h2>How Does a String Work Conceptually?</h2>
+
+<p>Under the hood, a string is built on top of an **Array** of numeric character codes, often accompanied by an explicit `length` field (or terminated by a special zero byte `\0` in languages like C). Because it is backed by a contiguous array, reading the $i$-th character of a fixed-width string is instantaneous, while operations like pattern matching, slicing, and concatenation scan across the character array sequentially.</p><br>
+
+<h2>Where Are Strings Used in the Real World?</h2>
+
+<p><strong>User Interfaces and Web Pages:</strong> Display every piece of text, HTML markup, URL, and message on digital screens.</p>
+
+<p><strong>Data Serialization (JSON, XML, CSV):</strong> Transmit structured data across the internet as standardized text streams.</p>
+
+<p><strong>Bioinformatics and Genomics:</strong> Represent billion-letter DNA strands made of the characters `A`, `C`, `G`, and `T`.</p><br>
+
+<h2>Summary</h2>
+
+<p>A string is an ordered array of characters that bridges the gap between raw computer numbers and human language, text processing, and symbolic data.</p>

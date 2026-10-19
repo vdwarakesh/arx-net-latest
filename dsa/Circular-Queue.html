@@ -1,0 +1,29 @@
+<h1>Circular Queue</h1>
+
+<p>A Circular Queue (also known as a Ring Buffer) is a special type of queue that connects the end of a fixed-size array back to its beginning, forming a logical circle. This allows the queue to reuse empty slots left behind at the front when items are dequeued, without ever shifting elements in memory.</p>
+
+<p>Imagine a circular conveyor belt at a sushi restaurant with ten numbered plates. As customers take plates off the front segment of the belt, those empty spots rotate right back around to the chef, who places fresh sushi onto them. The belt has a fixed size, yet items flow through it continuously without ever hitting a wall.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Front and Rear Pointers:</strong> Two index markers that chase each other around the array as items are removed and added.</p>
+
+<p><strong>Modulo Wrap-Around:</strong> Using remainder arithmetic (`(index + 1) % capacity`) so an index reaching the end of the array automatically jumps back to index `0`.</p>
+
+<p><strong>Buffer Full / Buffer Empty States:</strong> Conditions tracking whether the rear pointer has caught up to the front pointer (full) or the front pointer has caught up to the rear (empty).</p><br>
+
+<h2>How Does a Circular Queue Work Conceptually?</h2>
+
+<p>In a naive array-based queue, removing items from the front leaves dead, unusable space behind as the queue drifts toward the right wall of the array. A circular queue fixes this by bending the array into a virtual loop. When the `rear` pointer hits the last slot of the array, it checks if slot `0` at the very beginning is now empty; if so, it wraps right around to index `0` and continues storing data seamlessly.</p><br>
+
+<h2>Where Are Circular Queues Used in the Real World?</h2>
+
+<p><strong>Audio and Video Streaming Buffers:</strong> Continuously receive incoming media chunks from the internet while the player reads and plays chunks from the front.</p>
+
+<p><strong>Keyboard and Mouse Input Buffers:</strong> Store keystrokes in a fixed hardware ring buffer until the operating system reads them.</p>
+
+<p><strong>High-Speed Network Routers:</strong> Pass data packets between hardware interfaces with zero memory allocation delays.</p><br>
+
+<h2>Summary</h2>
+
+<p>A circular queue is a self-recycling waiting line. By wrapping a fixed array into a continuous loop, it delivers fast, zero-shift FIFO buffering inside a strict memory footprint.</p>

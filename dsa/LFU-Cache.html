@@ -1,0 +1,31 @@
+<h1>LFU Cache</h1>
+
+<p>An LFU Cache (**Least Frequently Used** Cache) is a special type of cache structure that tracks how many times every item has been requested and evicts the item with the **lowest total access count (frequency)** when the cache is full.</p>
+
+<p>Imagine a jukebox at a diner that can only hold 50 records. Instead of throwing out whichever song wasn't played in the last hour, the jukebox keeps a play-count tally on every record sleeve. A classic hit played 500 times stays safe inside the jukebox even during a quiet afternoon, while a novelty song that was only ever played once gets swapped out first when a new record arrives.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Access Frequency Counter:</strong> An integer tally attached to every cached item that increments by `+1` every time the item is read or updated.</p>
+
+<p><strong>Frequency Buckets (Doubly Linked Lists per Count):</strong> Grouping all items that currently share the exact same access count (e.g., all items with `count = 3`) into their own doubly linked list, ordered by recency to break ties.</p>
+
+<p><strong>`minFreq` Pointer:</strong> An integer tracking the lowest frequency count currently present in the cache so eviction happens in $\mathcal{O}(1)$ time.</p><br>
+
+<h2>How Does an LFU Cache Work Conceptually?</h2>
+
+<p>While an LRU cache can be fooled when a one-time bulk scan flushes out genuinely popular items, an LFU cache protects items that have proven their popularity over many accesses. To keep every operation $\mathcal{O}(1)$, an LFU cache uses two hash maps: one mapping `key -> node`, and another mapping `frequency_count -> DoublyLinkedList` of nodes with that count.</p>
+
+<p>When key `X` (currently at `count = 2`) is accessed, it is unlinked from the `count = 2` list and placed at the front of the `count = 3` list. When the cache is full, it looks up the list for `minFreq` and evicts the oldest item in that lowest-frequency bucket—breaking ties using LRU order!</p><br>
+
+<h2>Where Are LFU Caches Used in the Real World?</h2>
+
+<p><strong>Content Delivery Networks (CDNs) & Video Streaming:</strong> Keep blockbuster movies and viral homepage assets cached at edge servers even if a burst of niche requests arrives.</p>
+
+<p><strong>DNS Name Resolution Caches:</strong> Keep high-traffic domains (like `google.com` or `cloudflare.com`) permanently hot in resolver memory.</p>
+
+<p><strong>In-Memory Key-Value Stores (Redis `allkeys-lfu` / `volatile-lfu`):</strong> Protect high-request hot keys from being evicted by background batch jobs.</p><br>
+
+<h2>Summary</h2>
+
+<p>An LFU cache prioritizes long-term popularity over short-term recency, evicting the least-requested item first so proven hot data stays permanently in fast memory.</p>

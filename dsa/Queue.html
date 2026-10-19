@@ -1,0 +1,33 @@
+<h1>Queue</h1>
+
+<p>A Queue is a linear data structure that organizes elements using a strict **First-In, First-Out (FIFO)** policy. Elements enter the structure at the back end and exit from the front end in the exact chronological order they arrived.</p>
+
+<p>Imagine a line of customers waiting at a coffee shop counter. The first person to join the line is the first person served by the barista, while new arrivals step in at the back of the line and wait their turn. No one is allowed to cut into the middle. A queue enforces this exact fairness rule for data.</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>FIFO (First-In, First-Out):</strong> The principle that the oldest item waiting in the structure is always the next one to be processed.</p>
+
+<p><strong>Front (or Head):</strong> The exit end of the queue where elements are removed and processed.</p>
+
+<p><strong>Rear (or Tail / Back):</strong> The entrance end of the queue where new elements are added.</p>
+
+<p><strong>Enqueue:</strong> The action of adding a new element to the rear of the queue.</p>
+
+<p><strong>Dequeue:</strong> The action of removing the oldest element from the front of the queue.</p><br>
+
+<h2>How Does a Queue Work Conceptually?</h2>
+
+<p>Unlike a stack where one end handles everything, a queue separates arrivals and departures between two ends: the rear and the front. When data arrives faster than a system can process it, items are enqueued at the rear to wait safely in a buffer. As the system becomes ready, it dequeues items from the front one by one, ensuring every item is handled in order without anyone getting starved or skipped.</p><br>
+
+<h2>Where Are Queues Used in the Real World?</h2>
+
+<p><strong>Print Spoolers:</strong> Line up multiple documents sent to an office printer so they print in the exact order they were submitted.</p>
+
+<p><strong>Web Server Request Handling:</strong> Buffer incoming user traffic during busy spikes so requests are answered fairly in order of arrival.</p>
+
+<p><strong>Breadth-First Search (BFS):</strong> Explore networks and trees level by level, visiting all close neighbors before moving farther away.</p><br>
+
+<h2>Summary</h2>
+
+<p>A queue is a fair waiting line for data. By separating the entrance at the back from the exit at the front, it guarantees that items are processed smoothly in the exact order they arrived.</p>

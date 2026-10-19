@@ -1,17 +1,31 @@
 <h1>Order Statistic Tree</h1>
 
-<p>An Order Statistic Tree is a type of Binary Search Tree (BST) augmented with additional information that helps determine the position of values in sorted order.</p>
+<p>An Order Statistic Tree is a special type of binary search tree that augments every node with the exact count of nodes in its subtree, enabling it to answer rank and $k$-th smallest element queries in logarithmic time.</p>
 
-<p>Typically, each node stores the size of its subtree: the total number of nodes contained within that part of the tree, including itself. This extra information makes it possible to determine which value occupies a particular rank and to find the rank of a given value.</p>
+<p>Imagine a live marathon leaderboard where runners are constantly finishing or having their times adjusted. Not only can you look up a runner by their time, you can instantly ask: *"Who is currently in 500th place?"* or *"What rank is a runner with a time of 3 hours and 12 minutes?"* An order statistic tree answers both questions effortlessly.</p><br>
 
-<p>Imagine a leaderboard that not only stores players by score but also keeps track of how many players appear before or after each player in the ranking. This makes questions such as “Who is in fifth place?” or “What is this player's rank?” much easier to answer.</p>
+<h2>Understanding the Basic Terminology</h2>
 
-<p>The defining feature is the extra subtree-size information, rather than a particular balancing method. An Order Statistic Tree may use a self-balancing BST as its foundation to keep its structure efficient.</p><br>
+<p><strong>Subtree Size Augmentation:</strong> Storing an integer `size` inside every node equal to `left.size + right.size + 1`.</p>
 
-<h2>Where Is It Useful?</h2>
+<p><strong>Select ($k$-th Order Statistic):</strong> Finding the element with the exact $k$-th smallest value in the tree in $\mathcal{O}(\log n)$ time.</p>
 
-<p>Order Statistic Trees are useful for leaderboards, ranking systems, percentile calculations, and applications that need to retrieve the kth smallest or largest value from an ordered collection.</p><br>
+<p><strong>Rank Query:</strong> Determining how many elements in the tree are strictly smaller than a given value $x$ in $\mathcal{O}(\log n)$ time.</p><br>
+
+<h2>How Does an Order Statistic Tree Work Conceptually?</h2>
+
+<p>Built on top of any self-balancing binary search tree (such as a Red-Black Tree, AVL Tree, or Treap), an order statistic tree maintains one extra integer per node: the total number of descendants in that node's subtree. Whenever a node is inserted, deleted, or rotated, its size counter is updated in constant time from its two children.</p>
+
+<p>To find the 50th smallest item (`Select(50)`), you check the root's left child size. If the left subtree holds 30 items, you know the root itself is the 31st item, so you step into the right subtree and look for the $50 - 31 = 19\text{th}$ smallest item there.</p><br>
+
+<h2>Where Are Order Statistic Trees Used in the Real World?</h2>
+
+<p><strong>Live Financial Order Books and Percentiles:</strong> Compute real-time median, 95th percentile, or 99th percentile latencies as data streams in.</p>
+
+<p><strong>Gaming Ranking Systems:</strong> Immediately tell a player their exact global rank (e.g., `#14,203 out of 2,000,000`) whenever their score changes.</p>
+
+<p><strong>Language Libraries:</strong> Power C++ GNU PBDS `tree_order_statistics_node_update` and Python's `SortedList` indexing.</p><br>
 
 <h2>Summary</h2>
 
-<p>An Order Statistic Tree enriches a BST with rank-related information, allowing it to answer not only “What value is this?” but also “Where does this value stand in the sorted order?”</p>
+<p>An order statistic tree upgrades a standard binary search tree with subtree counters, giving sorted sets the array-like superpower of instant index and rank lookups.</p>

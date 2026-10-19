@@ -1,0 +1,31 @@
+<h1>Bloom Filter</h1>
+
+<p>A Bloom Filter is a special type of probabilistic structure that tests whether an element is a member of a set using a compact bit array and multiple hash functions. It guarantees **zero false negatives** (if it says an item is *not* in the set, it is 100% definitely not there), with a small, tunable chance of a **false positive** (saying an item *might* be there).</p>
+
+<p>Imagine stamping ink marks onto a numbered grid of 100 squares whenever you add a book to your library. Each book title gets run through 3 formulas that pick 3 squares to stamp black. Later, to check if you own `"Moby Dick"`, you check its 3 squares: if even one square is still white, you **definitely do not** own the book! If all 3 squares are black, you *probably* own it (though three other books might have coincidentally stamped those same three squares).</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>Bit Array of Size $m$:</strong> A compact array of $m$ bits, all initialized to `0`.</p>
+
+<p><strong>$k$ Independent Hash Functions:</strong> $k$ distinct math formulas that map any input item to $k$ positions in the bit array.</p>
+
+<p><strong>Definitely Not Present vs. Probably Present:</strong> A `0` bit at any of the $k$ hashed positions proves the item was never inserted; all `1` bits indicate the item is likely present.</p>
+
+<p><strong>Deletion Restriction:</strong> Standard Bloom filters cannot delete an item by flipping its $k$ bits back to `0`, because other items might share those same `1` bits.</p><br>
+
+<h2>How Does a Bloom Filter Work Conceptually?</h2>
+
+<p>To insert an item, you feed it into $k$ hash functions to get $k$ array indices, and set all $k$ bits to `1`. To query an item, you compute the exact same $k$ indices and check their bits. With just **10 bits per inserted item** (a little over 1 byte, regardless of how huge the item itself is!) and $k = 7$ hash functions, a Bloom filter achieves a false-positive rate under **1%**.</p><br>
+
+<h2>Where Are Bloom Filters Used in the Real World?</h2>
+
+<p><strong>NoSQL & LSM-Tree Databases (Cassandra, RocksDB, LevelDB, Bigtable):</strong> Check a Bloom filter in RAM before reading an on-disk SSTable file, skipping 99% of unnecessary disk seeks for missing keys.</p>
+
+<p><strong>Web Browsers (Malicious URL Filtering):</strong> Check whether a visited website might be on a list of millions of phishing URLs locally before querying a remote server.</p>
+
+<p><strong>Content Delivery Networks (CDNs):</strong> Avoid caching "one-hit-wonder" web objects unless a Bloom filter sees the URL requested at least twice.</p><br>
+
+<h2>Summary</h2>
+
+<p>A Bloom filter is an ultra-compact gatekeeper that tells you with 100% certainty when an item is absent, saving databases and networks from millions of expensive, pointless lookups.</p>

@@ -1,0 +1,33 @@
+<h1>Bit Vector</h1>
+
+<p>A Bit Vector is a special type of bit-based structure that extends a raw bit array witheither dynamic resizing or **succinct indexing tables** enabling constant-time **`Rank`** (counting `1`-bits up to index $i$) and **`Select`** (finding the index of the $k$-th `1`-bit) queries.</p>
+
+<p>Imagine a 10,000-seat stadium where every seat is marked Occupied (`1`) or Empty (`0`). A plain bitset lets you check whether Seat #4,210 is occupied. A succinct Bit Vector adds tiny milestone signs at the end of every section and row telling you the cumulative count of occupied seats so far—so you can instantly answer *"How many people are sitting between Seat 1 and Seat 4,210?"* (`Rank`) or *"Which seat number holds the 500th spectator?"* (`Select`) in a single step!</p><br>
+
+<h2>Understanding the Basic Terminology</h2>
+
+<p><strong>`Access(i)`:</strong> Returning the bit (`0` or `1`) at index $i$ in $\mathcal{O}(1)$ time.</p>
+
+<p><strong>`Rank_1(i)` / `Rank_0(i)`:</strong> Counting the exact number of `1`-bits (or `0`-bits) in the prefix $[0 \dots i]$ in $\mathcal{O}(1)$ time.</p>
+
+<p><strong>`Select_1(k)` / `Select_0(k)`:</strong> Finding the exact position index $i$ of the $k$-th `1`-bit (or `0`-bit) in $\mathcal{O}(1)$ time.</p>
+
+<p><strong>Superblocks and Blocks (Jacobson's / Clark's Directory):</strong> Lightweight lookup tables occupying only $o(n)$ extra bits (often $< 5\%$ overhead) that store cumulative bit counts at coarse and fine intervals.</p><br>
+
+<h2>How Does a Bit Vector Work Conceptually?</h2>
+
+<p>In a plain bitset, counting how many `1`-bits appear before index $i$ requires scanning and summing all words from $0$ to $i/64$, which takes $\mathcal{O}(n)$ time. A succinct Bit Vector divides the bit array into large **Superblocks** (storing full cumulative counts) and small 64-bit **Blocks** (storing relative 16-bit offsets from the start of their superblock).</p>
+
+<p>To compute `Rank_1(i)` in $\mathcal{O}(1)$ time, you simply add three numbers in one step: `Superblock[i / S] + Block[i / 64] + popcount(Word & mask)`! This constant-time `Rank` and `Select` machinery makes bit vectors the foundational building block of Wavelet Trees, FM-Indexes, and succinct trees.</p><br>
+
+<h2>Where Are Bit Vectors Used in the Real World?</h2>
+
+<p><strong>Wavelet Trees and FM-Indexes:</strong> Power the constant-time `rank` transitions used in compressed full-text search and genomic alignment.</p>
+
+<p><strong>Succinct Tree Representations (LOUDS):</strong> Encode the entire branching topology of a $100$-million-node tree using just $2n + o(n)$ bits total (2 bits per node instead of 128-bit pointers!).</p>
+
+<p><strong>Sparse Table Compression (Elias-Fano Encoding):</strong> Compress monotone integer sequences while preserving direct random access.</p><br>
+
+<h2>Summary</h2>
+
+<p>A bit vector supercharges a compact bit array with constant-time `Rank` and `Select` directories, forming the engine behind modern succinct and compressed data structures.</p>
