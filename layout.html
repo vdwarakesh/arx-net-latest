@@ -73,10 +73,6 @@
       /* Hitbox width and height for icon buttons inside card headers on desktop */
       --card-icon-btn-size-mobile: 1.5rem;
       /* Hitbox width and height for icon buttons inside card headers on mobile */
-      --sidebar-toggle-icon-size-desktop: 1.75rem;
-      /* Width and height of the collapse/expand image icon in the Algorithms header on desktop */
-      --sidebar-toggle-icon-size-mobile: 1.25rem;
-      /* Width and height of the collapse/expand image icon in the Algorithms header on mobile */
       --theme-option-btn-size-desktop: 1.625rem;
       /* Width and height of each icon button inside the desktop 3-way theme switcher */
       --theme-icon-size-desktop: 1rem;
@@ -1038,30 +1034,6 @@
       color: var(--text-bright);
     }
 
-    /* Icon Images */
-    .sidebar-toggle-img {
-      width: var(--sidebar-toggle-icon-size-desktop);
-      height: var(--sidebar-toggle-icon-size-desktop);
-      min-width: var(--sidebar-toggle-icon-size-desktop);
-      min-height: var(--sidebar-toggle-icon-size-desktop);
-      max-width: none;
-      max-height: none;
-      padding: 0;
-      border-radius: 0.25rem;
-      object-fit: contain;
-      display: block;
-      flex-shrink: 0;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    .sidebar-toggle-img.has-error {
-      display: none;
-    }
-
-    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
-      display: inline-flex;
-    }
-
     .brand-logo {
       width: var(--brand-logo-size);
       height: var(--brand-logo-size);
@@ -1795,13 +1767,6 @@
         height: var(--card-icon-btn-size-mobile);
         min-width: var(--card-icon-btn-size-mobile);
         min-height: var(--card-icon-btn-size-mobile);
-      }
-
-      .sidebar-toggle-img {
-        width: var(--sidebar-toggle-icon-size-mobile);
-        height: var(--sidebar-toggle-icon-size-mobile);
-        min-width: var(--sidebar-toggle-icon-size-mobile);
-        min-height: var(--sidebar-toggle-icon-size-mobile);
       }
 
       .workspace-container {
