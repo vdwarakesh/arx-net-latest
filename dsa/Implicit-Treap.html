@@ -1,0 +1,21 @@
+<h1>Implicit Treap</h1>
+
+<p>An <b>Implicit Treap</b> is a type of Treap that organizes elements by their positions in a sequence rather than by explicit key values. It combines the structural ideas of a Treap with the ability to determine each element’s position from the sizes of the subtrees.</p>
+
+<p>Unlike a conventional search tree, where you locate an element using its stored key, an Implicit Treap treats the sequence order itself as the key. Each node maintains the size of its subtree, helping determine where an element sits in the sequence.</p>
+
+<p>Imagine a playlist containing 100 songs. You want to insert a new song at position 20, remove the song at position 45, or rearrange a section of the playlist. You care about each song's position, not whether its title is alphabetically larger or smaller than another song's title. An Implicit Treap is designed for this kind of sequence manipulation.</p>
+
+<p>Its randomized priorities help maintain a balanced structure in typical situations, while subtree sizes keep track of positions as the sequence changes.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Implicit Treaps are useful for editable sequences, text editors, playlist management, dynamic arrays, and competitive programming problems involving frequent insertions, deletions, and rearrangements at arbitrary positions.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>An Implicit Treap treats a sequence’s positions as its ordering system, making it useful when elements must be inserted, removed, or rearranged without losing track of their relative order.</p>

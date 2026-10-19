@@ -1,0 +1,21 @@
+<h1>Persistent Segment Tree</h1>
+
+<p>A <b>Persistent Segment Tree</b> is a type of Segment Tree that preserves previous versions of its data after updates. Instead of overwriting the entire existing structure, it creates a new version while reusing the unchanged portions of the previous one.</p>
+
+<p>This means you can retain access to an earlier state even after making multiple updates. Each version represents the data as it existed at a particular point in time.</p>
+
+<p>Imagine editing a document where every saved version remains available. You make a change, save a new version, and can still return to an earlier version whenever needed. A Persistent Segment Tree provides a similar idea for structured data.</p>
+
+<p>For example, a system tracking account balances could preserve the state after every transaction, allowing previous states to be examined without losing the latest one.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Persistent Segment Trees are useful in historical queries, versioned datasets, competitive programming, and applications where multiple past states of an array must remain accessible.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Persistent Segment Tree preserves earlier versions of its data, allowing you to examine the past while continuing to make updates in the present.</p>

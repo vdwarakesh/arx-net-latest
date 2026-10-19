@@ -1,0 +1,110 @@
+<h1>Graph</h1>
+
+<p>A <b>Graph</b> is a non-linear data structure used to represent relationships and connections between objects. It
+    consists of vertices (also called nodes) and edges (also called links) that connect pairs of vertices.</p>
+
+<p>Think of a social network. Each person is a vertex, and a friendship or follow relationship between two people is an
+    edge. Unlike a hierarchy, a graph can represent connections in many directions, allowing one person to connect to
+    many others, and those connections can form complicated networks.</p>
+
+<p>The real power of a graph is that it models relationships rather than simply storing individual items. Cities
+    connected by roads, computers connected through a network, and web pages connected by hyperlinks can all be
+    represented as graphs.</p>
+
+<br>
+
+<h2>Important Terminology</h2>
+
+<p><b>Vertex:</b> An individual entity in the network, such as a city, person, or computer.</p>
+
+<p><b>Edge:</b> A connection between two vertices, such as a road between cities or a link between web pages.</p>
+
+<p><b>Adjacent Vertices:</b> Two vertices that share an edge.</p>
+
+<p><b>Degree:</b> The number of edges connected to a vertex in an undirected graph. In directed graphs, we distinguish
+    between incoming edges (in-degree) and outgoing edges (out-degree).</p>
+
+<p><b>Path:</b> A sequence of vertices connected by edges, representing a possible route through the network.</p>
+
+<p><b>Cycle:</b> A path that returns to its starting vertex without repeating other vertices along the way.</p>
+
+<p><b>Connected Graph:</b> An undirected graph in which every vertex can be reached from every other vertex.</p>
+
+<br>
+
+<h2>Directed and Undirected Graphs</h2>
+
+<p>In a <b>directed graph</b>, edges have a direction. For example, if one social media account follows another, that
+    does not necessarily mean the second account follows the first.</p>
+
+<p>In an <b>undirected graph</b>, edges have no direction. For example, a mutual friendship can be represented as a
+    connection that works both ways.</p>
+
+<br>
+
+<h2>Weighted and Unweighted Graphs</h2>
+
+<p>A <b>weighted graph</b> assigns a value to each edge, such as distance, travel time, cost, or network capacity. An
+    <b>unweighted graph</b> represents connections without assigning numerical weights to them.</p>
+
+<br>
+
+<h2>Other Important Graph Properties</h2>
+
+<p><b>Cyclic Graph:</b> A graph that contains at least one cycle.</p>
+
+<p><b>Acyclic Graph:</b> A graph that contains no cycles.</p>
+
+<p><b>DAG (Directed Acyclic Graph):</b> A directed graph with no directed cycles. It is useful for representing
+    dependencies where something must happen before something else, such as tasks in a project or prerequisites in a
+    course.</p>
+
+<p><b>Sparse Graph:</b> A graph with relatively few edges compared with the number of possible edges.</p>
+
+<p><b>Dense Graph:</b> A graph with many edges relative to the number of possible edges.</p>
+
+<p><b>Bipartite Graph:</b> A graph whose vertices can be divided into two groups so that every edge connects vertices
+    from different groups. For example, a job-matching system connecting applicants to available jobs.</p>
+
+<p><b>Complete Graph:</b> A simple graph in which every pair of distinct vertices is connected by an edge.</p>
+
+<p><b>Tree:</b> A connected, undirected graph with no cycles. Trees are a special kind of graph with a particularly
+    restricted structure.</p>
+
+<br>
+
+<h2>How Are Graphs Represented in Computers?</h2>
+
+<p><b>Adjacency List:</b> An adjacency list stores the neighbors of each vertex. Imagine keeping a contact list for
+    every person that records whom they are connected to.</p>
+
+<p><b>Adjacency Matrix:</b> An adjacency matrix uses a two-dimensional table to record whether pairs of vertices are
+    connected, and possibly the weight of each connection. Imagine a spreadsheet where rows and columns represent
+    cities, and each cell indicates whether a road connects them.</p>
+
+<br>
+
+<h2>Where Are Graphs Used in the Real World?</h2>
+
+<p><b>Navigation:</b> Maps represent locations as vertices and roads as edges, with distances or travel times
+    represented by weights.</p>
+
+<p><b>Social Networks:</b> People or accounts are vertices, while friendships, follows, and interactions are edges.</p>
+
+<p><b>Computer Networks:</b> Devices are vertices, and communication links are edges.</p>
+
+<p><b>Project Planning:</b> Tasks are vertices, and dependency relationships form directed edges. A DAG can represent
+    tasks that must be completed in a particular order.</p>
+
+<p><b>Recommendation Systems:</b> Users and products can be represented as connected vertices, helping systems identify
+    relevant recommendations.</p>
+
+<p><b>Web Search:</b> Web pages are vertices, and hyperlinks are directed edges that connect one page to another.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A <b>Graph</b> is a flexible structure for representing objects and the relationships between them. Whether you are
+    mapping roads, modeling friendships, planning projects, or connecting computers, graphs help you understand how a
+    network is organized and how its elements relate to one another.</p>

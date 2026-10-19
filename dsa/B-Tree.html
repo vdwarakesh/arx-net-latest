@@ -1,0 +1,17 @@
+<h1>B-Tree</h1>
+
+<p>A B-Tree is a self-balancing, multiway search tree designed to store large amounts of sorted data while keeping the tree relatively shallow. Unlike structures that restrict each node to just two children, a B-Tree can hold multiple keys and have multiple children within a single node.</p>
+
+<p>Each node contains several keys arranged in sorted order. These keys act as separators that guide searches toward the appropriate child. The tree maintains its balance as data changes, keeping all leaf nodes at the same depth.</p>
+
+<p>Imagine a library catalog where each large index page contains several alphabetical dividers rather than just one. Each divider directs you toward a particular section, so you can navigate a huge collection without passing through many individual pages.</p>
+
+<p>B-Trees are particularly valuable for storage systems because accessing data from a disk or other external storage can be much more expensive than accessing data in memory. Storing multiple keys in each node helps reduce the number of separate storage accesses needed.</p><br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>B-Trees are used in database indexes, file systems, and storage engines that manage large collections of records.</p><br>
+
+<h2>Summary</h2>
+
+<p>A B-Tree packs multiple sorted keys into each node, creating a shallow, balanced structure well suited to handling large amounts of stored data.</p>

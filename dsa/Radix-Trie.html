@@ -1,0 +1,21 @@
+<h1>Radix Trie</h1>
+
+<p>A <b>Radix Trie</b> is a type of Compressed Trie that stores strings by grouping sequences of characters into edge labels instead of creating a separate node for every character.</p>
+
+<p>When several characters occur consecutively without a branching point, they can be represented together on a single edge. When strings share a prefix, their paths remain shared until they reach a point where the strings differ or a stored word ends.</p>
+
+<p>For example, imagine storing the words <b>“star,” “start,” and “stay.”</b> The shared beginning “sta” can be represented as a common path, with branches appearing where the words diverge. This avoids unnecessary nodes while preserving the ability to distinguish the stored words.</p>
+
+<p>Think of a subway map. Instead of marking every meter of track, the map shows long stretches between stations and highlights the places where routes split. The result is a simpler representation without losing important connections.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Radix Tries are used in dictionaries, IP routing tables, autocomplete systems, and search indexes where efficient prefix matching and reduced memory overhead are important.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Radix Trie compresses character paths into longer edge labels, keeping shared prefixes and branching points while avoiding unnecessary nodes.</p>

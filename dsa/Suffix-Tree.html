@@ -1,0 +1,21 @@
+<h1>Suffix Tree</h1>
+
+<p>A <b>Suffix Tree</b> is a compressed tree-based data structure that represents all suffixes of a string. Each suffix starts at a different position in the original string and continues to its end.</p>
+
+<p>Its edges are labeled with sequences of characters rather than necessarily one character per node. Shared portions of suffixes can use common paths, while branching points distinguish different sequences. This organization makes it possible to search for patterns within the original text without storing every suffix as a completely separate path.</p>
+
+<p>For example, consider the word <b>“banana.”</b> Its suffixes include “banana,” “anana,” “nana,” “ana,” “na,” and “a.” A Suffix Tree organizes these suffixes in a shared structure, allowing a search for “ana” to locate its occurrences in the original string.</p>
+
+<p>Imagine a massive digital library where you need to find a particular phrase inside documents, even when the phrase begins halfway through a sentence. A Suffix Tree acts like a specialized index built to locate such patterns.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Suffix Trees are useful in text searching, DNA sequence analysis, plagiarism detection, and applications that need to locate repeated substrings or compare sequences.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Suffix Tree indexes every suffix of a string in a compressed structure, making complex substring searches practical on large texts.</p>

@@ -1,0 +1,25 @@
+<h1>Binary Search Tree (BST)</h1>
+
+<p>A Binary Search Tree (BST) is a type of binary tree that organizes values according to a specific ordering rule, making it easier to locate, insert, and remove data while maintaining that order.</p>
+
+<p>The defining rule is simple: for any node, values smaller than it are placed in its left subtree, while values greater than it are placed in its right subtree. This rule applies throughout the structure, not just to the immediate children.</p>
+
+<p>Imagine a library where books are arranged according to their identification numbers. If you are looking for book 50, you check a book labeled 50. If the current book is numbered 70, you know your target belongs on the lower-numbered side. If it is numbered 30, you know to look on the higher-numbered side. Each comparison helps you choose the appropriate direction.</p>
+
+<p>For example, imagine inserting the values 50, 30, 70, 20, and 40 into a BST. The value 50 becomes the starting value, 30 belongs to its left, and 70 belongs to its right. The values 20 and 40 are then positioned according to the same ordering rule.</p>
+
+<p>One important distinction: a BST does not automatically keep itself balanced. If values are inserted in an unfortunate order, its shape can become highly uneven. The ordering rule still holds, but the structure may lose much of its practical advantage.</p><br>
+
+<h2>Where Are BSTs Useful?</h2>
+
+<p><strong>Ordered Data Management:</strong> Useful when information needs to remain organized by keys, such as employee IDs or product codes.</p>
+
+<p><strong>Lookup Systems:</strong> Can help locate a particular value without having to examine every stored value in a well-shaped tree.</p>
+
+<p><strong>Range-Based Queries:</strong> Useful when you need values within a particular interval, such as product prices between two amounts.</p>
+
+<p><strong>Dynamic Collections:</strong> Suitable when values are frequently added or removed while their ordering must be preserved.</p><br>
+
+<h2>Summary</h2>
+
+<p>A Binary Search Tree is like a carefully organized filing system where smaller values go to the left and larger values go to the right. Its defining strength is that every value has a predictable position based on its relationship to other values.</p>

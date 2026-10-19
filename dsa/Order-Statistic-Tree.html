@@ -1,0 +1,17 @@
+<h1>Order Statistic Tree</h1>
+
+<p>An Order Statistic Tree is a type of Binary Search Tree (BST) augmented with additional information that helps determine the position of values in sorted order.</p>
+
+<p>Typically, each node stores the size of its subtree: the total number of nodes contained within that part of the tree, including itself. This extra information makes it possible to determine which value occupies a particular rank and to find the rank of a given value.</p>
+
+<p>Imagine a leaderboard that not only stores players by score but also keeps track of how many players appear before or after each player in the ranking. This makes questions such as “Who is in fifth place?” or “What is this player's rank?” much easier to answer.</p>
+
+<p>The defining feature is the extra subtree-size information, rather than a particular balancing method. An Order Statistic Tree may use a self-balancing BST as its foundation to keep its structure efficient.</p><br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Order Statistic Trees are useful for leaderboards, ranking systems, percentile calculations, and applications that need to retrieve the kth smallest or largest value from an ordered collection.</p><br>
+
+<h2>Summary</h2>
+
+<p>An Order Statistic Tree enriches a BST with rank-related information, allowing it to answer not only “What value is this?” but also “Where does this value stand in the sorted order?”</p>

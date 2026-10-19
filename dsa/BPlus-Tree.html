@@ -1,0 +1,17 @@
+<h1>B+ Tree</h1>
+
+<p>A B+ Tree is a type of B-Tree designed especially for efficient data retrieval and range-based access. It stores keys in internal nodes to guide searches, while the actual records or record references are stored at the leaf level.</p>
+
+<p>Its distinctive feature is that leaf nodes are linked together in sorted order. Once a search reaches the appropriate leaf, the system can continue through neighboring leaves to retrieve consecutive values without repeatedly navigating from the root.</p>
+
+<p>Imagine a library catalog whose index directs you to the correct page, while all the actual entries are arranged in linked pages. Once you find the first entry you need, you can move through the next entries in order without returning to the main index every time.</p>
+
+<p>This design is especially effective when systems need to retrieve a range of records, such as all transactions within a date interval or all products whose prices fall within a specified range.</p><br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>B+ Trees are widely used in database indexes and storage systems that need efficient ordered retrieval and range queries.</p><br>
+
+<h2>Summary</h2>
+
+<p>A B+ Tree separates navigation information from leaf-level records and links its leaves in sorted order, making it particularly useful for databases and range-based searches.</p>

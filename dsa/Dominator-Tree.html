@@ -1,0 +1,21 @@
+<h1>Dominator Tree</h1>
+
+<p>A <b>Dominator Tree</b> is a tree-based representation used in directed graphs to describe dominance relationships, especially in control-flow graphs used by compilers.</p>
+
+<p>In a directed graph with a designated entry vertex, a vertex A dominates a vertex B if every path from the entry to B must pass through A. In other words, A is an unavoidable checkpoint on every possible route to B.</p>
+
+<p>The Dominator Tree organizes these relationships. Each vertex, except the entry vertex, is connected to its immediate dominator: the closest strict dominator that lies before it in the dominance hierarchy.</p>
+
+<p>Imagine a building with several corridors leading to different rooms. If every possible route from the entrance to a particular room passes through a security checkpoint, that checkpoint dominates the room. A Dominator Tree organizes these unavoidable checkpoints throughout the building's layout.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Dominator Trees are used in compiler optimization, program control-flow analysis, code dependency analysis, and certain graph-analysis applications where it matters which vertices must be visited before others can be reached.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Dominator Tree captures unavoidable passage relationships in a directed graph, helping identify which points must be encountered before other points can be reached.</p>

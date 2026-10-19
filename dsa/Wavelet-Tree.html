@@ -1,0 +1,21 @@
+<h1>Wavelet Tree</h1>
+
+<p>A <b>Wavelet Tree</b> is a tree-based data structure that organizes a sequence of values to support queries involving both their positions and their numerical ranges.</p>
+
+<p>It recursively divides values into groups according to their value ranges while preserving enough information about their original positions to answer questions about selected portions of the sequence.</p>
+
+<p>For example, imagine a list of exam scores. You may want to know the third-smallest score among students numbered 10 through 30, or count how many students in that section scored below 70. A Wavelet Tree is designed to answer this kind of question without fully sorting the selected portion each time.</p>
+
+<p>Think of a library that organizes books by value categories while still remembering their original shelf positions. You can ask both where a book originally appeared and how its value compares with other books in a selected section.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Wavelet Trees are useful for range-quantile queries, finding the kth-smallest value in a subarray, counting values within a range, compressed data processing, and sequence analysis.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Wavelet Tree connects positional information with value-based organization, making it useful for answering detailed questions about values inside a particular part of a sequence.</p>

@@ -1,0 +1,21 @@
+<h1>Dynamic Segment Tree</h1>
+
+<p>A <b>Dynamic Segment Tree</b> is a type of Segment Tree that creates its nodes only when they are needed, rather than building the entire tree in advance.</p>
+
+<p>This is especially useful when the possible range of values is enormous but only a small portion of that range is actually accessed. Instead of allocating space for every possible segment, the structure creates nodes for the relevant portions as operations occur.</p>
+
+<p>Imagine a vast city map where you mark only the neighborhoods that have actually been visited. You do not need to prepare detailed records for every street in the city before starting. You expand the map only when new areas become relevant.</p>
+
+<p>For example, suppose a system tracks values across a range containing billions of possible positions, but updates occur at only a few locations. A Dynamic Segment Tree can represent the necessary portions without constructing every possible node.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Dynamic Segment Trees are useful for huge coordinate ranges, sparse datasets, online query systems, and problems where the relevant positions are not known in advance.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Dynamic Segment Tree builds its structure on demand, making it practical when the possible data range is huge but only a small portion is actually used.</p>

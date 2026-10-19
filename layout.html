@@ -73,6 +73,10 @@
       /* Hitbox width and height for icon buttons inside card headers on desktop */
       --card-icon-btn-size-mobile: 1.5rem;
       /* Hitbox width and height for icon buttons inside card headers on mobile */
+      --sidebar-toggle-icon-size-desktop: 1.75rem;
+      /* Width and height of the collapse/expand image icon in the Algorithms header on desktop */
+      --sidebar-toggle-icon-size-mobile: 1.25rem;
+      /* Width and height of the collapse/expand image icon in the Algorithms header on mobile */
       --theme-option-btn-size-desktop: 1.625rem;
       /* Width and height of each icon button inside the desktop 3-way theme switcher */
       --theme-icon-size-desktop: 1rem;
@@ -721,7 +725,7 @@
       background-color: var(--bg-elevated);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.3125rem;
-      max-height: 48%;
+      max-height: 75%;
       min-height: 0;
       overflow: hidden;
       flex-shrink: 0;
@@ -1032,6 +1036,30 @@
     .card-icon-btn:hover {
       background-color: var(--bg-hover);
       color: var(--text-bright);
+    }
+
+    /* Icon Images */
+    .sidebar-toggle-img {
+      width: var(--sidebar-toggle-icon-size-desktop);
+      height: var(--sidebar-toggle-icon-size-desktop);
+      min-width: var(--sidebar-toggle-icon-size-desktop);
+      min-height: var(--sidebar-toggle-icon-size-desktop);
+      max-width: none;
+      max-height: none;
+      padding: 0;
+      border-radius: 0.25rem;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .sidebar-toggle-img.has-error {
+      display: none;
+    }
+
+    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
+      display: inline-flex;
     }
 
     .brand-logo {
@@ -1769,6 +1797,13 @@
         min-height: var(--card-icon-btn-size-mobile);
       }
 
+      .sidebar-toggle-img {
+        width: var(--sidebar-toggle-icon-size-mobile);
+        height: var(--sidebar-toggle-icon-size-mobile);
+        min-width: var(--sidebar-toggle-icon-size-mobile);
+        min-height: var(--sidebar-toggle-icon-size-mobile);
+      }
+
       .workspace-container {
         flex-direction: column;
         padding: 0.25rem 0.35rem 0.35rem 0.35rem;
@@ -2015,6 +2050,86 @@
         transform: rotate(360deg);
       }
     }
+
+    /* =========================================================================
+       5. NOTES / HTML CONTENT TYPOGRAPHY
+       ========================================================================= */
+    .notes-content {
+      padding: 1rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .notes-content h1,
+    .notes-content h2,
+    .notes-content h3,
+    .notes-content h4 {
+      color: var(--text-bright);
+      font-weight: 600;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+
+    .notes-content h1 {
+      font-size: 1.75em;
+      margin: 0 0 0.3em 0;
+    }
+
+    .notes-content h2 {
+      font-size: 1.4em;
+      margin: 0 0 0.3em 0;
+    }
+
+    .notes-content h3 {
+      font-size: 1.2em;
+    }
+
+    .notes-content p {
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+
+    .notes-content ul,
+    .notes-content ol {
+      margin-top: 0;
+      margin-bottom: 1em;
+      padding-left: 1.75em;
+    }
+
+    .notes-content li {
+      margin-bottom: 0.35em;
+    }
+
+    .notes-content strong,
+    .notes-content b {
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .notes-content em,
+    .notes-content i {
+      font-style: italic;
+    }
+
+    .notes-content a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .notes-content a:hover {
+      text-decoration: underline;
+    }
+
+    /* .notes-content code {
+      font-family: 'Noto Sans Mono', monospace;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      padding: 0.1em 0.3em;
+      border-radius: 0.25rem;
+      font-size: 0.9em;
+      color: var(--text-bright);
+    } */
   </style>
 </head>
 
@@ -2173,6 +2288,10 @@
                       <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
                         aria-label="Clear search" style="display: none;">&times;</button>
                     </div>
+                    <button type="button" id="algo-hide-btn" class="algo-filter-btn"
+                      title="Hide Algorithms (Show Data Structures only)" aria-pressed="false">
+                      <img src="images/hide.png" alt="Hide Algorithms" class="algo-filter-icon" />
+                    </button>
                     <button type="button" id="algo-filter-btn" class="algo-filter-btn" title="Filter by data structure"
                       aria-expanded="false">
                       <img src="images/filter.png" alt="Filter" class="algo-filter-icon" />
@@ -2714,7 +2833,8 @@
       const currentTarget = selectedDsaName;
       const currentTab = activeRightTopTab;
       const ext = currentTab === 'notes' ? '.html' : currentLangExt;
-      const filePath = `dsa/${currentTarget}${ext}`;
+      const formattedTarget = currentTarget.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+      const filePath = `dsa/${formattedTarget}${ext}`;
 
       try {
         const response = await fetch(filePath);
@@ -2732,7 +2852,7 @@
         }
 
         if (currentTab === 'notes') {
-          codeViewPane.innerHTML = `<div class="card-inner-pad">${text}</div>`;
+          codeViewPane.innerHTML = `<div class="card-inner-pad notes-content">${text}</div>`;
         } else {
           // If fetching .py/.cpp/.java but server returned an HTML error page
           if (/^\s*<!doctype html/i.test(text) || /^\s*<html/i.test(text)) {
@@ -2835,7 +2955,7 @@
       const activeOption = document.querySelector('.lang-option-item.active');
       const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
       const codeText = codeElement.textContent;
-      const baseName = selectedDsaName || 'algorithm';
+      const baseName = (selectedDsaName || 'algorithm').replace(/\s+/g, '-').replace(/\+/g, 'Plus');
 
       const blob = new Blob([codeText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -3139,16 +3259,18 @@
           }
         }
 
+        const effectiveHasMatchingAlgo = isAlgosHidden ? false : hasMatchingDirectAlgo;
+
         // Determine if this DS node should be displayed
-        if (isSearching && !selfMatchesSearch && !hasMatchingDirectAlgo && !hasVisibleChildDs && !ancestorMatchedSearch) {
+        if (isSearching && !selfMatchesSearch && !effectiveHasMatchingAlgo && !hasVisibleChildDs && !ancestorMatchedSearch) {
           return null;
         }
 
-        const hasAnyChildren = hasVisibleChildDs || visibleAlgos.length > 0;
+        const hasAnyChildren = hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0);
 
         // Requirement 2: Automatically expand folders that contain the keyword when searching
         let isExpanded = expandedMainFolders.has(dsName);
-        if (isSearching && (hasMatchingDirectAlgo || hasVisibleChildDs || selfMatchesSearch)) {
+        if (isSearching && (effectiveHasMatchingAlgo || hasVisibleChildDs || selfMatchesSearch)) {
           isExpanded = true;
         } else if (activeDsFilterSet.size > 0 && !activeDsFilterSet.has(dsName) && hasVisibleChildDs) {
           isExpanded = true;
@@ -3174,80 +3296,83 @@
         childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
 
         // 1. Append direct algorithms FIRST
-        for (const algo of visibleAlgos) {
-          const algoWrapper = document.createElement('div');
-          algoWrapper.className = 'algo-item-wrapper';
+        // 1. Append direct algorithms FIRST
+        if (!isAlgosHidden) {
+          for (const algo of visibleAlgos) {
+            const algoWrapper = document.createElement('div');
+            algoWrapper.className = 'algo-item-wrapper';
 
-          const algoRow = document.createElement('div');
-          algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
-          algoRow.setAttribute('data-dsa-name', algo.name);
+            const algoRow = document.createElement('div');
+            algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
+            algoRow.setAttribute('data-dsa-name', algo.name);
 
-          // Create the bullet dot instead of an empty chevron space
-          const dot = document.createElement('span');
-          dot.className = 'algo-dot';
+            // Create the bullet dot instead of an empty chevron space
+            const dot = document.createElement('span');
+            dot.className = 'algo-dot';
 
-          const algoLabel = document.createElement('span');
-          algoLabel.className = 'tree-label algo-label';
-          algoLabel.textContent = algo.name;
+            const algoLabel = document.createElement('span');
+            algoLabel.className = 'tree-label algo-label';
+            algoLabel.textContent = algo.name;
 
-          algoRow.appendChild(dot);
-          algoRow.appendChild(algoLabel);
+            algoRow.appendChild(dot);
+            algoRow.appendChild(algoLabel);
 
-          algoRow.addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectDsaItem(algo.name);
-          });
+            algoRow.addEventListener('click', (e) => {
+              e.stopPropagation();
+              selectDsaItem(algo.name);
+            });
 
-          algoWrapper.appendChild(algoRow);
+            algoWrapper.appendChild(algoRow);
 
-          // Render constraints and tags
-          const constraintEntries = Object.entries(algo.constraints || {});
-          const tagList = algo.tags || [];
+            // Render constraints and tags
+            const constraintEntries = Object.entries(algo.constraints || {});
+            const tagList = algo.tags || [];
 
-          if (constraintEntries.length > 0 || tagList.length > 0) {
-            const metaContainer = document.createElement('div');
-            metaContainer.className = 'algo-meta-container';
+            if (constraintEntries.length > 0 || tagList.length > 0) {
+              const metaContainer = document.createElement('div');
+              metaContainer.className = 'algo-meta-container';
 
-            for (const [cKey, cVal] of constraintEntries) {
-              const cBadge = document.createElement('span');
-              cBadge.className = 'algo-meta-badge constraint-badge';
-              if (constraintsJson[cKey]) cBadge.setAttribute('title', constraintsJson[cKey]);
+              for (const [cKey, cVal] of constraintEntries) {
+                const cBadge = document.createElement('span');
+                cBadge.className = 'algo-meta-badge constraint-badge';
+                if (constraintsJson[cKey]) cBadge.setAttribute('title', constraintsJson[cKey]);
 
-              const cImg = document.createElement('img');
-              cImg.src = 'images/constraint.png';
-              cImg.alt = 'constraint';
-              cImg.className = 'algo-meta-icon';
-              if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
+                const cImg = document.createElement('img');
+                cImg.src = 'images/constraint.png';
+                cImg.alt = 'constraint';
+                cImg.className = 'algo-meta-icon';
+                if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
 
-              const cText = document.createElement('span');
-              cText.textContent = `${cKey}:${cVal}`;
+                const cText = document.createElement('span');
+                cText.textContent = `${cKey}:${cVal}`;
 
-              cBadge.appendChild(cImg);
-              cBadge.appendChild(cText);
-              metaContainer.appendChild(cBadge);
+                cBadge.appendChild(cImg);
+                cBadge.appendChild(cText);
+                metaContainer.appendChild(cBadge);
+              }
+
+              for (const tagName of tagList) {
+                const tBadge = document.createElement('span');
+                tBadge.className = 'algo-meta-badge tag-badge';
+
+                const tImg = document.createElement('img');
+                tImg.src = 'images/tag.png';
+                tImg.alt = 'tag';
+                tImg.className = 'algo-meta-icon';
+
+                const tText = document.createElement('span');
+                tText.textContent = tagName;
+
+                tBadge.appendChild(tImg);
+                tBadge.appendChild(tText);
+                metaContainer.appendChild(tBadge);
+              }
+
+              algoWrapper.appendChild(metaContainer);
             }
 
-            for (const tagName of tagList) {
-              const tBadge = document.createElement('span');
-              tBadge.className = 'algo-meta-badge tag-badge';
-
-              const tImg = document.createElement('img');
-              tImg.src = 'images/tag.png';
-              tImg.alt = 'tag';
-              tImg.className = 'algo-meta-icon';
-
-              const tText = document.createElement('span');
-              tText.textContent = tagName;
-
-              tBadge.appendChild(tImg);
-              tBadge.appendChild(tText);
-              metaContainer.appendChild(tBadge);
-            }
-
-            algoWrapper.appendChild(metaContainer);
+            childrenContainer.appendChild(algoWrapper);
           }
-
-          childrenContainer.appendChild(algoWrapper);
         }
 
         // 2. Append nested child data structures NEXT (after the loop)
@@ -3374,6 +3499,16 @@
     }
 
     const algoSearchClearBtn = document.getElementById('algo-search-clear-btn');
+    const algoHideBtn = document.getElementById('algo-hide-btn');
+    let isAlgosHidden = false;
+
+    algoHideBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isAlgosHidden = !isAlgosHidden;
+      algoHideBtn.classList.toggle('has-active-filter', isAlgosHidden);
+      algoHideBtn.setAttribute('aria-pressed', String(isAlgosHidden));
+      renderMainAlgoTree();
+    });
 
     algoSearchInput.addEventListener('input', () => {
       algoSearchClearBtn.style.display = algoSearchInput.value.length > 0 ? 'flex' : 'none';
@@ -3682,11 +3817,11 @@
       getContainer: () => algoColumn,
       getTargetPane: () => algoCard,
       getDirection: () => 'vertical',
-      getMinUnits: () => phoneMedia.matches 
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6) 
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
-      getMaxReservedUnits: () => phoneMedia.matches 
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6) 
+      getMaxReservedUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 

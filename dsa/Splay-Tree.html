@@ -1,0 +1,17 @@
+<h1>Splay Tree</h1>
+
+<p>A Splay Tree is a type of Binary Search Tree (BST) that rearranges itself whenever a node is accessed, bringing that node to the root through a process called splaying.</p>
+
+<p>Its central idea is that recently accessed values are often likely to be accessed again. Instead of keeping every value in a fixed position, the tree adapts to the access pattern by moving frequently used values closer to the top.</p>
+
+<p>Imagine a desk drawer where you keep your everyday essentials. Whenever you use an item, you place it near the front so it is easier to reach next time. Over time, the items you use most often become the easiest to access.</p>
+
+<p>Unlike AVL and Red-Black Trees, a Splay Tree does not maintain a strict balance condition. Its shape changes according to which values are accessed, so an individual operation can sometimes be expensive even though its performance over a sequence of operations has useful guarantees.</p><br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Splay Trees can be useful in caches, frequently accessed dictionaries, and systems where access patterns tend to repeat.</p><br>
+
+<h2>Summary</h2>
+
+<p>A Splay Tree adapts to usage by bringing recently accessed values to the top, making frequently revisited data more convenient to reach.</p>

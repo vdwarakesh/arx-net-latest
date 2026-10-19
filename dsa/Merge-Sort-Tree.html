@@ -1,0 +1,21 @@
+<h1>Merge Sort Tree</h1>
+
+<p>A <b>Merge Sort Tree</b> is a type of Segment Tree in which each node stores the sorted values belonging to its corresponding array segment.</p>
+
+<p>Instead of storing a single summary such as a sum or minimum, each node maintains an ordered collection of the values in its range. This allows the structure to answer more detailed questions about the distribution of values within a segment.</p>
+
+<p>Imagine a school that maintains sorted lists of students' marks for different groups of classrooms. If someone asks how many students in classrooms 5 through 12 scored below a certain mark, the system can use the sorted group lists to answer the question without examining every student's mark individually.</p>
+
+<p>Despite its name, a Merge Sort Tree is primarily a query data structure, not a sorting algorithm. Its nodes store sorted collections that support queries involving values inside a specified range of the original array.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Merge Sort Trees are useful for range-based counting, finding how many values fall below or above a threshold, competitive programming, and static datasets where queries concern both positions and value ranges.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Merge Sort Tree stores sorted collections for different array segments, making it useful when you need to ask not just about a range of positions, but also about the values contained within that range.</p>

@@ -1,0 +1,21 @@
+<h1>Top Tree</h1>
+
+<p>A <b>Top Tree</b> is a specialized data structure for maintaining information about a dynamic tree while supporting changes to its connections and queries about paths or entire subtrees.</p>
+
+<p>It organizes a tree into connected clusters, where each cluster represents a portion of the original tree. These clusters store summaries of the information relevant to the application. When the tree changes, the clusters can be reorganized so that the summaries remain useful.</p>
+
+<p>For example, a system managing a network of connected pipes might need to calculate the total length of a route between two junctions. If pipes are added or removed, the system needs to update its representation while continuing to answer questions about different routes.</p>
+
+<p>A Top Tree is particularly powerful because its clusters can maintain more general information about paths and tree components than simply recording which vertices are connected.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Top Trees are used in dynamic tree problems involving path aggregates, subtree information, network maintenance, and advanced graph algorithms.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Top Tree breaks a changing tree into manageable clusters and maintains useful summaries of those clusters, making complex path and component queries easier to support.</p>

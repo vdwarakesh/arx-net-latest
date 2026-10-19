@@ -1,0 +1,21 @@
+<h1>Patricia Trie</h1>
+
+<p>A <b>Patricia Trie</b> is a type of compressed Trie that reduces redundant paths by focusing on the positions where stored keys differ. The name stands for <b>“Practical Algorithm To Retrieve Information Coded In Alphanumeric.”</b></p>
+
+<p>Rather than representing every character or bit as a separate node, a Patricia Trie skips over stretches that do not distinguish one key from another. Its internal nodes concentrate on the differences that matter for separating stored keys.</p>
+
+<p>For example, imagine storing several network addresses that share many leading bits. A Patricia Trie can skip the common portions and focus on the bit positions where those addresses diverge. This helps organize the keys compactly.</p>
+
+<p>Think of identifying people using their ID numbers. If everyone shares the same first few digits, repeatedly checking those identical digits provides little information. It is more useful to focus on the positions where the IDs actually differ.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Patricia Tries are used in IP routing, network address lookup, symbol tables, and compact indexes for strings or binary keys.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Patricia Trie compresses redundant paths and focuses on the key positions that distinguish stored values, making it useful for compact and efficient lookup systems.</p>

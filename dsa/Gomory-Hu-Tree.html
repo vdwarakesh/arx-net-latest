@@ -1,0 +1,21 @@
+<h1>Gomory-Hu Tree</h1>
+
+<p>A <b>Gomory-Hu Tree</b> is a specialized weighted tree that represents the minimum-cut relationships between every pair of vertices in an undirected, capacitated graph.</p>
+
+<p>A minimum cut is the smallest total capacity of edges whose removal separates one vertex from another. Finding this value independently for every possible pair can be expensive. A Gomory-Hu Tree compresses these pairwise minimum-cut values into a single weighted tree.</p>
+
+<p>The important property is that the minimum-cut value between any two original vertices can be obtained from the minimum edge weight along the tree path connecting their corresponding vertices.</p>
+
+<p>Imagine a country with many cities connected by roads, where every road has a capacity representing how much traffic it can carry. You want to know the weakest connection separating any two cities. A Gomory-Hu Tree summarizes these separation strengths in one structure rather than requiring a separate representation for every city pair.</p>
+
+<br>
+
+<h2>Where Is It Useful?</h2>
+
+<p>Gomory-Hu Trees are useful in network reliability analysis, communication networks, transportation planning, and graph problems involving repeated minimum-cut queries.</p>
+
+<br>
+
+<h2>Summary</h2>
+
+<p>A Gomory-Hu Tree compresses pairwise minimum-cut information for an undirected network into a weighted tree, making it easier to compare the strength of connections between different pairs of vertices.</p>
