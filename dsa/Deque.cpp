@@ -1,5 +1,4 @@
-// Deque (Double-Ended Queue) is a special type of Queue supporting O(1) insertions
-// and removals at both the front and back ends.
+// Deque (Double-Ended Queue) is a special type of Queue supporting O(1) insertions and removals at both the front and back ends.
 class Deque : public Queue {
 public:
     void pushFront(int value) {

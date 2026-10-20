@@ -1,8 +1,7 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-// LRUCache is a special type of CacheStructures that evicts the least recently
-// accessed item when full, using a Hash Map + Doubly Linked List hybrid.
+// LRUCache is a special type of CacheStructures that evicts the least recently accessed item when full, using a Hash Map + Doubly Linked List hybrid.
 public class LRUCache extends CacheStructures {
     protected LinkedHashMap<Integer, Integer> map;
 

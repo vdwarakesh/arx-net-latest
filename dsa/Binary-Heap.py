@@ -1,5 +1,4 @@
-# Binary Heap is a special type of Heap structured as a Complete Binary Tree,
-# allowing it to be stored flat inside an array without explicit node pointers.
+# Binary Heap is a special type of Heap structured as a Complete Binary Tree, allowing it to be stored flat inside an array without explicit node pointers.
 class BinaryHeap(Heap):
     def __init__(self):
         super().__init__()

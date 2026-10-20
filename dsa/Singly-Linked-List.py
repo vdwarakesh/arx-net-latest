@@ -1,5 +1,4 @@
-# Singly Linked List is a special type of Linked List where each node has only
-# one pointer ('next') pointing strictly forward to the succeeding node.
+# Singly Linked List is a special type of Linked List where each node has only one pointer ('next') pointing strictly forward to the succeeding node.
 class SinglyLinkedList(LinkedList):
     def __init__(self):
         super().__init__()

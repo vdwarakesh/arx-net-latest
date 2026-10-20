@@ -1,5 +1,4 @@
-// Base class for Hash-Based Structures, which map data directly to bucket indices
-// using a mathematical hash function for O(1) average-case access.
+// Base class for Hash-Based Structures, which map data directly to bucket indices using a mathematical hash function for O(1) average-case access.
 public class HashBasedStructures {
     protected int numBuckets;
 

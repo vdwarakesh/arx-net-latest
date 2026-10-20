@@ -1,5 +1,4 @@
-// XORTrie is a special type of Trie that stores integers bit by bit (0 or 1)
-// from most significant bit to least significant bit for fast bitwise XOR queries.
+// XORTrie is a special type of Trie that stores integers bit by bit (0 or 1) from most significant bit to least significant bit for fast bitwise XOR queries.
 public class XORTrie extends Trie {
     public static class XORNode extends TrieNode {
         // Homogeneous array of 2 child nodes: child[0] for bit 0, child[1] for bit 1

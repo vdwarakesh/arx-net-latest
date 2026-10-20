@@ -1,4 +1,4 @@
-#include <vector>
+# include <vector>
 
 // DominatorTree is a special type of Tree in which the parent of every node v is its
 // Immediate Dominator (idom[v]), capturing mandatory control-flow/network bottlenecks.

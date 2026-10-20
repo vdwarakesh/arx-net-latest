@@ -1,4 +1,4 @@
-#include <vector>
+# include <vector>
 
 // Base class representing a general hierarchical Tree data structure.
 class Tree {

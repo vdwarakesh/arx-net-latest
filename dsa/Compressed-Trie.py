@@ -1,5 +1,4 @@
-# Compressed Trie is a special type of Trie that collapses chains of single-child nodes
-# into a single edge labeled with a multi-character substring.
+# Compressed Trie is a special type of Trie that collapses chains of single-child nodes into a single edge labeled with a multi-character substring.
 class CompressedTrieNode(TrieNode):
     def __init__(self, edge_label=""):
         super().__init__()

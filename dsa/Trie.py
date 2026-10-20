@@ -1,5 +1,4 @@
-# Trie (Prefix Tree) is a special type of Tree that stores strings character by character
-# along its edges so strings with a common prefix share the exact same path from the root.
+# Trie (Prefix Tree) is a special type of Tree that stores strings character by character along its edges so strings with a common prefix share the exact same path from the root.
 class TrieNode(TreeNode):
     def __init__(self):
         super().__init__(None)

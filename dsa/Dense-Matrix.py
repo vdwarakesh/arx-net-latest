@@ -1,5 +1,4 @@
-# Dense Matrix is a special type of Matrix where nearly all cells contain active
-# values, explicitly allocating storage for every M x N cell contiguously.
+# Dense Matrix is a special type of Matrix where nearly all cells contain active values, explicitly allocating storage for every M x N cell contiguously.
 class DenseMatrix(Matrix):
     def __init__(self, data_2d):
         rows = len(data_2d)

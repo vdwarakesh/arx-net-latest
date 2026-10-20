@@ -1,5 +1,4 @@
-// AVLTree is a special type of BinarySearchTree that automatically balances itself
-// using rotations so no node's left and right subtree heights differ by more than 1.
+// AVLTree is a special type of BinarySearchTree that automatically balances itself using rotations so no node's left and right subtree heights differ by more than 1.
 public class AVLTree extends BinarySearchTree {
     public static class AVLNode extends BinaryNode {
         public int height; // Height of this node's subtree

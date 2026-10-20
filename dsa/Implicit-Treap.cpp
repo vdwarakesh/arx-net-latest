@@ -1,5 +1,4 @@
-// ImplicitTreap is a special type of Treap that tracks subtree sizes to use a node's
-// in-order index as an implicit key, acting like a cut-and-paste dynamic array.
+// ImplicitTreap is a special type of Treap that tracks subtree sizes to use a node's in-order index as an implicit key, acting like a cut-and-paste dynamic array.
 class ImplicitTreap : public Treap {
 public:
     struct ImplicitNode : public TreapNode {

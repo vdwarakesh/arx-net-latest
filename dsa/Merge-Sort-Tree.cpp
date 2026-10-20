@@ -1,8 +1,6 @@
-#include <vector>
-#include <algorithm>
+# include <vector> include <algorithm>
 
-// MergeSortTree is a special type of SegmentTree where each node stores a sorted
-// std::vector of all elements in its segment to answer range threshold queries.
+// MergeSortTree is a special type of SegmentTree where each node stores a sorted std::vector of all elements in its segment to answer range threshold queries.
 class MergeSortTree : public SegmentTree {
 protected:
     std::vector<std::vector<int>> sortedTree;

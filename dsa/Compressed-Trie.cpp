@@ -1,7 +1,6 @@
-#include <string>
+# include <string>
 
-// CompressedTrie is a special type of Trie that contracts one-child node chains
-// into single edges labeled with multi-character substrings.
+// CompressedTrie is a special type of Trie that contracts one-child node chains into single edges labeled with multi-character substrings.
 class CompressedTrie : public Trie {
 public:
     struct CompressedNode : public TrieNode {

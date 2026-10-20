@@ -1,5 +1,4 @@
-// XORTrie is a special type of Trie that branches on binary bits (0 and 1)
-// from MSB to LSB to solve bitwise XOR optimization problems in O(log(MAX_VAL)) time.
+// XORTrie is a special type of Trie that branches on binary bits (0 and 1) from MSB to LSB to solve bitwise XOR optimization problems in O(log(MAX_VAL)) time.
 class XORTrie : public Trie {
 public:
     struct XORNode : public TrieNode {

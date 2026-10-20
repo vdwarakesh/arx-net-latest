@@ -1,7 +1,6 @@
 from collections import deque
 
-# FIFO Cache (First-In, First-Out) evicts items strictly in chronological order
-# of their arrival time, providing lock-free read performance.
+# FIFO Cache (First-In, First-Out) evicts items strictly in chronological order of their arrival time, providing lock-free read performance.
 class FIFOCache(CacheStructure):
     def __init__(self, capacity):
         super().__init__(capacity)

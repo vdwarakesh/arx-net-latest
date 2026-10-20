@@ -1,5 +1,4 @@
-# Implicit Treap is a special type of Treap that uses each node's dynamic array
-# position (computed on the fly from subtree sizes) as its implicit BST key.
+# Implicit Treap is a special type of Treap that uses each node's dynamic array position (computed on the fly from subtree sizes) as its implicit BST key.
 class ImplicitTreapNode(TreapNode):
     def __init__(self, value):
         super().__init__(value)

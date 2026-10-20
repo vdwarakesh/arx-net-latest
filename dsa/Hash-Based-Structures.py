@@ -1,5 +1,4 @@
-# Hash-Based Structures organize and locate data in O(1) average time by converting
-# keys into array bucket indices using a deterministic hash function.
+# Hash-Based Structures organize and locate data in O(1) average time by converting keys into array bucket indices using a deterministic hash function.
 class HashBasedStructure:
     def __init__(self, num_buckets=16):
         self.num_buckets = num_buckets

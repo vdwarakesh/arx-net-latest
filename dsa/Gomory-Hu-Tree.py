@@ -1,5 +1,4 @@
-# Gomory-Hu Tree (Cut Tree) is a special type of weighted Tree built over V vertices
-# of an undirected graph that encodes the Minimum s-t Cut (Max Flow) between all
+# Gomory-Hu Tree (Cut Tree) is a special type of weighted Tree built over V vertices of an undirected graph that encodes the Minimum s-t Cut (Max Flow) between all
 # V*(V-1)/2 vertex pairs using only V - 1 weighted tree edges.
 class GomoryHuTree(Tree):
     def __init__(self, num_vertices):

@@ -1,5 +1,4 @@
-# Li Chao Tree is a special type of Segment Tree that stores linear functions (y = m*x + b)
-# in each node to find the minimum or maximum y-value at any x-coordinate in O(log X) time.
+# Li Chao Tree is a special type of Segment Tree that stores linear functions (y = m*x + b) in each node to find the minimum or maximum y-value at any x-coordinate in O(log X) time.
 class Line:
     def __init__(self, m=0, b=float('inf')):
         self.m = m  # Slope

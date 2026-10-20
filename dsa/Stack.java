@@ -1,5 +1,4 @@
-// A Stack is a Last-In, First-Out (LIFO) linear data structure where elements
-// are pushed and popped strictly from the top.
+// A Stack is a Last-In, First-Out (LIFO) linear data structure where elements are pushed and popped strictly from the top.
 public class Stack {
     // Homogeneous array storing stack elements (can also hold Objects or any data type)
     private int[] elements;

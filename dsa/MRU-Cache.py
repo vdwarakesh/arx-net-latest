@@ -1,5 +1,4 @@
-# MRU Cache (Most Recently Used) evicts the item that was accessed most recently,
-# preventing cache thrashing during sequential scans over datasets larger than RAM.
+# MRU Cache (Most Recently Used) evicts the item that was accessed most recently, preventing cache thrashing during sequential scans over datasets larger than RAM.
 class MRUCache(CacheStructure):
     def __init__(self, capacity):
         super().__init__(capacity)

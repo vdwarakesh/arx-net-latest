@@ -1,6 +1,4 @@
-# B+ Tree is a special type of B-Tree where internal nodes store only routing keys,
-# all actual data records live exclusively in the leaf nodes, and leaves are linked
-# sequentially side by side for fast range scans.
+# B+ Tree is a special type of B-Tree where internal nodes store only routing keys, all actual data records live exclusively in the leaf nodes, and leaves are linked sequentially side by side for fast range scans.
 class BPlusTreeNode(BTreeNode):
     def __init__(self, is_leaf=True):
         super().__init__(is_leaf)

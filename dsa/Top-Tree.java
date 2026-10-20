@@ -1,5 +1,4 @@
-// TopTree is a special type of hierarchical dynamic Tree that recursively contracts
-// tree clusters via Compress (path) and Rake (subtree) merges for O(log n) path + subtree queries.
+// TopTree is a special type of hierarchical dynamic Tree that recursively contracts tree clusters via Compress (path) and Rake (subtree) merges for O(log n) path + subtree queries.
 public class TopTree extends Tree {
     public enum ClusterType { BASE_EDGE, COMPRESS, RAKE }
 

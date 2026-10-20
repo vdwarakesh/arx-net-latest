@@ -1,6 +1,5 @@
 # Euler Tour Tree is a special type of dynamic Tree that flattens a tree's Euler tour
-# (perimeter depth-first walk) into a balanced sequence BST (like a Treap or Splay Tree),
-# turning whole-subtree queries, links, and cuts into sequence splits and merges.
+# (perimeter depth-first walk) into a balanced sequence BST (like a Treap or Splay Tree), turning whole-subtree queries, links, and cuts into sequence splits and merges.
 class EulerTourTree(Tree):
     def __init__(self):
         super().__init__()

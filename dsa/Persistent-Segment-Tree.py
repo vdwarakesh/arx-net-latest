@@ -1,5 +1,4 @@
-# Persistent Segment Tree is a special type of Segment Tree that preserves every historical
-# version of the tree after updates by path-copying only the O(log n) modified nodes.
+# Persistent Segment Tree is a special type of Segment Tree that preserves every historical version of the tree after updates by path-copying only the O(log n) modified nodes.
 class PersistentSegNode(BinaryTreeNode):
     def __init__(self, val=0, left=None, right=None):
         super().__init__(val)

@@ -1,5 +1,4 @@
-// CircularSinglyLinkedList is a special type of CircularLinkedList with one-way
-// forward links where the tail node's 'next' pointer wraps around to the head.
+// CircularSinglyLinkedList is a special type of CircularLinkedList with one-way forward links where the tail node's 'next' pointer wraps around to the head.
 public class CircularSinglyLinkedList extends CircularLinkedList {
     public CircularSinglyLinkedList() {
         super();

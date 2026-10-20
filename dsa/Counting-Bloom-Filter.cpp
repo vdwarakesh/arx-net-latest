@@ -1,8 +1,6 @@
-#include <vector>
-#include <string>
+# include <vector> include <string>
 
-// CountingBloomFilter is a special type of BloomFilter storing multi-bit tally
-// counters to allow item deletions.
+// CountingBloomFilter is a special type of BloomFilter storing multi-bit tally counters to allow item deletions.
 class CountingBloomFilter : public BloomFilter {
 private:
     std::vector<int> counters;

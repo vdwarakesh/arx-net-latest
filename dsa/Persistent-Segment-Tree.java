@@ -1,8 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-// PersistentSegmentTree is a special type of SegmentTree that retains all historical
-// versions after point updates by creating new nodes only along the O(log n) modified path.
+// PersistentSegmentTree is a special type of SegmentTree that retains all historical versions after point updates by creating new nodes only along the O(log n) modified path.
 public class PersistentSegmentTree extends SegmentTree {
     public static class PersistentNode extends BinaryNode {
         public PersistentNode(int sum, BinaryNode left, BinaryNode right) {

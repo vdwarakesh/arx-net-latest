@@ -1,8 +1,6 @@
-#include <unordered_map>
-#include <string>
+# include <unordered_map> include <string>
 
-// SuffixTree is a special type of Tree that represents all suffixes of a text in O(n)
-// space using compressed (start, end) index edges and suffix links.
+// SuffixTree is a special type of Tree that represents all suffixes of a text in O(n) space using compressed (start, end) index edges and suffix links.
 class SuffixTree : public Tree {
 public:
     struct SuffixNode : public TreeNode {

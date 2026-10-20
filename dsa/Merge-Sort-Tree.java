@@ -1,5 +1,4 @@
-// MergeSortTree is a special type of SegmentTree where every node stores a fully
-// sorted array of all elements in its interval [L, R].
+// MergeSortTree is a special type of SegmentTree where every node stores a fully sorted array of all elements in its interval [L, R].
 public class MergeSortTree extends SegmentTree {
     // 2D array: sortedTree[node] holds a sorted int[] of elements in that segment.
     // Note: Can also use List<Integer>[] or arrays of other Comparable types.

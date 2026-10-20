@@ -1,5 +1,4 @@
-# Hash Set is a special type of Hash Table that stores unique elements only,
-# without associated values, for O(1) average-time membership testing.
+# Hash Set is a special type of Hash Table that stores unique elements only, without associated values, for O(1) average-time membership testing.
 # Note: Python's built-in set is a Hash Set:
 sample_set = {10, 20, 30}
 

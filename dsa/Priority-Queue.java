@@ -1,5 +1,4 @@
-// PriorityQueue is a special type of Queue where elements are dequeued according
-// to their priority score rather than First-In, First-Out arrival time.
+// PriorityQueue is a special type of Queue where elements are dequeued according to their priority score rather than First-In, First-Out arrival time.
 public class PriorityQueue extends Queue {
     public PriorityQueue(int capacity) {
         super(capacity);

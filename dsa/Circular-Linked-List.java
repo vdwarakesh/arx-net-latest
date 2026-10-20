@@ -1,5 +1,4 @@
-// CircularLinkedList is a special type of LinkedList where the last node links
-// back to the first node instead of null, forming a continuous loop.
+// CircularLinkedList is a special type of LinkedList where the last node links back to the first node instead of null, forming a continuous loop.
 public class CircularLinkedList extends LinkedList {
     public CircularLinkedList() {
         super();

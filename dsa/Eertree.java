@@ -1,8 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-// Eertree (Palindromic Tree) is a special type of dual-rooted Tree structure where
-// every node represents a distinct palindromic substring of a text in O(n) space.
+// Eertree (Palindromic Tree) is a special type of dual-rooted Tree structure where every node represents a distinct palindromic substring of a text in O(n) space.
 public class Eertree extends Tree {
     public static class PalindromeNode extends TreeNode {
         public int length;                              // Length of the palindrome

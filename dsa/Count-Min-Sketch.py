@@ -1,5 +1,4 @@
-# Count-Min Sketch is a special type of Probabilistic Structure that estimates item
-# frequencies in massive data streams using a 2D grid of counters and multiple hash functions.
+# Count-Min Sketch is a special type of Probabilistic Structure that estimates item frequencies in massive data streams using a 2D grid of counters and multiple hash functions.
 class CountMinSketch(ProbabilisticStructure):
     def __init__(self, width, depth):
         super().__init__()

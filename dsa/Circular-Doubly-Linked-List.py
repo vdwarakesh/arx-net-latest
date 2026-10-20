@@ -1,5 +1,4 @@
-# Circular Doubly Linked List is a special type of Circular Linked List where
-# every node has both 'next' and 'prev' pointers, and both ends wrap around
+# Circular Doubly Linked List is a special type of Circular Linked List where every node has both 'next' and 'prev' pointers, and both ends wrap around
 # (tail.next == head and head.prev == tail).
 class CircularDoublyLinkedList(CircularLinkedList):
     def __init__(self):

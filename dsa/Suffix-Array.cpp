@@ -1,10 +1,6 @@
-#include <vector>
-#include <string>
-#include <numeric>
-#include <algorithm>
+# include <vector> include <string> include <numeric> include <algorithm>
 
-// SuffixArray is a special type of String structure that stores sorted suffix indices
-// inside a contiguous integer array.
+// SuffixArray is a special type of String structure that stores sorted suffix indices inside a contiguous integer array.
 class SuffixArray {
 protected:
     std::vector<int> sa; // Sorted suffix starting positions

@@ -1,5 +1,4 @@
-# Max-Heap is a special type of Binary Heap where every parent node is greater than
-# or equal to its children, keeping the maximum element at the root (index 0).
+# Max-Heap is a special type of Binary Heap where every parent node is greater than or equal to its children, keeping the maximum element at the root (index 0).
 class MaxHeap(BinaryHeap):
     def __init__(self):
         super().__init__()

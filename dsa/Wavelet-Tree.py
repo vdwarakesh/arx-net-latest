@@ -1,6 +1,4 @@
-# Wavelet Tree is a special type of Binary Tree that recursively partitions an array
-# by value range (alphabet) rather than position, storing a compact 0/1 bitvector
-# at each node to track whether elements went left (<= mid) or right (> mid).
+# Wavelet Tree is a special type of Binary Tree that recursively partitions an array by value range (alphabet) rather than position, storing a compact 0/1 bitvector at each node to track whether elements went left (<= mid) or right (> mid).
 class WaveletTreeNode(BinaryTreeNode):
     def __init__(self, low_val, high_val):
         super().__init__(None)

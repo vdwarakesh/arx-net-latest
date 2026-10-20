@@ -1,5 +1,4 @@
-# Splay Tree is a special type of Binary Search Tree that automatically moves
-# any recently accessed or inserted node all the way to the root via splay rotations.
+# Splay Tree is a special type of Binary Search Tree that automatically moves any recently accessed or inserted node all the way to the root via splay rotations.
 class SplayTree(BinarySearchTree):
     def __init__(self):
         super().__init__()

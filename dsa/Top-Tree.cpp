@@ -1,5 +1,4 @@
-// TopTree is a special type of dynamic Tree that contracts tree clusters with at most
-// two boundary vertices using Compress and Rake operations.
+// TopTree is a special type of dynamic Tree that contracts tree clusters with at most two boundary vertices using Compress and Rake operations.
 class TopTree : public Tree {
 public:
     enum ClusterType { BASE_EDGE, COMPRESS, RAKE };

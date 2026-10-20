@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// BinaryHeap is a special type of Heap that uses a Complete Binary Tree layout
-// stored inside a contiguous array (std::vector).
+// BinaryHeap is a special type of Heap that uses a Complete Binary Tree layout stored inside a contiguous array (std::vector).
 class BinaryHeap : public Heap {
 protected:
     // Homogeneous contiguous array; can be templated for any data type

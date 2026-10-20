@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
-# LRU Cache (Least Recently Used) evicts the item that has gone the longest time
-# without being accessed when capacity is exceeded.
+# LRU Cache (Least Recently Used) evicts the item that has gone the longest time without being accessed when capacity is exceeded.
 class LRUCache(CacheStructure):
     def __init__(self, capacity):
         super().__init__(capacity)

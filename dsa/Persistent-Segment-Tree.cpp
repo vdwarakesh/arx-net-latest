@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// PersistentSegmentTree is a special type of SegmentTree that preserves all past
-// versions using path copying (O(log n) new nodes per update) and structural sharing.
+// PersistentSegmentTree is a special type of SegmentTree that preserves all past versions using path copying (O(log n) new nodes per update) and structural sharing.
 class PersistentSegmentTree : public SegmentTree {
 public:
     struct PersistentNode : public BinaryNode {

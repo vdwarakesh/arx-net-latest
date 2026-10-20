@@ -1,5 +1,4 @@
-# Dynamic Array is a special type of Array that automatically resizes itself
-# when it runs out of capacity.
+# Dynamic Array is a special type of Array that automatically resizes itself when it runs out of capacity.
 # Python's built-in list is implemented as a Dynamic Array under the hood in C.
 dynamic_arr = [10, 20, 30]
 dynamic_arr.append(40)  # Automatically expands capacity when full

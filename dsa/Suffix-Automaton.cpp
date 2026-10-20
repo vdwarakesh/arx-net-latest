@@ -1,9 +1,6 @@
-#include <vector>
-#include <unordered_map>
-#include <string>
+# include <vector> include <unordered_map> include <string>
 
-// SuffixAutomaton is a special type of String state machine (DAWG) that encodes
-// all substrings of a text inside at most 2n - 1 states.
+// SuffixAutomaton is a special type of String state machine (DAWG) that encodes all substrings of a text inside at most 2n - 1 states.
 class SuffixAutomaton {
 public:
     struct State {

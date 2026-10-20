@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// BTree is a special type of self-balancing multi-way search Tree designed for
-// block storage, where each node holds up to 2t - 1 sorted keys and 2t children.
+// BTree is a special type of self-balancing multi-way search Tree designed for block storage, where each node holds up to 2t - 1 sorted keys and 2t children.
 class BTree : public Tree {
 public:
     struct BNode : public TreeNode {

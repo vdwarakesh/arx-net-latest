@@ -1,6 +1,4 @@
-# Top Tree is a special type of dynamic Tree that generalizes Link-Cut and Euler Tour Trees
-# by recursively merging connected subtrees ("clusters" with at most 2 boundary vertices)
-# via 'Compress' (joining paths) and 'Rake' (folding side branches) operations.
+# Top Tree is a special type of dynamic Tree that generalizes Link-Cut and Euler Tour Trees by recursively merging connected subtrees ("clusters" with at most 2 boundary vertices) via 'Compress' (joining paths) and 'Rake' (folding side branches) operations.
 class ClusterNode(TreeNode):
     def __init__(self, cluster_type, boundary_a, boundary_b=None):
         super().__init__(cluster_type)

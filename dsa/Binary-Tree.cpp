@@ -1,5 +1,4 @@
-// BinaryTree is a special type of Tree where every node branches into at most
-// two children: 'left' and 'right'.
+// BinaryTree is a special type of Tree where every node branches into at most two children: 'left' and 'right'.
 class BinaryTree : public Tree {
 public:
     struct BinaryNode : public TreeNode {

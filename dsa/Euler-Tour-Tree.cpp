@@ -1,7 +1,6 @@
-#include <unordered_map>
+# include <unordered_map>
 
-// EulerTourTree is a special type of dynamic Tree that stores the Euler tour sequence
-// inside a balanced BST so every subtree corresponds to a contiguous tour segment.
+// EulerTourTree is a special type of dynamic Tree that stores the Euler tour sequence inside a balanced BST so every subtree corresponds to a contiguous tour segment.
 class EulerTourTree : public Tree {
 public:
     struct TourNode : public TreeNode {

@@ -1,9 +1,6 @@
-#include <vector>
-#include <cmath>
-#include <functional>
+# include <vector> include <cmath> include <functional>
 
-// BloomFilter is a special type of ProbabilisticStructures utilizing a bit array
-// and k hash functions to test set membership in compact space.
+// BloomFilter is a special type of ProbabilisticStructures utilizing a bit array and k hash functions to test set membership in compact space.
 class BloomFilter : public ProbabilisticStructures {
 private:
     std::vector<bool> bitArray;

@@ -1,5 +1,4 @@
-#include <vector>
-#include <limits>
+# include <vector> include <limits>
 
 // LiChaoTree is a special type of SegmentTree that maintains the dominant line segment
 // (y = mx + b) at each interval's midpoint for O(log X) function extremum queries.

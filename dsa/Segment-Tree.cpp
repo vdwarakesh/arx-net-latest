@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// SegmentTree is a special type of BinaryTree that stores interval aggregates
-// over an array for O(log n) range queries and updates.
+// SegmentTree is a special type of BinaryTree that stores interval aggregates over an array for O(log n) range queries and updates.
 class SegmentTree : public BinaryTree {
 protected:
     // Homogeneous vector storing segment aggregates (can be templated for any type)

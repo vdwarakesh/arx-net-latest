@@ -1,6 +1,4 @@
-# XOR Trie (Binary 0-1 Trie) is a special type of Trie that stores integers in their
-# binary form (bit by bit from Most Significant Bit to Least Significant Bit)
-# to rapidly answer maximum/minimum bitwise XOR queries.
+# XOR Trie (Binary 0-1 Trie) is a special type of Trie that stores integers in their binary form (bit by bit from Most Significant Bit to Least Significant Bit) to rapidly answer maximum/minimum bitwise XOR queries.
 class XORTrieNode(TrieNode):
     def __init__(self):
         super().__init__()

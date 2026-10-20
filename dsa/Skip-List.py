@@ -1,7 +1,6 @@
 import random
 
-# Skip List is a probabilistic multi-layered data structure built from stacked sorted
-# linked lists, achieving O(log n) search and update speeds without tree rotations.
+# Skip List is a probabilistic multi-layered data structure built from stacked sorted linked lists, achieving O(log n) search and update speeds without tree rotations.
 class SkipListNode:
     def __init__(self, val, level):
         self.val = val

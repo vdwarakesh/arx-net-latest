@@ -1,9 +1,6 @@
-#include <vector>
-#include <string>
-#include <algorithm>
+# include <vector> include <string> include <algorithm>
 
-// CountMinSketch is a special type of ProbabilisticStructures that estimates stream
-// item frequencies using d rows and w columns of hashed counters.
+// CountMinSketch is a special type of ProbabilisticStructures that estimates stream item frequencies using d rows and w columns of hashed counters.
 class CountMinSketch : public ProbabilisticStructures {
 private:
     std::vector<std::vector<int>> table;

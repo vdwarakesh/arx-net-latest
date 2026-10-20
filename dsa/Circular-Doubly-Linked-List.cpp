@@ -1,5 +1,4 @@
-// CircularDoublyLinkedList is a special type of CircularLinkedList that connects
-// tail->next to head and head->prev to tail for continuous bidirectional looping.
+// CircularDoublyLinkedList is a special type of CircularLinkedList that connects tail->next to head and head->prev to tail for continuous bidirectional looping.
 class CircularDoublyLinkedList : public CircularLinkedList {
 public:
     CircularDoublyLinkedList() : CircularLinkedList() {}

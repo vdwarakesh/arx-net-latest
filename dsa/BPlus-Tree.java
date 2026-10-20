@@ -1,5 +1,4 @@
-// BPlusTree is a special type of BTree that stores all data values in the bottom
-// leaf layer and links all leaf nodes into a sequential chain for fast range queries.
+// BPlusTree is a special type of BTree that stores all data values in the bottom leaf layer and links all leaf nodes into a sequential chain for fast range queries.
 public class BPlusTree extends BTree {
     public static class BPlusNode extends BNode {
         // Homogeneous array of data payloads stored at leaf nodes (can hold any Object/Record)

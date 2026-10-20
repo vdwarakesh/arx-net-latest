@@ -1,5 +1,4 @@
-// LiChaoTree is a special type of SegmentTree that stores linear functions (y = mx + b)
-// to dynamically answer convex-hull maximum/minimum queries at any x in O(log X) time.
+// LiChaoTree is a special type of SegmentTree that stores linear functions (y = mx + b) to dynamically answer convex-hull maximum/minimum queries at any x in O(log X) time.
 public class LiChaoTree extends SegmentTree {
     public static class Line {
         public long m; // Slope

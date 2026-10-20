@@ -1,5 +1,4 @@
-// OrderStatisticTree is a special type of BinarySearchTree that augments each node
-// with a subtree node count ('size') for O(log n) rank and k-th element queries.
+// OrderStatisticTree is a special type of BinarySearchTree that augments each node with a subtree node count ('size') for O(log n) rank and k-th element queries.
 class OrderStatisticTree : public BinarySearchTree {
 public:
     struct OSNode : public BinaryNode {

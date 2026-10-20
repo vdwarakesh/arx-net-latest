@@ -1,8 +1,6 @@
-#include <vector>
-#include <cmath>
+# include <vector> include <cmath>
 
-// HyperLogLog is a special type of ProbabilisticStructures that estimates set
-// cardinalities within ~1% error inside small register arrays.
+// HyperLogLog is a special type of ProbabilisticStructures that estimates set cardinalities within ~1% error inside small register arrays.
 class HyperLogLog : public ProbabilisticStructures {
 private:
     int bBits;

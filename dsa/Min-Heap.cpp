@@ -1,7 +1,6 @@
-#include <algorithm>
+# include <algorithm>
 
-// MinHeap is a special type of BinaryHeap where every parent's key is <= its children,
-// stationing the minimum element permanently at heap[0].
+// MinHeap is a special type of BinaryHeap where every parent's key is <= its children, stationing the minimum element permanently at heap[0].
 class MinHeap : public BinaryHeap {
 public:
     MinHeap() : BinaryHeap() {}

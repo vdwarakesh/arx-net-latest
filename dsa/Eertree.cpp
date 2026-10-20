@@ -1,7 +1,6 @@
-#include <unordered_map>
+# include <unordered_map>
 
-// Eertree (Palindromic Tree) is a special type of Tree with two roots (lengths -1 and 0)
-// that indexes every distinct palindrome of a string in linear O(n) space and time.
+// Eertree (Palindromic Tree) is a special type of Tree with two roots (lengths -1 and 0) that indexes every distinct palindrome of a string in linear O(n) space and time.
 class Eertree : public Tree {
 public:
     struct PalindromeNode : public TreeNode {

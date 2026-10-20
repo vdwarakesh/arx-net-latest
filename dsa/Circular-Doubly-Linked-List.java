@@ -1,5 +1,4 @@
-// CircularDoublyLinkedList is a special type of CircularLinkedList with two-way
-// pointers where tail.next points to head and head.prev points to tail.
+// CircularDoublyLinkedList is a special type of CircularLinkedList with two-way pointers where tail.next points to head and head.prev points to tail.
 public class CircularDoublyLinkedList extends CircularLinkedList {
     public CircularDoublyLinkedList() {
         super();

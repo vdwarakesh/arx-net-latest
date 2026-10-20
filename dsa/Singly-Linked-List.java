@@ -1,5 +1,4 @@
-// SinglyLinkedList is a special type of LinkedList where traversal is strictly one-way
-// from head to tail using only the 'next' pointer.
+// SinglyLinkedList is a special type of LinkedList where traversal is strictly one-way from head to tail using only the 'next' pointer.
 public class SinglyLinkedList extends LinkedList {
     public SinglyLinkedList() {
         super();

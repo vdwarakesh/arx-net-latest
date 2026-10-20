@@ -1,6 +1,4 @@
-#include <unordered_map>
-#include <queue>
-#include <utility>
+# include <unordered_map> include <queue> include <utility>
 
 // FIFOCache is a special type of CacheStructures evicting items in FIFO arrival order.
 class FIFOCache : public CacheStructures {

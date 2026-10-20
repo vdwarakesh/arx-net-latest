@@ -1,5 +1,4 @@
-# Sparse Matrix is a special type of Matrix where most cells are zero, compressing
-# memory by storing only non-zero values along with their (row, col) coordinates.
+# Sparse Matrix is a special type of Matrix where most cells are zero, compressing memory by storing only non-zero values along with their (row, col) coordinates.
 class SparseMatrix(Matrix):
     def __init__(self, rows, cols):
         super().__init__(rows, cols)

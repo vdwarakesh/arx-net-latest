@@ -1,4 +1,4 @@
-#include <vector>
+# include <vector>
 
 // A Stack is a linear data structure operating on a Last-In, First-Out (LIFO) policy.
 class Stack {

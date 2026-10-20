@@ -1,7 +1,6 @@
-#include <cstdlib>
+# include <cstdlib>
 
-// Treap is a special type of BinarySearchTree that enforces BST order on keys
-// and Max-Heap order on random priorities to achieve randomized balance.
+// Treap is a special type of BinarySearchTree that enforces BST order on keys and Max-Heap order on random priorities to achieve randomized balance.
 class Treap : public BinarySearchTree {
 public:
     struct TreapNode : public BinaryNode {

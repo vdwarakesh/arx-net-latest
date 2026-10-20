@@ -1,5 +1,4 @@
-# Disjoint Set Union (DSU / Union-Find) keeps track of partitioned disjoint sets,
-# supporting near-constant time group merging (union) and set representation checks (find).
+# Disjoint Set Union (DSU / Union-Find) keeps track of partitioned disjoint sets, supporting near-constant time group merging (union) and set representation checks (find).
 class DisjointSetUnion:
     def __init__(self, n):
         # parent[i] points to the group representative leader; initially every element is its own boss

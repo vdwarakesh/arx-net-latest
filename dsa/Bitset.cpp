@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// Bitset is a special type of BitBasedStructures that packs boolean flags into bits,
-// supporting hardware-accelerated 64-at-a-time set operations.
+// Bitset is a special type of BitBasedStructures that packs boolean flags into bits, supporting hardware-accelerated 64-at-a-time set operations.
 class Bitset : public BitBasedStructures {
 private:
     std::vector<unsigned long long> words;

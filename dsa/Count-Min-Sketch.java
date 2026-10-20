@@ -1,5 +1,4 @@
-// CountMinSketch is a special type of ProbabilisticStructures estimating frequency
-// counts in data streams using a 2D counter matrix.
+// CountMinSketch is a special type of ProbabilisticStructures estimating frequency counts in data streams using a 2D counter matrix.
 public class CountMinSketch extends ProbabilisticStructures {
     protected int[][] table;
     protected int width;

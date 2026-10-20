@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// LinkCutTree is a special type of dynamic Tree that maintains preferred paths using
-// auxiliary Splay Trees for O(log n) amortized link, cut, and path aggregate operations.
+// LinkCutTree is a special type of dynamic Tree that maintains preferred paths using auxiliary Splay Trees for O(log n) amortized link, cut, and path aggregate operations.
 class LinkCutTree : public Tree {
 public:
     struct LCTNode : public TreeNode {

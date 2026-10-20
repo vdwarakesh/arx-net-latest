@@ -1,7 +1,6 @@
-#include <string>
+# include <string>
 
-// MutableString is a special type of String backed by a standard std::string
-// that allows direct character overwrites and fast in-place mutations.
+// MutableString is a special type of String backed by a standard std::string that allows direct character overwrites and fast in-place mutations.
 class MutableString : public StringStructure {
 private:
     std::string buffer; // Editable character buffer

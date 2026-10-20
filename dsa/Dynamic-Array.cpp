@@ -1,4 +1,4 @@
-#include <vector>
+# include <vector>
 
 // DynamicArray is a special type of Array that resizes automatically on demand.
 // Inherits from the base Array class.

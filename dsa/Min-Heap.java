@@ -1,5 +1,4 @@
-// MinHeap is a special type of BinaryHeap where parent <= children, guaranteeing
-// that the smallest element in the collection is always at index 0 (the root).
+// MinHeap is a special type of BinaryHeap where parent <= children, guaranteeing that the smallest element in the collection is always at index 0 (the root).
 public class MinHeap extends BinaryHeap {
     public MinHeap(int capacity) {
         super(capacity);

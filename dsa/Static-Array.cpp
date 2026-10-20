@@ -1,4 +1,4 @@
-#include <array>
+# include <array>
 
 // StaticArray is a special type of Array whose size is fixed at compile time.
 // Inherits from the base Array class.

@@ -1,8 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-// Trie (Prefix Tree) is a special type of Tree that indexes strings character by character
-// along branches so words sharing a prefix share the same root path.
+// Trie (Prefix Tree) is a special type of Tree that indexes strings character by character along branches so words sharing a prefix share the same root path.
 public class Trie extends Tree {
     public static class TrieNode extends TreeNode {
         public Map<Character, TrieNode> charChildren; // Maps next character to child node

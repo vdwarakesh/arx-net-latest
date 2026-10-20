@@ -1,5 +1,4 @@
-# Suffix Array is a special type of String data structure consisting of a sorted
-# array of integers representing the starting indices of all suffixes of a text.
+# Suffix Array is a special type of String data structure consisting of a sorted array of integers representing the starting indices of all suffixes of a text.
 class SuffixArray:
     def __init__(self, text):
         self.text = text

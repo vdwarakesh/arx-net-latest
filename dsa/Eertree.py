@@ -1,6 +1,5 @@
 # Eertree (Palindromic Tree) is a special type of Tree-like structure with two roots
-# (length -1 for odd palindromes, length 0 for even palindromes) that stores all
-# distinct palindromic substrings of a string in O(n) space.
+# (length -1 for odd palindromes, length 0 for even palindromes) that stores all distinct palindromic substrings of a string in O(n) space.
 class EertreeNode(TreeNode):
     def __init__(self, length):
         super().__init__(length)

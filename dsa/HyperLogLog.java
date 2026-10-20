@@ -1,5 +1,4 @@
-// HyperLogLog is a special type of ProbabilisticStructures estimating unique element
-// cardinalities using leading-zero register streaks in kilobytes of memory.
+// HyperLogLog is a special type of ProbabilisticStructures estimating unique element cardinalities using leading-zero register streaks in kilobytes of memory.
 public class HyperLogLog extends ProbabilisticStructures {
     protected int bBits;
     protected int mRegisters;

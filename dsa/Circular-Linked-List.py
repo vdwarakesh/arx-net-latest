@@ -1,5 +1,4 @@
-# Circular Linked List is a special type of Linked List in which the tail node
-# points directly back to the head node instead of None, forming an unbroken ring.
+# Circular Linked List is a special type of Linked List in which the tail node points directly back to the head node instead of None, forming an unbroken ring.
 class CircularLinkedList(LinkedList):
     def __init__(self):
         super().__init__()

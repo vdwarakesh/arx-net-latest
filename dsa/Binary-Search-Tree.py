@@ -1,6 +1,4 @@
-# Binary Search Tree (BST) is a special type of Binary Tree that maintains the
-# ordering invariant: all keys in the left subtree are smaller than the node's key,
-# and all keys in the right subtree are larger.
+# Binary Search Tree (BST) is a special type of Binary Tree that maintains the ordering invariant: all keys in the left subtree are smaller than the node's key, and all keys in the right subtree are larger.
 class BinarySearchTree(BinaryTree):
     def __init__(self):
         super().__init__()

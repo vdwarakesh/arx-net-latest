@@ -1,5 +1,4 @@
-# A Linked List is a linear data structure where elements (Nodes) are stored
-# in scattered memory locations and connected together via pointers.
+# A Linked List is a linear data structure where elements (Nodes) are stored in scattered memory locations and connected together via pointers.
 class Node:
     def __init__(self, data):
         self.data = data  # The value stored in the node

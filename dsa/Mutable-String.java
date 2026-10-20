@@ -1,5 +1,4 @@
-// MutableString (comparable to java.lang.StringBuilder) is a special type of String
-// that permits direct in-place modifications and fast appends without object allocations.
+// MutableString (comparable to java.lang.StringBuilder) is a special type of String that permits direct in-place modifications and fast appends without object allocations.
 public class MutableString extends StringStructure {
     // Underlying dynamic character buffer
     private StringBuilder buffer;

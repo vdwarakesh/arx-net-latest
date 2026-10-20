@@ -1,5 +1,4 @@
-# Deque (Double-Ended Queue) is a special type of Queue that allows elements
-# to be inserted and removed from both the front and the back in O(1) time.
+# Deque (Double-Ended Queue) is a special type of Queue that allows elements to be inserted and removed from both the front and the back in O(1) time.
 class Deque(Queue):
     def __init__(self):
         super().__init__()

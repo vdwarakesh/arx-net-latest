@@ -1,5 +1,4 @@
-// DisjointSetUnion (Union-Find) maintains non-overlapping groups with path compression
-// and union by rank for nearly instantaneous connectivity checks.
+// DisjointSetUnion (Union-Find) maintains non-overlapping groups with path compression and union by rank for nearly instantaneous connectivity checks.
 public class DisjointSetUnion {
     // Homogeneous array storing parent set pointers (can also be Object[] for generic types)
     protected int[] parent;

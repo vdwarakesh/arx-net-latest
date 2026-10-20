@@ -1,8 +1,6 @@
-#include <unordered_map>
-#include <string>
+# include <unordered_map> include <string>
 
-// Trie is a special type of Tree that branches by individual characters to store
-// strings with shared prefixes along common paths from the root.
+// Trie is a special type of Tree that branches by individual characters to store strings with shared prefixes along common paths from the root.
 class Trie : public Tree {
 public:
     struct TrieNode : public TreeNode {

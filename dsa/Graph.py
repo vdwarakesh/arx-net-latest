@@ -1,5 +1,4 @@
-# A Graph is a non-linear network structure consisting of vertices (nodes)
-# connected by edges. Unlike trees, graphs allow arbitrary many-to-many connections and cycles.
+# A Graph is a non-linear network structure consisting of vertices (nodes) connected by edges. Unlike trees, graphs allow arbitrary many-to-many connections and cycles.
 class Graph:
     def __init__(self, directed=False):
         # Adjacency list representation mapping vertex -> list of neighbor vertices

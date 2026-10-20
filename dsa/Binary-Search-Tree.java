@@ -1,5 +1,4 @@
-// BinarySearchTree is a special type of BinaryTree where every node's key is greater
-// than all keys in its left subtree and smaller than all keys in its right subtree.
+// BinarySearchTree is a special type of BinaryTree where every node's key is greater than all keys in its left subtree and smaller than all keys in its right subtree.
 public class BinarySearchTree extends BinaryTree {
     public BinarySearchTree() {
         super();

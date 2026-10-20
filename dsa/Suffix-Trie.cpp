@@ -1,7 +1,6 @@
-#include <string>
+# include <string>
 
-// SuffixTrie is a special type of Trie that inserts every suffix of a text
-// into the character trie for O(m) pattern matching.
+// SuffixTrie is a special type of Trie that inserts every suffix of a text into the character trie for O(m) pattern matching.
 class SuffixTrie : public Trie {
 public:
     SuffixTrie(const std::string& text = "") : Trie() {

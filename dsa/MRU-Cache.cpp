@@ -1,9 +1,6 @@
-#include <unordered_map>
-#include <list>
-#include <utility>
+# include <unordered_map> include <list> include <utility>
 
-// MRUCache is a special type of CacheStructures that evicts the most recently
-// accessed item to optimize sequential full-table scans.
+// MRUCache is a special type of CacheStructures that evicts the most recently accessed item to optimize sequential full-table scans.
 class MRUCache : public CacheStructures {
 private:
     std::list<std::pair<int, int>> itemList;

@@ -1,5 +1,4 @@
-# Mutable String is a special type of String whose characters can be edited,
-# overwritten, or appended in place using a bytearray or list buffer.
+# Mutable String is a special type of String whose characters can be edited, overwritten, or appended in place using a bytearray or list buffer.
 class MutableString:
     def __init__(self, initial_text=""):
         # Store characters in a mutable bytearray or list of chars

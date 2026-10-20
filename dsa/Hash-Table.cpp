@@ -1,9 +1,6 @@
-#include <vector>
-#include <list>
-#include <utility>
+# include <vector> include <list> include <utility>
 
-// HashTable is a special type of HashBasedStructures that manages an array of buckets
-// and resolves collisions via separate chaining.
+// HashTable is a special type of HashBasedStructures that manages an array of buckets and resolves collisions via separate chaining.
 class HashTable : public HashBasedStructures {
 protected:
     // Array (vector) of doubly-linked lists storing (key, value) pairs per bucket

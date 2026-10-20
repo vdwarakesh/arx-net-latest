@@ -1,5 +1,4 @@
-// LinkCutTree is a special type of dynamic Tree that partitions trees into preferred
-// paths backed by Splay Trees to support O(log n) Link, Cut, and root-path queries.
+// LinkCutTree is a special type of dynamic Tree that partitions trees into preferred paths backed by Splay Trees to support O(log n) Link, Cut, and root-path queries.
 public class LinkCutTree extends Tree {
     public static class LCTNode extends TreeNode {
         public LCTNode left;

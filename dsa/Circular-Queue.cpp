@@ -1,8 +1,6 @@
-#include <vector>
-#include <stdexcept>
+# include <vector> include <stdexcept>
 
-// CircularQueue is a special type of Queue (Ring Buffer) that wraps indices
-// around a fixed-capacity array using modulo arithmetic.
+// CircularQueue is a special type of Queue (Ring Buffer) that wraps indices around a fixed-capacity array using modulo arithmetic.
 class CircularQueue : public Queue {
 private:
     std::vector<int> buffer; // Homogeneous fixed-size ring array

@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// WaveletTree is a special type of BinaryTree that partitions sequences by value alphabet
-// using bitvector rank tables at each node for O(log Sigma) range quantile queries.
+// WaveletTree is a special type of BinaryTree that partitions sequences by value alphabet using bitvector rank tables at each node for O(log Sigma) range quantile queries.
 class WaveletTree : public BinaryTree {
 public:
     struct WaveletNode : public BinaryNode {

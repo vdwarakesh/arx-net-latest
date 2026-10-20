@@ -1,5 +1,4 @@
-// BinomialHeap is a special type of Heap consisting of a collection of Binomial Trees
-// that can be merged in O(log n) time just like binary addition.
+// BinomialHeap is a special type of Heap consisting of a collection of Binomial Trees that can be merged in O(log n) time just like binary addition.
 public class BinomialHeap extends Heap {
     public static class BinomialNode extends TreeNode {
         public int degree;           // Order k of this Binomial Tree (contains 2^k nodes)

@@ -1,5 +1,4 @@
-// BinarySearchTree is a special type of BinaryTree that keeps keys sorted such that
-// left_subtree < node < right_subtree for every node.
+// BinarySearchTree is a special type of BinaryTree that keeps keys sorted such that left_subtree < node < right_subtree for every node.
 class BinarySearchTree : public BinaryTree {
 protected:
     BinaryNode* insertRec(BinaryNode* node, int key) {

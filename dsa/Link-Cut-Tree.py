@@ -1,5 +1,4 @@
-# Link-Cut Tree is a special type of dynamic Tree structure that decomposes a forest
-# of trees into "preferred paths" maintained inside auxiliary Splay Trees, supporting
+# Link-Cut Tree is a special type of dynamic Tree structure that decomposes a forest of trees into "preferred paths" maintained inside auxiliary Splay Trees, supporting
 # O(log n) amortized path aggregates, dynamic edge linking, and edge cutting.
 class LinkCutNode(BinaryTreeNode):
     def __init__(self, value=0):

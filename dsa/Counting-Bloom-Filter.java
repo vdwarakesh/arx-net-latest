@@ -1,5 +1,4 @@
-// CountingBloomFilter is a special type of BloomFilter that uses integer counters
-// instead of single bits, permitting item deletions.
+// CountingBloomFilter is a special type of BloomFilter that uses integer counters instead of single bits, permitting item deletions.
 public class CountingBloomFilter extends BloomFilter {
     protected int[] counters; // Tally counters replacing single bits
 

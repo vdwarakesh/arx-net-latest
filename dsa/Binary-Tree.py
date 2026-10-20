@@ -1,5 +1,4 @@
-# Binary Tree is a special type of Tree in which every node has at most two children:
-# explicitly designated as the 'left' child and the 'right' child.
+# Binary Tree is a special type of Tree in which every node has at most two children: explicitly designated as the 'left' child and the 'right' child.
 class BinaryTreeNode(TreeNode):
     def __init__(self, data):
         super().__init__(data)

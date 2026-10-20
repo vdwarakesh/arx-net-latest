@@ -1,7 +1,6 @@
 import java.util.Random;
 
-// Treap is a special type of BinarySearchTree that assigns every node a random
-// heap priority so the tree stays balanced in O(log n) expected height.
+// Treap is a special type of BinarySearchTree that assigns every node a random heap priority so the tree stays balanced in O(log n) expected height.
 public class Treap extends BinarySearchTree {
     private static final Random RAND = new Random();
 

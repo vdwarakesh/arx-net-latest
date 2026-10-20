@@ -1,5 +1,4 @@
-# Bitset is a special type of Bit-Based Structure representing a fixed-size set of bits,
-# supporting fast bitwise AND, OR, XOR, and set membership checks.
+# Bitset is a special type of Bit-Based Structure representing a fixed-size set of bits, supporting fast bitwise AND, OR, XOR, and set membership checks.
 class Bitset(BitBasedStructure):
     def __init__(self, size):
         super().__init__(size)

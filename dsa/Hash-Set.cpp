@@ -1,5 +1,4 @@
-// HashSet is a special type of HashTable that stores unique keys and answers
-// membership queries ("is X in the set?") in O(1) average time.
+// HashSet is a special type of HashTable that stores unique keys and answers membership queries ("is X in the set?") in O(1) average time.
 class HashSet : public HashTable {
 public:
     HashSet(int numBuckets = 16) : HashTable(numBuckets) {}

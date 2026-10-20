@@ -1,4 +1,4 @@
-#include <vector>
+# include <vector>
 
 // DenseMatrix is a special type of Matrix storing every cell in a dense 2D grid.
 class DenseMatrix : public Matrix {

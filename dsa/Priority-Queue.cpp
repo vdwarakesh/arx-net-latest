@@ -1,8 +1,6 @@
-#include <queue>
-#include <vector>
+# include <queue> include <vector>
 
-// PriorityQueue is a special type of Queue that always serves the element
-// with the highest priority first, backed under the hood by a Binary Heap.
+// PriorityQueue is a special type of Queue that always serves the element with the highest priority first, backed under the hood by a Binary Heap.
 class PriorityQueue : public Queue {
 private:
     std::priority_queue<int> maxHeap;

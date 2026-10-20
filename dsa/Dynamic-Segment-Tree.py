@@ -1,6 +1,4 @@
-# Dynamic Segment Tree (Sparse Segment Tree) is a special type of Segment Tree that
-# allocates child nodes lazily on demand only when an interval is actually touched,
-# allowing it to span massive coordinate ranges like [0, 10^18].
+# Dynamic Segment Tree (Sparse Segment Tree) is a special type of Segment Tree that allocates child nodes lazily on demand only when an interval is actually touched, allowing it to span massive coordinate ranges like [0, 10^18].
 class DynamicSegmentTree(SegmentTree):
     def __init__(self, min_coord=0, max_coord=10**9):
         super().__init__([])

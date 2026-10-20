@@ -1,5 +1,4 @@
-# Segment Tree is a special type of Binary Tree that stores precomputed interval
-# summaries (such as range sums, mins, or maxes) to support O(log n) range queries and updates.
+# Segment Tree is a special type of Binary Tree that stores precomputed interval summaries (such as range sums, mins, or maxes) to support O(log n) range queries and updates.
 class SegmentTree(BinaryTree):
     def __init__(self, arr):
         super().__init__()

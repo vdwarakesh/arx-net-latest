@@ -1,8 +1,7 @@
 import math
 
 # Sparse Table is a 2D array-based data structure built over an immutable (static) array.
-# It precalculates answers for intervals of power-of-two lengths, enabling O(1) 
-# constant-time queries for overlapping operations like Range Minimum or Maximum.
+# It precalculates answers for intervals of power-of-two lengths, enabling O(1)  constant-time queries for overlapping operations like Range Minimum or Maximum.
 class SparseTable:
     def __init__(self, arr):
         self.n = len(arr)
@@ -21,8 +20,7 @@ class SparseTable:
         for k in range(1, self.max_k):
             # 1 << k is equivalent to 2^k
             for i in range(self.n - (1 << k) + 1):
-                # The minimum of a block of size 2^k is the minimum of two overlapping 
-                # or adjacent blocks of size 2^(k-1)
+                # The minimum of a block of size 2^k is the minimum of two overlapping  or adjacent blocks of size 2^(k-1)
                 self.st[k][i] = min(self.st[k - 1][i], self.st[k - 1][i + (1 << (k - 1))])
 
     def query_min(self, left, right):

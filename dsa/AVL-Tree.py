@@ -1,5 +1,4 @@
-# AVL Tree is a special type of Binary Search Tree that strictly self-balances
-# so the heights of the left and right subtrees of any node never differ by more than 1.
+# AVL Tree is a special type of Binary Search Tree that strictly self-balances so the heights of the left and right subtrees of any node never differ by more than 1.
 class AVLNode(BinaryTreeNode):
     def __init__(self, data):
         super().__init__(data)

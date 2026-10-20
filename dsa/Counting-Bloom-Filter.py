@@ -1,5 +1,4 @@
-# Counting Bloom Filter is a special type of Bloom Filter that replaces single bits
-# with multi-bit tally counters, unlocking full support for safe item deletions.
+# Counting Bloom Filter is a special type of Bloom Filter that replaces single bits with multi-bit tally counters, unlocking full support for safe item deletions.
 class CountingBloomFilter(BloomFilter):
     def __init__(self, capacity, false_positive_rate=0.01):
         super().__init__(capacity, false_positive_rate)

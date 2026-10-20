@@ -1,6 +1,4 @@
-# Suffix Tree is a special type of Tree (specifically a compressed Suffix Trie) that
-# stores all suffixes of a string in O(n) space by labeling edges with [start, end]
-# index pairs into the original string instead of copying characters.
+# Suffix Tree is a special type of Tree (specifically a compressed Suffix Trie) that stores all suffixes of a string in O(n) space by labeling edges with [start, end] index pairs into the original string instead of copying characters.
 class SuffixTreeNode(TreeNode):
     def __init__(self, start=-1, end=-1):
         super().__init__(None)

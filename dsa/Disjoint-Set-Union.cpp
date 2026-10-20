@@ -1,8 +1,6 @@
-#include <vector>
-#include <numeric>
+# include <vector> include <numeric>
 
-// DisjointSetUnion (Union-Find) manages disjoint groups with path compression
-// and union by rank.
+// DisjointSetUnion (Union-Find) manages disjoint groups with path compression and union by rank.
 class DisjointSetUnion {
 protected:
     std::vector<int> parent;

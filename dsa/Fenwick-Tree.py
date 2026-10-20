@@ -1,6 +1,4 @@
-# Fenwick Tree (Binary Indexed Tree / BIT) is a special type of implicit Tree stored
-# inside a 1-indexed flat array that uses lowest-set-bit jumps (i & -i) to perform
-# prefix sums and point updates in O(log n) time.
+# Fenwick Tree (Binary Indexed Tree / BIT) is a special type of implicit Tree stored inside a 1-indexed flat array that uses lowest-set-bit jumps (i & -i) to perform prefix sums and point updates in O(log n) time.
 class FenwickTree(Tree):
     def __init__(self, size):
         super().__init__()

@@ -1,8 +1,6 @@
-#include <unordered_map>
-#include <list>
+# include <unordered_map> include <list>
 
-// LFUCache is a special type of CacheStructures tracking access frequencies
-// to evict the least frequently requested items.
+// LFUCache is a special type of CacheStructures tracking access frequencies to evict the least frequently requested items.
 class LFUCache : public CacheStructures {
 private:
     int minFreq;

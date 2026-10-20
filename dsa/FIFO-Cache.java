@@ -1,8 +1,7 @@
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-// FIFOCache is a special type of CacheStructures that evicts the oldest inserted
-// item first in arrival order without updating timestamps on read hits.
+// FIFOCache is a special type of CacheStructures that evicts the oldest inserted item first in arrival order without updating timestamps on read hits.
 public class FIFOCache extends CacheStructures {
     protected LinkedHashMap<Integer, Integer> map;
 

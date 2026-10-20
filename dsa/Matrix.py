@@ -1,5 +1,4 @@
-# A Matrix is a 2D data structure organizing elements into rows and columns,
-# accessible via (row, column) coordinate indexing.
+# A Matrix is a 2D data structure organizing elements into rows and columns, accessible via (row, column) coordinate indexing.
 class Matrix:
     def __init__(self, rows, cols, default_val=0):
         self.rows = rows

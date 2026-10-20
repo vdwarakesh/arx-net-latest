@@ -1,5 +1,4 @@
-// WaveletTree is a special type of BinaryTree that recursively splits elements by their
-// value range [low, high] and stores a prefix rank array at each node for quantile queries.
+// WaveletTree is a special type of BinaryTree that recursively splits elements by their value range [low, high] and stores a prefix rank array at each node for quantile queries.
 public class WaveletTree extends BinaryTree {
     public static class WaveletNode extends BinaryNode {
         public int lowVal;

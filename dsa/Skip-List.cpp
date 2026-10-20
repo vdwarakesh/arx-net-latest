@@ -1,9 +1,6 @@
-#include <vector>
-#include <cstdlib>
-#include <climits>
+# include <vector> include <cstdlib> include <climits>
 
-// SkipList is a probabilistic structure stacking sorted linked-list express lanes
-// for O(log n) performance.
+// SkipList is a probabilistic structure stacking sorted linked-list express lanes for O(log n) performance.
 class SkipList {
 public:
     struct SkipNode {

@@ -1,5 +1,4 @@
-// SinglyLinkedList is a special type of LinkedList where each node links strictly
-// forward to the next node, ending at nullptr.
+// SinglyLinkedList is a special type of LinkedList where each node links strictly forward to the next node, ending at nullptr.
 class SinglyLinkedList : public LinkedList {
 public:
     SinglyLinkedList() : LinkedList() {}

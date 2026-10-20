@@ -1,6 +1,5 @@
 # Static Array is a special type of Array whose capacity is fixed upon creation.
-# Since Python lists are dynamic by default, we wrap a fixed-size list inside a class
-# to enforce the static capacity constraint.
+# Since Python lists are dynamic by default, we wrap a fixed-size list inside a class to enforce the static capacity constraint.
 class StaticArray:
     def __init__(self, capacity):
         # Fixed capacity that cannot grow or shrink

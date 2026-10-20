@@ -1,5 +1,4 @@
-// BloomFilter is a special type of ProbabilisticStructures providing O(1) set membership
-// tests with zero false negatives and tunable false-positive rates.
+// BloomFilter is a special type of ProbabilisticStructures providing O(1) set membership tests with zero false negatives and tunable false-positive rates.
 public class BloomFilter extends ProbabilisticStructures {
     protected int[] bitArray;
     protected int m; // Bit array size

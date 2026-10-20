@@ -1,9 +1,6 @@
-#include <vector>
-#include <algorithm>
-#include <cmath>
+# include <vector> include <algorithm> include <cmath>
 
-// SparseTable precomputes power-of-two interval blocks over a static array,
-// allowing O(1) constant-time queries for operations like Range Minimum.
+// SparseTable precomputes power-of-two interval blocks over a static array, allowing O(1) constant-time queries for operations like Range Minimum.
 class SparseTable {
 protected:
     // 2D homogeneous vector representing the table

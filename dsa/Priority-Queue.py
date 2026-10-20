@@ -1,7 +1,6 @@
 import heapq
 
-# Priority Queue is a special type of Queue where elements are served based on
-# priority order rather than arrival order.
+# Priority Queue is a special type of Queue where elements are served based on priority order rather than arrival order.
 class PriorityQueue(Queue):
     def __init__(self):
         # Backed by a binary heap so the highest-priority (smallest key) item is always at index 0

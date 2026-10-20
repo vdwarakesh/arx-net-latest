@@ -1,5 +1,4 @@
-// HashSet is a special type of HashTable that stores a collection of unique keys
-// with no duplicate entries and no extra values.
+// HashSet is a special type of HashTable that stores a collection of unique keys with no duplicate entries and no extra values.
 public class HashSet extends HashTable {
     // Dummy placeholder value used so HashSet can reuse HashTable's Entry buckets
     private static final Object PRESENT = new Object();

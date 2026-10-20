@@ -1,7 +1,6 @@
-#include <algorithm>
+# include <algorithm>
 
-// MaxHeap is a special type of BinaryHeap where every parent's key is >= its children,
-// stationing the maximum element permanently at heap[0].
+// MaxHeap is a special type of BinaryHeap where every parent's key is >= its children, stationing the maximum element permanently at heap[0].
 class MaxHeap : public BinaryHeap {
 public:
     MaxHeap() : BinaryHeap() {}

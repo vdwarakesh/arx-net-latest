@@ -1,9 +1,6 @@
-#include <unordered_map>
-#include <list>
-#include <utility>
+# include <unordered_map> include <list> include <utility>
 
-// LRUCache is a special type of CacheStructures combining a hash map and a doubly
-// linked list for O(1) LRU get, put, and eviction operations.
+// LRUCache is a special type of CacheStructures combining a hash map and a doubly linked list for O(1) LRU get, put, and eviction operations.
 class LRUCache : public CacheStructures {
 private:
     std::list<std::pair<int, int>> itemList; // Doubly linked list of (key, value)

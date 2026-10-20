@@ -1,5 +1,4 @@
-// MRUCache is a special type of CacheStructures that evicts the most recently used
-// item first, ideal for sequential cyclic scans over large datasets.
+// MRUCache is a special type of CacheStructures that evicts the most recently used item first, ideal for sequential cyclic scans over large datasets.
 public class MRUCache extends CacheStructures {
     protected LinkedHashMap<Integer, Integer> map;
 

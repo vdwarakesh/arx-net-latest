@@ -1,8 +1,7 @@
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
-// LFUCache is a special type of CacheStructures that evicts items with the lowest
-// access frequency count first.
+// LFUCache is a special type of CacheStructures that evicts items with the lowest access frequency count first.
 public class LFUCache extends CacheStructures {
     protected int minFreq;
     protected HashMap<Integer, Integer> vals;

@@ -1,5 +1,4 @@
-// SuffixTrie is a special type of Trie that indexes all suffixes of a single string
-// so that any substring can be located as a prefix of one of the stored suffixes.
+// SuffixTrie is a special type of Trie that indexes all suffixes of a single string so that any substring can be located as a prefix of one of the stored suffixes.
 public class SuffixTrie extends Trie {
     public SuffixTrie(String text) {
         super();

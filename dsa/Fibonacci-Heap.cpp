@@ -1,5 +1,4 @@
-// FibonacciHeap is a special type of Heap that maintains a circular doubly linked
-// root list and uses cascading cuts to achieve O(1) amortized decrease-key and merge.
+// FibonacciHeap is a special type of Heap that maintains a circular doubly linked root list and uses cascading cuts to achieve O(1) amortized decrease-key and merge.
 class FibonacciHeap : public Heap {
 public:
     struct FibNode : public TreeNode {

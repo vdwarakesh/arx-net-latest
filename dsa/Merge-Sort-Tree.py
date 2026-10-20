@@ -1,5 +1,4 @@
-# Merge Sort Tree is a special type of Segment Tree in which every node stores a complete
-# sorted list of all elements within its interval, enabling binary search over subarrays.
+# Merge Sort Tree is a special type of Segment Tree in which every node stores a complete sorted list of all elements within its interval, enabling binary search over subarrays.
 class MergeSortTree(SegmentTree):
     def __init__(self, arr):
         super().__init__([])

@@ -1,6 +1,4 @@
-#include <vector>
-#include <unordered_map>
-#include <utility>
+# include <vector> include <unordered_map> include <utility>
 
 // Base class representing a Graph network structure containing vertices and edges.
 class Graph {

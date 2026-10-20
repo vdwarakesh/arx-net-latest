@@ -1,5 +1,4 @@
-// RedBlackTree is a special type of BinarySearchTree that maintains balance via node
-// colors (Red/Black), ensuring uniform black-height and no consecutive red nodes.
+// RedBlackTree is a special type of BinarySearchTree that maintains balance via node colors (Red/Black), ensuring uniform black-height and no consecutive red nodes.
 class RedBlackTree : public BinarySearchTree {
 public:
     enum Color { RED, BLACK };

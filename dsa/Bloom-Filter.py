@@ -1,7 +1,6 @@
 import math
 
-# Bloom Filter is a special type of Probabilistic Structure that tests set membership
-# with zero false negatives and a small tunable false-positive probability.
+# Bloom Filter is a special type of Probabilistic Structure that tests set membership with zero false negatives and a small tunable false-positive probability.
 class BloomFilter(ProbabilisticStructure):
     def __init__(self, capacity, false_positive_rate=0.01):
         super().__init__(false_positive_rate)

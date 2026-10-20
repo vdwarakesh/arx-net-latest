@@ -1,5 +1,4 @@
-// DynamicSegmentTree is a special type of SegmentTree that creates nodes lazily on demand,
-// handling huge sparse coordinate ranges (e.g., [0, 10^18]) without pre-allocating 4N space.
+// DynamicSegmentTree is a special type of SegmentTree that creates nodes lazily on demand, handling huge sparse coordinate ranges (e.g., [0, 10^18]) without pre-allocating 4N space.
 public class DynamicSegmentTree extends SegmentTree {
     protected long minCoord;
     protected long maxCoord;

@@ -1,5 +1,4 @@
-# Circular Singly Linked List is a special type of Circular Linked List where
-# each node has only one forward pointer, and the tail's next pointer loops to head.
+# Circular Singly Linked List is a special type of Circular Linked List where each node has only one forward pointer, and the tail's next pointer loops to head.
 class CircularSinglyLinkedList(CircularLinkedList):
     def __init__(self):
         super().__init__()

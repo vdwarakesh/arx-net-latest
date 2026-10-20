@@ -1,5 +1,4 @@
-// DoublyLinkedList is a special type of LinkedList where every node links both
-// forward ('next') and backward ('prev'), allowing bidirectional traversal and O(1) deletion.
+// DoublyLinkedList is a special type of LinkedList where every node links both forward ('next') and backward ('prev'), allowing bidirectional traversal and O(1) deletion.
 public class DoublyLinkedList extends LinkedList {
     public DoublyLinkedList() {
         super();

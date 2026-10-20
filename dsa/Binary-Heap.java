@@ -1,5 +1,4 @@
-// BinaryHeap is a special type of Heap shaped as a Complete Binary Tree and stored
-// compactly inside a flat array using index math (left = 2i + 1, right = 2i + 2).
+// BinaryHeap is a special type of Heap shaped as a Complete Binary Tree and stored compactly inside a flat array using index math (left = 2i + 1, right = 2i + 2).
 public class BinaryHeap extends Heap {
     // Homogeneous integer array (can also hold any Comparable Object type)
     protected int[] heapArray;

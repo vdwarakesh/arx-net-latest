@@ -1,7 +1,6 @@
-#include <functional>
+# include <functional>
 
-// Base class for Hash-Based Structures that convert keys into array indices
-// using a deterministic hash function.
+// Base class for Hash-Based Structures that convert keys into array indices using a deterministic hash function.
 class HashBasedStructures {
 protected:
     int numBuckets;

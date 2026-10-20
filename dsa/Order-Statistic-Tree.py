@@ -1,5 +1,4 @@
-# Order Statistic Tree is a special type of Binary Search Tree augmented with
-# subtree sizes in every node to answer k-th smallest (select) and rank queries in O(log n).
+# Order Statistic Tree is a special type of Binary Search Tree augmented with subtree sizes in every node to answer k-th smallest (select) and rank queries in O(log n).
 class OrderStatisticNode(BinaryTreeNode):
     def __init__(self, key):
         super().__init__(key)

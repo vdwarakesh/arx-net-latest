@@ -1,5 +1,4 @@
-# Suffix Automaton is a special type of String structure that compresses all substrings
-# of a text into a minimal directed acyclic word graph (DAWG) of at most 2n - 1 states.
+# Suffix Automaton is a special type of String structure that compresses all substrings of a text into a minimal directed acyclic word graph (DAWG) of at most 2n - 1 states.
 class SAMState:
     def __init__(self, length=0, link=-1):
         self.length = length       # Longest substring length accepted by this state

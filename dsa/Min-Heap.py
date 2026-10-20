@@ -1,5 +1,4 @@
-# Min-Heap is a special type of Binary Heap where every parent node is less than
-# or equal to its children, keeping the minimum element at the root (index 0).
+# Min-Heap is a special type of Binary Heap where every parent node is less than or equal to its children, keeping the minimum element at the root (index 0).
 class MinHeap(BinaryHeap):
     def __init__(self):
         super().__init__()

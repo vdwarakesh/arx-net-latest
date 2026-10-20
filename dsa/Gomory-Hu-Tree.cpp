@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// GomoryHuTree is a special type of weighted Tree where the minimum edge weight on the
-// path between any u and v equals the exact Min-Cut / Max-Flow between u and v.
+// GomoryHuTree is a special type of weighted Tree where the minimum edge weight on the path between any u and v equals the exact Min-Cut / Max-Flow between u and v.
 class GomoryHuTree : public Tree {
 protected:
     int numVertices;

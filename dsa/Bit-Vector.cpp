@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// BitVector is a special type of Bitset providing O(1) Rank and Select queries
-// via auxiliary superblock directory tables.
+// BitVector is a special type of Bitset providing O(1) Rank and Select queries via auxiliary superblock directory tables.
 class BitVector : public Bitset {
 private:
     std::vector<int> rankSuperblocks;

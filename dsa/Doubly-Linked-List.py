@@ -1,5 +1,4 @@
-# Doubly Linked List is a special type of Linked List where each node maintains
-# two pointers: 'next' (forward) and 'prev' (backward) for two-way navigation.
+# Doubly Linked List is a special type of Linked List where each node maintains two pointers: 'next' (forward) and 'prev' (backward) for two-way navigation.
 class DoublyNode(Node):
     def __init__(self, data):
         super().__init__(data)

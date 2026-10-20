@@ -1,5 +1,4 @@
-// CircularQueue is a special type of Queue that wraps around a fixed-size array
-// using modulo arithmetic so vacated slots at the front are automatically reused.
+// CircularQueue is a special type of Queue that wraps around a fixed-size array using modulo arithmetic so vacated slots at the front are automatically reused.
 public class CircularQueue extends Queue {
     public CircularQueue(int capacity) {
         super(capacity);

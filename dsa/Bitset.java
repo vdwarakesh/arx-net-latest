@@ -1,5 +1,4 @@
-// Bitset is a special type of BitBasedStructures mapping a fixed range of integers
-// to compact bits inside an array of 64-bit words.
+// Bitset is a special type of BitBasedStructures mapping a fixed range of integers to compact bits inside an array of 64-bit words.
 public class Bitset extends BitBasedStructures {
     protected long[] words;
     protected int numBits;

@@ -1,5 +1,4 @@
-// BTree is a special type of self-balancing Tree where each node holds multiple sorted keys
-// and branches into up to 2t children, minimizing disk I/O reads.
+// BTree is a special type of self-balancing Tree where each node holds multiple sorted keys and branches into up to 2t children, minimizing disk I/O reads.
 public class BTree extends Tree {
     public static class BNode extends TreeNode {
         // Homogeneous array of sorted keys (can also use Comparable Objects)

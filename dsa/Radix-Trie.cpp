@@ -1,8 +1,6 @@
-#include <unordered_map>
-#include <string>
+# include <unordered_map> include <string>
 
-// RadixTrie is a special type of CompressedTrie that stores multi-character
-// prefix chunks per node and branches only where keys diverge.
+// RadixTrie is a special type of CompressedTrie that stores multi-character prefix chunks per node and branches only where keys diverge.
 class RadixTrie : public CompressedTrie {
 public:
     struct RadixNode : public CompressedNode {

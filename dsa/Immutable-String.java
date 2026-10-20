@@ -1,5 +1,4 @@
-// ImmutableString is a special type of String (like standard java.lang.String)
-// where contents are permanently write-protected after creation.
+// ImmutableString is a special type of String (like standard java.lang.String) where contents are permanently write-protected after creation.
 public class ImmutableString extends StringStructure {
     private final String text;
 

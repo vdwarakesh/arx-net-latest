@@ -1,7 +1,6 @@
 import java.util.Arrays;
 
-// SuffixArray is a special type of String structure storing sorted suffix start indices
-// for efficient substring searching without heavy pointer trees.
+// SuffixArray is a special type of String structure storing sorted suffix start indices for efficient substring searching without heavy pointer trees.
 public class SuffixArray {
     // Homogeneous array storing sorted starting indices of all suffixes
     protected int[] sa;

@@ -1,5 +1,4 @@
-# B-Tree is a special type of self-balancing search Tree that stores multiple sorted keys
-# in every node and branches into multiple children, keeping the tree wide and shallow.
+# B-Tree is a special type of self-balancing search Tree that stores multiple sorted keys in every node and branches into multiple children, keeping the tree wide and shallow.
 class BTreeNode(TreeNode):
     def __init__(self, is_leaf=True):
         super().__init__(None)

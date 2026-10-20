@@ -1,7 +1,6 @@
-#include <algorithm>
+# include <algorithm>
 
-// AVLTree is a special type of BinarySearchTree that maintains strict O(log n)
-// height balance by ensuring every node has a balance factor in {-1, 0, 1}.
+// AVLTree is a special type of BinarySearchTree that maintains strict O(log n) height balance by ensuring every node has a balance factor in {-1, 0, 1}.
 class AVLTree : public BinarySearchTree {
 public:
     struct AVLNode : public BinaryNode {

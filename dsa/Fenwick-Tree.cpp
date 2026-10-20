@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// FenwickTree (Binary Indexed Tree) is a special type of implicit Tree that computes
-// prefix sums and point updates in O(log n) time using only O(n) space.
+// FenwickTree (Binary Indexed Tree) is a special type of implicit Tree that computes prefix sums and point updates in O(log n) time using only O(n) space.
 class FenwickTree : public Tree {
 private:
     // 1-indexed array storing power-of-two responsibility ranges

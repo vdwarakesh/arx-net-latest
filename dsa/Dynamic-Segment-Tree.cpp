@@ -1,5 +1,4 @@
-// DynamicSegmentTree is a special type of SegmentTree that allocates child nodes
-// on the fly only when visited, supporting huge coordinate bounds [0, 10^18].
+// DynamicSegmentTree is a special type of SegmentTree that allocates child nodes on the fly only when visited, supporting huge coordinate bounds [0, 10^18].
 class DynamicSegmentTree : public SegmentTree {
 private:
     long long minCoord;

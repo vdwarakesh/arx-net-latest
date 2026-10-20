@@ -1,5 +1,4 @@
-# Circular Queue is a special type of Queue that connects the end of a fixed-size
-# array back to its beginning using modulo arithmetic to reuse empty front slots.
+# Circular Queue is a special type of Queue that connects the end of a fixed-size array back to its beginning using modulo arithmetic to reuse empty front slots.
 class CircularQueue(Queue):
     def __init__(self, capacity):
         self.capacity = capacity

@@ -1,8 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 
-// SparseMatrix is a special type of Matrix that compresses mostly-zero grids
-// by recording only non-zero entries via coordinate maps or Compressed Sparse Row (CSR).
+// SparseMatrix is a special type of Matrix that compresses mostly-zero grids by recording only non-zero entries via coordinate maps or Compressed Sparse Row (CSR).
 public class SparseMatrix extends Matrix {
     public static class Coordinate {
         public int row, col;

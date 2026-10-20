@@ -1,5 +1,4 @@
-// Base class for Probabilistic Structures providing approximate stream analytics
-// within tunable error bounds.
+// Base class for Probabilistic Structures providing approximate stream analytics within tunable error bounds.
 class ProbabilisticStructures {
 protected:
     double errorRate;

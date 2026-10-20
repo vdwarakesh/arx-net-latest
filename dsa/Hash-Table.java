@@ -1,7 +1,6 @@
 import java.util.LinkedList;
 
-// HashTable is a special type of HashBasedStructures that combines a bucket array
-// with collision resolution (separate chaining using linked lists).
+// HashTable is a special type of HashBasedStructures that combines a bucket array with collision resolution (separate chaining using linked lists).
 public class HashTable extends HashBasedStructures {
     protected static class Entry {
         Object key;

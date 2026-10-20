@@ -1,7 +1,6 @@
-#include <vector>
+# include <vector>
 
-// BPlusTree is a special type of BTree in which internal nodes hold only routing keys
-// and all leaf nodes store actual values while linking horizontally via 'nextLeaf'.
+// BPlusTree is a special type of BTree in which internal nodes hold only routing keys and all leaf nodes store actual values while linking horizontally via 'nextLeaf'.
 class BPlusTree : public BTree {
 public:
     struct BPlusNode : public BNode {

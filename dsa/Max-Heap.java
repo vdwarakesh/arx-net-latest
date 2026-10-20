@@ -1,5 +1,4 @@
-// MaxHeap is a special type of BinaryHeap where parent >= children, guaranteeing
-// that the largest element in the collection is always at index 0 (the root).
+// MaxHeap is a special type of BinaryHeap where parent >= children, guaranteeing that the largest element in the collection is always at index 0 (the root).
 public class MaxHeap extends BinaryHeap {
     public MaxHeap(int capacity) {
         super(capacity);

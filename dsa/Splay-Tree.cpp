@@ -1,5 +1,4 @@
-// SplayTree is a special type of BinarySearchTree that moves accessed nodes to the
-// root via Zig, Zig-Zig, and Zig-Zag rotations without storing extra balance metadata.
+// SplayTree is a special type of BinarySearchTree that moves accessed nodes to the root via Zig, Zig-Zig, and Zig-Zag rotations without storing extra balance metadata.
 class SplayTree : public BinarySearchTree {
 protected:
     BinaryNode* rotateRight(BinaryNode* x) {
