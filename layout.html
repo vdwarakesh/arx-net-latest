@@ -3029,7 +3029,7 @@
       const codeElement = document.querySelector('#codeViewPane code');
       if (!codeElement) return;
 
-      const activeOption = document.querySelector('.lang-option-item.active');
+      const activeOption = document.querySelector('#lang-dropdown-menu .lang-option-item.active');
       const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
       const codeText = codeElement.textContent;
       const baseName = (selectedDsaName || 'algorithm').replace(/\s+/g, '-').replace(/\+/g, 'Plus');
