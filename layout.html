@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="css/prism.css" />
   <style>
     /* =========================================================================
-       0. IMPORTANT LAYOUT & SIZING CONFIGURATION VARIABLES
+       IMPORTANT LAYOUT & SIZING CONFIGURATION VARIABLES
        (Single source of truth for global sizing, proportions, and dimensions)
        ========================================================================= */
     :root {
@@ -171,7 +171,7 @@
     }
 
     /* =========================================================================
-       1. VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
+       VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
        ========================================================================= */
     :root,
     [data-theme="dark"] {
@@ -242,6 +242,65 @@
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
+    /* =========================================================================
+       LOADING SCREEN STYLES
+       ========================================================================= */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-app);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .loading-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .loading-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin: 0;
+      letter-spacing: 0.05em;
+    }
+
+    .loading-spinner {
+      width: 3rem;
+      height: 3rem;
+      border: 0.25rem solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: spin-anim 1s linear infinite;
+    }
+
+    .loading-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    @keyframes spin-anim {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     /* Unified Scrollbars */
     ::-webkit-scrollbar {
       width: 0.375rem;
@@ -270,6 +329,7 @@
     #codeViewPane {
       overflow-x: hidden;
       overflow-y: auto;
+      scrollbar-gutter: stable;
       min-width: 0;
     }
 
@@ -284,16 +344,31 @@
       overflow: visible !important;
       white-space: pre-wrap !important;
       word-wrap: break-word !important;
-      overflow-wrap: anywhere !important;
+      overflow-wrap: break-word !important;
+      word-break: normal !important;
+      font-variant-ligatures: none !important;
     }
 
-    #codeViewPane code[class*="language-"] {
+    #codeViewPane code[class*="language-"],
+    #codeViewPane .line-numbers-sizer,
+    #codeViewPane .line-numbers-sizer>span {
       display: block !important;
       width: 100% !important;
       min-width: 0 !important;
+      box-sizing: border-box !important;
       white-space: pre-wrap !important;
       word-wrap: break-word !important;
-      overflow-wrap: anywhere !important;
+      overflow-wrap: break-word !important;
+      word-break: normal !important;
+      word-spacing: normal !important;
+      letter-spacing: normal !important;
+      font-variant-ligatures: none !important;
+    }
+
+    /* Prevent bold/italic tokens from having slightly wider glyphs than the plain-text sizer */
+    #codeViewPane code[class*="language-"] .token {
+      font-weight: normal !important;
+      font-style: normal !important;
     }
 
     /* Keep line highlights aligned across wrapped lines */
@@ -303,7 +378,7 @@
     }
 
     /* =========================================================================
-       2. CORE DESKTOP LAYOUT & CARD COMPONENTS (REM / EM / % ONLY)
+       CORE DESKTOP LAYOUT & CARD COMPONENTS (REM / EM / % ONLY)
        ========================================================================= */
     .app-shell {
       display: flex;
@@ -834,11 +909,6 @@
     .tree-row:hover {
       background-color: var(--bg-hover);
     }
-
-    /* .tree-row.selected {
-      background-color: var(--bg-active-item);
-      color: var(--text-bright);
-    } */
 
     .tree-row.selected .algo-dot {
       background-color: var(--text-bright);
@@ -1766,7 +1836,77 @@
     }
 
     /* =========================================================================
-       3. PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
+       NOTES / HTML CONTENT TYPOGRAPHY
+       ========================================================================= */
+    .notes-content {
+      padding: 1rem;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .notes-content h1,
+    .notes-content h2,
+    .notes-content h3,
+    .notes-content h4 {
+      color: var(--text-bright);
+      font-weight: 600;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+
+    .notes-content h1 {
+      font-size: 1.75em;
+      margin: 0 0 0.3em 0;
+    }
+
+    .notes-content h2 {
+      font-size: 1.4em;
+      margin: 0 0 0.3em 0;
+    }
+
+    .notes-content h3 {
+      font-size: 1.2em;
+    }
+
+    .notes-content p {
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+
+    .notes-content ul,
+    .notes-content ol {
+      margin-top: 0;
+      margin-bottom: 1em;
+      padding-left: 1.75em;
+    }
+
+    .notes-content li {
+      margin-bottom: 0.35em;
+    }
+
+    .notes-content strong,
+    .notes-content b {
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .notes-content em,
+    .notes-content i {
+      font-style: italic;
+    }
+
+    .notes-content a {
+      color: var(--accent-primary);
+      text-decoration: none;
+    }
+
+    .notes-content a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================================================================
+       PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
        ========================================================================= */
     @media (max-width: 56.25rem) {
       :root {
@@ -2008,7 +2148,7 @@
       }
 
       code[class*="language-"] {
-        padding-top: 0.1em;
+        padding-top: 0em;
       }
 
       .line-highlight {
@@ -2023,145 +2163,6 @@
         display: flex !important;
       }
     }
-
-    /* =========================================================================
-       4. LOADING SCREEN STYLES
-       ========================================================================= */
-    .loading-screen {
-      position: fixed;
-      inset: 0;
-      background-color: var(--bg-app);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    .loading-screen.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .loading-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1.5rem;
-      text-align: center;
-    }
-
-    .loading-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      margin: 0;
-      letter-spacing: 0.05em;
-    }
-
-    .loading-spinner {
-      width: 3rem;
-      height: 3rem;
-      border: 0.25rem solid var(--border-color);
-      border-top-color: var(--accent-primary);
-      border-radius: 50%;
-      animation: spin-anim 1s linear infinite;
-    }
-
-    .loading-subtitle {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      margin: 0;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    @keyframes spin-anim {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* =========================================================================
-       5. NOTES / HTML CONTENT TYPOGRAPHY
-       ========================================================================= */
-    .notes-content {
-      padding: 1rem;
-      color: var(--text-primary);
-      line-height: 1.6;
-    }
-
-    .notes-content h1,
-    .notes-content h2,
-    .notes-content h3,
-    .notes-content h4 {
-      color: var(--text-bright);
-      font-weight: 600;
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
-      line-height: 1.3;
-    }
-
-    .notes-content h1 {
-      font-size: 1.75em;
-      margin: 0 0 0.3em 0;
-    }
-
-    .notes-content h2 {
-      font-size: 1.4em;
-      margin: 0 0 0.3em 0;
-    }
-
-    .notes-content h3 {
-      font-size: 1.2em;
-    }
-
-    .notes-content p {
-      margin-top: 0;
-      margin-bottom: 1em;
-    }
-
-    .notes-content ul,
-    .notes-content ol {
-      margin-top: 0;
-      margin-bottom: 1em;
-      padding-left: 1.75em;
-    }
-
-    .notes-content li {
-      margin-bottom: 0.35em;
-    }
-
-    .notes-content strong,
-    .notes-content b {
-      font-weight: 600;
-      color: var(--text-bright);
-    }
-
-    .notes-content em,
-    .notes-content i {
-      font-style: italic;
-    }
-
-    .notes-content a {
-      color: var(--accent-primary);
-      text-decoration: none;
-    }
-
-    .notes-content a:hover {
-      text-decoration: underline;
-    }
-
-    /* .notes-content code {
-      font-family: 'Noto Sans Mono', monospace;
-      background-color: var(--bg-input);
-      border: 1px solid var(--border-color);
-      padding: 0.1em 0.3em;
-      border-radius: 0.25rem;
-      font-size: 0.9em;
-      color: var(--text-bright);
-    } */
   </style>
 </head>
 
@@ -2657,7 +2658,7 @@
     });
 
     // =========================================================================
-    // 0. IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
+    // IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
     // =========================================================================
     const LAYOUT_CONFIG = {
       MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)',
@@ -2707,7 +2708,7 @@
     }
 
     // =========================================================================
-    // 1. THEME MANAGEMENT (SYSTEM DEFAULT + DESKTOP & MOBILE SINGLE-ICON CYCLER)
+    // THEME MANAGEMENT (SYSTEM DEFAULT + DESKTOP & MOBILE SINGLE-ICON CYCLER)
     // =========================================================================
     const systemDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
     const themeOptionButtons = document.querySelectorAll('.theme-option-btn');
@@ -2770,7 +2771,7 @@
     });
 
     // =========================================================================
-    // 1B. FULLSCREEN TOGGLE & PROFILE FLOATING MODAL WINDOW
+    // FULLSCREEN TOGGLE & PROFILE FLOATING MODAL WINDOW
     // =========================================================================
     const btnFullscreen = document.getElementById('btnFullscreen');
     const imgFullscreen = document.getElementById('imgFullscreen');
@@ -2831,7 +2832,7 @@
     });
 
     // =========================================================================
-    // 2. STATE FOR SELECTED DSA ITEM, ACTIVE TAB & LANGUAGE
+    // STATE FOR SELECTED DSA ITEM, ACTIVE TAB & LANGUAGE
     // =========================================================================
     const codeViewPane = document.getElementById('codeViewPane');
     let selectedDsaName = null; // Stores exact DS or algorithm name when clicked
@@ -2892,17 +2893,21 @@
           }
           const pre = document.createElement('pre');
           pre.className = 'line-numbers';
-          pre.setAttribute('data-line', '1,3')
-          // pre class="line-numbers" data-line="1,4,32"><code class="language-python"
+          pre.setAttribute('data-line', '1,3');
+
           const code = document.createElement('code');
           code.className = `language-${currentPrismLang}`;
-          code.textContent = text;
+          // Normalize CRLF to LF so \r doesn't skew Prism's sizer
+          code.textContent = text.replace(/\r\n?/g, '\n');
+
           pre.appendChild(code);
           codeViewPane.innerHTML = '';
           codeViewPane.appendChild(pre);
 
           if (window.Prism) {
             window.Prism.highlightElement(code);
+            // Re-measure on the next frame after scrollbars & fonts settle
+            requestAnimationFrame(() => syncPrismLayout(pre));
           }
         }
       } catch (err) {
@@ -2915,7 +2920,29 @@
       }
     }
 
-    // Recalculate Prism line numbers & line highlights when the code pane is resized
+    function syncPrismLayout(pre) {
+      if (!pre || !window.Prism) return;
+
+      // 1. Recalculate Prism line numbers
+      if (window.Prism.plugins?.lineNumbers?.resize) {
+        window.Prism.plugins.lineNumbers.resize(pre);
+      }
+
+      // 2. Cleanly remove old highlight overlays and re-apply them for the new wrapped heights
+      if (window.Prism.plugins?.lineHighlight) {
+        const code = pre.querySelector('code');
+        pre.querySelectorAll('.line-highlight').forEach(el => el.remove());
+
+        const highlightLines = pre.getAttribute('data-line');
+        if (highlightLines) {
+          const reposition = window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines);
+          if (typeof reposition === 'function') reposition();
+        } else if (code) {
+          window.Prism.hooks.run('complete', { element: code });
+        }
+      }
+    }
+
     let resizeRafId = null;
 
     const codePaneResizeObserver = new ResizeObserver(() => {
@@ -2925,34 +2952,14 @@
 
       resizeRafId = requestAnimationFrame(() => {
         const pre = codeViewPane.querySelector('pre.line-numbers');
-        if (!pre) return;
-
-        // 1. Directly invoke Prism's line-numbers resizer
-        if (window.Prism.plugins?.lineNumbers?.resize) {
-          window.Prism.plugins.lineNumbers.resize(pre);
-        }
-
-        // 2. Cleanly remove old highlight overlays and re-apply them for the new wrapped heights
-        if (window.Prism.plugins?.lineHighlight) {
-          const code = pre.querySelector('code');
-          pre.querySelectorAll('.line-highlight').forEach(el => el.remove());
-
-          const highlightLines = pre.getAttribute('data-line');
-          if (highlightLines) {
-            const reposition = window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines);
-            if (typeof reposition === 'function') reposition();
-          } else if (code) {
-            // Fallback if Prism version triggers line-highlight via the 'complete' hook
-            window.Prism.hooks.run('complete', { element: code });
-          }
-        }
+        syncPrismLayout(pre);
       });
     });
 
     codePaneResizeObserver.observe(codeViewPane);
 
     // =========================================================================
-    // 2A. LANGUAGE SELECTOR (PYTHON, C++, JAVA)
+    // LANGUAGE SELECTOR (PYTHON, C++, JAVA)
     // =========================================================================
     const langWrapper = document.getElementById('lang-dropdown-wrapper');
     const langTriggerBtn = document.getElementById('lang-trigger-btn');
@@ -3000,7 +3007,7 @@
     });
 
     // =========================================================================
-    // 2B. COPY & DOWNLOAD CODE BUTTONS
+    // COPY & DOWNLOAD CODE BUTTONS
     // =========================================================================
     const btnCopyCode = document.getElementById('btn-copy-code');
     const imgCopyCode = document.getElementById('img-copy-code');
@@ -3039,7 +3046,7 @@
     });
 
     // =========================================================================
-    // 3. TAB SWITCHING (CODE, EXPLANATION, NOTES) & SPEED SLIDER
+    // TAB SWITCHING (CODE, EXPLANATION, NOTES) & SPEED SLIDER
     // =========================================================================
 
     // --- Tab Switching Logic (Desktop & Mobile Sync) ---
@@ -3119,7 +3126,7 @@
     }
 
     // =========================================================================
-    // 3B. DYNAMIC DSA TREE, EXACT + SUBSEQUENCE SEARCH, AND DS FILTER
+    // DYNAMIC DSA TREE, EXACT + SUBSEQUENCE SEARCH, AND DS FILTER
     // =========================================================================
     const algoSearchInput = document.getElementById('algo-search-input');
     const algoFilterBtn = document.getElementById('algo-filter-btn');
@@ -3628,7 +3635,7 @@
     loadDsaMetadata();
 
     // =========================================================================
-    // 4. COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
+    // COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
     // =========================================================================
     const phoneMedia = window.matchMedia(LAYOUT_CONFIG.MOBILE_BREAKPOINT_QUERY);
     const workspace = document.getElementById('workspace');
@@ -3709,7 +3716,7 @@
     syncResponsiveStructure();
 
     // =========================================================================
-    // 5. UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (DYNAMIC CSS VAR BOUNDS)
+    // UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (DYNAMIC CSS VAR BOUNDS)
     // =========================================================================
     function makeResizable({ splitter, getContainer, getTargetPane, getDirection, getMinUnits, getMaxReservedUnits }) {
       let isDragging = false;
@@ -3901,7 +3908,7 @@
     }
 
     // =========================================================================
-    // 6. VISUALIZATION CONTROLS SYNCHRONIZATION
+    // VISUALIZATION CONTROLS SYNCHRONIZATION
     // =========================================================================
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
     const speedLabels = document.querySelectorAll('.playback-speed-value');
