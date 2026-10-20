@@ -11,7 +11,7 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>BST Ordering Property:</strong> The core invariant that `left_descendants < parent < right_descendants` holds
+<p><strong>BST Ordering Property:</strong> The core invariant that <code>left_descendants < parent < right_descendants</code> holds
         true for every single node in the tree.</p>
 
         <p><strong>In-Order Traversal:</strong> Visiting the left subtree first, then the current node, and finally the
@@ -30,7 +30,7 @@
             step down the tree, you cut the remaining search space roughly in half.</p>
 
         <p>As long as the tree remains reasonably balanced, searching, inserting, and deleting take time proportional to
-            the tree's height ($\mathcal{O}(\log n)$) rather than scanning through every item. Plus, unlike a hash
+            the tree's height (O(log n)) rather than scanning through every item. Plus, unlike a hash
             table, a binary search tree keeps all its data in sorted order at all times.</p><br>
 
         <h2>Where Are Binary Search Trees Used in the Real World?</h2>
@@ -38,7 +38,7 @@
         <p><strong>Sorted Map and Set Libraries:</strong> Power ordered data collections where users need to iterate
             through keys alphabetically or numerically.</p>
 
-        <p><strong>Range Queries in Databases:</strong> Quickly find all records whose prices fall between ¥20 and ¥50
+        <p><strong>Range Queries in Databases:</strong> Quickly find all records whose prices fall between $20 and $50
             without scanning the entire database.</p>
 
         <p><strong>Auto-Complete and Leaderboards:</strong> Maintain live rankings where scores are constantly updated

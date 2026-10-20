@@ -1,22 +1,22 @@
 <h1>Eertree</h1>
 
-<p>An Eertree (also known as a **Palindromic Tree**; its name is a playful palindrome-style reversal of "tree") is a
-    special type of tree-like graph structure that stores every distinct **palindromic substring** of a string in linear
-    $\mathcal{O}(n)$ space and time.</p>
+<p>An Eertree (also known as a <strong>Palindromic Tree</strong>; its name is a playful palindrome-style reversal of "tree") is a
+    special type of tree-like graph structure that stores every distinct <strong>palindromic substring</strong> of a string in linear
+    O(n) space and time.</p>
 
 <p>Imagine building snowmen from the inside out: you start with either a single snowball in the center (for odd-length
-    palindromes like `"ABA"`) or two touching snowballs (for even-length palindromes like `"ABBA"`). Every time you step
+    palindromes like <code>"ABA"</code>) or two touching snowballs (for even-length palindromes like <code>"ABBA"</code>). Every time you step
     down a branch in an eertree, you wrap the exact same matching letter onto *both* the front and the back of the
-    current palindrome (`P` $\rightarrow$ `x + P + x`).</p><br>
+    current palindrome (<code>P</code> &rarr; <code>x + P + x</code>).</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Dual Roots (Length `-1` and Length `0`):</strong> An eertree actually has **two roots**: an imaginary root of
-    length `-1` (so wrapping `'a'` around it yields the 1-letter palindrome `"a"`, since `-1 + 2 = 1`) and an
-    empty-string root of length `0` (so wrapping `'a'` around it yields `"aa"`).</p>
+<p><strong>Dual Roots (Length <code>-1</code> and Length <code>0</code>):</strong> An eertree actually has <strong>two roots</strong>: an imaginary root of
+    length <code>-1</code> (so wrapping <code>'a'</code> around it yields the 1-letter palindrome <code>"a"</code>, since <code>-1 + 2 = 1</code>) and an
+    empty-string root of length <code>0</code> (so wrapping <code>'a'</code> around it yields <code>"aa"</code>).</p>
 
-<p><strong>Palindrome Extension Edge (`x`):</strong> A directed edge labeled with character `x` from node `P` to node
-    `xPx`, adding `x` to both ends simultaneously.</p>
+<p><strong>Palindrome Extension Edge (<code>x</code>):</strong> A directed edge labeled with character <code>x</code> from node <code>P</code> to node
+    <code>xPx</code>, adding <code>x</code> to both ends simultaneously.</p>
 
 <p><strong>Suffix Link (Longest Palindromic Proper Suffix):</strong> A fallback pointer from each palindrome node to the
     longest smaller palindrome that sits at its right end, similar to failure links in Aho-Corasick or Suffix Trees.</p>
@@ -25,13 +25,13 @@
 <h2>How Does an Eertree Work Conceptually?</h2>
 
 <p>A fundamental theorem of string theory states that adding one character to the end of a string can create **at most
-    one new distinct palindrome**, which means a string of length $n$ contains at most $n$ distinct palindromic
+    one new distinct palindrome**, which means a string of length n contains at most n distinct palindromic
     substrings total!</p>
 
 <p>As you process a string character by character from left to right, the eertree follows suffix links from the longest
-    palindrome ending at the previous position until it finds one preceded by the new character `c`. It then either
-    steps along an existing `c` edge or creates one new node-constructing the entire catalog of all palindromes in
-    $\mathcal{O}(n)$ time.</p><br>
+    palindrome ending at the previous position until it finds one preceded by the new character <code>c</code>. It then either
+    steps along an existing <code>c</code> edge or creates one new node-constructing the entire catalog of all palindromes in
+    O(n) time.</p><br>
 
 <h2>Where Are Eertrees Used in the Real World?</h2>
 

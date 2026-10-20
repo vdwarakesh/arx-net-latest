@@ -1,49 +1,58 @@
 <h1>Bitset</h1>
 
-<p>A Bitset (also called a **Bitmap** or **Bit Array**) is a special type of bit-based structure that represents a
+<p>A Bitset (also called a <strong>Bitmap</strong> or <strong>Bit Array</strong>) is a special type of bit-based
+    structure that represents a
     fixed-size or bounded set of integers (or boolean flags) as a compact sequence of bits, supporting instant bit
     manipulation and 64-at-a-time set operations.</p>
 
-<p>Imagine an attendance sheet for a class of 100 students numbered `0` through `99`. Instead of writing down a list of
+<p>Imagine an attendance sheet for a class of 100 students numbered <code>0</code> through <code>99</code>. Instead of
+    writing down a list of
     names of everyone who showed up today, you have a strip of 100 checkboxes. If Student #42 is present, box #42 is
-    checked (`1`); if absent, it is blank (`0`). Comparing Monday's attendance with Tuesday's attendance is as easy as
+    checked (<code>1</code>); if absent, it is blank (<code>0</code>). Comparing Monday's attendance with Tuesday's
+    attendance is as easy as
     laying the two strips on top of each other.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>`Set(i)` / `Reset(i)` / `Flip(i)`:</strong> Setting bit `i` to `1` (`|= (1 << i)`), clearing bit `i` to `0`
-        (`&=~(1 << i)`), or toggling bit `i` (`^=(1 << i)`).</p>
+<p><strong><code>Set(i)</code> / <code>Reset(i)</code> / <code>Flip(i)</code>:</strong> Setting bit <code>i</code> to
+    <code>1</code> (<code>|= (1 << i)</code>), clearing bit <code>i</code> to <code>0</code>
+    (<code>&=~(1 << i)</code>), or toggling bit <code>i</code> (<code>^=(1 << i)</code>).</p>
 
-        <p><strong>`Test(i)`:</strong> Checking whether bit `i` is currently `1` or `0` in constant $\mathcal{O}(1)$
-            time.</p>
+<p><strong><code>Test(i)</code>:</strong> Checking whether bit <code>i</code> is currently <code>1</code> or
+    <code>0</code> in constant O(1)
+    time.</p>
 
-        <p><strong>Bitwise Set Intersection & Union:</strong> Computing the intersection of two sets via bitwise `AND`
-            (`A & B`) or their union via bitwise `OR` (`A | B`), processing 64 elements per CPU instruction.</p>
+<p><strong>Bitwise Set Intersection & Union:</strong> Computing the intersection of two sets via bitwise
+    <code>AND</code>
+    (<code>A & B</code>) or their union via bitwise <code>OR</code> (<code>A | B</code>), processing 64 elements per CPU
+    instruction.</p>
 
-        <p><strong>`Count()` (`popcount`):</strong> Counting the total number of `1`-bits in the bitset using fast
-            hardware population-count instructions.</p><br>
+<p><strong><code>Count()</code> (<code>popcount</code>):</strong> Counting the total number of <code>1</code>-bits in
+    the bitset using fast
+    hardware population-count instructions.</p><br>
 
-        <h2>How Does a Bitset Work Conceptually?</h2>
+<h2>How Does a Bitset Work Conceptually?</h2>
 
-        <p>A bitset of size $N$ allocates an array of $\lceil N / 64 \rceil$ unsigned 64-bit integers. Every integer $x
-            \in [0, N-1]$ corresponds directly to the $x$-th bit in that array.</p>
+<p>A bitset of size N allocates an array of ⌈N / 64 ⌉ unsigned 64-bit integers. Every integer x
+    &isin; [0, N-1] corresponds directly to the x-th bit in that array.</p>
 
-        <p>Because the CPU applies bitwise `AND`, `OR`, `XOR`, and bit-shifts to whole 64-bit words at once, operations
-            that normally take $\mathcal{O}(N)$ steps on a standard array take $\mathcal{O}(N / 64)$ steps on a
-            bitset-turning slow loops into cache-friendly, single-instruction sweeps.</p><br>
+<p>Because the CPU applies bitwise <code>AND</code>, <code>OR</code>, <code>XOR</code>, and bit-shifts to whole 64-bit
+    words at once, operations
+    that normally take O(N) steps on a standard array take O(N / 64) steps on a
+    bitset-turning slow loops into cache-friendly, single-instruction sweeps.</p><br>
 
-        <h2>Where Are Bitsets Used in the Real World?</h2>
+<h2>Where Are Bitsets Used in the Real World?</h2>
 
-        <p><strong>Sieve of Eratosthenes (Prime Number Generation):</strong> Mark composite numbers up to billions using
-            minimal RAM that fits cleanly inside CPU cache.</p>
+<p><strong>Sieve of Eratosthenes (Prime Number Generation):</strong> Mark composite numbers up to billions using
+    minimal RAM that fits cleanly inside CPU cache.</p>
 
-        <p><strong>Permission Flags & Feature Toggles:</strong> Pack dozens of user permissions or hardware status
-            registers into a single integer word.</p>
+<p><strong>Permission Flags & Feature Toggles:</strong> Pack dozens of user permissions or hardware status
+    registers into a single integer word.</p>
 
-        <p><strong>Graph Transitive Closure & Subgraph Matching:</strong> Speed up triangle counting, clique finding,
-            and reachability queries by a factor of 64 (`std::bitset` in C++).</p><br>
+<p><strong>Graph Transitive Closure & Subgraph Matching:</strong> Speed up triangle counting, clique finding,
+    and reachability queries by a factor of 64 (<code>std::bitset</code> in C++).</p><br>
 
-        <h2>Summary</h2>
+<h2>Summary</h2>
 
-        <p>A bitset maps integers and flags directly to individual bits inside 64-bit machine words, delivering an
-            8x–64x memory reduction and 64x faster bulk set operations.</p>
+<p>A bitset maps integers and flags directly to individual bits inside 64-bit machine words, delivering an
+    8x-64x memory reduction and 64x faster bulk set operations.</p>

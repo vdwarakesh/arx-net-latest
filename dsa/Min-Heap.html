@@ -1,14 +1,14 @@
 <h1>Min-Heap</h1>
 
-<p>A Min-Heap is a special type of binary heap in which every parent node has a value **less than or equal to** the values of its children. As a result, the smallest element in the entire collection always sits at the root node.</p>
+<p>A Min-Heap is a special type of binary heap in which every parent node has a value <strong>less than or equal to</strong> the values of its children. As a result, the smallest element in the entire collection always sits at the root node.</p>
 
 <p>Imagine a golf tournament leaderboard where the lowest score wins. The player with the lowest strokes sits at the very top of the pyramid, and every bracket level below holds players with progressively higher stroke counts. Whenever you want to know who is in first place with the lowest number, you just look at the top.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Min-Heap Property:</strong> The rule that `parent <= child` for every node in the heap.</p>
+<p><strong>Min-Heap Property:</strong> The rule that <code>parent <= child</code> for every node in the heap.</p>
 
-<p><strong>Extract-Min:</strong> Removing and returning the minimum element from the root in $\mathcal{O}(\log n)$ time.</p>
+<p><strong>Extract-Min:</strong> Removing and returning the minimum element from the root in O(log n) time.</p>
 
 <p><strong>Decrease-Key:</strong> Lowering the value of an existing node, which may cause it to bubble upward toward the root.</p><br>
 
@@ -24,7 +24,7 @@
 
 <p><strong>Task Timers and Cron Schedulers:</strong> Keep the event with the earliest upcoming timestamp at the root so the system knows exactly how long to sleep.</p>
 
-<p><strong>Merging $K$ Sorted Streams:</strong> Combine dozens of sorted log files in chronological order by always pulling the earliest timestamp from a min-heap.</p><br>
+<p><strong>Merging K Sorted Streams:</strong> Combine dozens of sorted log files in chronological order by always pulling the earliest timestamp from a min-heap.</p><br>
 
 <h2>Summary</h2>
 

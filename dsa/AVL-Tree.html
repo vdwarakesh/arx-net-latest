@@ -6,17 +6,17 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Balance Factor:</strong> The height of a node's left subtree minus the height of its right subtree. In a valid AVL tree, every node's balance factor must be `-1`, `0`, or `+1`.</p>
+<p><strong>Balance Factor:</strong> The height of a node's left subtree minus the height of its right subtree. In a valid AVL tree, every node's balance factor must be <code>-1</code>, <code>0</code>, or <code>+1</code>.</p>
 
 <p><strong>Tree Rotation:</strong> A fast, local pointer-swapping operation (Left, Right, Left-Right, or Right-Left) that shifts a heavy branch upward and a light branch downward without breaking the sorted BST order.</p>
 
-<p><strong>Strict Height Balance:</strong> The guarantee that the overall height of an AVL tree with $n$ nodes never exceeds roughly $1.44 \log_2(n)$.</p><br>
+<p><strong>Strict Height Balance:</strong> The guarantee that the overall height of an AVL tree with n nodes never exceeds roughly 1.44 log<sub>2</sub>(n).</p><br>
 
 <h2>How Does an AVL Tree Work Conceptually?</h2>
 
-<p>Standard binary search trees have a major weakness: if you insert numbers in sorted order (`1, 2, 3, 4, 5`), the tree grows into a lopsided straight line and slows down to a crawl. An AVL tree prevents this by storing each node's height and checking the balance factor along the path back to the root after every insertion or deletion.</p>
+<p>Standard binary search trees have a major weakness: if you insert numbers in sorted order (<code>1, 2, 3, 4, 5</code>), the tree grows into a lopsided straight line and slows down to a crawl. An AVL tree prevents this by storing each node's height and checking the balance factor along the path back to the root after every insertion or deletion.</p>
 
-<p>The moment any node's balance factor reaches `-2` or `+2`, the AVL tree performs one or two crisp rotations at that spot to restore balance immediately. Because it stays so tightly balanced, lookups in an AVL tree are exceptionally fast.</p><br>
+<p>The moment any node's balance factor reaches <code>-2</code> or <code>+2</code>, the AVL tree performs one or two crisp rotations at that spot to restore balance immediately. Because it stays so tightly balanced, lookups in an AVL tree are exceptionally fast.</p><br>
 
 <h2>Where Are AVL Trees Used in the Real World?</h2>
 

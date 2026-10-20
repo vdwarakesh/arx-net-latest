@@ -1,8 +1,8 @@
 <h1>Link-Cut Tree</h1>
 
 <p>A Link-Cut Tree (invented by Daniel Sleator and Robert Tarjan) is a special type of dynamic tree data structure that
-    maintains a forest of rooted trees and allows you to **cut branches apart**, **link separate trees together**, and
-    **query or update any node-to-root path** in $\mathcal{O}(\log n)$ amortized time.</p>
+    maintains a forest of rooted trees and allows you to <strong>cut branches apart</strong>, <strong>link separate trees together</strong>, and
+    <strong>query or update any node-to-root path</strong> in O(log n) amortized time.</p>
 
 <p>Imagine a railroad network shaped like a branching tree where some tracks have electric switches currently flipped
     "on" (forming active express routes) and side spurs have switches flipped "off." Whenever you want to run a train
@@ -13,33 +13,33 @@
 
 <p><strong>Preferred Child & Preferred Path:</strong> Each node remembers which of its children was accessed most
     recently. Chaining these "preferred" edges together breaks the entire tree into a set of disjoint vertical
-    **Preferred Paths**.</p>
+    <strong>Preferred Paths</strong>.</p>
 
-<p><strong>Auxiliary Splay Trees:</strong> Every preferred path is stored inside its own self-adjusting **Splay Tree**,
+<p><strong>Auxiliary Splay Trees:</strong> Every preferred path is stored inside its own self-adjusting <strong>Splay Tree</strong>,
     keyed by node depth (shallowest nodes on the left, deepest on the right).</p>
 
-<p><strong>`Access(v)` Operation:</strong> The core superpower of a Link-Cut Tree, which restructures the splay trees so
-    that the path from the root down to node `v` becomes one single continuous preferred path with no preferred child
-    below `v`.</p>
+<p><strong><code>Access(v)</code> Operation:</strong> The core superpower of a Link-Cut Tree, which restructures the splay trees so
+    that the path from the root down to node <code>v</code> becomes one single continuous preferred path with no preferred child
+    below <code>v</code>.</p>
 
-<p><strong>`Link(u, v)` and `Cut(v)`:</strong> Connecting two separate trees by adding an edge, or severing the edge
-    between a node and its parent-both in $\mathcal{O}(\log n)$ amortized time.</p><br>
+<p><strong><code>Link(u, v)</code> and <code>Cut(v)</code>:</strong> Connecting two separate trees by adding an edge, or severing the edge
+    between a node and its parent-both in O(log n) amortized time.</p><br>
 
 <h2>How Does a Link-Cut Tree Work Conceptually?</h2>
 
 <p>A standard tree becomes a nightmare to query if nodes can be arbitrarily disconnected and reattached millions of
     times-even worse if a single tree is stretched into a long, unbalanced chain. A Link-Cut Tree solves both problems
-    by decomposing the *represented tree* into paths and storing each path inside a *balanced Splay Tree* connected by
-    `path-parent` pointers.</p>
+    by decomposing the <strong>represented tree</strong> into paths and storing each path inside a <strong>balanced Splay Tree</strong> connected by
+    <code>path-parent</code> pointers.</p>
 
-<p>Calling `Access(v)` walks up `path-parent` links and splays nodes to assemble the exact root-to-`v` route into one
+<p>Calling <code>Access(v)</code> walks up <code>path-parent</code> links and splays nodes to assemble the exact root-to-<code>v</code> route into one
     balanced splay tree. Once assembled, finding the path sum, path maximum, or Lowest Common Ancestor (LCA)-or
     cutting/linking an edge-takes a single step at the splay tree root.</p><br>
 
 <h2>Where Are Link-Cut Trees Used in the Real World?</h2>
 
 <p><strong>Maximum Network Flow Algorithms (Dinic's / Goldberg-Tarjan):</strong> Push flow along augmenting paths of
-    vertices in $\mathcal{O}(\log V)$ time instead of walking edge by edge.</p>
+    vertices in O(log V) time instead of walking edge by edge.</p>
 
 <p><strong>Dynamic Minimum Spanning Trees:</strong> Maintain the cheapest spanning network as communication links are
     added, removed, or re-weighted in real time.</p>

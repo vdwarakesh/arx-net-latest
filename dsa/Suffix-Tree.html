@@ -1,38 +1,38 @@
 <h1>Suffix Tree</h1>
 
-<p>A Suffix Tree is a special type of tree-specifically a **compressed suffix trie**-that stores all suffixes of a
-    string of length $n$ in just $\mathcal{O}(n)$ space and can be constructed in linear $\mathcal{O}(n)$ time by
+<p>A Suffix Tree is a special type of tree-specifically a <strong>compressed suffix trie</strong>-that stores all suffixes of a
+    string of length n in just O(n) space and can be constructed in linear O(n) time by
     collapsing non-branching character chains into index-pair edges.</p>
 
-<p>Imagine an index for an entire 500-page novel that doesn't just list major words, but indexes *every single phrase,
-    sentence fragment, and character sequence* in the book-yet instead of copying paragraphs into the index, each branch
-    simply lists `(Page 42, Character 10 to 85)`. That compact pointer trick shrinks a massive quadratic trie down to
+<p>Imagine an index for an entire 500-page novel that doesn't just list major words, but indexes <strong>every single phrase,
+    sentence fragment, and character sequence</strong> in the book-yet instead of copying paragraphs into the index, each branch
+    simply lists <code>(Page 42, Character 10 to 85)</code>. That compact pointer trick shrinks a massive quadratic trie down to
     the size of the book itself.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Edge Index Labels `(start, end)`:</strong> Instead of storing actual string copies on compressed edges, each
-    edge stores two integer indices pointing directly into the original master text, keeping every edge $\mathcal{O}(1)$
+<p><strong>Edge Index Labels <code>(start, end)</code>:</strong> Instead of storing actual string copies on compressed edges, each
+    edge stores two integer indices pointing directly into the original master text, keeping every edge O(1)
     in size.</p>
 
 <p><strong>Ukkonen's Algorithm:</strong> The famous online algorithm that builds a full suffix tree character by
-    character from left to right in linear $\mathcal{O}(n)$ time.</p>
+    character from left to right in linear O(n) time.</p>
 
-<p><strong>Suffix Links:</strong> Internal shortcut pointers connecting a node for string `c + S` to the node for `S`,
+<p><strong>Suffix Links:</strong> Internal shortcut pointers connecting a node for string <code>c + S</code> to the node for <code>S</code>,
     enabling linear-time construction and cross-string comparisons.</p>
 
 <p><strong>Generalized Suffix Tree:</strong> A single suffix tree built over multiple distinct strings (each terminated
-    by a unique symbol `#`, `$`, `%`) to find shared substrings across documents.</p><br>
+    by a unique symbol <code>#</code>, <code></code>, <code>%</code>) to find shared substrings across documents.</p><br>
 
 <h2>How Does a Suffix Tree Work Conceptually?</h2>
 
 <p>An uncompressed Suffix Trie for a 1-million-character genome would require roughly 500 billion nodes and crash any
     server. A Suffix Tree solves this in two steps: first, it collapses every chain of one-child nodes into a single
-    edge (guaranteeing at most $2n$ nodes total); second, it replaces the text on every edge with a pair of `[start,
-    end]` numbers referencing the original string.</p>
+    edge (guaranteeing at most 2n nodes total); second, it replaces the text on every edge with a pair of <code>[start,
+    end]</code> numbers referencing the original string.</p>
 
-<p>Once built in $\mathcal{O}(n)$ time, it acts as a Swiss Army knife for strings: you can find any substring of length
-    $m$ in $\mathcal{O}(m)$ time, find the longest repeated substring via the deepest internal node, or find the longest
+<p>Once built in O(n) time, it acts as a Swiss Army knife for strings: you can find any substring of length
+    m in O(m) time, find the longest repeated substring via the deepest internal node, or find the longest
     common substring of multiple texts.</p><br>
 
 <h2>Where Are Suffix Trees Used in the Real World?</h2>

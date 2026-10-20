@@ -1,7 +1,7 @@
 <h1>FIFO Cache</h1>
 
-<p>A FIFO Cache (**First-In, First-Out** Cache) is a special type of cache structure that evicts items strictly in the
-    **chronological order they were first inserted**, completely ignoring how often or how recently an item has been
+<p>A FIFO Cache (<strong>First-In, First-Out</strong> Cache) is a special type of cache structure that evicts items strictly in the
+    <strong>chronological order they were first inserted</strong>, completely ignoring how often or how recently an item has been
     read since it arrived.</p>
 
 <p>Imagine a rolling 30-day security camera DVR buffer or a bakery display shelf. Every new tray of bread goes in on the
@@ -13,19 +13,19 @@
 <p><strong>Arrival Order (Insertion Timestamp):</strong> The strict queue order determined solely by when a key was
     first added to the cache.</p>
 
-<p><strong>Zero Read-Update Overhead:</strong> Reading an existing key (`Get`) never moves pointers or updates counters,
+<p><strong>Zero Read-Update Overhead:</strong> Reading an existing key (<code>Get</code>) never moves pointers or updates counters,
     making read hits completely lock-free and ultra-fast.</p>
 
-<p><strong>Hash Map + Circular Queue Architecture:</strong> Combining a Hash Map for $\mathcal{O}(1)$ lookups with a
+<p><strong>Hash Map + Circular Queue Architecture:</strong> Combining a Hash Map for O(1) lookups with a
     simple FIFO Queue (or ring buffer) tracking insertion order.</p><br>
 
 <h2>How Does a FIFO Cache Work Conceptually?</h2>
 
-<p>In an LRU or LFU cache, every single read (`Get`) has to mutate pointers in a doubly linked list-which writes to
+<p>In an LRU or LFU cache, every single read (<code>Get</code>) has to mutate pointers in a doubly linked list-which writes to
     memory and causes CPU threads to fight over locks. A FIFO cache eliminates all work during reads: when a key is
     read, the Hash Map simply returns the value without touching the queue at all!</p>
 
-<p>Only when a brand-new key is inserted (`Put`) does it join the back of the queue, while the oldest key at the front
+<p>Only when a brand-new key is inserted (<code>Put</code>) does it join the back of the queue, while the oldest key at the front
     of the queue is dequeued and deleted from the Hash Map.</p><br>
 
 <h2>Where Are FIFO Caches Used in the Real World?</h2>

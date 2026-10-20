@@ -6,17 +6,17 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Tail-Pointer Optimization:</strong> Maintaining a single external pointer to the *last* node rather than the first, which gives instant one-step access to both the tail and the head (`tail.next`).</p>
+<p><strong>Tail-Pointer Optimization:</strong> Maintaining a single external pointer to the *last* node rather than the first, which gives instant one-step access to both the tail and the head (<code>tail.next</code>).</p>
 
 <p><strong>One-Way Loop:</strong> A ring that can be traversed continuously, but strictly in the forward direction.</p><br>
 
 <h2>How Does a Circular Singly Linked List Work Conceptually?</h2>
 
-<p>Each node holds its data and a single `next` link. By pointing the external reference at the *tail* node instead of the head, a circular singly linked list achieves a clever trick: you can insert new nodes at the very front *or* the very back of the list in constant time using just one pointer, because the head is always just one step ahead of the tail.</p><br>
+<p>Each node holds its data and a single <code>next</code> link. By pointing the external reference at the *tail* node instead of the head, a circular singly linked list achieves a clever trick: you can insert new nodes at the very front *or* the very back of the list in constant time using just one pointer, because the head is always just one step ahead of the tail.</p><br>
 
 <h2>Where Are Circular Singly Linked Lists Used in the Real World?</h2>
 
-<p><strong>Lightweight Queue Implementations:</strong> Build full-featured First-In, First-Out queues using only a single external `tail` pointer instead of separate `head` and `tail` pointers.</p>
+<p><strong>Lightweight Queue Implementations:</strong> Build full-featured First-In, First-Out queues using only a single external <code>tail</code> pointer instead of separate <code>head</code> and <code>tail</code> pointers.</p>
 
 <p><strong>Token Ring Networks:</strong> Pass a virtual permission token around a one-way ring of connected devices.</p>
 

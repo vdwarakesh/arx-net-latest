@@ -4,9 +4,9 @@
     of separate words. By inserting the full string and every progressively shorter ending of that string into one
     prefix tree, it turns any substring search into a simple prefix walk from the root.</p>
 
-<p>Imagine taking the word `"BANANA"` and writing down all its endings on separate index cards: `"BANANA"`, `"ANANA"`,
-    `"NANA"`, `"ANA"`, `"NA"`, and `"A"`. If you organize all six endings inside a standard trie, any smaller piece of
-    the word-like `"NAN"`-is guaranteed to appear right at the beginning of one of those cards. A suffix trie indexes
+<p>Imagine taking the word <code>"BANANA"</code> and writing down all its endings on separate index cards: <code>"BANANA"</code>, <code>"ANANA"</code>,
+    <code>"NANA"</code>, <code>"ANA"</code>, <code>"NA"</code>, and <code>"A"</code>. If you organize all six endings inside a standard trie, any smaller piece of
+    the word-like <code>"NAN"</code>-is guaranteed to appear right at the beginning of one of those cards. A suffix trie indexes
     text using this exact insight.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
@@ -17,21 +17,21 @@
 <p><strong>Substring as a Prefix of a Suffix:</strong> The fundamental rule of string indexing: every substring inside a
     text is simply the starting prefix of at least one suffix of that text.</p>
 
-<p><strong>Terminal Marker (`$`):</strong> A special end-of-string symbol appended to the text (such as `"BANANA$"`) to
+<p><strong>Terminal Marker (<code></code>):</strong> A special end-of-string symbol appended to the text (such as <code>"BANANA"</code>) to
     ensure no suffix is hidden inside a longer suffix without its own distinct leaf node.</p>
 
-<p><strong>Suffix Link:</strong> An auxiliary shortcut pointer leading from a node representing string `c + S` to the
-    node representing `S`, used to speed up construction and traversal.</p><br>
+<p><strong>Suffix Link:</strong> An auxiliary shortcut pointer leading from a node representing string <code>c + S</code> to the
+    node representing <code>S</code>, used to speed up construction and traversal.</p><br>
 
 <h2>How Does a Suffix Trie Work Conceptually?</h2>
 
-<p>To build a suffix trie for a string of length $n$, you insert all $n$ suffixes into a standard character-by-character
-    trie. Once constructed, checking whether a pattern of length $m$ appears anywhere inside the huge original text
-    takes only $O(m)$ steps-you simply start at the root and follow the letters of your pattern.</p>
+<p>To build a suffix trie for a string of length n, you insert all n suffixes into a standard character-by-character
+    trie. Once constructed, checking whether a pattern of length m appears anywhere inside the huge original text
+    takes only O(m) steps-you simply start at the root and follow the letters of your pattern.</p>
 
-<p>While conceptually simple and blazingly fast for queries, an uncompressed suffix trie can require up to $O(n^2)$
+<p>While conceptually simple and blazingly fast for queries, an uncompressed suffix trie can require up to O(n<sup>2</sup>)
     nodes in memory for long strings, which is why large-scale systems often compress its single-child chains into a
-    **Suffix Tree**.</p><br>
+    <strong>Suffix Tree</strong>.</p><br>
 
 <h2>Where Are Suffix Tries Used in the Real World?</h2>
 

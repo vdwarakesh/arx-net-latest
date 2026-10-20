@@ -1,6 +1,6 @@
 <h1>Circular Linked List</h1>
 
-<p>A Circular Linked List is a special type of linked list in which the last node points directly back to the first node instead of pointing to `null`, forming a continuous, unbroken loop. There is no true dead end anywhere in the structure.</p>
+<p>A Circular Linked List is a special type of linked list in which the last node points directly back to the first node instead of pointing to <code>null</code>, forming a continuous, unbroken loop. There is no true dead end anywhere in the structure.</p>
 
 <p>Imagine a group of players sitting in a circle for a board game. After the last player finishes their turn, play immediately passes back to the first player without stopping or resetting. A circular linked list arranges its nodes in this exact endless ring.</p><br>
 
@@ -14,7 +14,7 @@
 
 <h2>How Does a Circular Linked List Work Conceptually?</h2>
 
-<p>In a standard linked list, reaching the end means hitting a `null` wall. In a circular linked list, the tail node's forward link is wired directly to the head node. Because the structure is a continuous loop, you can start at *any* node in the list and still visit every other node by simply following the links around the circle.</p>
+<p>In a standard linked list, reaching the end means hitting a <code>null</code> wall. In a circular linked list, the tail node's forward link is wired directly to the head node. Because the structure is a continuous loop, you can start at *any* node in the list and still visit every other node by simply following the links around the circle.</p>
 
 <p>To prevent programs from getting stuck spinning around the ring forever, algorithms remember the address of the starting node and stop as soon as they encounter it a second time.</p><br>
 

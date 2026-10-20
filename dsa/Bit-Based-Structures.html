@@ -1,45 +1,45 @@
 <h1>Bit-Based Structures</h1>
 
 <p>Bit-Based Structures are a family of ultra-compact data structures that store and manipulate information at the level
-    of **individual binary bits** (`0` and `1`) rather than spending full bytes or 32/64-bit machine words on each item.
+    of <strong>individual binary bits</strong> (<code>0</code> and <code>1</code>) rather than spending full bytes or 32/64-bit machine words on each item.
 </p>
 
-<p>Imagine a row of 64 light switches on a control panel. Each switch can represent a True/False answer (On = `1`, Off =
-    `0`). Instead of writing `"True"` or `"False"` on 64 separate sheets of paper, a single 64-bit integer in your
+<p>Imagine a row of 64 light switches on a control panel. Each switch can represent a True/False answer (On = <code>1</code>, Off =
+    <code>0</code>). Instead of writing <code>"True"</code> or <code>"False"</code> on 64 separate sheets of paper, a single 64-bit integer in your
     computer's CPU already contains 64 miniature switches that can all be flipped, compared, or counted in a single
     clock cycle!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Bit (`0` or `1`):</strong> The smallest possible unit of digital information, representing a boolean state
+<p><strong>Bit (<code>0</code> or <code>1</code>):</strong> The smallest possible unit of digital information, representing a boolean state
     (false/true, absent/present).</p>
 
-<p><strong>Machine Word (`uint64`):</strong> A native 64-bit chunk of CPU memory that packs 64 individual bits side by
+<p><strong>Machine Word (<code>uint64</code>):</strong> A native 64-bit chunk of CPU memory that packs 64 individual bits side by
     side.</p>
 
-<p><strong>Bit-Level Parallelism (Word-RAM):</strong> Performing bitwise operations (`AND`, `OR`, `XOR`, `NOT`, shifts)
+<p><strong>Bit-Level Parallelism (Word-RAM):</strong> Performing bitwise operations (<code>AND</code>, <code>OR</code>, <code>XOR</code>, <code>NOT</code>, shifts)
     on 64 bits simultaneously in a single CPU instruction.</p>
 
-<p><strong>Hardware Intrinsics (`popcount`, `ctz`, `clz`):</strong> Dedicated silicon CPU instructions that count how
-    many `1`-bits are in a 64-bit word (`popcount`) or find the first `1`-bit (`ctz`) in one cycle.</p><br>
+<p><strong>Hardware Intrinsics (<code>popcount</code>, <code>ctz</code>, <code>clz</code>):</strong> Dedicated silicon CPU instructions that count how
+    many <code>1</code>-bits are in a 64-bit word (<code>popcount</code>) or find the first <code>1</code>-bit (<code>ctz</code>) in one cycle.</p><br>
 
 <h2>How Do Bit-Based Structures Work Conceptually?</h2>
 
-<p>In many programming languages, a standard `boolean` variable takes up a full 1 byte (8 bits) or more because memory
+<p>In many programming languages, a standard <code>boolean</code> variable takes up a full 1 byte (8 bits) or more because memory
     addresses point to bytes, not individual bits-wasting 87.5% of the space. Bit-based structures pack 64 boolean flags
     tightly into each 64-bit integer of an array.</p>
 
-<p>To check or flip the $i$-th flag, the structure divides $i$ by 64 (`i >> 6`) to find the right 64-bit word, and uses
-    the remainder (`i & 63`) as a bitmask shift (`1ULL << (i & 63)`). This shrinks memory usage by **8x to 64x** while
-        speeding up bulk set operations by up to **64x**.</p><br>
+<p>To check or flip the i-th flag, the structure divides i by 64 (<code>i >> 6</code>) to find the right 64-bit word, and uses
+    the remainder (<code>i & 63</code>) as a bitmask shift (<code>1ULL << (i & 63)</code>). This shrinks memory usage by <strong>8x to 64x</strong> while
+        speeding up bulk set operations by up to <strong>64x</strong>.</p><br>
 
         <h2>Where Are Bit-Based Structures Used in the Real World?</h2>
 
         <p><strong>Database Columnar Indexes (Bitmap Indexes):</strong> Filter millions of rows across categories (e.g.,
-            `InStock AND FreeShipping`) by intersecting bit arrays at hardware speed.</p>
+            <code>InStock AND FreeShipping</code>) by intersecting bit arrays at hardware speed.</p>
 
         <p><strong>Operating System Disk & Memory Allocators:</strong> Track which disk sectors or memory pages are
-            currently free (`0`) or occupied (`1`).</p>
+            currently free (<code>0</code>) or occupied (<code>1</code>).</p>
 
         <p><strong>Compressed Text & Succinct Data Structures:</strong> Store massive graphs, trees, and genomic indexes
             close to the theoretical information-theoretic minimum size.</p><br>

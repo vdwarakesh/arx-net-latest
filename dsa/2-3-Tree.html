@@ -1,18 +1,18 @@
 <h1>2-3 Tree</h1>
 
-<p>A 2-3 Tree is a special type of B-tree (specifically of minimum degree/order 3) in which every internal node is either a **2-node** (holding 1 key and 2 children) or a **3-node** (holding 2 keys and 3 children), and every leaf node sits at the exact same depth (`perfectly_balanced`).</p>
+<p>A 2-3 Tree is a special type of B-tree (specifically of minimum degree/order 3) in which every internal node is either a <strong>2-node</strong> (holding 1 key and 2 children) or a <strong>3-node</strong> (holding 2 keys and 3 children), and every leaf node sits at the exact same depth (<code>perfectly_balanced</code>).</p>
 
 <p>Imagine a road signpost that can either hold one town name splitting traffic Left and Right (smaller or larger), or two town names splitting traffic Left, Middle, and Right (smaller than both, in between the two, or larger than both). Whenever a signpost gets a third town name crammed onto it, it splits cleanly in two and sends its middle name up to the signpost above it.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>2-Node:</strong> A standard binary-style node containing 1 key ($K_1$) and 2 child branches (values $< K_1$, and values $> K_1$).</p>
+<p><strong>2-Node:</strong> A standard binary-style node containing 1 key (K<sub>1</sub>) and 2 child branches (values < K<sub>1</sub>, and values > K<sub>1</sub>).</p>
 
-<p><strong>3-Node (`max_degree_3` / `multi_way_branching`):</strong> A wider node containing 2 sorted keys ($K_1 < K_2$) and 3 child branches (values $< K_1$, values between $K_1$ and $K_2$, and values $> K_2$).</p>
+<p><strong>3-Node (<code>max_degree_3</code> / <code>multi_way_branching</code>):</strong> A wider node containing 2 sorted keys (K<sub>1</sub> < K<sub>2</sub>) and 3 child branches (values < K<sub>1</sub>, values between K<sub>1</sub> and K<sub>2</sub>, and values > K<sub>2</sub>).</p>
 
 <p><strong>Temporary 4-Node Split:</strong> When inserting into a 3-node briefly creates 3 keys, the node splits into two 2-nodes and pushes the middle key up to its parent.</p>
 
-<p><strong>Perfect Balance (`perfectly_balanced`):</strong> Because splits only ever create a new root at the top when the whole tree fills up, all root-to-leaf paths have the exact same length.</p><br>
+<p><strong>Perfect Balance (<code>perfectly_balanced</code>):</strong> Because splits only ever create a new root at the top when the whole tree fills up, all root-to-leaf paths have the exact same length.</p><br>
 
 <h2>How Does a 2-3 Tree Work Conceptually?</h2>
 

@@ -1,30 +1,30 @@
 <h1>Order Statistic Tree</h1>
 
-<p>An Order Statistic Tree is a special type of binary search tree that augments every node with the exact count of nodes in its subtree, enabling it to answer rank and $k$-th smallest element queries in logarithmic time.</p>
+<p>An Order Statistic Tree is a special type of binary search tree that augments every node with the exact count of nodes in its subtree, enabling it to answer rank and k-th smallest element queries in logarithmic time.</p>
 
-<p>Imagine a live marathon leaderboard where runners are constantly finishing or having their times adjusted. Not only can you look up a runner by their time, you can instantly ask: *"Who is currently in 500th place?"* or *"What rank is a runner with a time of 3 hours and 12 minutes?"* An order statistic tree answers both questions effortlessly.</p><br>
+<p>Imagine a live marathon leaderboard where runners are constantly finishing or having their times adjusted. Not only can you look up a runner by their time, you can instantly ask: <strong>"Who is currently in 500th place?"</strong> or <strong>"What rank is a runner with a time of 3 hours and 12 minutes?"</strong> An order statistic tree answers both questions effortlessly.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Subtree Size Augmentation:</strong> Storing an integer `size` inside every node equal to `left.size + right.size + 1`.</p>
+<p><strong>Subtree Size Augmentation:</strong> Storing an integer <code>size</code> inside every node equal to <code>left.size + right.size + 1</code>.</p>
 
-<p><strong>Select ($k$-th Order Statistic):</strong> Finding the element with the exact $k$-th smallest value in the tree in $\mathcal{O}(\log n)$ time.</p>
+<p><strong>Select (k-th Order Statistic):</strong> Finding the element with the exact k-th smallest value in the tree in O(log n) time.</p>
 
-<p><strong>Rank Query:</strong> Determining how many elements in the tree are strictly smaller than a given value $x$ in $\mathcal{O}(\log n)$ time.</p><br>
+<p><strong>Rank Query:</strong> Determining how many elements in the tree are strictly smaller than a given value x in O(log n) time.</p><br>
 
 <h2>How Does an Order Statistic Tree Work Conceptually?</h2>
 
 <p>Built on top of any self-balancing binary search tree (such as a Red-Black Tree, AVL Tree, or Treap), an order statistic tree maintains one extra integer per node: the total number of descendants in that node's subtree. Whenever a node is inserted, deleted, or rotated, its size counter is updated in constant time from its two children.</p>
 
-<p>To find the 50th smallest item (`Select(50)`), you check the root's left child size. If the left subtree holds 30 items, you know the root itself is the 31st item, so you step into the right subtree and look for the $50 - 31 = 19\text{th}$ smallest item there.</p><br>
+<p>To find the 50th smallest item (<code>Select(50)</code>), you check the root's left child size. If the left subtree holds 30 items, you know the root itself is the 31st item, so you step into the right subtree and look for the 50 - 31 = 19th smallest item there.</p><br>
 
 <h2>Where Are Order Statistic Trees Used in the Real World?</h2>
 
 <p><strong>Live Financial Order Books and Percentiles:</strong> Compute real-time median, 95th percentile, or 99th percentile latencies as data streams in.</p>
 
-<p><strong>Gaming Ranking Systems:</strong> Immediately tell a player their exact global rank (e.g., `#14,203 out of 2,000,000`) whenever their score changes.</p>
+<p><strong>Gaming Ranking Systems:</strong> Immediately tell a player their exact global rank (e.g., <code>#14,203 out of 2,000,000</code>) whenever their score changes.</p>
 
-<p><strong>Language Libraries:</strong> Power C++ GNU PBDS `tree_order_statistics_node_update` and Python's `SortedList` indexing.</p><br>
+<p><strong>Language Libraries:</strong> Power C++ GNU PBDS <code>tree_order_statistics_node_update</sub></code> and Python's <code>SortedList</code> indexing.</p><br>
 
 <h2>Summary</h2>
 

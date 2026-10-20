@@ -1,8 +1,8 @@
 <h1>Hash Map</h1>
 
-<p>A Hash Map (also called a Dictionary or Associative Array) is a special type of hash table that stores data as **Key-Value pairs**, where every unique key maps directly to an associated value.</p>
+<p>A Hash Map (also called a Dictionary or Associative Array) is a special type of hash table that stores data as <strong>Key-Value pairs</strong>, where every unique key maps directly to an associated value.</p>
 
-<p>Imagine a contact list on your smartphone. Each person's name is the **Key**, and their phone number is the **Value**. You never search your contacts by "Slot #14"; you search by the name "Alice", and the phone immediately retrieves Alice's phone number. No two contacts share the exact same unique identifier key, though two people might share the same home phone number.</p><br>
+<p>Imagine a contact list on your smartphone. Each person's name is the <strong>Key</strong>, and their phone number is the <strong>Value</strong>. You never search your contacts by "Slot #14"; you search by the name "Alice", and the phone immediately retrieves Alice's phone number. No two contacts share the exact same unique identifier key, though two people might share the same home phone number.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
@@ -14,11 +14,11 @@
 
 <h2>How Does a Hash Map Work Conceptually?</h2>
 
-<p>When you store a pair like `("apple", 1.99)` in a hash map, only the **key** (`"apple"`) is fed into the hash function to determine which bucket the pair lands in. The value (`1.99`) simply rides along with the key. If you insert a new value using a key that already exists in the map, the hash map locates the existing key and overwrites its old value with the new one, guaranteeing that keys remain strictly unique.</p><br>
+<p>When you store a pair like <code>("apple", 1.99)</code> in a hash map, only the <strong>key</strong> (<code>"apple"</code>) is fed into the hash function to determine which bucket the pair lands in. The value (<code>1.99</code>) simply rides along with the key. If you insert a new value using a key that already exists in the map, the hash map locates the existing key and overwrites its old value with the new one, guaranteeing that keys remain strictly unique.</p><br>
 
 <h2>Where Are Hash Maps Used in the Real World?</h2>
 
-<p><strong>JSON and Configuration Objects:</strong> Represent structured settings and API payloads (such as mapping `"theme"` to `"dark"`).</p>
+<p><strong>JSON and Configuration Objects:</strong> Represent structured settings and API payloads (such as mapping <code>"theme"</code> to <code>"dark"</code>).</p>
 
 <p><strong>Counting Frequencies:</strong> Count how many times each word appears in a book by mapping each word (key) to its running tally (value).</p>
 

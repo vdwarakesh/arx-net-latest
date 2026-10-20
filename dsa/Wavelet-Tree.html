@@ -1,34 +1,34 @@
 <h1>Wavelet Tree</h1>
 
-<p>A Wavelet Tree is a special type of binary tree that recursively partitions a sequence of values by their **alphabet
-    range** (rather than by array position) while preserving their original left-to-right order using compact bitvectors
+<p>A Wavelet Tree is a special type of binary tree that recursively partitions a sequence of values by their <strong>alphabet
+    range</strong> (rather than by array position) while preserving their original left-to-right order using compact bitvectors
     at every node.</p>
 
 <p>Imagine sorting a deck of cards numbered 1 through 8 without losing track of how the deck was originally shuffled. At
-    the top node, you don't move the cards; you simply write down a `0` for every card $\le 4$ and a `1` for every card
-    $> 4$, then deal the `0` cards to the left child and the `1` cards to the right child in their exact original order,
+    the top node, you don't move the cards; you simply write down a <code>0</code> for every card &le; 4 and a <code>1</code> for every card
+    > 4, then deal the <code>0</code> cards to the left child and the <code>1</code> cards to the right child in their exact original order,
     repeating until each leaf holds a single card value.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Alphabet Partitioning:</strong> Unlike a Segment Tree (which splits array *positions* $[L, R]$ in half), a
-    Wavelet Tree splits the *value range* $[\sigma_{low}, \sigma_{high}]$ in half at each level.</p>
+<p><strong>Alphabet Partitioning:</strong> Unlike a Segment Tree (which splits array <strong>positions</strong> [L, R] in half), a
+    Wavelet Tree splits the <strong>value range</strong> [&sigma;<sub>low</sub>, &sigma;<sub>high</sub>] in half at each level.</p>
 
-<p><strong>Node Bitvector:</strong> A compact array of `0`s and `1`s at each node recording whether each element fell
-    into the lower half (`0`) or upper half (`1`) of the current value range.</p>
+<p><strong>Node Bitvector:</strong> A compact array of <code>0</code>s and <code>1</code>s at each node recording whether each element fell
+    into the lower half (<code>0</code>) or upper half (<code>1</code>) of the current value range.</p>
 
-<p><strong>Constant-Time `Rank` Queries on Bitvectors:</strong> Counting how many `0`s or `1`s appear up to index $i$ in
-    $\mathcal{O}(1)$ time, which lets you map any subarray $[L, R]$ down to a child node in a single step.</p><br>
+<p><strong>Constant-Time <code>Rank</code> Queries on Bitvectors:</strong> Counting how many <code>0</code>s or <code>1</code>s appear up to index i in
+    O(1) time, which lets you map any subarray [L, R] down to a child node in a single step.</p><br>
 
 <h2>How Does a Wavelet Tree Work Conceptually?</h2>
 
-<p>Because each node's bitvector supports $\mathcal{O}(1)$ `rank` queries (counting `0`s and `1`s up to any position),
-    you can translate any subarray range $[L, R]$ at the root into the corresponding range of elements in the left or
+<p>Because each node's bitvector supports O(1) <code>rank</code> queries (counting <code>0</code>s and <code>1</code>s up to any position),
+    you can translate any subarray range [L, R] at the root into the corresponding range of elements in the left or
     right child instantaneously-without storing full subarrays or doing binary searches.</p>
 
-<p>Walking down the $\mathcal{O}(\log \Sigma)$ levels of the alphabet lets you answer three kinds of queries on any
-    arbitrary subarray $[L, R]$ in $\mathcal{O}(\log \Sigma)$ time: finding the value at index $i$ (`Access`), counting
-    occurrences of character $c$ (`Rank`), and finding the **$k$-th smallest value** (`Quantile`).</p><br>
+<p>Walking down the O(log &Sigma;) levels of the alphabet lets you answer three kinds of queries on any
+    arbitrary subarray [L, R] in O(log &Sigma;) time: finding the value at index i (<code>Access</code>), counting
+    occurrences of character c (<code>Rank</code>), and finding the <strong>k-th smallest value</strong> (<code>Quantile</code>).</p><br>
 
 <h2>Where Are Wavelet Trees Used in the Real World?</h2>
 

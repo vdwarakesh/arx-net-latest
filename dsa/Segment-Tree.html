@@ -1,35 +1,40 @@
 <h1>Segment Tree</h1>
 
 <p>A Segment Tree is a special type of binary tree that stores precalculated summary information about contiguous
-    intervals (segments) of an array, enabling both **range queries** (like finding the sum, minimum, or maximum over
-    any sub-array) and **element updates** in fast $\mathcal{O}(\log n)$ time.</p>
+    intervals (segments) of an array, enabling both <strong>range queries</strong> (like finding the sum, minimum, or
+    maximum over
+    any sub-array) and <strong>element updates</strong> in fast O(log n) time.</p>
 
 <p>Imagine a company CEO who wants to know total sales from Day 3 to Day 14. Instead of adding up twelve daily receipts
     one by one, the accounting hierarchy already has weekly totals, 4-day totals, and 2-day totals pre-calculated in a
-    tree. The CEO simply asks three managers whose time blocks neatly cover Days 3–14 and adds their three numbers
+    tree. The CEO simply asks three managers whose time blocks neatly cover Days 3-14 and adds their three numbers
     together in an instant.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Segment (Interval $[L, R]$):</strong> The contiguous slice of array indices represented by a specific node in
+<p><strong>Segment (Interval [L, R]):</strong> The contiguous slice of array indices represented by a specific node in
     the tree.</p>
 
-<p><strong>Leaf Node:</strong> A bottom node representing a single individual array element at index $[i, i]$.</p>
+<p><strong>Leaf Node:</strong> A bottom node representing a single individual array element at index [i, i].</p>
 
-<p><strong>Internal Node Merge Operation:</strong> The associative function (such as addition `+`, `min`, `max`, or
-    `gcd`) used to combine the left child's $[L, mid]$ summary and right child's $[mid+1, R]$ summary.</p>
+<p><strong>Internal Node Merge Operation:</strong> The associative function (such as addition <code>+</code>,
+    <code>min</code>, <code>max</code>, or
+    <code>gcd</code>) used to combine the left child's [L, mid] summary and right child's [mid+1, R] summary.
+</p>
 
-<p><strong>Lazy Propagation:</strong> A powerful technique where range updates (like adding `+5` to indices 100 through
+<p><strong>Lazy Propagation:</strong> A powerful technique where range updates (like adding <code>+5</code> to indices
+    100 through
     5,000) are stored as pending notes on high-level nodes and only pushed down to children when needed.</p><br>
 
 <h2>How Does a Segment Tree Work Conceptually?</h2>
 
-<p>The root of a segment tree represents the entire array $[0, n-1]$. Its left child covers the first half $[0, mid]$,
-    and its right child covers the second half $[mid+1, n-1]$, continuing down until the leaves hold single array
+<p>The root of a segment tree represents the entire array [0, n-1]. Its left child covers the first half [0, mid],
+    and its right child covers the second half [mid+1, n-1], continuing down until the leaves hold single array
     elements.</p>
 
-<p>When a single array element changes, only the $\log_2 n$ ancestor intervals containing that index need to be
-    recalculated. When you query an arbitrary range $[qL, qR]$, the tree decomposes your range into at most $2 \log_2 n$
+<p>When a single array element changes, only the log<sub>2</sub> n ancestor intervals containing that index need to be
+    recalculated. When you query an arbitrary range [qL, qR], the tree decomposes your range into at most 2
+    log<sub>2</sub> n
     precomputed canonical blocks-giving you instant answers even when the underlying data changes thousands of times a
     second.</p><br>
 
@@ -41,7 +46,8 @@
 <p><strong>Computational Geometry & GIS:</strong> Count overlapping rectangles, calculate union areas of map regions,
     and resolve spatial range queries.</p>
 
-<p><strong>Database Range Aggregations:</strong> Accelerate `SUM`, `MIN`, and `MAX` queries over dynamic numerical
+<p><strong>Database Range Aggregations:</strong> Accelerate <code>SUM</code>, <code>MIN</code>, and <code>MAX</code>
+    queries over dynamic numerical
     columns.</p><br>
 
 <h2>Summary</h2>

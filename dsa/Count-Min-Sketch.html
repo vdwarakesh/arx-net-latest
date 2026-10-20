@@ -1,36 +1,36 @@
 <h1>Count-Min Sketch</h1>
 
-<p>A Count-Min Sketch (CMS) is a special type of probabilistic structure that estimates the **frequency count** of items
+<p>A Count-Min Sketch (CMS) is a special type of probabilistic structure that estimates the <strong>frequency count</strong> of items
     in a massive data stream using a compact 2D grid of counters and multiple hash functions.</p>
 
 <p>Imagine wanting to know how many times each song is streamed across a billion plays today without keeping a massive
     dictionary of every song title. You set up 4 rows of 1,000 tally counters. Each row uses a different formula to
-    assign a song to a counter box and adds `+1` when the song plays. To look up a song's play count, you check its box
-    in all 4 rows and take the **smallest (minimum)** number among the four-filtering out accidental collisions with
+    assign a song to a counter box and adds <code>+1</code> when the song plays. To look up a song's play count, you check its box
+    in all 4 rows and take the <strong>smallest (minimum)</strong> number among the four-filtering out accidental collisions with
     other songs!</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>2D Counter Matrix ($d \times w$):</strong> A fixed table of $d$ rows (depth, one per hash function) and $w$
+<p><strong>2D Counter Matrix (d &times; w):</strong> A fixed table of d rows (depth, one per hash function) and w
     columns (width, counters per row).</p>
 
-<p><strong>Point Update (`Add(x, count)`):</strong> Hashing item `x` with each row's hash function $h_i(x)$ and adding
-    `count` to `table[i][h_i(x)]` across all $d$ rows.</p>
+<p><strong>Point Update (<code>Add(x, count)</code>):</strong> Hashing item <code>x</code> with each row's hash function h<sub>i</sub>(x) and adding
+    <code>count</code> to <code>table[i][h<sub>i</sub>(x)]</code> across all d rows.</p>
 
-<p><strong>Minimum Estimator (`Query(x)`):</strong> Returning $\min_{i} \text{table}[i][h_i(x)]$ as the estimated
-    frequency of item `x`.</p>
+<p><strong>Minimum Estimator (<code>Query(x)</code>):</strong> Returning min<sub>i</sub> table[i][h<sub>i</sub>(x)] as the estimated
+    frequency of item <code>x</code>.</p>
 
 <p><strong>One-Sided Error (Overestimation Only):</strong> Because counters only ever go up when collisions happen, a
-    Count-Min Sketch never underestimates a true count-and taking the minimum across $d$ rows minimizes any collision
+    Count-Min Sketch never underestimates a true count-and taking the minimum across d rows minimizes any collision
     inflation.</p><br>
 
 <h2>How Does a Count-Min Sketch Work Conceptually?</h2>
 
 <p>In any single row of counters, an unpopular item might occasionally collide with a viral item and have its counter
-    inflated. However, because each of the $d$ rows uses a completely independent hash function, the odds that an item
-    collides with a heavy hitter in **every single row simultaneously** drop exponentially ($2^{-d}$).</p>
+    inflated. However, because each of the d rows uses a completely independent hash function, the odds that an item
+    collides with a heavy hitter in <strong>every single row simultaneously</strong> drop exponentially (2<sup>-d</sup>).</p>
 
-<p>By picking the minimum value across all $d$ rows, you get a remarkably tight frequency estimate using only a few
+<p>By picking the minimum value across all d rows, you get a remarkably tight frequency estimate using only a few
     kilobytes of fixed memory, no matter how many billions of distinct items flow through the stream.</p><br>
 
 <h2>Where Are Count-Min Sketches Used in the Real World?</h2>

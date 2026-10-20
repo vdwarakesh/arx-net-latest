@@ -1,22 +1,22 @@
 <h1>XOR Trie</h1>
 
-<p>An XOR Trie (also known as a **Binary Trie** or **0-1 Trie**) is a special type of trie that stores integers in their fixed-length binary form (bit by bit, from most significant bit to least significant bit) to solve bitwise XOR optimization queries in logarithmic time.</p>
+<p>An XOR Trie (also known as a <strong>Binary Trie</strong> or <strong>0-1 Trie</strong>) is a special type of trie that stores integers in their fixed-length binary form (bit by bit, from most significant bit to least significant bit) to solve bitwise XOR optimization queries in logarithmic time.</p>
 
-<p>Imagine a railroad switchyard with 32 consecutive left-or-right track switches. Every train is labeled with a 32-bit binary number of `0`s and `1`s. At each switch, `0` sends the train left and `1` sends it right. If you want to find a stored number that produces the largest possible XOR result with your number, you simply try to take the *opposite* switch at every single fork from top to bottom.</p><br>
+<p>Imagine a railroad switchyard with 32 consecutive left-or-right track switches. Every train is labeled with a 32-bit binary number of <code>0</code>s and <code>1</code>s. At each switch, <code>0</code> sends the train left and <code>1</code> sends it right. If you want to find a stored number that produces the largest possible XOR result with your number, you simply try to take the *opposite* switch at every single fork from top to bottom.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Bitwise XOR ($\oplus$):</strong> A binary operation that outputs `1` when two compared bits are different (`0 ^ 1 = 1`) and `0` when they are the same (`1 ^ 1 = 0`).</p>
+<p><strong>Bitwise XOR (&oplus;):</strong> A binary operation that outputs <code>1</code> when two compared bits are different (<code>0 ^ 1 = 1</code>) and <code>0</code> when they are the same (<code>1 ^ 1 = 0</code>).</p>
 
 <p><strong>Most Significant Bit (MSB) First:</strong> Storing numbers starting from the highest-value bit (such as bit 30 or 62) at the top of the trie down to bit 0 at the leaves, because high bits contribute the most to a number's total value.</p>
 
-<p><strong>Greedy Opposite-Bit Walk:</strong> Choosing the `1` branch when your query bit is `0` (and the `0` branch when your query bit is `1`) at each level to maximize the resulting XOR value.</p><br>
+<p><strong>Greedy Opposite-Bit Walk:</strong> Choosing the <code>1</code> branch when your query bit is <code>0</code> (and the <code>0</code> branch when your query bit is <code>1</code>) at each level to maximize the resulting XOR value.</p><br>
 
 <h2>How Does an XOR Trie Work Conceptually?</h2>
 
-<p>Every node in an XOR trie has at most two children: child `0` and child `1`. Every integer is padded to a fixed bit width (for example, 32 bits) and inserted from its highest bit down to its lowest bit.</p>
+<p>Every node in an XOR trie has at most two children: child <code>0</code> and child <code>1</code>. Every integer is padded to a fixed bit width (for example, 32 bits) and inserted from its highest bit down to its lowest bit.</p>
 
-<p>When you want to find which number in a collection of $n$ integers gives the maximum XOR with a query integer $X$, you don't compare $X$ against all $n$ numbers. Instead, starting at the highest bit at the root, you inspect the current bit of $X$ and greedily step into the opposite child branch if it exists (or fall back to the same bit branch if it doesn't). In just 32 steps, you land on the exact mathematical optimum.</p><br>
+<p>When you want to find which number in a collection of n integers gives the maximum XOR with a query integer X, you don't compare X against all n numbers. Instead, starting at the highest bit at the root, you inspect the current bit of X and greedily step into the opposite child branch if it exists (or fall back to the same bit branch if it doesn't). In just 32 steps, you land on the exact mathematical optimum.</p><br>
 
 <h2>Where Are XOR Tries Used in the Real World?</h2>
 
@@ -24,8 +24,8 @@
 
 <p><strong>Network Subnet and Bitmask Matching:</strong> Group and query binary flags, cryptographic masks, and hardware register states.</p>
 
-<p><strong>Competitive Programming & Algorithm Design:</strong> Solve bitwise range queries and count how many elements satisfy $(A[i] \oplus X) < K$.</p><br>
+<p><strong>Competitive Programming & Algorithm Design:</strong> Solve bitwise range queries and count how many elements satisfy (A[i] &oplus; X) < K.</p><br>
 
 <h2>Summary</h2>
 
-<p>An XOR trie treats integers as binary strings of `0`s and `1`s, letting you greedily walk down opposite bit branches to find maximum or minimum bitwise XOR matches in a few dozen steps.</p>
+<p>An XOR trie treats integers as binary strings of <code>0</code>s and <code>1</code>s, letting you greedily walk down opposite bit branches to find maximum or minimum bitwise XOR matches in a few dozen steps.</p>

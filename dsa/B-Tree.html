@@ -12,10 +12,10 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Minimum Degree ($t$) / Order ($m$):</strong> The rule governing how many keys and child pointers each node
-    must hold (typically between $t-1$ and $2t-1$ keys).</p>
+<p><strong>Minimum Degree (t) / Order (m):</strong> The rule governing how many keys and child pointers each node
+    must hold (typically between t-1 and 2t-1 keys).</p>
 
-<p><strong>Multi-Way Branching (High Fanout):</strong> A node containing $k$ sorted keys acts as a divider for $k+1$
+<p><strong>Multi-Way Branching (High Fanout):</strong> A node containing k sorted keys acts as a divider for k+1
     child subtrees.</p>
 
 <p><strong>Node Splitting:</strong> When a node fills up beyond its maximum capacity during an insertion, it splits into
@@ -31,7 +31,7 @@
     across memory, causing slow disk jumps at every level.</p>
 
 <p>A B-tree sizes each node to match one physical storage page cleanly. With a branching factor of 1,000 keys per node,
-    a B-tree only needs **3 levels** to store a billion records-meaning any item can be located in at most 3 disk reads.
+    a B-tree only needs <strong>3 levels</strong> to store a billion records-meaning any item can be located in at most 3 disk reads.
 </p><br>
 
 <h2>Where Are B-Trees Used in the Real World?</h2>

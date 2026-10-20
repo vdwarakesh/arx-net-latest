@@ -1,21 +1,21 @@
 <h1>Patricia Trie</h1>
 
-<p>A Patricia Trie (short for **Practical Algorithm to Retrieve Information Coded in Alphanumeric**) is a special type
-    of compressed trie that operates as a **binary radix tree** (radix = 2), where every internal node stores the exact
+<p>A Patricia Trie (short for <strong>Practical Algorithm to Retrieve Information Coded in Alphanumeric</strong>) is a special type
+    of compressed trie that operates as a <strong>binary radix tree</strong> (radix = 2), where every internal node stores the exact
     bit index to test next, completely eliminating one-way branches and redundant substring storage.</p>
 
 <p>Imagine identifying a mystery vehicle using only a minimalist checklist of numbered Yes/No questions: Step 1 jumps
-    straight to Question #4 (*"Does it have two wheels?"*), and if Yes, jumps straight to Question #19 (*"Does it have a
-    motor?"*). You completely skip all questions in between where every candidate has the exact same answer, and you
+    straight to Question #4 (<strong>"Does it have two wheels?"</strong>), and if Yes, jumps straight to Question #19 (<strong>"Does it have a
+    motor?"</strong>). You completely skip all questions in between where every candidate has the exact same answer, and you
     only carefully verify the full license plate once you reach the final parking spot.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
 <p><strong>Critical Bit Index (Skip Count):</strong> The exact bit position stored inside an internal node where at
-    least two keys in its subtree first differ (`0` goes left, `1` goes right).</p>
+    least two keys in its subtree first differ (<code>0</code> goes left, <code>1</code> goes right).</p>
 
-<p><strong>Binary Branching (Radix 2):</strong> Every internal node has strictly two children-one for bit `0` and one
-    for bit `1` at that critical bit position.</p>
+<p><strong>Binary Branching (Radix 2):</strong> Every internal node has strictly two children-one for bit <code>0</code> and one
+    for bit <code>1</code> at that critical bit position.</p>
 
 <p><strong>Upward Back-Pointers (or Leaf Keys):</strong> Storing full keys only at the leaves (or via upward pointers)
     and performing a single final equality check at the end of a search to verify all skipped bits match.</p><br>
@@ -23,9 +23,9 @@
 <h2>How Does a Patricia Trie Work Conceptually?</h2>
 
 <p>Instead of storing intermediate substring slices on every edge, a Patricia trie views every key as a stream of bits
-    (`0`s and `1`s). Each internal node stores only an integer bit offset-for example, *"Check bit #23."* During a
+    (<code>0</code>s and <code>1</code>s). Each internal node stores only an integer bit offset-for example, <strong>"Check bit #23."</strong> During a
     search, you don't even examine bits 1 through 22; you jump straight to bit #23 of your query key, branch left for
-    `0` or right for `1`, and continue until you land on a leaf.</p>
+    <code>0</code> or right for <code>1</code>, and continue until you land on a leaf.</p>
 
 <p>Once you reach the leaf, you compare your query key against the full key stored at that leaf one time. If they match,
     the key is found; if not, the first bit where they disagree tells you the exact spot to insert a new node.</p><br>

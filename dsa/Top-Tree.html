@@ -1,38 +1,38 @@
 <h1>Top Tree</h1>
 
 <p>A Top Tree is a special type of hierarchical dynamic tree data structure that generalizes both Link-Cut Trees and
-    Euler Tour Trees by recursively contracting pairs of connected subtrees (**clusters**) using two
-    operations-`Compress` and `Rake`-allowing it to handle both **path queries** and **subtree queries** simultaneously
-    in $\mathcal{O}(\log n)$ time.</p>
+    Euler Tour Trees by recursively contracting pairs of connected subtrees (<strong>clusters</strong>) using two
+    operations-<code>Compress</code> and <code>Rake</code>-allowing it to handle both <strong>path queries</strong> and <strong>subtree queries</strong> simultaneously
+    in O(log n) time.</p>
 
 <p>Imagine folding up a sprawling road map of a country. First, whenever you see a side dead-end road branching off a
-    highway, you fold that dead-end neatly onto the highway junction (`Rake`). Second, whenever two highway segments
-    meet end-to-end with no other branches between them, you fold them into a single shorter segment (`Compress`).
+    highway, you fold that dead-end neatly onto the highway junction (<code>Rake</code>). Second, whenever two highway segments
+    meet end-to-end with no other branches between them, you fold them into a single shorter segment (<code>Compress</code>).
     Repeating those two folds shrinks any tree down to one single master cluster in logarithmic steps.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
 <p><strong>Cluster:</strong> A connected subgraph of the underlying tree that interacts with the rest of the tree
-    through at most two **boundary vertices**.</p>
+    through at most two <strong>boundary vertices</strong>.</p>
 
-<p><strong>Path Cluster (2 Boundary Vertices):</strong> A cluster with two boundary endpoints $(a, b)$, representing a
-    main path connecting $a$ and $b$ plus any side branches hanging off its interior.</p>
+<p><strong>Path Cluster (2 Boundary Vertices):</strong> A cluster with two boundary endpoints (a, b), representing a
+    main path connecting a and b plus any side branches hanging off its interior.</p>
 
-<p><strong>Point Cluster (1 Boundary Vertex):</strong> A cluster with only one boundary vertex $(a)$, representing a
-    hanging dead-end subtree attached to the rest of the tree only at $a$.</p>
+<p><strong>Point Cluster (1 Boundary Vertex):</strong> A cluster with only one boundary vertex (a), representing a
+    hanging dead-end subtree attached to the rest of the tree only at a.</p>
 
-<p><strong>`Compress` and `Rake` Operations:</strong> `Compress` joins two path clusters end-to-end along their shared
-    boundary vertex; `Rake` folds a point cluster (a side branch) onto an adjacent cluster.</p><br>
+<p><strong><code>Compress</code> and <code>Rake</code> Operations:</strong> <code>Compress</code> joins two path clusters end-to-end along their shared
+    boundary vertex; <code>Rake</code> folds a point cluster (a side branch) onto an adjacent cluster.</p><br>
 
 <h2>How Does a Top Tree Work Conceptually?</h2>
 
 <p>Link-Cut Trees can easily query paths but struggle with subtrees; Euler Tour Trees easily query subtrees but struggle
     with paths. A Top Tree unifies both worlds by representing every single edge of the original tree as a base cluster,
-    and building a balanced binary hierarchy of `Compress` and `Rake` merges on top of them.</p>
+    and building a balanced binary hierarchy of <code>Compress</code> and <code>Rake</code> merges on top of them.</p>
 
 <p>Because every node in the Top Tree summarizes a cluster with at most 2 boundary vertices, you can dynamically link,
     cut, update paths, update subtrees, and even run tree-search routines (like finding a tree's diameter or
-    center/median) in $\mathcal{O}(\log n)$ time per operation.</p><br>
+    center/median) in O(log n) time per operation.</p><br>
 
 <h2>Where Are Top Trees Used in the Real World?</h2>
 
@@ -47,5 +47,5 @@
 
 <h2>Summary</h2>
 
-<p>A Top Tree is the ultimate generalization of dynamic trees, folding side branches (`Rake`) and paths (`Compress`)
+<p>A Top Tree is the ultimate generalization of dynamic trees, folding side branches (<code>Rake</code>) and paths (<code>Compress</code>)
     into a unified hierarchy that handles both path and subtree operations in logarithmic time.</p>

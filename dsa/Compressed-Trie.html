@@ -4,7 +4,7 @@
     chain of one-child nodes into a single edge labeled with an entire substring rather than a single character.</p>
 
 <p>Imagine driving down a long country road with no intersections for ten miles. Instead of putting up a street sign
-    every ten feet reading `"M"`, `"A"`, `"I"`, `"N"`, the highway department puts up one sign reading `"MAIN"` and only
+    every ten feet reading <code>"M"</code>, <code>"A"</code>, <code>"I"</code>, <code>"N"</code>, the highway department puts up one sign reading <code>"MAIN"</code> and only
     places new signs when the road actually forks. A compressed trie cleans up a standard trie in the exact same way.
 </p><br>
 
@@ -17,16 +17,16 @@
     children (unless it marks the end of a stored word).</p>
 
 <p><strong>Edge Splitting:</strong> Breaking a multi-character edge in two when a newly inserted word diverges in the
-    middle of an existing label (for example, inserting `"TOAST"` when `"TOASTER"` is stored as one edge).</p><br>
+    middle of an existing label (for example, inserting <code>"TOAST"</code> when <code>"TOASTER"</code> is stored as one edge).</p><br>
 
 <h2>How Does a Compressed Trie Work Conceptually?</h2>
 
 <p>Standard tries waste huge amounts of memory when storing long strings that rarely branch-storing the word
-    `"INTERNATIONALIZATION"` alone creates 20 separate node objects in a chain. A compressed trie eliminates every
+    <code>"INTERNATIONALIZATION"</code> alone creates 20 separate node objects in a chain. A compressed trie eliminates every
     non-branching intermediate node by labeling edges with strings (or start/end indices into a master string).</p>
 
-<p>Because every internal node now represents a true fork in the road, a compressed trie storing $n$ words is guaranteed
-    to have at most $2n$ nodes total, no matter how long the words are.</p><br>
+<p>Because every internal node now represents a true fork in the road, a compressed trie storing n words is guaranteed
+    to have at most 2n nodes total, no matter how long the words are.</p><br>
 
 <h2>Where Are Compressed Tries Used in the Real World?</h2>
 

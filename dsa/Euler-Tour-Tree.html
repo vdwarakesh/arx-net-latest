@@ -1,8 +1,8 @@
 <h1>Euler Tour Tree</h1>
 
 <p>An Euler Tour Tree (ETT) is a special type of dynamic tree data structure that represents an entire tree by
-    flattening its **Euler tour**-the cyclic walk that traverses every edge once downward and once upward-into a
-    balanced binary search tree (such as a Treap or Splay Tree), enabling fast **subtree aggregations** along with
+    flattening its <strong>Euler tour</strong>-the cyclic walk that traverses every edge once downward and once upward-into a
+    balanced binary search tree (such as a Treap or Splay Tree), enabling fast <strong>subtree aggregations</strong> along with
     dynamic link and cut operations.</p>
 
 <p>Imagine walking around the outside perimeter of a fenced garden shaped like a branching tree, keeping your right hand
@@ -15,26 +15,26 @@
 <p><strong>Euler Tour Sequence:</strong> The sequence of vertices (or directed edges) visited during a depth-first walk
     around the tree, recording each node both when entering its subtree and when returning from each child.</p>
 
-<p><strong>Subtree Contiguity:</strong> Every subtree rooted at $v$ appears as one contiguous interval between the
-    *first* appearance of $v$ and the *last* appearance of $v$ in the flattened tour sequence.</p>
+<p><strong>Subtree Contiguity:</strong> Every subtree rooted at v appears as one contiguous interval between the
+    <strong>first</strong> appearance of v and the <strong>last</strong> appearance of v in the flattened tour sequence.</p>
 
 <p><strong>Cyclic Shift (Re-Rooting):</strong> Changing the root of the tree simply by cutting the Euler tour sequence
     before the new root's first occurrence and pasting the front slice onto the back.</p><br>
 
 <h2>How Does an Euler Tour Tree Work Conceptually?</h2>
 
-<p>While a Link-Cut Tree excels at *path* queries (from a node to the root), it struggles with *subtree* queries when a
+<p>While a Link-Cut Tree excels at <strong>path</strong> queries (from a node to the root), it struggles with <strong>subtree</strong> queries when a
     node has thousands of children. An Euler Tour Tree solves this by storing the flattened Euler tour inside a balanced
     sequence BST (like an Implicit Treap or Splay Tree).</p>
 
-<p>Cutting an edge between $u$ and $v$ simply means slicing the contiguous segment of $v$'s subtree out of $u$'s tour
-    and stitching the two outer ends of $u$'s tour back together (`Split` and `Merge`). Linking two trees is just
-    splicing one tour into the middle of another-all in $\mathcal{O}(\log n)$ time.</p><br>
+<p>Cutting an edge between u and v simply means slicing the contiguous segment of v's subtree out of u's tour
+    and stitching the two outer ends of u's tour back together (<code>Split</code> and <code>Merge</code>). Linking two trees is just
+    splicing one tour into the middle of another-all in O(log n) time.</p><br>
 
 <h2>Where Are Euler Tour Trees Used in the Real World?</h2>
 
 <p><strong>Fully Dynamic Graph Connectivity (Holm-de Lichtenberg-Thorup Algorithm):</strong> Maintain a spanning forest
-    of a graph where edges are both inserted and deleted, checking component sizes in $\mathcal{O}(\log n)$ time.</p>
+    of a graph where edges are both inserted and deleted, checking component sizes in O(log n) time.</p>
 
 <p><strong>Dynamic Subtree Aggregations:</strong> Compute the sum, minimum, or node count of any whole subtree while the
     tree's root and edges are dynamically rewired.</p><br>

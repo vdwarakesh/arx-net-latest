@@ -1,35 +1,35 @@
 <h1>Fenwick Tree</h1>
 
-<p>A Fenwick Tree (also known as a **Binary Indexed Tree**, or **BIT**) is a special type of implicit tree structure
-    stored inside a flat 1D array that computes **prefix sums** and applies **point updates** in $\mathcal{O}(\log n)$
+<p>A Fenwick Tree (also known as a <strong>Binary Indexed Tree</strong>, or <strong>BIT</strong>) is a special type of implicit tree structure
+    stored inside a flat 1D array that computes <strong>prefix sums</strong> and applies <strong>point updates</strong> in O(log n)
     time using clever binary bit manipulation.</p>
 
 <p>Imagine measuring a distance of 13 meters using only rulers of power-of-two lengths: an 8-meter ruler, a 4-meter
-    ruler, and a 1-meter ruler ($8 + 4 + 1 = 13$). In a Fenwick tree, slot 13 stores 1 item, slot 12 stores 4 items, and
-    slot 8 stores 8 items. By stripping off the lowest `1`-bit in the binary representation of 13 (`1101` $\rightarrow$
-    `1100` $\rightarrow$ `1000`), you add up all 13 items in just three hops.</p><br>
+    ruler, and a 1-meter ruler (8 + 4 + 1 = 13). In a Fenwick tree, slot 13 stores 1 item, slot 12 stores 4 items, and
+    slot 8 stores 8 items. By stripping off the lowest <code>1</code>-bit in the binary representation of 13 (<code>1101</code> &rarr;
+    <code>1100</code> &rarr; <code>1000</code>), you add up all 13 items in just three hops.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Least Significant Bit (`LSB` / `lowbit`):</strong> The value of the rightmost `1`-bit in an index's binary
-    number, calculated instantly in hardware via the bitwise trick `i & -i`.</p>
+<p><strong>Least Significant Bit (<code>LSB</code> / <code>lowbit</code>):</strong> The value of the rightmost <code>1</code>-bit in an index's binary
+    number, calculated instantly in hardware via the bitwise trick <code>i & -i</code>.</p>
 
-<p><strong>Responsibility Range:</strong> Each 1-based array slot `i` stores the sum of exactly `lowbit(i)` elements
-    ending at position `i`.</p>
+<p><strong>Responsibility Range:</strong> Each 1-based array slot <code>i</code> stores the sum of exactly <code>lowbit(i)</code> elements
+    ending at position <code>i</code>.</p>
 
-<p><strong>Prefix Sum Query:</strong> Summing elements from index `1` to `i` by repeatedly subtracting `lowbit(i)` from
-    `i` until `i` reaches `0`.</p>
+<p><strong>Prefix Sum Query:</strong> Summing elements from index <code>1</code> to <code>i</code> by repeatedly subtracting <code>lowbit(i)</code> from
+    <code>i</code> until <code>i</code> reaches <code>0</code>.</p>
 
-<p><strong>Point Update:</strong> Adding a delta to index `i` by repeatedly *adding* `lowbit(i)` to `i` up to $n$ to
+<p><strong>Point Update:</strong> Adding a delta to index <code>i</code> by repeatedly *adding* <code>lowbit(i)</code> to <code>i</code> up to n to
     update all covering intervals.</p><br>
 
 <h2>How Does a Fenwick Tree Work Conceptually?</h2>
 
-<p>While a Segment Tree requires $4n$ memory slots and recursive tree navigation, a Fenwick tree requires an array of
-    size **just $n$**-the exact same size as the original data! Every index `i` implicitly acts as a tree node whose
+<p>While a Segment Tree requires 4n memory slots and recursive tree navigation, a Fenwick tree requires an array of
+    size <strong>just n</strong>-the exact same size as the original data! Every index <code>i</code> implicitly acts as a tree node whose
     parent is found by flipping or adding its lowest set bit.</p>
 
-<p>Because both queries and updates consist of a tiny three-line `while` loop using `i += i & -i` or `i -= i & -i`, a
+<p>Because both queries and updates consist of a tiny three-line <code>while</code> loop using <code>i += i & -i</code> or <code>i -= i & -i</code>, a
     Fenwick tree has virtually zero constant-factor overhead and runs several times faster than a full segment tree for
     cumulative sum and frequency tasks.</p><br>
 
@@ -46,5 +46,5 @@
 
 <h2>Summary</h2>
 
-<p>A Fenwick tree packs the power of a dynamic range-sum tree into a flat array of size $n$, using binary bit jumps (`i
-    & -i`) for ultra-compact, lightning-fast prefix sums and updates.</p>
+<p>A Fenwick tree packs the power of a dynamic range-sum tree into a flat array of size n, using binary bit jumps (<code>i
+    & -i</code>) for ultra-compact, lightning-fast prefix sums and updates.</p>

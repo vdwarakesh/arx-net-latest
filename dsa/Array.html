@@ -13,7 +13,7 @@
 <p><strong>Element:</strong> An individual item or value stored within the array. For example, a single letter or number
     sitting inside one of the lockers.</p>
 
-<p><strong>Index:</strong> The numerical position assigned to each element, usually starting at zero (`0`). It acts as
+<p><strong>Index:</strong> The numerical position assigned to each element, usually starting at zero (<code>0</code>). It acts as
     the exact address needed to locate an item immediately.</p>
 
 <p><strong>Length (or Capacity):</strong> The total number of elements the array is capable of holding.</p>
@@ -21,7 +21,7 @@
 <p><strong>Contiguous Memory:</strong> A continuous, unbroken block of computer memory where elements sit physically
     adjacent to one another.</p>
 
-<p><strong>Base Address:</strong> The memory location of the very first element (at index `0`), which the computer uses
+<p><strong>Base Address:</strong> The memory location of the very first element (at index <code>0</code>), which the computer uses
     as a reference point to calculate the location of all other elements.</p><br>
 
 <h2>How Does an Array Work Conceptually?</h2>
@@ -30,7 +30,7 @@
     every element takes up the exact same amount of space, the computer can find any item instantly using simple
     arithmetic: it takes the base address and adds the index multiplied by the size of one element.</p>
 
-<p>This gives arrays **constant-time random access**-looking up the first element takes the exact same effort as looking
+<p>This gives arrays <strong>constant-time random access</strong>-looking up the first element takes the exact same effort as looking
     up the ten-thousandth element. However, because the memory block is fixed and unbroken, inserting or deleting an
     item in the middle requires shifting all subsequent elements over to fill the gap or make room.</p><br>
 

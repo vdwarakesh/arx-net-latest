@@ -1,7 +1,7 @@
 <h1>Sparse Matrix</h1>
 
-<p>A Sparse Matrix is a special type of matrix in which the overwhelming majority of cells are empty (`0`), so the
-    structure compresses memory dramatically by storing **only the non-zero values** alongside their `(row, column)`
+<p>A Sparse Matrix is a special type of matrix in which the overwhelming majority of cells are empty (<code>0</code>), so the
+    structure compresses memory dramatically by storing <strong>only the non-zero values</strong> alongside their <code>(row, column)</code>
     coordinates.</p>
 
 <p>Imagine a grid tracking which of Netflix's 250 million users have watched which of its 15,000 movies. A full grid
@@ -11,21 +11,21 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Sparsity vs. Density:</strong> Sparsity is the fraction of cells that are zero (`0`), while density ($nnz /
-    (M \times N)$) is the tiny fraction of cells holding non-zero values ($nnz$).</p>
+<p><strong>Sparsity vs. Density:</strong> Sparsity is the fraction of cells that are zero (<code>0</code>), while density (nnz /
+    (M &times; N)) is the tiny fraction of cells holding non-zero values (nnz).</p>
 
-<p><strong>Coordinate List (COO):</strong> Storing three parallel arrays-`row_index`, `col_index`, and `value`-one entry
+<p><strong>Coordinate List (COO):</strong> Storing three parallel arrays-<code>row_index</code>, <code>col_index</code>, and <code>value</code>-one entry
     per non-zero element.</p>
 
 <p><strong>Compressed Sparse Row (CSR):</strong> The industry-standard format that compresses row indices into a compact
-    row-offset array (`row_ptr`) plus `col_idx` and `values` arrays for fast row slicing and matrix-vector
+    row-offset array (<code>row_ptr</code>) plus <code>col_idx</code> and <code>values</code> arrays for fast row slicing and matrix-vector
     multiplication.</p><br>
 
 <h2>How Does a Sparse Matrix Work Conceptually?</h2>
 
-<p>Instead of allocating $M \times N$ space, a sparse matrix uses space proportional only to $nnz$ (the number of
-    non-zero entries). In **CSR (Compressed Sparse Row)** format, all non-zero values are packed into a `values` array,
-    their column numbers sit in a matching `col_idx` array, and a small `row_ptr` array of size $M + 1$ tells you
+<p>Instead of allocating M &times; N space, a sparse matrix uses space proportional only to nnz (the number of
+    non-zero entries). In <strong>CSR (Compressed Sparse Row)</strong> format, all non-zero values are packed into a <code>values</code> array,
+    their column numbers sit in a matching <code>col_idx</code> array, and a small <code>row_ptr</code> array of size M + 1 tells you
     exactly where each row's non-zero entries start and stop.</p>
 
 <p>When multiplying a sparse matrix by a vector, the computer completely skips all the billions of zeros and only

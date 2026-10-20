@@ -1,16 +1,16 @@
 <h1>Trie</h1>
 
-<p>A Trie (pronounced "try" or "tree", derived from re**trie**val, and also called a **Prefix Tree**) is a special type
+<p>A Trie (pronounced "try" or "tree", derived from re<strong>trie</strong>val, and also called a <strong>Prefix Tree</strong>) is a special type
     of tree that stores strings character by character along its branches so that words sharing a common prefix share
     the exact same path from the root.</p>
 
-<p>Imagine looking up words in a road atlas where the first intersection asks for the 1st letter (`C`), the next fork
-    asks for the 2nd letter (`A`), and the third fork splits into `T` ("CAT"), `R` ("CAR"), and `P` ("CAP"). All three
-    words travel down the exact same `C -> A` highway before branching off at the very last letter.</p><br>
+<p>Imagine looking up words in a road atlas where the first intersection asks for the 1st letter (<code>C</code>), the next fork
+    asks for the 2nd letter (<code>A</code>), and the third fork splits into <code>T</code> ("CAT"), <code>R</code> ("CAR"), and <code>P</code> ("CAP"). All three
+    words travel down the exact same <code>C -> A</code> highway before branching off at the very last letter.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Root Node:</strong> The topmost node representing an empty string (`""`), from which all first-letter
+<p><strong>Root Node:</strong> The topmost node representing an empty string (<code>""</code>), from which all first-letter
     branches originate.</p>
 
 <p><strong>Character Edge / Child Map:</strong> A link from a parent node to a child node labeled with a single
@@ -19,23 +19,23 @@
 <p><strong>Prefix Path:</strong> The sequence of characters formed by walking from the root down to any internal node.
 </p>
 
-<p><strong>End-of-Word Marker (`isEnd`):</strong> A boolean flag (or terminal marker) on a node indicating that the path
+<p><strong>End-of-Word Marker (<code>isEnd</code>):</strong> A boolean flag (or terminal marker) on a node indicating that the path
     from the root to this node spells out a complete, valid word-not just a prefix of a longer word.</p><br>
 
 <h2>How Does a Trie Work Conceptually?</h2>
 
 <p>Unlike a Binary Search Tree or Hash Table, which compares or hashes entire strings at once, a trie breaks each string
-    into individual characters. To look up a 5-letter word like `"APPLE"`, you start at the root and take five steps: `A
-    -> P -> P -> L -> E`.</p>
+    into individual characters. To look up a 5-letter word like <code>"APPLE"</code>, you start at the root and take five steps: <code>A
+    -> P -> P -> L -> E</code>.</p>
 
-<p>The lookup speed depends **only on the length of the word** ($L$), completely independent of whether the trie stores
-    100 words or 100 million words! Furthermore, once you walk to the node for `"APP"`, every single word starting with
-    `"APP"` sits directly inside the subtree beneath you.</p><br>
+<p>The lookup speed depends <strong>only on the length of the word</strong> (L), completely independent of whether the trie stores
+    100 words or 100 million words! Furthermore, once you walk to the node for <code>"APP"</code>, every single word starting with
+    <code>"APP"</code> sits directly inside the subtree beneath you.</p><br>
 
 <h2>Where Are Tries Used in the Real World?</h2>
 
-<p><strong>Search Engine Auto-Complete:</strong> Instantly suggest `"weather today"`, `"weather tomorrow"`, and
-    `"weather radar"` the moment a user types `"weath"`.</p>
+<p><strong>Search Engine Auto-Complete:</strong> Instantly suggest <code>"weather today"</code>, <code>"weather tomorrow"</code>, and
+    <code>"weather radar"</code> the moment a user types <code>"weath"</code>.</p>
 
 <p><strong>Smartphone Keyboard Predictive Text and Spell Check:</strong> Validate words and suggest completions as
     fingers tap each letter.</p>

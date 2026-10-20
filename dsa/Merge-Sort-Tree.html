@@ -1,24 +1,26 @@
 <h1>Merge Sort Tree</h1>
 
-<p>A Merge Sort Tree is a special type of segment tree in which every node stores a **complete sorted list** of all
+<p>A Merge Sort Tree is a special type of segment tree in which every node stores a <strong>complete sorted
+        list</strong> of all
     elements inside its interval, capturing every intermediate merging stage of the Merge Sort algorithm in a permanent,
     queryable tree structure.</p>
 
 <p>Imagine a school principal who wants to know how many students in classrooms 4 through 9 scored above 85% on an exam.
     In a Merge Sort Tree, every wing and hallway of the school keeps a pre-sorted roster of its students' scores. The
-    principal simply checks three hallway rosters covering classrooms 4–9 and uses binary search on each sorted list to
+    principal simply checks three hallway rosters covering classrooms 4-9 and uses binary search on each sorted list to
     count the high scorers in an instant.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Sorted Subarray Vector:</strong> Instead of storing a single sum or minimum integer, a node covering $[L, R]$
-    stores a sorted array of all $R - L + 1$ elements in that range.</p>
+<p><strong>Sorted Subarray Vector:</strong> Instead of storing a single sum or minimum integer, a node covering [L, R]
+    stores a sorted array of all R - L + 1 elements in that range.</p>
 
-<p><strong>In-Node Binary Search (`lower_bound` / `upper_bound`):</strong> Searching the sorted list inside a canonical
+<p><strong>In-Node Binary Search (<code>lower_bound</code> / <code>upper_bound</code>):</strong> Searching the sorted
+    list inside a canonical
     segment tree node to count how many elements are less than, greater than, or between given bounds.</p>
 
-<p><strong>$\mathcal{O}(n \log n)$ Space Footprint:</strong> Because the tree has $\log_2 n$ levels and each level
-    contains all $n$ elements distributed across its nodes, the entire structure uses $n \log_2 n$ memory.</p><br>
+<p><strong>O(n log n) Space Footprint:</strong> Because the tree has log<sub>2</sub> n levels and each level
+    contains all n elements distributed across its nodes, the entire structure uses n log<sub>2</sub> n memory.</p><br>
 
 <h2>How Does a Merge Sort Tree Work Conceptually?</h2>
 
@@ -26,19 +28,21 @@
     the two already-sorted lists of its left and right children in linear time-just like the standard Merge Sort
     algorithm-except it saves those merged lists inside the nodes forever.</p>
 
-<p>When you ask *"How many numbers in subarray $[L, R]$ are strictly less than $K$?"*, the segment tree splits $[L, R]$
-    into $\mathcal{O}(\log n)$ canonical nodes and runs a fast binary search ($\mathcal{O}(\log n)$) inside each node's
-    sorted list, answering the query in $\mathcal{O}(\log^2 n)$ time.</p><br>
+<p>When you ask <strong>"How many numbers in subarray [L, R] are strictly less than K?"</strong>, the segment tree
+    splits [L, R]
+    into O(log n) canonical nodes and runs a fast binary search (O(log n)) inside each node's
+    sorted list, answering the query in O(log<sup>2</sup> n) time.</p><br>
 
 <h2>Where Are Merge Sort Trees Used in the Real World?</h2>
 
-<p><strong>2D Orthogonal Range Counting:</strong> Count how many data points fall inside a rectangular window $[x_1,
-    x_2] \times [y_1, y_2]$ on a map or scatter plot.</p>
+<p><strong>2D Orthogonal Range Counting:</strong> Count how many data points fall inside a rectangular window
+    [x<sub>1</sub>,
+    x<sub>2</sub>] &times; [y<sub>1</sub>, y<sub>2</sub>] on a map or scatter plot.</p>
 
 <p><strong>Analytical Database Filtering:</strong> Count how many transactions within a specific index/time slice
     exceeded a dollar threshold.</p>
 
-<p><strong>Subarray Rank and Order Queries:</strong> Find the smallest element greater than $X$ within any arbitrary
+<p><strong>Subarray Rank and Order Queries:</strong> Find the smallest element greater than X within any arbitrary
     subarray.</p><br>
 
 <h2>Summary</h2>

@@ -1,43 +1,43 @@
 <h1>Dominator-Tree</h1>
 
-<p>A Dominator Tree is a special type of directed tree constructed from a directed graph with a starting entry node $R$,
-    in which every node's parent is its **Immediate Dominator**-the unique last mandatory checkpoint that *every* path
-    from the entry $R$ to that node must pass through.</p>
+<p>A Dominator Tree is a special type of directed tree constructed from a directed graph with a starting entry node R,
+    in which every node's parent is its <strong>Immediate Dominator</strong>-the unique last mandatory checkpoint that <strong>every</strong> path
+    from the entry R to that node must pass through.</p>
 
-<p>Imagine an airport terminal where every passenger enters through the Main Security Gate ($R$). To reach Gate B12,
+<p>Imagine an airport terminal where every passenger enters through the Main Security Gate (R). To reach Gate B12,
     there might be five different hallways and escalators you can take, but every single one of them forces you to walk
     through Concourse B's entrance arch first, and before that, the Central Plaza. A Dominator Tree strips away all
     optional detours and arranges only the mandatory bottlenecks into a clean hierarchy.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Dominator (`dom`):</strong> A node $d$ *dominates* a node $v$ if every possible path from the start node $R$
-    to $v$ must go through $d$. Every node dominates itself.</p>
+<p><strong>Dominator (<code>dom</code>):</strong> A node d <strong>dominates</strong> a node v if every possible path from the start node R
+    to v must go through d. Every node dominates itself.</p>
 
-<p><strong>Immediate Dominator (`idom`):</strong> The unique node $d \neq v$ that dominates $v$ and is dominated by all
-    other dominators of $v$-meaning it is the **closest** mandatory bottleneck to $v$ on any path from $R$.</p>
+<p><strong>Immediate Dominator (<code>idom</code>):</strong> The unique node d &ne; v that dominates v and is dominated by all
+    other dominators of v-meaning it is the <strong>closest</strong> mandatory bottleneck to v on any path from R.</p>
 
 <p><strong>Lengauer-Tarjan Algorithm:</strong> The classic algorithm using Depth-First Search (DFS) trees and
-    **semidominators** to build the entire Dominator Tree of a graph in near-linear $\mathcal{O}(E \log V)$ or
-    $\mathcal{O}(E \alpha(E, V))$ time.</p><br>
+    <strong>semidominators</strong> to build the entire Dominator Tree of a graph in near-linear O(E log V) or
+    O(E &alpha;(E, V)) time.</p><br>
 
 <h2>How Does a Dominator Tree Work Conceptually?</h2>
 
 <p>Even if a directed graph is full of messy loops, cross-edges, and alternative routes, dominance obeys a remarkable
-    mathematical property: if both node $A$ and node $B$ are mandatory checkpoints to reach node $C$, then either $A$
-    must come before $B$ on every path, or $B$ must come before $A$. They can never cross each other independently!</p>
+    mathematical property: if both node A and node B are mandatory checkpoints to reach node C, then either A
+    must come before B on every path, or B must come before A. They can never cross each other independently!</p>
 
-<p>Because all dominators of any node form a strict chain, every reachable node (except $R$) has **exactly one**
+<p>Because all dominators of any node form a strict chain, every reachable node (except R) has <strong>exactly one</strong>
     Immediate Dominator. Wiring each node as a child of its Immediate Dominator turns any tangled directed graph into a
-    clean tree where $u$ dominates $v$ if and only if $u$ is an ancestor of $v$.</p><br>
+    clean tree where u dominates v if and only if u is an ancestor of v.</p><br>
 
 <h2>Where Are Dominator Trees Used in the Real World?</h2>
 
 <p><strong>Optimizing Compilers (LLVM, GCC, V8):</strong> Analyze Control Flow Graphs (CFGs) of programs to detect
-    loops, place Static Single Assignment (SSA) $\phi$-nodes, and hoist redundant code out of loops.</p>
+    loops, place Static Single Assignment (SSA) &phi;-nodes, and hoist redundant code out of loops.</p>
 
 <p><strong>Memory Profilers (Chrome DevTools, Android Studio, JVM Heap Dump Analyzers):</strong> Calculate the
-    **"Retained Size"** of every object in RAM-showing exactly how much memory would be freed by the garbage collector
+    <strong>"Retained Size"</strong> of every object in RAM-showing exactly how much memory would be freed by the garbage collector
     if that object were deleted.</p>
 
 <p><strong>Single-Point-of-Failure Network Security:</strong> Pinpoint critical routers or road intersections whose

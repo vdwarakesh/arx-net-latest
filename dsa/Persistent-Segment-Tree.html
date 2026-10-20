@@ -1,28 +1,28 @@
 <h1>Persistent Segment Tree</h1>
 
-<p>A Persistent Segment Tree (also known as a **Chairman Tree**) is a special type of segment tree that preserves every historical version of itself after every update by reusing unchanged subtrees and only creating new nodes along the single modified root-to-leaf path.</p>
+<p>A Persistent Segment Tree (also known as a <strong>Chairman Tree</strong>) is a special type of segment tree that preserves every historical version of itself after every update by reusing unchanged subtrees and only creating new nodes along the single modified root-to-leaf path.</p>
 
 <p>Imagine editing a 1,000-page encyclopedia where you want to save a complete snapshot of the entire book every time you fix a single typo. Instead of photocopying all 1,000 pages for Version 2, you print *only* the 1 revised page and a new Table of Contents that points to the 999 original pages plus your 1 new page. A persistent segment tree saves complete historical snapshots using this exact path-copying trick.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Path Copying:</strong> Creating only $\mathcal{O}(\log n)$ new nodes along the path from the root to the updated leaf, while wiring all untouched sibling pointers directly to the previous version's nodes.</p>
+<p><strong>Path Copying:</strong> Creating only O(log n) new nodes along the path from the root to the updated leaf, while wiring all untouched sibling pointers directly to the previous version's nodes.</p>
 
-<p><strong>Version Root Array:</strong> An array of root pointers where `roots[v]` gives you instant access to the state of the entire segment tree as it existed at version `v`.</p>
+<p><strong>Version Root Array:</strong> An array of root pointers where <code>roots[v]</code> gives you instant access to the state of the entire segment tree as it existed at version <code>v</code>.</p>
 
 <p><strong>Structural Sharing:</strong> The overlap where multiple version trees share the vast majority of their internal nodes safely in memory.</p><br>
 
 <h2>How Does a Persistent Segment Tree Work Conceptually?</h2>
 
-<p>When you update a single element in a standard segment tree, only the $\mathcal{O}(\log n)$ nodes along a single vertical path from the root to that leaf actually change their values; the other $99.9\%$ of the tree stays identical. Instead of overwriting those $\mathcal{O}(\log n)$ nodes in place, a persistent segment tree allocates new copies of just those nodes, links their unmodified side branches to the old tree, and returns a brand-new root node.</p>
+<p>When you update a single element in a standard segment tree, only the O(log n) nodes along a single vertical path from the root to that leaf actually change their values; the other 99.9% of the tree stays identical. Instead of overwriting those O(log n) nodes in place, a persistent segment tree allocates new copies of just those nodes, links their unmodified side branches to the old tree, and returns a brand-new root node.</p>
 
-<p>With $m$ updates on an array of size $n$, you get $m$ complete, queryable historical segment trees using only $\mathcal{O}(n + m \log n)$ total memory instead of $\mathcal{O}(n \cdot m)$.</p><br>
+<p>With m updates on an array of size n, you get m complete, queryable historical segment trees using only O(n + m log n) total memory instead of O(n &middot; m).</p><br>
 
 <h2>Where Are Persistent Segment Trees Used in the Real World?</h2>
 
-<p><strong>Time-Travel Database Queries:</strong> Answer range aggregation queries *"as of 3:15 PM yesterday"* without replaying transaction logs from scratch.</p>
+<p><strong>Time-Travel Database Queries:</strong> Answer range aggregation queries <strong>"as of 3:15 PM yesterday"</strong> without replaying transaction logs from scratch.</p>
 
-<p><strong>Range $K$-th Smallest Queries (2D Range Counting):</strong> Find the $k$-th smallest number in any subarray $[L, R]$ by subtracting the frequency segment tree at version $L-1$ from version $R$.</p>
+<p><strong>Range K-th Smallest Queries (2D Range Counting):</strong> Find the k-th smallest number in any subarray [L, R] by subtracting the frequency segment tree at version L-1 from version R.</p>
 
 <p><strong>Version Control & Undo Systems:</strong> Maintain lightweight snapshots of hierarchical state across thousands of edits.</p><br>
 

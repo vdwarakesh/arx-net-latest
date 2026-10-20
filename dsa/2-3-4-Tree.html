@@ -1,30 +1,30 @@
 <h1>2-3-4 Tree</h1>
 
-<p>A 2-3-4 Tree (also called a **2-4 Tree**) is a special type of B-tree of order 4 in which every internal node can
-    hold 1, 2, or 3 keys and branch into **2, 3, or 4 children** (`max_degree_4`, `multi_way_branching`), while
-    remaining `perfectly_balanced` and structurally `isomorphic_to_red_black_tree`.</p>
+<p>A 2-3-4 Tree (also called a <strong>2-4 Tree</strong>) is a special type of B-tree of order 4 in which every internal node can
+    hold 1, 2, or 3 keys and branch into <strong>2, 3, or 4 children</strong> (<code>max_degree_4</code>, <code>multi_way_branching</code>), while
+    remaining <code>perfectly_balanced</code> and structurally <code>isomorphic_to_red_black_tree</code>.</p>
 
 <p>Imagine walking down a staircase while carrying a tray of items. Every time you step onto a landing that is already
-    completely full (holding 3 keys / 4 branches), you immediately split that landing into two smaller landings *on your
-    way down*-before you even reach the bottom step. That way, by the time you reach the bottom to place your new item,
+    completely full (holding 3 keys / 4 branches), you immediately split that landing into two smaller landings <strong>on your
+    way down</strong>-before you even reach the bottom step. That way, by the time you reach the bottom to place your new item,
     you are guaranteed to have spare room waiting for you without ever having to walk back up the stairs.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>2-Node, 3-Node, and 4-Node (`max_degree_4`):</strong> Nodes containing 1 key (2 children), 2 keys (3
+<p><strong>2-Node, 3-Node, and 4-Node (<code>max_degree_4</code>):</strong> Nodes containing 1 key (2 children), 2 keys (3
     children), or 3 keys (4 children), respectively.</p>
 
-<p><strong>Preemptive Top-Down Splitting:</strong> Splitting any 4-node encountered on the way *down* during an
+<p><strong>Preemptive Top-Down Splitting:</strong> Splitting any 4-node encountered on the way <strong>down</strong> during an
     insertion so the parent above is guaranteed to have room to absorb the middle key in a single downward pass.</p>
 
-<p><strong>Red-Black Isomorphism (`isomorphic_to_red_black_tree`):</strong> Every 2-3-4 tree corresponds 1-to-1 with a
+<p><strong>Red-Black Isomorphism (<code>isomorphic_to_red_black_tree</code>):</strong> Every 2-3-4 tree corresponds 1-to-1 with a
     Red-Black Tree: a 2-node is a black node, a 3-node is a black node with one red child, and a 4-node is a black node
     with two red children.</p><br>
 
 <h2>How Does a 2-3-4 Tree Work Conceptually?</h2>
 
 <p>Adding the ability to hold a 4-node (3 keys, 4 children) unlocks a remarkable algorithmic advantage over a 2-3 tree:
-    **single-pass top-down insertions**. As you search downward from the root to insert a value, whenever you step onto
+    <strong>single-pass top-down insertions</strong>. As you search downward from the root to insert a value, whenever you step onto
     a full 4-node, you split it immediately into two 2-nodes and push its middle key into the parent node you just came
     from (which you already know isn't full!).</p>
 
@@ -34,7 +34,7 @@
 <h2>Where Are 2-3-4 Trees Used in the Real World?</h2>
 
 <p><strong>Understanding and Designing Red-Black Trees:</strong> Provide the exact mathematical equivalence
-    (`isomorphic_to_red_black_tree`) used to prove Red-Black tree correctness and height bounds.</p>
+    (<code>isomorphic_to_red_black_tree</code>) used to prove Red-Black tree correctness and height bounds.</p>
 
 <p><strong>Concurrent In-Memory Indexes:</strong> Enable top-down locking where parent nodes can be released immediately
     after a downward step because upward backtracking splits never occur.</p><br>

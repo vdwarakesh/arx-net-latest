@@ -1,11 +1,11 @@
 <h1>Binary Heap</h1>
 
-<p>A Binary Heap is a special type of heap that takes the shape of a **Complete Binary Tree**-meaning every level of the
+<p>A Binary Heap is a special type of heap that takes the shape of a <strong>Complete Binary Tree</strong>-meaning every level of the
     tree is packed completely full from left to right-allowing the entire tree to be stored flat inside a standard array
     without using a single pointer.</p>
 
-<p>Imagine numbering the seats in a family tree row by row from top to bottom, left to right: the root is Seat `0`, its
-    two children are Seats `1` and `2`, and their children are Seats `3, 4, 5, 6`. Because there are never any gaps in
+<p>Imagine numbering the seats in a family tree row by row from top to bottom, left to right: the root is Seat <code>0</code>, its
+    two children are Seats <code>1</code> and <code>2</code>, and their children are Seats <code>3, 4, 5, 6</code>. Because there are never any gaps in
     the seating chart, you can line everyone up in a flat array and use simple multiplication and division to find
     anyone's parent or children instantly.</p><br>
 
@@ -14,8 +14,8 @@
 <p><strong>Shape Property (Completeness):</strong> The rule that all levels of the binary tree are full except possibly
     the bottom level, which is filled strictly from left to right.</p>
 
-<p><strong>Implicit Array Indexing:</strong> Storing the tree in an array where for any node at index `i`, its left
-    child is at `2i + 1`, its right child is at `2i + 2`, and its parent is at `(i - 1) / 2`.</p>
+<p><strong>Implicit Array Indexing:</strong> Storing the tree in an array where for any node at index <code>i</code>, its left
+    child is at <code>2i + 1</code>, its right child is at <code>2i + 2</code>, and its parent is at <code>(i - 1) / 2</code>.</p>
 
 <p><strong>Bubble-Up (Sift-Up):</strong> Inserting a new item at the very last slot of the array and repeatedly swapping
     it with its parent until the heap property holds.</p>
@@ -25,20 +25,20 @@
 
 <h2>How Does a Binary Heap Work Conceptually?</h2>
 
-<p>Because a binary heap is always a complete binary tree, its height is guaranteed to be strictly $\lfloor \log_2 n
-    \rfloor$. Even better, storing it inside a contiguous dynamic array eliminates all pointer memory overhead and makes
+<p>Because a binary heap is always a complete binary tree, its height is guaranteed to be strictly ⌊log<sub>2</sub> n
+    ⌋. Even better, storing it inside a contiguous dynamic array eliminates all pointer memory overhead and makes
     it blazingly fast on modern CPU caches.</p>
 
-<p>You can even build a binary heap out of an unsorted array of $n$ items in linear $\mathcal{O}(n)$ time using Floyd's
+<p>You can even build a binary heap out of an unsorted array of n items in linear O(n) time using Floyd's
     bottom-up heap construction algorithm.</p><br>
 
 <h2>Where Are Binary Heaps Used in the Real World?</h2>
 
-<p><strong>Heapsort Algorithm:</strong> Sort an array in-place in guaranteed $\mathcal{O}(n \log n)$ time with zero
+<p><strong>Heapsort Algorithm:</strong> Sort an array in-place in guaranteed O(n log n) time with zero
     extra memory allocation.</p>
 
-<p><strong>Standard Library Priority Queues:</strong> Power Python's `heapq`, Java's `PriorityQueue`, and C++'s
-    `std::priority_queue`.</p>
+<p><strong>Standard Library Priority Queues:</strong> Power Python's <code>heapq</code>, Java's <code>PriorityQueue</code>, and C++'s
+    <code>std::priority_queue</code>.</p>
 
 <p><strong>Timer and Event Loops:</strong> Track the next scheduled timeout or animation frame in web browsers and game
     engines.</p><br>

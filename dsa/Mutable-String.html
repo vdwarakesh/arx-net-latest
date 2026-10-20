@@ -1,7 +1,7 @@
 <h1>Mutable String</h1>
 
 <p>A Mutable String is a special type of string that allows its characters to be modified, inserted, overwritten, or
-    appended directly **in place** without allocating a brand-new string object for every change.</p>
+    appended directly <strong>in place</strong> without allocating a brand-new string object for every change.</p>
 
 <p>Imagine writing a sentence on a classroom whiteboard with dry-erase markers. If you want to change the third letter
     or add five more words to the end, you simply erase a letter or keep writing on the same board-you don't throw the
@@ -9,28 +9,28 @@
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>In-Place Character Mutation:</strong> Directly overwriting an individual character at index `i` (such as
-    `s[i] = 'Z'`) in constant $\mathcal{O}(1)$ time.</p>
+<p><strong>In-Place Character Mutation:</strong> Directly overwriting an individual character at index <code>i</code> (such as
+    <code>s[i] = 'Z'</code>) in constant O(1) time.</p>
 
 <p><strong>Dynamic Character Buffer:</strong> An underlying dynamic array of characters that keeps spare capacity at the
-    end so new text can be appended in amortized $\mathcal{O}(1)$ time.</p>
+    end so new text can be appended in amortized O(1) time.</p>
 
 <p><strong>String Builder Pattern:</strong> Assembling a large text document piece by piece inside a mutable buffer
     before converting it into a final string.</p><br>
 
 <h2>How Does a Mutable String Work Conceptually?</h2>
 
-<p>Under the hood, a mutable string works just like a **Dynamic Array** of characters. It reserves extra empty bytes at
+<p>Under the hood, a mutable string works just like a <strong>Dynamic Array</strong> of characters. It reserves extra empty bytes at
     the end of its memory buffer. When you append characters, modify letters in place, or reverse the text, it edits the
     existing memory block directly.</p>
 
-<p>This turns repeated string concatenation from a slow $\mathcal{O}(n^2)$ memory-copying bottleneck into a smooth,
-    linear $\mathcal{O}(n)$ pass.</p><br>
+<p>This turns repeated string concatenation from a slow O(n<sup>2</sup>) memory-copying bottleneck into a smooth,
+    linear O(n) pass.</p><br>
 
 <h2>Where Are Mutable Strings Used in the Real World?</h2>
 
-<p><strong>Standard C++ Strings and String Builders:</strong> Power C++'s `std::string`, Rust's `String`, Java's
-    `StringBuilder`, and Python's `bytearray`.</p>
+<p><strong>Standard C++ Strings and String Builders:</strong> Power C++'s <code>std::string</code>, Rust's <code>String</code>, Java's
+    <code>StringBuilder</code>, and Python's <code>bytearray</code>.</p>
 
 <p><strong>Log Formatting and HTML/JSON Generation:</strong> Stitch together thousands of small text pieces into a
     single HTTP response payload.</p>

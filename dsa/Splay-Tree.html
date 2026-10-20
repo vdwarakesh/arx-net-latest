@@ -1,7 +1,7 @@
 <h1>Splay Tree</h1>
 
 <p>A Splay Tree is a special type of binary search tree that automatically moves any accessed, inserted, or searched
-    node all the way up to the root of the tree using a sequence of rotations called **splaying**.</p>
+    node all the way up to the root of the tree using a sequence of rotations called <strong>splaying</strong>.</p>
 
 <p>Imagine a stack of folders on your desk. Every time you pull out a folder to read or update it-even if it was buried
     near the bottom-you place it right back on the very top of the pile when you finish. The folders you use every five
@@ -19,14 +19,14 @@
 <p><strong>Temporal Locality:</strong> The real-world pattern where data accessed once is highly likely to be accessed
     again in the near future.</p>
 
-<p><strong>Amortized $\mathcal{O}(\log n)$ Complexity:</strong> The mathematical guarantee that even if a single deep
+<p><strong>Amortized O(log n) Complexity:</strong> The mathematical guarantee that even if a single deep
     search takes time, it flattens the tree along the way so any long sequence of operations averages out to fast
     logarithmic time.</p><br>
 
 <h2>How Does a Splay Tree Work Conceptually?</h2>
 
-<p>Unlike AVL or Red-Black trees, a splay tree stores **zero** extra balance metadata-no height counts and no color
-    bits. Instead, every time you touch a node, the tree performs `Zig-Zig` and `Zig-Zag` rotations until that node sits
+<p>Unlike AVL or Red-Black trees, a splay tree stores <strong>zero</strong> extra balance metadata-no height counts and no color
+    bits. Instead, every time you touch a node, the tree performs <code>Zig-Zig</code> and <code>Zig-Zag</code> rotations until that node sits
     at the root.</p>
 
 <p>This makes the tree self-optimizing: frequently searched items cluster near the top for near-instant access, while

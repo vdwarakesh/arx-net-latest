@@ -1,13 +1,13 @@
 <h1>B+ Tree</h1>
 
 <p>A B+ Tree is a special type of B-tree in which all actual data records (or data pointers) are stored exclusively in
-    the **leaf nodes**, while internal nodes store only routing copies of keys, and all leaf nodes are linked together
+    the <strong>leaf nodes</strong>, while internal nodes store only routing copies of keys, and all leaf nodes are linked together
     side by side in a sequential chain.</p>
 
-<p>Imagine an encyclopedia set where the thin index booklet at the front contains *only* topic names and page numbers-no
+<p>Imagine an encyclopedia set where the thin index booklet at the front contains <strong>only</strong> topic names and page numbers-no
     long articles cluttering the index. Once the index points you to Volume 4, Page 120, every page at the bottom is
-    numbered consecutively so you can simply turn the pages forward to read everything from `"Mozart"` through
-    `"Nivaldi"` without ever flipping back to the index booklet.</p><br>
+    numbered consecutively so you can simply turn the pages forward to read everything from <code>"Mozart"</code> through
+    <code>"Nivaldi"</code> without ever flipping back to the index booklet.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
@@ -35,8 +35,8 @@
 <p><strong>Relational Database Management Systems (RDBMS):</strong> Serve as the default indexing engine for MySQL
     (InnoDB), PostgreSQL, SQLite, Oracle, and Microsoft SQL Server.</p>
 
-<p><strong>SQL Range Queries (`BETWEEN`, `>`, `<`):< /strong> Execute queries like `SELECT * FROM orders WHERE date
-            BETWEEN '2026-01-01' AND '2026-03-01'` via a single leaf search followed by a sequential leaf scan.</p>
+<p><strong>SQL Range Queries (<code>BETWEEN</code>, <code>></code>, <code><</code>):< /strong> Execute queries like <code>SELECT * FROM orders WHERE date
+            BETWEEN '2026-01-01' AND '2026-03-01'</code> via a single leaf search followed by a sequential leaf scan.</p>
 
 <p><strong>Modern File System Directories:</strong> Index large directories and file extents in XFS, NTFS, and ReiserFS.
 </p><br>

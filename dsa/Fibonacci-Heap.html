@@ -1,26 +1,26 @@
 <h1>Fibonacci Heap</h1>
 
-<p>A Fibonacci Heap is a special type of heap that consists of a flexible collection of heap-ordered trees and uses "lazy" consolidation to achieve **constant $\mathcal{O}(1)$ amortized time** for insertions, merges, and decreasing a node's key.</p>
+<p>A Fibonacci Heap is a special type of heap that consists of a flexible collection of heap-ordered trees and uses "lazy" consolidation to achieve <strong>constant O(1) amortized time</strong> for insertions, merges, and decreasing a node's key.</p>
 
-<p>Imagine throwing dirty dishes into a sink throughout the day (`Insert` in 1 second) rather than washing and stacking each dish the moment you use it. Only when you actually need to pull out the cleanest plate (`Extract-Min`) do you organize and stack the dishes neatly into racks. By deferring cleanup work until an extraction happens, almost every everyday action becomes instantaneous.</p><br>
+<p>Imagine throwing dirty dishes into a sink throughout the day (<code>Insert</code> in 1 second) rather than washing and stacking each dish the moment you use it. Only when you actually need to pull out the cleanest plate (<code>Extract-Min</code>) do you organize and stack the dishes neatly into racks. By deferring cleanup work until an extraction happens, almost every everyday action becomes instantaneous.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
 <p><strong>Lazy Insertion and Merging:</strong> Adding new nodes or splicing two heaps together simply by dropping them into a circular doubly linked root list without cleaning up right away.</p>
 
-<p><strong>Consolidation:</strong> The cleanup phase triggered during `Extract-Min`, where trees of equal degree are linked together just like in a Binomial Heap.</p>
+<p><strong>Consolidation:</strong> The cleanup phase triggered during <code>Extract-Min</code>, where trees of equal degree are linked together just like in a Binomial Heap.</p>
 
-<p><strong>Cascading Cut:</strong> When `Decrease-Key` violates heap order, the node is simply snipped from its parent and tossed into the root list; if a parent loses two children, it gets cut too, keeping trees wide and flat.</p>
+<p><strong>Cascading Cut:</strong> When <code>Decrease-Key</code> violates heap order, the node is simply snipped from its parent and tossed into the root list; if a parent loses two children, it gets cut too, keeping trees wide and flat.</p>
 
-<p><strong>Fibonacci Bounding:</strong> The mathematical property that a tree of degree $k$ in the heap always contains at least $F_{k+2}$ nodes (from the Fibonacci sequence), guaranteeing logarithmic tree degrees.</p><br>
+<p><strong>Fibonacci Bounding:</strong> The mathematical property that a tree of degree k in the heap always contains at least F<sub>k+2</sub> nodes (from the Fibonacci sequence), guaranteeing logarithmic tree degrees.</p><br>
 
 <h2>How Does a Fibonacci Heap Work Conceptually?</h2>
 
-<p>A Fibonacci heap pushes laziness to the theoretical limit. It maintains a pointer to the minimum root in a circular doubly linked list of trees. Inserting a node, merging two heaps, or cutting a node whose key decreased and dropping it into the root list all take $\mathcal{O}(1)$ amortized time. The accumulated mess is only consolidated when `Extract-Min` is called.</p><br>
+<p>A Fibonacci heap pushes laziness to the theoretical limit. It maintains a pointer to the minimum root in a circular doubly linked list of trees. Inserting a node, merging two heaps, or cutting a node whose key decreased and dropping it into the root list all take O(1) amortized time. The accumulated mess is only consolidated when <code>Extract-Min</code> is called.</p><br>
 
 <h2>Where Are Fibonacci Heaps Used in the Real World?</h2>
 
-<p><strong>Asymptotically Fastest Dijkstra and Prim Algorithms:</strong> Reduce the theoretical runtime of shortest-path and minimum spanning tree algorithms on dense graphs where `Decrease-Key` is called millions of times.</p>
+<p><strong>Asymptotically Fastest Dijkstra and Prim Algorithms:</strong> Reduce the theoretical runtime of shortest-path and minimum spanning tree algorithms on dense graphs where <code>Decrease-Key</code> is called millions of times.</p>
 
 <p><strong>Network Optimization and Routing Research:</strong> Benchmark theoretical lower bounds in dense graph flow problems.</p><br>
 

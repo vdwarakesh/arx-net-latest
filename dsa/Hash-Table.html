@@ -17,21 +17,21 @@
     a slot is occupied, the table checks the next open slot according to a fixed pattern.</p>
 
 <p><strong>Rehashing:</strong> Creating a larger bucket array and recalculating the position of every stored item when
-    the load factor exceeds a safe threshold (commonly `0.75`).</p><br>
+    the load factor exceeds a safe threshold (commonly <code>0.75</code>).</p><br>
 
 <h2>How Does a Hash Table Work Conceptually?</h2>
 
 <p>A hash table combines an underlying dynamic array of buckets with a hash function and a collision handler. When an
     item is inserted, its hash code is divided by the number of buckets to find the remainder-its home index. As long as
     the hash function spreads items evenly across the buckets and the table rehashes before getting too crowded, almost
-    every bucket contains zero or one item, making operations run in constant $O(1)$ time on average.</p><br>
+    every bucket contains zero or one item, making operations run in constant O(1) time on average.</p><br>
 
 <h2>Where Are Hash Tables Used in the Real World?</h2>
 
 <p><strong>Compiler Symbol Tables:</strong> Track variable names and function definitions while translating source code
     into machine programs.</p>
 
-<p><strong>DNS (Domain Name System) Caches:</strong> Translate human-readable website names like `example.com` into
+<p><strong>DNS (Domain Name System) Caches:</strong> Translate human-readable website names like <code>example.com</code> into
     numerical IP addresses.</p>
 
 <p><strong>Spell Checkers:</strong> Verify whether every typed word in a document exists in a dictionary of hundreds of

@@ -1,7 +1,7 @@
 <h1>LRU Cache</h1>
 
-<p>An LRU Cache (**Least Recently Used** Cache) is a special type of cache structure that always evicts the item that
-    has gone the **longest time without being accessed** whenever the cache runs out of room.</p>
+<p>An LRU Cache (<strong>Least Recently Used</strong> Cache) is a special type of cache structure that always evicts the item that
+    has gone the <strong>longest time without being accessed</strong> whenever the cache runs out of room.</p>
 
 <p>Imagine organizing the clothes in your closet using a simple rule: every time you wear a jacket and put it back, you
     hang it on the far-left end of the rod. Over the months, the clothes you wear every week stay clustered on the left,
@@ -24,14 +24,14 @@
 
 <h2>How Does an LRU Cache Work Conceptually?</h2>
 
-<p>A plain hash map can find items in $\mathcal{O}(1)$ time, but has no idea which item was used longest ago. A plain
-    doubly linked list keeps items in chronological order, but takes $\mathcal{O}(n)$ time to search. An LRU cache wires
+<p>A plain hash map can find items in O(1) time, but has no idea which item was used longest ago. A plain
+    doubly linked list keeps items in chronological order, but takes O(n) time to search. An LRU cache wires
     them together: every key in the Hash Map points directly to its node inside a Doubly Linked List.</p>
 
-<p>When you read (`Get`) or update (`Put`) a key, the Hash Map locates its node in $\mathcal{O}(1)$ time, unclips it
-    from the middle of the Doubly Linked List in $\mathcal{O}(1)$ time, and moves it straight to the front head. When
+<p>When you read (<code>Get</code>) or update (<code>Put</code>) a key, the Hash Map locates its node in O(1) time, unclips it
+    from the middle of the Doubly Linked List in O(1) time, and moves it straight to the front head. When
     the cache exceeds capacity, it simply drops the node sitting at the back tail-making every operation strictly
-    $\mathcal{O}(1)$.</p><br>
+    O(1).</p><br>
 
 <h2>Where Are LRU Caches Used in the Real World?</h2>
 
@@ -41,7 +41,7 @@
 <p><strong>Database Buffer Pools (MySQL InnoDB, PostgreSQL):</strong> Keep active table and index pages in RAM while
     evicting cold pages.</p>
 
-<p><strong>Function Memoization (`@functools.lru_cache` in Python):</strong> Remember the outputs of expensive function
+<p><strong>Function Memoization (<code>@functools.lru_cache</code> in Python):</strong> Remember the outputs of expensive function
     calls for recently seen inputs.</p><br>
 
 <h2>Summary</h2>

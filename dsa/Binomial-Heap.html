@@ -1,33 +1,33 @@
 <h1>Binomial Heap</h1>
 
-<p>A Binomial Heap is a special type of heap composed of a collection (forest) of **Binomial Trees** that enables two
+<p>A Binomial Heap is a special type of heap composed of a collection (forest) of <strong>Binomial Trees</strong> that enables two
     entire heaps to be merged together in fast logarithmic time-something a standard array-based binary heap cannot do
     efficiently.</p>
 
-<p>Imagine representing the number 13 in binary (`1101` in base 2) using exact coin pouches of sizes 8, 4, and 1. If
-    someone hands you another set of pouches totaling 5 (`0101`-pouches of size 4 and 1), you combine them just like
+<p>Imagine representing the number 13 in binary (<code>1101</code> in base 2) using exact coin pouches of sizes 8, 4, and 1. If
+    someone hands you another set of pouches totaling 5 (<code>0101</code>-pouches of size 4 and 1), you combine them just like
     binary addition: the two size-1 pouches combine into a size-2 pouch, and the two size-4 pouches combine into a
     size-8 pouch. A binomial heap merges priority queues using this exact binary-addition trick.</p><br>
 
 <h2>Understanding the Basic Terminology</h2>
 
-<p><strong>Binomial Tree of Order $k$ ($B_k$):</strong> A recursive tree containing exactly $2^k$ nodes, formed by
-    linking the root of one $B_{k-1}$ tree as the leftmost child of another $B_{k-1}$ tree.</p>
+<p><strong>Binomial Tree of Order k (B<sub>k</sub>):</strong> A recursive tree containing exactly 2<sup>k</sup> nodes, formed by
+    linking the root of one B<sub>k-1</sub> tree as the leftmost child of another B<sub>k-1</sub> tree.</p>
 
-<p><strong>Binomial Forest:</strong> A sorted list of binomial trees where at most one tree of each order ($2^0, 2^1,
-    2^2, \dots$) exists at any time, mirroring the binary representation of the total node count $n$.</p>
+<p><strong>Binomial Forest:</strong> A sorted list of binomial trees where at most one tree of each order (2<sup>0</sup>, 2<sup>1</sup>,
+    2<sup>2</sup>, ...) exists at any time, mirroring the binary representation of the total node count n.</p>
 
 <p><strong>Meld (Union) Operation:</strong> Combining two binomial heaps by linking trees of equal order in
-    $\mathcal{O}(\log n)$ time, identical to adding two binary numbers with carry-over.</p><br>
+    O(log n) time, identical to adding two binary numbers with carry-over.</p><br>
 
 <h2>How Does a Binomial Heap Work Conceptually?</h2>
 
-<p>Instead of forcing all $n$ elements into one single binary tree, a binomial heap breaks $n$ into powers of two. For
+<p>Instead of forcing all n elements into one single binary tree, a binomial heap breaks n into powers of two. For
     example, a binomial heap with 13 items consists of three heap-ordered binomial trees of sizes 8, 4, and 1.</p>
 
 <p>Even inserting a single new item is treated as merging a 1-node binomial heap into the existing forest. Because there
-    are at most $\log_2 n$ trees in the forest and linking two equal-sized trees takes just one pointer update, merging
-    two massive heaps takes only $\mathcal{O}(\log n)$ steps.</p><br>
+    are at most log<sub>2</sub> n trees in the forest and linking two equal-sized trees takes just one pointer update, merging
+    two massive heaps takes only O(log n) steps.</p><br>
 
 <h2>Where Are Binomial Heaps Used in the Real World?</h2>
 
