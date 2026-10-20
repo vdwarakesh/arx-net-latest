@@ -266,26 +266,34 @@
       background: transparent;
     }
 
-    /* Fix nested scrollbars & enable Prism word-wrap */
+    /* Fix nested scrollbars & enable responsive Prism word-wrap */
     #codeViewPane {
       overflow-x: hidden;
       overflow-y: auto;
+      min-width: 0;
     }
 
     #codeViewPane pre[class*="language-"] {
       margin: 0 !important;
       border-radius: 0;
-      flex: 1 1 auto;
+      flex: 1 0 auto;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
       overflow: visible !important;
-      /* Let #codeViewPane handle scrolling exclusively */
       white-space: pre-wrap !important;
-      word-break: break-word !important;
+      word-wrap: break-word !important;
+      overflow-wrap: anywhere !important;
     }
 
     #codeViewPane code[class*="language-"] {
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
       white-space: pre-wrap !important;
-      word-break: break-word !important;
-      display: block;
+      word-wrap: break-word !important;
+      overflow-wrap: anywhere !important;
     }
 
     /* Keep line highlights aligned across wrapped lines */
@@ -2004,7 +2012,7 @@
       }
 
       .line-highlight {
-        margin-top: 0.7rem;
+        margin-top: 0.765rem;
       }
 
       .desktop-tabs {
@@ -2884,7 +2892,7 @@
           }
           const pre = document.createElement('pre');
           pre.className = 'line-numbers';
-          pre.setAttribute('data-line','1,3')
+          pre.setAttribute('data-line', '1,3')
           // pre class="line-numbers" data-line="1,4,32"><code class="language-python"
           const code = document.createElement('code');
           code.className = `language-${currentPrismLang}`;
@@ -2907,22 +2915,38 @@
       }
     }
 
-    // Recalculate Prism line numbers & line highlights when the code pane is resized via splitters
+    // Recalculate Prism line numbers & line highlights when the code pane is resized
+    let resizeRafId = null;
+
     const codePaneResizeObserver = new ResizeObserver(() => {
       if (activeRightTopTab !== 'code' || !window.Prism) return;
-      const pre = codeViewPane.querySelector('pre.line-numbers');
-      if (!pre) return;
 
-      // 1. Trigger Prism's internal resize handler for line-numbers
-      window.dispatchEvent(new Event('resize'));
+      if (resizeRafId) cancelAnimationFrame(resizeRafId);
 
-      // 2. If you use Prism's line-highlight plugin, re-align active highlights:
-      if (window.Prism.plugins && window.Prism.plugins.lineHighlight) {
-        const highlightLines = pre.getAttribute('data-line');
-        if (highlightLines) {
-          window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines)();
+      resizeRafId = requestAnimationFrame(() => {
+        const pre = codeViewPane.querySelector('pre.line-numbers');
+        if (!pre) return;
+
+        // 1. Directly invoke Prism's line-numbers resizer
+        if (window.Prism.plugins?.lineNumbers?.resize) {
+          window.Prism.plugins.lineNumbers.resize(pre);
         }
-      }
+
+        // 2. Cleanly remove old highlight overlays and re-apply them for the new wrapped heights
+        if (window.Prism.plugins?.lineHighlight) {
+          const code = pre.querySelector('code');
+          pre.querySelectorAll('.line-highlight').forEach(el => el.remove());
+
+          const highlightLines = pre.getAttribute('data-line');
+          if (highlightLines) {
+            const reposition = window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines);
+            if (typeof reposition === 'function') reposition();
+          } else if (code) {
+            // Fallback if Prism version triggers line-highlight via the 'complete' hook
+            window.Prism.hooks.run('complete', { element: code });
+          }
+        }
+      });
     });
 
     codePaneResizeObserver.observe(codeViewPane);
