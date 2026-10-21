@@ -27,11 +27,11 @@
       /* Height of the top application header bar on desktop */
       --header-height-mobile: 2.625rem;
       /* Height of the top application header bar on mobile */
-      --card-header-height-desktop: 2.75rem;
+      --card-header-height-desktop: 2.15rem;
       /* Height of section card headers (Graph, Code, etc.) on desktop */
       --card-header-height-mobile: 1.6rem;
       /* Height of section card headers on mobile */
-      --card-min-height-desktop: 2.75rem;
+      --card-min-height-desktop: 2.15rem;
       /* Minimum height of each card on desktop (matches card header height) */
       --card-min-height-mobile: 1.6rem;
       /* Minimum height of each card on mobile (matches card header height) */
@@ -100,14 +100,22 @@
       /* --- Algorithms, Code & Row Constraints --- */
       --left-col-min-width-desktop: 12rem;
       /* Minimum width of the left column on desktop */
-      --algorithms-min-width-desktop: 11rem;
+      --algorithms-min-width-desktop: 5rem;
       /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
-      --algorithms-min-width-mobile: 6.5rem;
+      --algorithms-min-width-mobile: 5rem;
       /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
-      --algorithms-collapsed-width-desktop: 3rem;
+      --algorithms-collapsed-width-desktop: 2.15rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
       --algorithms-collapsed-width-mobile: 1.6rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
+      --history-default-width-desktop: 20%;
+      /* Default width of history section on desktop */
+      --history-default-width-mobile: 38%;
+      /* Default width of history section on mobile */
+      --history-max-width: 40%;
+      /* Maxmimum width of history and metadata sections on desktop and mobile */
+      --history-top-height: 30%;
+      /* Ratio of history to metadata */
       --code-card-min-width: 8rem;
       /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
       --right-top-row-min-height: var(--card-min-height-desktop);
@@ -351,7 +359,7 @@
 
     #codeViewPane code[class*="language-"],
     #codeViewPane .line-numbers-sizer,
-    #codeViewPane .line-numbers-sizer > span {
+    #codeViewPane .line-numbers-sizer>span {
       display: block !important;
       width: 100% !important;
       min-width: 0 !important;
@@ -492,12 +500,21 @@
 
     .left-column {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      /* Changed from column to row */
       width: var(--desktop-left-col-width);
       min-width: var(--left-col-min-width-desktop);
       max-width: calc(100% - var(--algorithms-collapsed-width-desktop) - var(--code-card-min-width) - (var(--splitter-thickness-desktop) * 2));
       min-height: 0;
       flex: 0 0 auto;
+    }
+
+    .left-main-stack {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      min-width: var(--code-card-min-width);
+      min-height: 0;
     }
 
     .right-column {
@@ -627,6 +644,67 @@
     #algo-settings-card {
       flex: 1 1 0%;
       min-height: var(--card-min-height-desktop);
+    }
+
+    #history-column {
+      display: flex;
+      flex-direction: column;
+      width: var(--history-default-width-desktop);
+      min-width: var(--algorithms-min-width-desktop);
+      max-width: var(--history-max-width);
+      flex: 0 0 auto;
+    }
+
+    #history-column.is-collapsed {
+      width: var(--algorithms-collapsed-width-desktop) !important;
+      min-width: var(--algorithms-collapsed-width-desktop) !important;
+      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      gap: var(--splitter-thickness-desktop);
+    }
+
+    #metadata-card {
+      height: var(--history-top-height);
+      min-height: var(--card-min-height-desktop);
+      flex: 0 0 auto;
+    }
+
+    #history-card {
+      flex: 1 1 0%;
+      min-height: var(--card-min-height-desktop);
+    }
+
+    #history-column.is-collapsed .vscode-card-header {
+      display: none;
+    }
+
+    #history-column.is-collapsed .vscode-card {
+      background-color: var(--bg-card-header);
+    }
+
+    #history-column.is-collapsed #metadata-title,
+    #history-column.is-collapsed #metadata-body,
+    #history-column.is-collapsed #history-title,
+    #history-column.is-collapsed #history-body,
+    #history-column.is-collapsed #splitter-metadata-history-h {
+      display: none;
+    }
+
+    #metadata-collapsed-strip,
+    #history-collapsed-strip {
+      display: none;
+      flex: 1 1 0%;
+      min-height: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 0;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    #history-column.is-collapsed #metadata-collapsed-strip,
+    #history-column.is-collapsed #history-collapsed-strip {
+      display: flex;
     }
 
     #code-card {
@@ -1830,7 +1908,8 @@
     }
 
     /* Align the mobile tab dropdown to the left so it doesn't clip off-screen */
-    #tab-dropdown-menu {
+    #tab-dropdown-menu,
+    #state-tab-dropdown-menu {
       right: auto;
       left: 0;
     }
@@ -2041,6 +2120,23 @@
         min-height: var(--card-min-height-mobile);
       }
 
+      #history-column {
+        width: var(--history-default-width-mobile);
+        min-width: var(--algorithms-min-width-mobile);
+        max-width: var(--history-max-width);
+      }
+
+      #history-column.is-collapsed {
+        width: var(--algorithms-collapsed-width-mobile) !important;
+        min-width: var(--algorithms-collapsed-width-mobile) !important;
+        max-width: var(--algorithms-collapsed-width-mobile) !important;
+      }
+
+      #metadata-card,
+      #history-card {
+        min-height: var(--card-min-height-mobile);
+      }
+
       #log-card {
         width: var(--mobile-traversal-width);
         min-width: var(--bottom-cards-min-width);
@@ -2235,69 +2331,113 @@
 
     <!-- ================= ADAPTIVE WORKSPACE CONTAINER ================= -->
     <main id="workspace" class="workspace-container">
-
       <!-- ===============================================================
-           SECTION A: GRAPH CARD & DESKTOP TRAVERSAL SLOT
+           SECTION A: METADATA/HISTORY COLUMN + GRAPH & TRAVERSAL STACK
            =============================================================== -->
       <div id="left-column" class="left-column">
 
-        <section id="graph-card" class="vscode-card">
-          <div class="vscode-card-header">
-            <span>Graph</span>
-          </div>
-
-          <div class="graph-body-wrapper">
-            <div class="graph-canvas-area">
-              <div class="graph-inner-pad">
-                <span class="graph-placeholder-text">
-                  Main content area.
+        <!-- COLLAPSIBLE METADATA + HISTORY COLUMN -->
+        <div id="history-column" class="is-collapsed">
+          <section id="metadata-card" class="vscode-card">
+            <div class="vscode-card-header">
+              <span id="metadata-title">Metadata</span>
+            </div>
+            <div id="metadata-body" class="card-scroll-body">
+              <div class="card-inner-pad">
+                <span class="card-body-text">
+                  Metadata content goes here.
                 </span>
               </div>
             </div>
+            <div id="metadata-collapsed-strip" title="Click to expand Metadata">
+              <span class="algo-collapsed-label">
+                Metadata
+              </span>
+            </div>
+          </section>
 
-            <div class="playback-bar">
-              <div class="playback-controls-left">
-                <button type="button" class="playback-text-btn" title="Run">
-                  Run
-                </button>
-                <div class="visualization-options">
-                  Visualize&nbsp;
-                  <button type="button" class="playback-icon-btn" title="Step Backward">
-                    <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn" title="Visualize">
-                    <img src="images/run.png" alt="Run" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn" title="Step Forward">
-                    <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn" title="Reset">
-                    <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
-                  </button>
+          <div id="splitter-metadata-history-h" class="splitter-h" title="Drag to resize"></div>
 
+          <section id="history-card" class="vscode-card">
+            <div class="vscode-card-header">
+              <span id="history-title">History</span>
+            </div>
+            <div id="history-body" class="card-scroll-body">
+              <div class="card-inner-pad">
+                <span class="card-body-text">
+                  History content goes here.
+                </span>
+              </div>
+            </div>
+            <div id="history-collapsed-strip" title="Click to expand History">
+              <span class="algo-collapsed-label">
+                History
+              </span>
+            </div>
+          </section>
+        </div>
 
-                  <div class="playback-speed-group">
-                    <img src="images/speed.png" class="playback-label-img" />
-                    <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
-                      class="vscode-slider" />
-                    <span id="speed-label" class="playback-speed-value">1x</span>
-                  </div>
+        <div id="splitter-history-graph-v" class="splitter-v" title="Drag to resize"></div>
+
+        <!-- GRAPH CARD & DESKTOP TRAVERSAL SLOT STACK -->
+        <div id="left-main-stack" class="left-main-stack">
+          <section id="graph-card" class="vscode-card">
+            <div class="vscode-card-header">
+              <span>Graph</span>
+            </div>
+
+            <div class="graph-body-wrapper">
+              <div class="graph-canvas-area">
+                <div class="graph-inner-pad">
+                  <span class="graph-placeholder-text">
+                    Main content area.
+                  </span>
                 </div>
               </div>
 
-              <div class="playback-controls-right">
-                <span class="playback-muted-label">0 / 0</span>
+              <div class="playback-bar">
+                <div class="playback-controls-left">
+                  <button type="button" class="playback-text-btn" title="Run">
+                    Run
+                  </button>
+                  <div class="visualization-options">
+                    Visualize&nbsp;
+                    <button type="button" class="playback-icon-btn" title="Step Backward">
+                      <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn" title="Visualize">
+                      <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn" title="Step Forward">
+                      <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn" title="Reset">
+                      <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
+                    </button>
+
+                    <div class="playback-speed-group">
+                      <img src="images/speed.png" class="playback-label-img" />
+                      <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
+                        class="vscode-slider" />
+                      <span id="speed-label" class="playback-speed-value">1x</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="playback-controls-right">
+                  <span class="playback-muted-label">0 / 0</span>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
+          <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
 
-        <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
+          <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
+        </div>
       </div>
-
       <div id="splitter-main-v" class="splitter-v desktop-only-el" title="Drag to resize"></div>
+
 
       <!-- ===============================================================
            SECTION B: RIGHT COLUMN (DESKTOP) / MIDDLE + BOTTOM ROWS (PHONE)
@@ -2355,7 +2495,7 @@
 
             <section id="algo-settings-card" class="vscode-card">
               <div class="vscode-card-header">
-                <span id="algo-settings-title">Algorithm Settings</span>
+                <span id="algo-settings-title">Settings</span>
               </div>
               <div id="algo-settings-body" class="card-scroll-body">
                 <div class="card-inner-pad">
@@ -2426,8 +2566,6 @@
                   <button type="button" class="vscode-tab active" data-tab-group="right-top"
                     data-tab-type="code">Code</button>
                   <button type="button" class="vscode-tab" data-tab-group="right-top"
-                    data-tab-type="explanation">Explanation</button>
-                  <button type="button" class="vscode-tab" data-tab-group="right-top"
                     data-tab-type="notes">Notes</button>
                 </div>
 
@@ -2445,9 +2583,6 @@
                   <div id="tab-dropdown-menu" class="lang-dropdown-menu" role="listbox" aria-label="Select Content Tab">
                     <div class="lang-option-item active" role="option" aria-selected="true" data-tab-type="code">
                       <span>Code</span>
-                    </div>
-                    <div class="lang-option-item" role="option" aria-selected="false" data-tab-type="explanation">
-                      <span>Explanation</span>
                     </div>
                     <div class="lang-option-item" role="option" aria-selected="false" data-tab-type="notes">
                       <span>Notes</span>
@@ -2544,10 +2679,40 @@
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
           <section id="state-card" class="vscode-card">
-            <div class="vscode-card-header">
-              <span>State variables</span>
+            <div class="vscode-card-header code-card-header">
+              <div class="code-tabs-container">
+                <!-- Desktop Tabs (Hidden on Mobile) -->
+                <div class="card-tabs-group desktop-tabs">
+                  <button type="button" class="vscode-tab active" data-tab-group="state-bottom"
+                    data-tab-type="state">State variables</button>
+                  <button type="button" class="vscode-tab" data-tab-group="state-bottom"
+                    data-tab-type="explanation">Explanation</button>
+                </div>
+
+                <!-- Mobile Tabs Dropdown (Hidden on Desktop) -->
+                <div class="tab-dropdown-wrapper mobile-tabs" id="state-tab-dropdown-wrapper">
+                  <button type="button" id="state-tab-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
+                    aria-expanded="false">
+                    <span id="state-tab-active-label">State variables</span>
+                    <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  <div id="state-tab-dropdown-menu" class="lang-dropdown-menu" role="listbox"
+                    aria-label="Select State or Explanation Tab">
+                    <div class="lang-option-item active" role="option" aria-selected="true" data-tab-type="state">
+                      <span>State variables</span>
+                    </div>
+                    <div class="lang-option-item" role="option" aria-selected="false" data-tab-type="explanation">
+                      <span>Explanation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="card-scroll-body">
+            <div id="stateViewPane" class="card-scroll-body">
               <div class="card-inner-pad">
                 <span class="card-body-text">
                   State variables content goes here.
@@ -2676,6 +2841,8 @@
       ALGO_MIN_WIDTH_MOBILE_VAR: '--algorithms-min-width-mobile',
       ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--algorithms-collapsed-width-desktop',
       ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--algorithms-collapsed-width-mobile',
+      HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
+      HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
       CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
       LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
       BOTTOM_CARDS_MIN_WIDTH_VAR: '--bottom-cards-min-width',
@@ -2835,8 +3002,27 @@
     // STATE FOR SELECTED DSA ITEM, ACTIVE TAB & LANGUAGE
     // =========================================================================
     const codeViewPane = document.getElementById('codeViewPane');
+    const stateViewPane = document.getElementById('stateViewPane');
     let selectedDsaName = null; // Stores exact DS or algorithm name when clicked
-    let activeRightTopTab = 'code'; // 'code' | 'explanation' | 'notes'
+    let activeRightTopTab = 'code'; // 'code' | 'notes'
+    let activeStateBottomTab = 'state'; // 'state' | 'explanation'
+
+    function updateStateViewPane() {
+      if (!stateViewPane) return;
+      if (activeStateBottomTab === 'explanation') {
+        stateViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Explanations not implemented yet</span>
+          </div>
+        `;
+      } else {
+        stateViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">State variables content goes here.</span>
+          </div>
+        `;
+      }
+    }
     let currentLangExt = '.py';
     let currentPrismLang = 'python';
 
@@ -2893,7 +3079,7 @@
           }
           const pre = document.createElement('pre');
           pre.className = 'line-numbers';
-          pre.setAttribute('data-line', '1,3');
+          pre.setAttribute('data-line', '1,3,7,10');
 
           const code = document.createElement('code');
           code.className = `language-${currentPrismLang}`;
@@ -3050,14 +3236,14 @@
     // =========================================================================
 
     // --- Tab Switching Logic (Desktop & Mobile Sync) ---
-    const desktopTabs = document.querySelectorAll('.desktop-tabs .vscode-tab');
+    const desktopTabs = document.querySelectorAll('#code-card .desktop-tabs .vscode-tab');
     const tabWrapper = document.getElementById('tab-dropdown-wrapper');
     const tabTriggerBtn = document.getElementById('tab-trigger-btn');
     const tabMenu = document.getElementById('tab-dropdown-menu');
     const tabActiveLabel = document.getElementById('tab-active-label');
     const tabOptions = tabMenu ? tabMenu.querySelectorAll('.lang-option-item') : [];
 
-    // Helper to sync state and update content
+    // Helper to sync state and update content for Code / Notes
     function setActiveTab(tabType, tabText) {
       activeRightTopTab = tabType;
 
@@ -3077,7 +3263,7 @@
       updateCodeViewPane();
     }
 
-    // Desktop Tab Clicks
+    // Desktop Tab Clicks (Code / Notes)
     desktopTabs.forEach(tab => {
       tab.addEventListener('click', () => {
         const tabType = tab.getAttribute('data-tab-type');
@@ -3086,7 +3272,7 @@
       });
     });
 
-    // Mobile Dropdown Toggle
+    // Mobile Dropdown Toggle (Code / Notes)
     if (tabTriggerBtn) {
       tabTriggerBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -3095,7 +3281,7 @@
       });
     }
 
-    // Mobile Dropdown Selection
+    // Mobile Dropdown Selection (Code / Notes)
     tabOptions.forEach(option => {
       option.addEventListener('click', () => {
         const tabType = option.getAttribute('data-tab-type');
@@ -3108,11 +3294,68 @@
       });
     });
 
-    // Close Dropdown when clicking outside
+    // --- State Variables / Explanation Tab Switching Logic (Desktop & Mobile Sync) ---
+    const stateDesktopTabs = document.querySelectorAll('#state-card .desktop-tabs .vscode-tab');
+    const stateTabWrapper = document.getElementById('state-tab-dropdown-wrapper');
+    const stateTabTriggerBtn = document.getElementById('state-tab-trigger-btn');
+    const stateTabMenu = document.getElementById('state-tab-dropdown-menu');
+    const stateTabActiveLabel = document.getElementById('state-tab-active-label');
+    const stateTabOptions = stateTabMenu ? stateTabMenu.querySelectorAll('.lang-option-item') : [];
+
+    function setActiveStateTab(tabType, tabText) {
+      activeStateBottomTab = tabType;
+
+      stateDesktopTabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
+      });
+
+      if (stateTabActiveLabel) stateTabActiveLabel.textContent = tabText;
+      stateTabOptions.forEach(opt => {
+        const isActive = opt.getAttribute('data-tab-type') === tabType;
+        opt.classList.toggle('active', isActive);
+        opt.setAttribute('aria-selected', String(isActive));
+      });
+
+      updateStateViewPane();
+    }
+
+    stateDesktopTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabType = tab.getAttribute('data-tab-type');
+        const tabText = tab.textContent.trim();
+        setActiveStateTab(tabType, tabText);
+      });
+    });
+
+    if (stateTabTriggerBtn) {
+      stateTabTriggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = stateTabMenu.classList.toggle('open');
+        stateTabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+
+    stateTabOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const tabType = option.getAttribute('data-tab-type');
+        const tabText = option.querySelector('span').textContent.trim();
+
+        stateTabMenu.classList.remove('open');
+        stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
+
+        setActiveStateTab(tabType, tabText);
+      });
+    });
+
+    // Close Dropdowns when clicking outside
     window.addEventListener('click', (e) => {
       if (tabWrapper && !tabWrapper.contains(e.target)) {
         tabMenu.classList.remove('open');
         if (tabTriggerBtn) tabTriggerBtn.setAttribute('aria-expanded', 'false');
+      }
+      if (stateTabWrapper && !stateTabWrapper.contains(e.target)) {
+        stateTabMenu.classList.remove('open');
+        if (stateTabTriggerBtn) stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
       }
     });
 
@@ -3679,6 +3922,41 @@
 
     algoCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
 
+    const leftMainStack = document.getElementById('left-main-stack');
+    const historyColumn = document.getElementById('history-column');
+    const metadataCard = document.getElementById('metadata-card');
+    const historyCard = document.getElementById('history-card');
+    const metadataCollapsedStrip = document.getElementById('metadata-collapsed-strip');
+    const historyCollapsedStrip = document.getElementById('history-collapsed-strip');
+    const splitterHistoryGraph = document.getElementById('splitter-history-graph-v');
+    const splitterMetadataHistoryH = document.getElementById('splitter-metadata-history-h');
+
+    let isHistoryCollapsed = true;
+    let savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+
+    function setHistoryCollapsed(collapse, customExpandedWidth) {
+      isHistoryCollapsed = collapse;
+      const isPhone = phoneMedia.matches;
+
+      if (isHistoryCollapsed) {
+        if (!customExpandedWidth && historyColumn.style.width) {
+          savedHistoryWidth = historyColumn.style.width;
+        }
+        historyColumn.classList.add('is-collapsed');
+        historyColumn.style.width = '';
+      } else {
+        historyColumn.classList.remove('is-collapsed');
+        historyColumn.style.width = customExpandedWidth || (isPhone ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : savedHistoryWidth);
+      }
+    }
+
+    if (metadataCollapsedStrip) {
+      metadataCollapsedStrip.addEventListener('click', () => setHistoryCollapsed(false));
+    }
+    if (historyCollapsedStrip) {
+      historyCollapsedStrip.addEventListener('click', () => setHistoryCollapsed(false));
+    }
+
     const algoSettingsCollapsedStrip = document.getElementById('algo-settings-collapsed-strip');
     if (algoSettingsCollapsedStrip) {
       algoSettingsCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
@@ -3701,14 +3979,16 @@
           workspace.insertBefore(splitterLeftH, rightColumn);
         }
         setAlgoCollapsed(true);
+        setHistoryCollapsed(true);
       } else {
-        if (splitterLeftH.parentElement !== leftColumn) {
-          leftColumn.insertBefore(splitterLeftH, desktopTraversalSlot);
+        if (splitterLeftH.parentElement !== leftMainStack) {
+          leftMainStack.insertBefore(splitterLeftH, desktopTraversalSlot);
         }
         if (logCard.parentElement !== desktopTraversalSlot) {
           desktopTraversalSlot.appendChild(logCard);
         }
         setAlgoCollapsed(false);
+        setHistoryCollapsed(true); // Always starts collapsed
       }
     }
 
@@ -3797,7 +4077,7 @@
     // 2. Top Horizontal Splitter
     makeResizable({
       splitter: splitterLeftH,
-      getContainer: () => phoneMedia.matches ? workspace : leftColumn,
+      getContainer: () => phoneMedia.matches ? workspace : leftMainStack,
       getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
       getDirection: () => 'vertical',
       getMinUnits: () => phoneMedia.matches
@@ -3902,8 +4182,93 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 
+    // 6. Metadata <-> History Horizontal Splitter (50/50 vertical split inside History Column)
+    makeResizable({
+      splitter: splitterMetadataHistoryH,
+      getContainer: () => historyColumn,
+      getTargetPane: () => metadataCard,
+      getDirection: () => 'vertical',
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
+      getMaxReservedUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
+    });
+
+    // 7. History Column <-> Graph/Traversal Stack Vertical Splitter (Supports Drag-Collapse & Max 40%)
+    (function setupHistorySplitter() {
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        splitterHistoryGraph.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = leftColumn.getBoundingClientRect();
+        if (rect.width <= 0) return;
+
+        const collapseThresholdU = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 6.5)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 11);
+        const graphMinU = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
+        const splitterW = splitterHistoryGraph.getBoundingClientRect().width;
+        const desiredWidthU = clientX - rect.left;
+
+        if (desiredWidthU < collapseThresholdU) {
+          if (!isHistoryCollapsed) {
+            setHistoryCollapsed(true);
+          }
+        } else {
+          // Cap at 40% of leftColumn width (or available space before Graph min-width)
+          const maxByPercentU = rect.width * 0.40;
+          const maxByReserveU = rect.width - graphMinU - splitterW;
+          const maxU = Math.max(collapseThresholdU, Math.min(maxByPercentU, maxByReserveU));
+          const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
+          const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
+          savedHistoryWidth = widthStr;
+
+          if (isHistoryCollapsed) {
+            setHistoryCollapsed(false, widthStr);
+          } else {
+            historyColumn.style.width = widthStr;
+          }
+        }
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        splitterHistoryGraph.classList.remove('dragging');
+        document.body.style.cursor = '';
+      };
+
+      splitterHistoryGraph.addEventListener('mousedown', startDrag);
+      splitterHistoryGraph.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    })();
+
+    // 8. Mobile Bottom Vertical Splitter (Traversal <-> State Variables)
+    makeResizable({
+      splitter: splitterBottomMobileV,
+      getContainer: () => bottomSplitRow,
+      getTargetPane: () => logCard,
+      getDirection: () => 'horizontal',
+      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5),
+      getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5)
+    });
+
     function resetAllProportions() {
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
+      savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
       syncResponsiveStructure();
     }
 

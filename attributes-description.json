@@ -1,0 +1,530 @@
+{
+    "contiguous_memory": {
+        "description": "Indicates whether all elements are stored in a single, unbroken block of physical memory, allowing for predictable and fast memory access.",
+        "data_type": "bool"
+    },
+    "random_access": {
+        "description": "Indicates the ability to access any element directly in O(1) constant time using its index or memory offset.",
+        "data_type": "bool"
+    },
+    "fixed_capacity": {
+        "description": "Specifies the immutable maximum number of elements the structure can hold, allocated at creation time.",
+        "data_type": "int"
+    },
+    "resizable": {
+        "description": "Indicates whether the data structure can automatically dynamically allocate more memory to expand its capacity when full.",
+        "data_type": "bool"
+    },
+    "amortized_insertion": {
+        "description": "Indicates that while occasional operations (like resizing) may be slow, the average time complexity for insertions remains O(1).",
+        "data_type": "bool"
+    },
+    "node_based": {
+        "description": "Indicates that the structure is composed of independent, dynamically allocated objects (nodes) connected via memory pointers.",
+        "data_type": "bool"
+    },
+    "dynamic_size": {
+        "description": "Indicates that the structure grows and shrinks precisely node-by-node without needing contiguous block reallocation.",
+        "data_type": "bool"
+    },
+    "sequential_access": {
+        "description": "Requires traversing elements one by one from the beginning (or end) to reach a specific element, rather than jumping directly to it.",
+        "data_type": "bool"
+    },
+    "unidirectional": {
+        "description": "Indicates that traversal is only possible in one direction (e.g., head to tail) using a single forward pointer.",
+        "data_type": "bool"
+    },
+    "bidirectional": {
+        "description": "Indicates that traversal is possible in both forward and backward directions using next and previous pointers.",
+        "data_type": "bool"
+    },
+    "ring_topology": {
+        "description": "Indicates that the end of the structure connects directly back to the beginning, forming a continuous loop.",
+        "data_type": "bool"
+    },
+    "LIFO": {
+        "description": "Last-In, First-Out access policy; the most recently added element is the first one to be removed.",
+        "data_type": "bool"
+    },
+    "FIFO": {
+        "description": "First-In, First-Out access policy; elements are removed in the exact chronological order they were added.",
+        "data_type": "bool"
+    },
+    "ring_buffer": {
+        "description": "Uses modulo arithmetic to wrap array indices around a fixed-size buffer to reuse empty space continuously.",
+        "data_type": "bool"
+    },
+    "double_ended": {
+        "description": "Allows insertions and deletions from both the front and the back of the structure.",
+        "data_type": "bool"
+    },
+    "ordered_by_priority": {
+        "description": "Indicates that elements are retrieved based on an assigned priority score rather than their arrival time.",
+        "data_type": "bool"
+    },
+    "hash_function": {
+        "description": "The mathematical algorithm used to convert a key into a numerical index for array placement.",
+        "data_type": "string"
+    },
+    "key_based": {
+        "description": "Indicates that elements are indexed, inserted, and looked up using a unique identifier (key) rather than a sequential position.",
+        "data_type": "bool"
+    },
+    "collision_resolution": {
+        "description": "The strategy used (e.g., separate chaining, open addressing) when two different keys hash to the same bucket index.",
+        "data_type": "string"
+    },
+    "key_value_pairs": {
+        "description": "Indicates that the structure stores a paired association mapping a unique key to a specific data payload (value).",
+        "data_type": "bool"
+    },
+    "unique_elements": {
+        "description": "Enforces a mathematical set property where no two identical elements can exist within the structure simultaneously.",
+        "data_type": "bool"
+    },
+    "hierarchical": {
+        "description": "Indicates that data is organized in a top-down parent-child relationship rather than a flat linear sequence.",
+        "data_type": "bool"
+    },
+    "acyclic": {
+        "description": "Indicates the strict absence of cycles; there is exactly one path between any two nodes, and you cannot loop back to a starting node.",
+        "data_type": "bool"
+    },
+    "rooted": {
+        "description": "Indicates the structure has a single designated starting node (the root) from which all other nodes descend.",
+        "data_type": "bool"
+    },
+    "max_degree_2": {
+        "description": "Restricts every node in the structure to branching into a maximum of two children (left and right).",
+        "data_type": "bool"
+    },
+    "ordered_keys": {
+        "description": "Maintains a strict left-to-right sorting invariant (e.g., left child < parent < right child) across the entire structure.",
+        "data_type": "bool"
+    },
+    "self_balancing": {
+        "description": "Indicates that the structure automatically performs internal rearrangements (like tree rotations) to maintain optimal logarithmic depth during updates.",
+        "data_type": "bool"
+    },
+    "height_balanced": {
+        "description": "A strict balancing rule ensuring the maximum depth difference between left and right subtrees across all nodes is heavily bounded (e.g., max difference of 1).",
+        "data_type": "bool"
+    },
+    "color_coded": {
+        "description": "Uses a boolean flag or small integer (like Red/Black) per node to enforce balancing rules without needing to calculate exact heights.",
+        "data_type": "bool"
+    },
+    "self_adjusting": {
+        "description": "Restructures itself continuously based on read and write access patterns rather than maintaining strict static balance rules.",
+        "data_type": "bool"
+    },
+    "recent_access_optimized": {
+        "description": "Moves frequently or recently accessed elements closer to the root/entry point for faster subsequent retrievals.",
+        "data_type": "bool"
+    },
+    "randomized_priorities": {
+        "description": "Assigns a randomly generated numerical weight to each element to probabilistically guarantee a balanced structure shape.",
+        "data_type": "bool"
+    },
+    "heap_and_bst_properties": {
+        "description": "Simultaneously maintains horizontal sorting (BST) for search keys and vertical priority (Heap) for a secondary value.",
+        "data_type": "bool"
+    },
+    "implicit_keys": {
+        "description": "Indicates that nodes do not store explicit search keys; instead, their position/index is calculated dynamically based on subtree sizes.",
+        "data_type": "bool"
+    },
+    "size_augmented": {
+        "description": "Stores the total count of descendants inside every node, enabling logarithmic array-like index lookups.",
+        "data_type": "bool"
+    },
+    "rank_queries": {
+        "description": "Supports O(log n) queries to find the numerical rank of a value, or find the k-th smallest element in a dynamic set.",
+        "data_type": "bool"
+    },
+    "heap_property": {
+        "description": "Enforces a strict vertical invariant where every parent node is guaranteed to be strictly greater than (or less than) all of its children.",
+        "data_type": "bool"
+    },
+    "complete_tree": {
+        "description": "A tree structure where every level is fully packed with nodes, and the bottom level is filled strictly from left to right.",
+        "data_type": "bool"
+    },
+    "array_backed": {
+        "description": "Indicates that a logical pointer-based structure (like a tree) is physically stored mapped into a flat, contiguous 1D array.",
+        "data_type": "bool"
+    },
+    "minimum_at_root": {
+        "description": "Guarantees that the absolute smallest element in the entire structure is constantly stationed at the topmost root position.",
+        "data_type": "bool"
+    },
+    "maximum_at_root": {
+        "description": "Guarantees that the absolute largest element in the entire structure is constantly stationed at the topmost root position.",
+        "data_type": "bool"
+    },
+    "forest_of_trees": {
+        "description": "Indicates the structure is not a single tree, but rather a collection (forest) of multiple distinct trees working together.",
+        "data_type": "bool"
+    },
+    "mergeable": {
+        "description": "Supports combining two entire massive data structures into one valid structure in extremely fast (O(log n) or O(1)) time.",
+        "data_type": "bool"
+    },
+    "lazy_consolidation": {
+        "description": "Defers structural cleanup and rebalancing work during fast insertions/updates, grouping the cleanup into a single bulk sweep later.",
+        "data_type": "bool"
+    },
+    "amortized_O(1)_merge": {
+        "description": "Guarantees that merging structures takes constant time on average, despite potential worst-case spikes during cleanup phases.",
+        "data_type": "bool"
+    },
+    "prefix_based": {
+        "description": "Organizes data such that elements sharing the same prefix (start sequence) share the exact same structural path from the root.",
+        "data_type": "bool"
+    },
+    "character_edges": {
+        "description": "Branches in the tree are labeled with single characters or symbols, used to spell out sequences by walking downward.",
+        "data_type": "bool"
+    },
+    "path_compression": {
+        "description": "Collapses long chains of non-branching nodes into a single edge or shortcut to drastically reduce memory usage and lookup depth.",
+        "data_type": "bool"
+    },
+    "fixed_radix_chunks": {
+        "description": "Slices keys into fixed-size mathematical bases or bit-chunks (e.g., base-2, base-16) to determine branching paths predictably.",
+        "data_type": "bool"
+    },
+    "binary_radix": {
+        "description": "Indicates branching decisions are made at the lowest hardware level using strict binary bits (0 goes left, 1 goes right).",
+        "data_type": "bool"
+    },
+    "critical_bit_testing": {
+        "description": "Skips identical prefix bits entirely, jumping directly to the exact bit index where stored keys diverge.",
+        "data_type": "bool"
+    },
+    "all_suffixes": {
+        "description": "Indicates the structure stores and indexes every possible ending (suffix) of a given text for full-text substring search capabilities.",
+        "data_type": "bool"
+    },
+    "binary_paths": {
+        "description": "Every root-to-leaf path spells out the binary representation of an integer.",
+        "data_type": "bool"
+    },
+    "bitwise_queries": {
+        "description": "Specialized to solve bit-level operations, such as finding the maximum XOR pair among a set of numbers.",
+        "data_type": "bool"
+    },
+    "multi_way_branching": {
+        "description": "Allows a single parent node to split into more than two child branches, keeping the structure very shallow.",
+        "data_type": "bool"
+    },
+    "disk_optimized": {
+        "description": "Sizes node memory footprints to perfectly match hardware disk sectors/pages to minimize expensive I/O read operations.",
+        "data_type": "bool"
+    },
+    "data_only_at_leaves": {
+        "description": "Restricts actual data payloads to the bottommost layer of the tree, keeping internal nodes small and reserved only for routing keys.",
+        "data_type": "bool"
+    },
+    "linked_leaves": {
+        "description": "Connects all bottom-layer leaf nodes horizontally via linked list pointers to enable blazing fast sequential range scans.",
+        "data_type": "bool"
+    },
+    "max_degree_3": {
+        "description": "Restricts nodes to a maximum of 3 child branches and 2 stored keys.",
+        "data_type": "int"
+    },
+    "perfectly_balanced": {
+        "description": "Ensures that every single leaf node sits at the exact same depth from the root, meaning all search paths are the exact same length.",
+        "data_type": "bool"
+    },
+    "max_degree_4": {
+        "description": "Restricts nodes to a maximum of 4 child branches and 3 stored keys.",
+        "data_type": "int"
+    },
+    "isomorphic_to_red_black_tree": {
+        "description": "Structurally identical to a Red-Black tree; every node split perfectly maps to a Red-Black color flip and rotation.",
+        "data_type": "bool"
+    },
+    "interval_based": {
+        "description": "Nodes represent segments or ranges of an array rather than single elements, used to aggregate sub-array data.",
+        "data_type": "bool"
+    },
+    "range_queries": {
+        "description": "Optimized to answer aggregate questions (sum, min, max) over any contiguous sub-segment of data in logarithmic time.",
+        "data_type": "bool"
+    },
+    "historical_versions": {
+        "description": "Preserves the complete state of the data structure after every modification, allowing queries against past snapshots in time.",
+        "data_type": "bool"
+    },
+    "path_copying": {
+        "description": "Implements immutability by creating new copies of only the nodes altered during an update, safely sharing the rest of the tree with previous versions.",
+        "data_type": "bool"
+    },
+    "lazy_node_allocation": {
+        "description": "Avoids pre-allocating memory for empty spaces, creating nodes dynamically only at the moment data is inserted into that branch.",
+        "data_type": "bool"
+    },
+    "sparse_domain": {
+        "description": "Capable of indexing across astronomically large coordinate systems (e.g., 0 to 10^18) by ignoring empty regions.",
+        "data_type": "bool"
+    },
+    "function_segments": {
+        "description": "Stores mathematical lines or functions (y = mx + b) in nodes rather than static numerical values.",
+        "data_type": "bool"
+    },
+    "convex_hull_trick": {
+        "description": "Utilizes the geometry of intersecting lines to dynamically maintain the maximum or minimum function output at any coordinate.",
+        "data_type": "bool"
+    },
+    "sorted_intervals": {
+        "description": "Every node stores a fully sorted list of all the individual elements contained within its assigned range.",
+        "data_type": "bool"
+    },
+    "fractional_cascading": {
+        "description": "A technique used to speed up binary searches across multiple sorted lists by linking elements to their insertion points in adjacent lists.",
+        "data_type": "bool"
+    },
+    "implicit_tree": {
+        "description": "A tree structure with no physical node objects or pointers; parent-child relationships are calculated purely through index arithmetic on a flat array.",
+        "data_type": "bool"
+    },
+    "bit_manipulation": {
+        "description": "Uses low-level binary bitwise operations (like finding the lowest set bit) to navigate the structure at hardware speeds.",
+        "data_type": "bool"
+    },
+    "prefix_sums": {
+        "description": "Specializes in rapidly calculating the cumulative total of all elements from the start of an array up to a given index.",
+        "data_type": "bool"
+    },
+    "compressed_suffixes": {
+        "description": "Stores all suffixes of a string using O(n) memory by labeling edges with index pointers to the original text rather than copying characters.",
+        "data_type": "bool"
+    },
+    "linear_construction": {
+        "description": "Indicates the existence of an advanced algorithm (like Ukkonen's) capable of building the entire complex structure in strict O(n) time.",
+        "data_type": "bool"
+    },
+    "alphabet_partitioning": {
+        "description": "Recursively splits a sequence of elements by their value range (e.g., A-M goes left, N-Z goes right) rather than by their array position.",
+        "data_type": "bool"
+    },
+    "bitvector_augmented": {
+        "description": "Stores a compact array of 0s and 1s at each node to track routing decisions, enabling fast O(1) rank/select operations down the tree.",
+        "data_type": "bool"
+    },
+    "dual_rooted": {
+        "description": "Contains two distinct entry roots (e.g., one for even lengths, one for odd lengths) to handle structural symmetries.",
+        "data_type": "bool"
+    },
+    "palindromic_substrings": {
+        "description": "Specifically designed to locate, count, and index every distinct substring that reads the same forwards and backwards.",
+        "data_type": "bool"
+    },
+    "dynamic_forest": {
+        "description": "Manages a collection of multiple disjoint trees where edges can be arbitrarily added (linked) or removed (cut) in real time.",
+        "data_type": "bool"
+    },
+    "preferred_paths": {
+        "description": "Decomposes complex trees into heavy/light continuous vertical chains to guarantee fast traversal from any node up to the root.",
+        "data_type": "bool"
+    },
+    "splay_tree_backed": {
+        "description": "Uses auxiliary Splay Trees internally to represent and manipulate the active vertical paths of the main dynamic tree.",
+        "data_type": "bool"
+    },
+    "flattened_tour": {
+        "description": "Represents a tree structure by tracing its outer perimeter (Euler walk) and storing that sequence in a standard array or sequence BST.",
+        "data_type": "bool"
+    },
+    "subtree_contiguity": {
+        "description": "Guarantees that all descendants of any node form a single unbroken, contiguous slice inside the flattened representation.",
+        "data_type": "bool"
+    },
+    "cluster_based": {
+        "description": "Breaks trees down into small, manageable topological components (clusters) with strictly defined boundary connections.",
+        "data_type": "bool"
+    },
+    "compress_and_rake": {
+        "description": "Utilizes a pair of fundamental operations to merge tree paths (compress) and fold side-branches (rake) into a unified hierarchy.",
+        "data_type": "bool"
+    },
+    "min_cut_equivalent": {
+        "description": "Creates a simplified tree whose smallest edge on a path between two nodes perfectly equals the complex min-cut/max-flow capacity between them in the original graph.",
+        "data_type": "bool"
+    },
+    "all_pairs_max_flow": {
+        "description": "Encodes the solution to the maximum network flow problem for every possible pair of vertices simultaneously.",
+        "data_type": "bool"
+    },
+    "immediate_dominators": {
+        "description": "Every node points to the exact closest mandatory bottleneck node that must be passed through to reach it from a starting point.",
+        "data_type": "bool"
+    },
+    "control_flow_analysis": {
+        "description": "Primarily used by compilers to analyze execution paths, find code loops, and optimize variable assignments in software.",
+        "data_type": "bool"
+    },
+    "directed": {
+        "description": "Indicates whether edges have a strict one-way direction (true) or allow two-way bidirectional travel (false).",
+        "data_type": "bool"
+    },
+    "union_by_rank": {
+        "description": "An optimization for disjoint sets that always attaches the shorter tree beneath the taller tree's root to prevent the structure from becoming deep and slow.",
+        "data_type": "bool"
+    },
+    "character_sequence": {
+        "description": "Represents data as a linear chain of human-readable text characters or bytes.",
+        "data_type": "bool"
+    },
+    "read_only": {
+        "description": "Indicates that the underlying memory buffer is strictly locked; any edits must generate a completely new structure in memory.",
+        "data_type": "bool"
+    },
+    "in_place_editable": {
+        "description": "Allows individual characters or elements to be overwritten directly in the existing memory space without allocating new objects.",
+        "data_type": "bool"
+    },
+    "sorted_suffixes": {
+        "description": "Maintains an ordered integer array pointing to every possible ending of a string, sorted alphabetically by the text they point to.",
+        "data_type": "bool"
+    },
+    "lexicographical_order": {
+        "description": "Maintains data in strict alphabetical or dictionary order based on character byte values.",
+        "data_type": "bool"
+    },
+    "directed_acyclic_word_graph": {
+        "description": "A highly compressed, loop-free state machine diagram where every path spells out a valid substring of a text.",
+        "data_type": "bool"
+    },
+    "minimal_states": {
+        "description": "Mathematically guarantees that the structure uses the absolute smallest number of nodes possible to represent the data.",
+        "data_type": "bool"
+    },
+    "2D_grid": {
+        "description": "Organizes data into a two-dimensional rectangular table with width and height.",
+        "data_type": "bool"
+    },
+    "row_column_indexed": {
+        "description": "Elements are accessed using two coordinates (Y and X, or Row and Column) rather than a single linear index.",
+        "data_type": "bool"
+    },
+    "full_allocation": {
+        "description": "Explicitly reserves memory space for every single coordinate in a grid, even if the value stored there is zero or empty.",
+        "data_type": "bool"
+    },
+    "coordinate_compression": {
+        "description": "Saves massive amounts of memory by only recording coordinates that contain active (non-zero) data, ignoring empty space.",
+        "data_type": "bool"
+    },
+    "non_zero_only": {
+        "description": "The structure assumes a default value of 0 for all unrecorded positions and only stores items that break that default.",
+        "data_type": "bool"
+    },
+    "bit_level_packing": {
+        "description": "Compacts boolean flags natively into individual microscopic bits (0 and 1) inside CPU words to minimize RAM usage.",
+        "data_type": "bool"
+    },
+    "fixed_size_bits": {
+        "description": "Represents a collection as a statically sized strip of bits, operating much like a compact array of booleans.",
+        "data_type": "bool"
+    },
+    "bitwise_operations": {
+        "description": "Designed to be manipulated using hyper-fast hardware bitwise logic (AND, OR, XOR, SHIFT) processing up to 64 elements per CPU cycle.",
+        "data_type": "bool"
+    },
+    "succinct": {
+        "description": "Compresses data so close to the theoretical mathematical minimum size that the structural overhead approaches zero.",
+        "data_type": "bool"
+    },
+    "rank_and_select_directories": {
+        "description": "Augments bit arrays with tiny lookup tables to enable O(1) counting of 1s (Rank) and finding the position of the k-th 1 (Select).",
+        "data_type": "bool"
+    },
+    "approximate_answers": {
+        "description": "Trades 100% exact precision for a statistically guaranteed, small margin of error (e.g., 99% accuracy) to achieve massive speed and memory gains.",
+        "data_type": "bool"
+    },
+    "sublinear_space": {
+        "description": "Uses drastically less memory than the amount of data it processes; e.g., tracking a billion items using only 12 kilobytes.",
+        "data_type": "bool"
+    },
+    "zero_false_negatives": {
+        "description": "Provides a one-sided mathematical guarantee: if it claims an item is not present, it is 100% absolutely correct.",
+        "data_type": "bool"
+    },
+    "set_membership": {
+        "description": "A core functionality designed exclusively to answer the yes/no question: 'Has this item been seen before?'",
+        "data_type": "bool"
+    },
+    "deletable_elements": {
+        "description": "Unlike standard probabilistic filters, this attribute indicates the structure safely supports removing elements that were previously inserted.",
+        "data_type": "bool"
+    },
+    "tally_counters": {
+        "description": "Replaces single binary bits with small multi-bit integers (e.g., 4-bit nibbles) to track overlapping occurrences.",
+        "data_type": "bool"
+    },
+    "frequency_estimation": {
+        "description": "Designed to count how many times an item appears in a massive data stream without storing the items themselves.",
+        "data_type": "bool"
+    },
+    "minimum_estimator": {
+        "description": "Uses the lowest value across multiple hashed counter rows to aggressively filter out accidental hash collisions.",
+        "data_type": "bool"
+    },
+    "cardinality_estimation": {
+        "description": "Designed specifically to count the number of strictly unique, distinct elements in a dataset, ignoring all duplicates.",
+        "data_type": "bool"
+    },
+    "leading_zeros": {
+        "description": "Exploits the statistical probability of seeing long streaks of zero-bits in a random hash to estimate dataset sizes.",
+        "data_type": "bool"
+    },
+    "randomized_levels": {
+        "description": "Uses coin-flip probability to dynamically determine the height of a node's express lane pointers.",
+        "data_type": "bool"
+    },
+    "express_lanes": {
+        "description": "Stacks increasingly sparse linked lists on top of each other to skip over large sections of data during search.",
+        "data_type": "bool"
+    },
+    "eviction_policy": {
+        "description": "The specific algorithm or rule used to determine which existing item gets deleted when the cache reaches full capacity.",
+        "data_type": "string"
+    },
+    "capacity_bound": {
+        "description": "Enforces a strict upper limit on the number of items or total memory the structure is allowed to consume.",
+        "data_type": "int"
+    },
+    "least_recently_used": {
+        "description": "An eviction policy that discards the item that has gone the longest amount of time without being read or updated.",
+        "data_type": "bool"
+    },
+    "least_frequently_used": {
+        "description": "An eviction policy that discards the item with the absolute lowest total access count over its lifetime.",
+        "data_type": "bool"
+    },
+    "most_recently_used": {
+        "description": "An eviction policy that discards the most recently touched item, optimized for cyclic scans where recent items won't be needed again soon.",
+        "data_type": "bool"
+    },
+    "arrival_order": {
+        "description": "An eviction policy that ignores usage statistics and simply deletes items in the exact chronological order they were inserted.",
+        "data_type": "bool"
+    },
+    "static_data": {
+        "description": "Indicates the structure is built over an array that never changes; it supports fast queries but does not support updating values.",
+        "data_type": "bool"
+    },
+    "idempotent_queries": {
+        "description": "Supports queries where overlapping the same data twice doesn't change the result (e.g., Minimum, Maximum, GCD).",
+        "data_type": "bool"
+    },
+    "power_of_two_intervals": {
+        "description": "Precalculates answers for block sizes of 1, 2, 4, 8, etc., allowing any query size to be covered by exactly two overlapping blocks.",
+        "data_type": "bool"
+    }
+}

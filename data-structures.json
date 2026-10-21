@@ -1,17 +1,575 @@
 {
-  "Array": { "attributes": [], "children": { "Static Array": { "attributes": [], "children": {} }, "Dynamic Array": { "attributes": [], "children": {} } } },
-  "Linked List": { "attributes": [], "children": { "Singly Linked List": { "attributes": [], "children": {} }, "Doubly Linked List": { "attributes": [], "children": {} }, "Circular Linked List": { "attributes": [], "children": { "Circular Singly Linked List": { "attributes": [], "children": {} }, "Circular Doubly Linked List": { "attributes": [], "children": {} } } } } },
-  "Stack": { "attributes": [], "children": {} },
-  "Queue": { "attributes": [], "children": { "Circular Queue": { "attributes": [], "children": {} }, "Deque": { "attributes": [], "children": {} }, "Priority Queue": { "attributes": [], "children": {} } } },
-  "Hash-Based Structures": { "attributes": [], "children": { "Hash Table": { "attributes": [], "children": { "Hash Map": { "attributes": [], "children": {} }, "Hash Set": { "attributes": [], "children": {} } } } } },
-  "Tree": { "attributes": [], "children": { "Binary Tree": { "attributes": [], "children": { "Binary Search Tree": { "attributes": [], "children": { "AVL Tree": { "attributes": [], "children": {} }, "Red-Black Tree": { "attributes": [], "children": {} }, "Splay Tree": { "attributes": [], "children": {} }, "Treap": { "attributes": [], "children": { "Implicit Treap": { "attributes": [], "children": {} } } }, "Order Statistic Tree": { "attributes": [], "children": {} } } } } }, "Heap": { "attributes": [], "children": { "Binary Heap": { "attributes": [], "children": { "Min-Heap": { "attributes": [], "children": {} }, "Max-Heap": { "attributes": [], "children": {} } } }, "Binomial Heap": { "attributes": [], "children": {} }, "Fibonacci Heap": { "attributes": [], "children": {} } } }, "Trie": { "attributes": [], "children": { "Compressed Trie": { "attributes": [], "children": { "Radix Trie": { "attributes": [], "children": {} }, "Patricia Trie": { "attributes": [], "children": {} } } }, "Suffix Trie": { "attributes": [], "children": {} }, "XOR Trie": { "attributes": [], "children": {} } } }, "B-Tree": { "attributes": [], "children": { "B+ Tree": { "attributes": [], "children": {} } } }, "2-3 Tree": { "attributes": [ "max_degree_3", "perfectly_balanced", "multi_way_branching" ], "children": {} }, "2-3-4 Tree": { "attributes": [ "max_degree_4", "perfectly_balanced", "multi_way_branching", "isomorphic_to_red_black_tree" ], "children": {} }, "Segment Tree": { "attributes": [], "children": { "Persistent Segment Tree": { "attributes": [], "children": {} }, "Dynamic Segment Tree": { "attributes": [], "children": {} }, "Li Chao Tree": { "attributes": [], "children": {} }, "Merge Sort Tree": { "attributes": [], "children": {} } } }, "Fenwick Tree": { "attributes": [], "children": {} }, "Suffix Tree": { "attributes": [], "children": {} }, "Wavelet Tree": { "attributes": [], "children": {} }, "Eertree": { "attributes": [], "children": {} }, "Link-Cut Tree": { "attributes": [], "children": {} }, "Euler Tour Tree": { "attributes": [], "children": {} }, "Top Tree": { "attributes": [], "children": {} }, "Gomory-Hu Tree": { "attributes": [], "children": {} }, "Dominator Tree": { "attributes": [], "children": {} } } },
-  "Graph": { "attributes": [], "children": {} },
-  "Disjoint Set Union": { "attributes": [], "children": {} },
-  "String": { "attributes": [], "children": { "Immutable String": { "attributes": [], "children": {} }, "Mutable String": { "attributes": [], "children": {} }, "Suffix Array": { "attributes": [], "children": {} }, "Suffix Automaton": { "attributes": [], "children": {} } } },
-  "Matrix": { "attributes": [], "children": { "Dense Matrix": { "attributes": [], "children": {} }, "Sparse Matrix": { "attributes": [], "children": {} } } },
-  "Bit-Based Structures": { "attributes": [], "children": { "Bitset": { "attributes": [], "children": {} }, "Bit Vector": { "attributes": [], "children": {} } } },
-  "Probabilistic Structures": { "attributes": [], "children": { "Bloom Filter": { "attributes": [], "children": { "Counting Bloom Filter": { "attributes": [], "children": {} } } }, "Count-Min Sketch": { "attributes": [], "children": {} }, "HyperLogLog": { "attributes": [], "children": {} } } },
-  "Skip List": { "attributes": [], "children": {} },
-  "Cache Structures": { "attributes": [], "children": { "LRU Cache": { "attributes": [], "children": {} }, "LFU Cache": { "attributes": [], "children": {} }, "MRU Cache": { "attributes": [], "children": {} }, "FIFO Cache": { "attributes": [], "children": {} } } },
-  "Sparse Table": { "attributes": [], "children": {} }
+  "Array": {
+    "attributes": [
+      "contiguous_memory",
+      "random_access"
+    ],
+    "children": {
+      "Static Array": {
+        "attributes": [
+          "fixed_capacity"
+        ],
+        "children": {}
+      },
+      "Dynamic Array": {
+        "attributes": [
+          "resizable",
+          "amortized_insertion"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Linked List": {
+    "attributes": [
+      "node_based",
+      "dynamic_size",
+      "sequential_access"
+    ],
+    "children": {
+      "Singly Linked List": {
+        "attributes": [
+          "unidirectional"
+        ],
+        "children": {}
+      },
+      "Doubly Linked List": {
+        "attributes": [
+          "bidirectional"
+        ],
+        "children": {}
+      },
+      "Circular Linked List": {
+        "attributes": [
+          "ring_topology"
+        ],
+        "children": {
+          "Circular Singly Linked List": {
+            "attributes": [
+              "unidirectional"
+            ],
+            "children": {}
+          },
+          "Circular Doubly Linked List": {
+            "attributes": [
+              "bidirectional"
+            ],
+            "children": {}
+          }
+        }
+      }
+    }
+  },
+  "Stack": {
+    "attributes": [
+      "LIFO"
+    ],
+    "children": {}
+  },
+  "Queue": {
+    "attributes": [
+      "FIFO"
+    ],
+    "children": {
+      "Circular Queue": {
+        "attributes": [
+          "ring_buffer"
+        ],
+        "children": {}
+      },
+      "Deque": {
+        "attributes": [
+          "double_ended"
+        ],
+        "children": {}
+      },
+      "Priority Queue": {
+        "attributes": [
+          "ordered_by_priority"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Hash-Based Structures": {
+    "attributes": [
+      "hash_function",
+      "key_based"
+    ],
+    "children": {
+      "Hash Table": {
+        "attributes": [
+          "collision_resolution"
+        ],
+        "children": {
+          "Hash Map": {
+            "attributes": [
+              "key_value_pairs"
+            ],
+            "children": {}
+          },
+          "Hash Set": {
+            "attributes": [
+              "unique_elements"
+            ],
+            "children": {}
+          }
+        }
+      }
+    }
+  },
+  "Tree": {
+    "attributes": [
+      "hierarchical",
+      "acyclic",
+      "rooted"
+    ],
+    "children": {
+      "Binary Tree": {
+        "attributes": [
+          "max_degree_2"
+        ],
+        "children": {
+          "Binary Search Tree": {
+            "attributes": [
+              "ordered_keys"
+            ],
+            "children": {
+              "AVL Tree": {
+                "attributes": [
+                  "self_balancing",
+                  "height_balanced"
+                ],
+                "children": {}
+              },
+              "Red-Black Tree": {
+                "attributes": [
+                  "self_balancing",
+                  "color_coded"
+                ],
+                "children": {}
+              },
+              "Splay Tree": {
+                "attributes": [
+                  "self_adjusting",
+                  "recent_access_optimized"
+                ],
+                "children": {}
+              },
+              "Treap": {
+                "attributes": [
+                  "randomized_priorities",
+                  "heap_and_bst_properties"
+                ],
+                "children": {
+                  "Implicit Treap": {
+                    "attributes": [
+                      "implicit_keys",
+                      "size_augmented"
+                    ],
+                    "children": {}
+                  }
+                }
+              },
+              "Order Statistic Tree": {
+                "attributes": [
+                  "size_augmented",
+                  "rank_queries"
+                ],
+                "children": {}
+              }
+            }
+          }
+        }
+      },
+      "Heap": {
+        "attributes": [
+          "heap_property"
+        ],
+        "children": {
+          "Binary Heap": {
+            "attributes": [
+              "complete_tree",
+              "array_backed"
+            ],
+            "children": {
+              "Min-Heap": {
+                "attributes": [
+                  "minimum_at_root"
+                ],
+                "children": {}
+              },
+              "Max-Heap": {
+                "attributes": [
+                  "maximum_at_root"
+                ],
+                "children": {}
+              }
+            }
+          },
+          "Binomial Heap": {
+            "attributes": [
+              "forest_of_trees",
+              "mergeable"
+            ],
+            "children": {}
+          },
+          "Fibonacci Heap": {
+            "attributes": [
+              "lazy_consolidation",
+              "amortized_O(1)_merge"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "Trie": {
+        "attributes": [
+          "prefix_based",
+          "character_edges"
+        ],
+        "children": {
+          "Compressed Trie": {
+            "attributes": [
+              "path_compression"
+            ],
+            "children": {
+              "Radix Trie": {
+                "attributes": [
+                  "fixed_radix_chunks"
+                ],
+                "children": {}
+              },
+              "Patricia Trie": {
+                "attributes": [
+                  "binary_radix",
+                  "critical_bit_testing"
+                ],
+                "children": {}
+              }
+            }
+          },
+          "Suffix Trie": {
+            "attributes": [
+              "all_suffixes"
+            ],
+            "children": {}
+          },
+          "XOR Trie": {
+            "attributes": [
+              "binary_paths",
+              "bitwise_queries"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "B-Tree": {
+        "attributes": [
+          "multi_way_branching",
+          "self_balancing",
+          "disk_optimized"
+        ],
+        "children": {
+          "B+ Tree": {
+            "attributes": [
+              "data_only_at_leaves",
+              "linked_leaves"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "2-3 Tree": {
+        "attributes": [
+          "max_degree_3",
+          "perfectly_balanced",
+          "multi_way_branching"
+        ],
+        "children": {}
+      },
+      "2-3-4 Tree": {
+        "attributes": [
+          "max_degree_4",
+          "perfectly_balanced",
+          "multi_way_branching",
+          "isomorphic_to_red_black_tree"
+        ],
+        "children": {}
+      },
+      "Segment Tree": {
+        "attributes": [
+          "interval_based",
+          "range_queries"
+        ],
+        "children": {
+          "Persistent Segment Tree": {
+            "attributes": [
+              "historical_versions",
+              "path_copying"
+            ],
+            "children": {}
+          },
+          "Dynamic Segment Tree": {
+            "attributes": [
+              "lazy_node_allocation",
+              "sparse_domain"
+            ],
+            "children": {}
+          },
+          "Li Chao Tree": {
+            "attributes": [
+              "function_segments",
+              "convex_hull_trick"
+            ],
+            "children": {}
+          },
+          "Merge Sort Tree": {
+            "attributes": [
+              "sorted_intervals",
+              "fractional_cascading"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "Fenwick Tree": {
+        "attributes": [
+          "implicit_tree",
+          "bit_manipulation",
+          "prefix_sums"
+        ],
+        "children": {}
+      },
+      "Suffix Tree": {
+        "attributes": [
+          "compressed_suffixes",
+          "linear_construction"
+        ],
+        "children": {}
+      },
+      "Wavelet Tree": {
+        "attributes": [
+          "alphabet_partitioning",
+          "bitvector_augmented"
+        ],
+        "children": {}
+      },
+      "Eertree": {
+        "attributes": [
+          "dual_rooted",
+          "palindromic_substrings"
+        ],
+        "children": {}
+      },
+      "Link-Cut Tree": {
+        "attributes": [
+          "dynamic_forest",
+          "preferred_paths",
+          "splay_tree_backed"
+        ],
+        "children": {}
+      },
+      "Euler Tour Tree": {
+        "attributes": [
+          "flattened_tour",
+          "subtree_contiguity"
+        ],
+        "children": {}
+      },
+      "Top Tree": {
+        "attributes": [
+          "cluster_based",
+          "compress_and_rake"
+        ],
+        "children": {}
+      },
+      "Gomory-Hu Tree": {
+        "attributes": [
+          "min_cut_equivalent",
+          "all_pairs_max_flow"
+        ],
+        "children": {}
+      },
+      "Dominator Tree": {
+        "attributes": [
+          "immediate_dominators",
+          "control_flow_analysis"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Graph": {
+    "attributes": [
+      "directed"
+    ],
+    "children": {}
+  },
+  "Disjoint Set Union": {
+    "attributes": [
+      "path_compression",
+      "union_by_rank"
+    ],
+    "children": {}
+  },
+  "String": {
+    "attributes": [
+      "character_sequence"
+    ],
+    "children": {
+      "Immutable String": {
+        "attributes": [
+          "read_only"
+        ],
+        "children": {}
+      },
+      "Mutable String": {
+        "attributes": [
+          "in_place_editable"
+        ],
+        "children": {}
+      },
+      "Suffix Array": {
+        "attributes": [
+          "sorted_suffixes",
+          "lexicographical_order"
+        ],
+        "children": {}
+      },
+      "Suffix Automaton": {
+        "attributes": [
+          "directed_acyclic_word_graph",
+          "minimal_states"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Matrix": {
+    "attributes": [
+      "2D_grid",
+      "row_column_indexed"
+    ],
+    "children": {
+      "Dense Matrix": {
+        "attributes": [
+          "full_allocation"
+        ],
+        "children": {}
+      },
+      "Sparse Matrix": {
+        "attributes": [
+          "coordinate_compression",
+          "non_zero_only"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Bit-Based Structures": {
+    "attributes": [
+      "bit_level_packing"
+    ],
+    "children": {
+      "Bitset": {
+        "attributes": [
+          "fixed_size_bits",
+          "bitwise_operations"
+        ],
+        "children": {}
+      },
+      "Bit Vector": {
+        "attributes": [
+          "succinct",
+          "rank_and_select_directories"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Probabilistic Structures": {
+    "attributes": [
+      "approximate_answers",
+      "sublinear_space"
+    ],
+    "children": {
+      "Bloom Filter": {
+        "attributes": [
+          "zero_false_negatives",
+          "set_membership"
+        ],
+        "children": {
+          "Counting Bloom Filter": {
+            "attributes": [
+              "deletable_elements",
+              "tally_counters"
+            ],
+            "children": {}
+          }
+        }
+      },
+      "Count-Min Sketch": {
+        "attributes": [
+          "frequency_estimation",
+          "minimum_estimator"
+        ],
+        "children": {}
+      },
+      "HyperLogLog": {
+        "attributes": [
+          "cardinality_estimation",
+          "leading_zeros"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Skip List": {
+    "attributes": [
+      "randomized_levels",
+      "express_lanes"
+    ],
+    "children": {}
+  },
+  "Cache Structures": {
+    "attributes": [
+      "eviction_policy",
+      "capacity_bound"
+    ],
+    "children": {
+      "LRU Cache": {
+        "attributes": [
+          "least_recently_used"
+        ],
+        "children": {}
+      },
+      "LFU Cache": {
+        "attributes": [
+          "least_frequently_used"
+        ],
+        "children": {}
+      },
+      "MRU Cache": {
+        "attributes": [
+          "most_recently_used"
+        ],
+        "children": {}
+      },
+      "FIFO Cache": {
+        "attributes": [
+          "arrival_order"
+        ],
+        "children": {}
+      }
+    }
+  },
+  "Sparse Table": {
+    "attributes": [
+      "static_data",
+      "idempotent_queries",
+      "power_of_two_intervals"
+    ],
+    "children": {}
+  }
 }
