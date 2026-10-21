@@ -2884,7 +2884,9 @@
       DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
       MOBILE_GRAPH_ROW_HEIGHT: 'var(--mobile-graph-row-height)',
       MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
-      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)'
+      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
+      LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
+      LANG_STORAGE_KEY: 'shard-spiral-lang-pref'
     };
 
     function getRootCssVarRem(varName, fallbackRem) {
@@ -3207,6 +3209,10 @@
         langMenu.classList.remove('open');
         langTriggerBtn.setAttribute('aria-expanded', 'false');
 
+        try {
+          localStorage.setItem(LAYOUT_CONFIG.LANG_STORAGE_KEY, selectedLang);
+        } catch (e) { }
+
         if (activeRightTopTab === 'code' && selectedDsaName) {
           updateCodeViewPane();
         }
@@ -3219,6 +3225,15 @@
         langTriggerBtn.setAttribute('aria-expanded', 'false');
       }
     });
+
+    // Load saved language preference
+    try {
+      const savedLang = localStorage.getItem(LAYOUT_CONFIG.LANG_STORAGE_KEY);
+      if (savedLang) {
+        const savedLangOpt = Array.from(langOptions).find(opt => opt.getAttribute('data-lang') === savedLang);
+        if (savedLangOpt) savedLangOpt.click();
+      }
+    } catch (e) { }
 
     // =========================================================================
     // COPY & DOWNLOAD CODE BUTTONS
@@ -3973,7 +3988,10 @@
       }
     }
 
-    algoCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
+    algoCollapsedStrip.addEventListener('click', () => {
+      setAlgoCollapsed(false);
+      if (typeof saveLayoutState === 'function') saveLayoutState();
+    });
 
     const leftMainStack = document.getElementById('left-main-stack');
     const historyColumn = document.getElementById('history-column');
@@ -4004,15 +4022,24 @@
     }
 
     if (metadataCollapsedStrip) {
-      metadataCollapsedStrip.addEventListener('click', () => setHistoryCollapsed(false));
+      metadataCollapsedStrip.addEventListener('click', () => {
+        setHistoryCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
     }
     if (historyCollapsedStrip) {
-      historyCollapsedStrip.addEventListener('click', () => setHistoryCollapsed(false));
+      historyCollapsedStrip.addEventListener('click', () => {
+        setHistoryCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
     }
 
     const algoSettingsCollapsedStrip = document.getElementById('algo-settings-collapsed-strip');
     if (algoSettingsCollapsedStrip) {
-      algoSettingsCollapsedStrip.addEventListener('click', () => setAlgoCollapsed(false));
+      algoSettingsCollapsedStrip.addEventListener('click', () => {
+        setAlgoCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
     }
 
     function syncResponsiveStructure() {
@@ -4047,6 +4074,51 @@
 
     phoneMedia.addEventListener('change', syncResponsiveStructure);
     syncResponsiveStructure();
+
+    function saveLayoutState() {
+      try {
+        const layout = {
+          leftColumnW: leftColumn.style.width,
+          graphCardH: graphCard.style.height,
+          rightTopRowH: rightTopRow.style.height,
+          algoColumnW: algoColumn.style.width,
+          algorithmsCardH: algoCard.style.height,
+          historyColumnW: historyColumn.style.width,
+          metadataCardH: metadataCard.style.height,
+          logCardW: logCard.style.width,
+          isAlgoCollapsed,
+          isHistoryCollapsed,
+          savedAlgoWidth,
+          savedHistoryWidth
+        };
+        localStorage.setItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY, JSON.stringify(layout));
+      } catch (e) { }
+    }
+
+    function loadLayoutState() {
+      try {
+        const stored = localStorage.getItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY);
+        if (stored) {
+          const layout = JSON.parse(stored);
+          if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
+          if (layout.graphCardH) graphCard.style.height = layout.graphCardH;
+          if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
+          if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
+          if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
+          if (layout.logCardW) logCard.style.width = layout.logCardW;
+
+          savedAlgoWidth = layout.savedAlgoWidth || LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
+          savedHistoryWidth = layout.savedHistoryWidth || LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+
+          if (!phoneMedia.matches) {
+            setAlgoCollapsed(layout.isAlgoCollapsed, layout.isAlgoCollapsed ? null : savedAlgoWidth);
+            setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
+          }
+        }
+      } catch (e) { }
+    }
+
+    loadLayoutState(); // Apply saved sizes right after setting initial structure
 
     // =========================================================================
     // UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (DYNAMIC CSS VAR BOUNDS)
@@ -4098,6 +4170,7 @@
         isDragging = false;
         splitter.classList.remove('dragging');
         document.body.style.cursor = '';
+        if (typeof saveLayoutState === 'function') saveLayoutState();
       };
 
       splitter.addEventListener('mousedown', startDrag);
@@ -4211,6 +4284,7 @@
         isDragging = false;
         splitterAlgoCode.classList.remove('dragging');
         document.body.style.cursor = '';
+        if (typeof saveLayoutState === 'function') saveLayoutState();
       };
 
       splitterAlgoCode.addEventListener('mousedown', startDrag);
@@ -4299,6 +4373,7 @@
         isDragging = false;
         splitterHistoryGraph.classList.remove('dragging');
         document.body.style.cursor = '';
+        if (typeof saveLayoutState === 'function') saveLayoutState();
       };
 
       splitterHistoryGraph.addEventListener('mousedown', startDrag);
@@ -4322,6 +4397,7 @@
     function resetAllProportions() {
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+      try { localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY); } catch(e) {}
       syncResponsiveStructure();
     }
 
