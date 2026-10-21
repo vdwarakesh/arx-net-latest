@@ -41,7 +41,7 @@
       /* Height of the bottom playback controls bar on mobile */
 
       /* --- Default Panel Proportions --- */
-      --desktop-left-col-width: 50%;
+      --desktop-left-col-width: 45%;
       /* Default width of the left column (Graph + Traversal) on desktop */
       --desktop-graph-height: 100%;
       /* Default height of the Graph card inside the left column on desktop */
@@ -49,7 +49,7 @@
       /* Default height of the Algorithms + Code row inside the right column on desktop */
       --algorithms-default-width-desktop: 40%;
       /* Default expanded width of the Algorithms card on desktop */
-      --algorithms-default-width-mobile: 38%;
+      --algorithms-default-width-mobile: 40%;
       /* Default expanded width of the Algorithms card when opened on mobile */
       --mobile-graph-row-height: 50%;
       /* Default height of the top Graph row on mobile */
@@ -990,6 +990,11 @@
 
     .tree-row.selected .algo-dot {
       background-color: var(--text-bright);
+      border-color: var(--text-bright);
+    }
+
+    .tree-row.selected .ds-leaf-dot::after {
+      background-color: var(--text-bright);
     }
 
     .tree-chevron {
@@ -1019,18 +1024,19 @@
     }
 
     .ds-label {
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .algo-label {
-      font-weight: 400;
+      font-weight: 300;
+      font-style: italic;
     }
 
     .tree-children {
       display: none;
       flex-direction: column;
       padding-left: 0.75rem;
-      border-left: 0.0625rem solid var(--border-color);
+      border-left: 0.125rem solid var(--scrollbar-thumb);
       margin-left: 0.45rem;
     }
 
@@ -1042,19 +1048,35 @@
     .algo-item-wrapper {
       display: flex;
       flex-direction: column;
-      padding: 0.1rem 0;
-      margin-bottom: 0.75rem;
-      /* Extra spacing between algorithms */
+      padding: 0.05rem 0;
+      margin-bottom: 0.15rem;
     }
 
     .algo-dot {
       width: 0.35rem;
       height: 0.35rem;
-      background-color: var(--text-muted);
+      background-color: transparent;
+      border: 0.08rem solid var(--text-muted);
       border-radius: 50%;
       margin: 0 0.5rem 0 0.65rem;
-      /* Positions the dot nicely under the DS chevron */
       flex-shrink: 0;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .ds-leaf-dot {
+      width: 0.9rem;
+      height: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .ds-leaf-dot::after {
+      content: '';
+      width: 0.3rem;
+      height: 0.6rem;
+      background-color: var(--text-muted);
       transition: background-color 0.12s ease;
     }
 
@@ -2401,7 +2423,7 @@
                     Run
                   </button>
                   <div class="visualization-options">
-                    Visualize&nbsp;
+                    Steps&nbsp;
                     <button type="button" class="playback-icon-btn" title="Step Backward">
                       <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
                     </button>
@@ -2499,6 +2521,12 @@
               </div>
               <div id="algo-settings-body" class="card-scroll-body">
                 <div class="card-inner-pad">
+                  <!-- Constraints & Tags -->
+                  <div id="algo-settings-meta-section" style="display: none; margin-bottom: 0.75rem;">
+                    <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.35rem;">Constraints &amp; Tags
+                    </h4>
+                    <div id="algo-settings-meta-container" class="algo-meta-container" style="padding: 0;"></div>
+                  </div>
                   <!-- Parameters -->
                   <div style="margin-bottom: 0.75rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Parameters</h4>
@@ -2517,7 +2545,7 @@
                     style="width: 100%; margin-bottom: 1rem;">Run</button>
 
                   <!-- Visualize Controls -->
-                  <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.5rem;">Visualize</h4>
+                  <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.5rem;">Steps</h4>
                   <div class="playback-controls-left" style="flex-wrap: wrap; gap: 0.5rem;">
                     <div class="visualization-options" style="margin: 0; padding: 0; border: none;">
                       <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
@@ -3485,9 +3513,11 @@
       return span;
     }
 
-    function updateAlgorithmSettings(name) {
+    function updateAlgorithmSettings(name, parentDsName = null) {
       const paramsContainer = document.getElementById('algo-params-container');
       const optParamsContainer = document.getElementById('algo-optional-params-container');
+      const metaSection = document.getElementById('algo-settings-meta-section');
+      const metaContainer = document.getElementById('algo-settings-meta-container');
       if (!paramsContainer || !optParamsContainer) return;
 
       // If nothing is selected, or a data structure (not an algorithm) is selected
@@ -3495,7 +3525,72 @@
       if (!name || !algoData) {
         paramsContainer.innerHTML = '';
         optParamsContainer.innerHTML = '';
+        if (metaSection && metaContainer) {
+          metaContainer.innerHTML = '';
+          metaSection.style.display = 'none';
+        }
         return;
+      }
+
+      // Render Constraints & Tags in Algorithm Settings
+      if (metaSection && metaContainer) {
+        metaContainer.innerHTML = '';
+        const inputs = algoData.inputs || {};
+        let constraintEntries = [];
+
+        if (parentDsName && inputs[parentDsName]) {
+          constraintEntries = Object.entries(inputs[parentDsName]);
+        } else {
+          for (const dsObj of Object.values(inputs)) {
+            for (const [k, v] of Object.entries(dsObj || {})) {
+              constraintEntries.push([k, v]);
+            }
+          }
+        }
+
+        const tagList = Array.isArray(algoData.tags) ? algoData.tags : [];
+
+        if (constraintEntries.length > 0 || tagList.length > 0) {
+          metaSection.style.display = 'block';
+
+          for (const [cKey, cVal] of constraintEntries) {
+            const cBadge = document.createElement('span');
+            cBadge.className = 'algo-meta-badge constraint-badge';
+            if (constraintsJson[cKey]) cBadge.setAttribute('title', constraintsJson[cKey]);
+
+            const cImg = document.createElement('img');
+            cImg.src = 'images/constraint.png';
+            cImg.alt = 'constraint';
+            cImg.className = 'algo-meta-icon';
+            if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
+
+            const cText = document.createElement('span');
+            cText.textContent = `${cKey}:${cVal}`;
+
+            cBadge.appendChild(cImg);
+            cBadge.appendChild(cText);
+            metaContainer.appendChild(cBadge);
+          }
+
+          for (const tagName of tagList) {
+            const tBadge = document.createElement('span');
+            tBadge.className = 'algo-meta-badge tag-badge';
+
+            const tImg = document.createElement('img');
+            tImg.src = 'images/tag.png';
+            tImg.alt = 'tag';
+            tImg.className = 'algo-meta-icon';
+
+            const tText = document.createElement('span');
+            tText.textContent = tagName;
+
+            tBadge.appendChild(tImg);
+            tBadge.appendChild(tText);
+            metaContainer.appendChild(tBadge);
+          }
+        } else {
+          metaSection.style.display = 'none';
+        }
       }
 
       const noReqParamsMsg = 'This function does not accept parameters';
@@ -3523,13 +3618,13 @@
     }
 
     // Select a data structure or algorithm and load its Notes / Code / Explanation
-    function selectDsaItem(name) {
+    function selectDsaItem(name, parentDsName = null) {
       selectedDsaName = name;
       algoTreeContainer.querySelectorAll('.tree-row[data-dsa-name]').forEach(row => {
         row.classList.toggle('selected', row.getAttribute('data-dsa-name') === name);
       });
       updateCodeViewPane();
-      updateAlgorithmSettings(name);
+      updateAlgorithmSettings(name, parentDsName);
     }
 
     // Render the main collapsible Data Structures & Algorithms tree
@@ -3606,16 +3701,22 @@
         const chevron = createChevronSvg(isExpanded, !hasAnyChildren);
         const label = document.createElement('span');
         label.className = 'tree-label ds-label';
-        label.textContent = dsName; // Requirement 4: Leave names exactly as such
+        label.textContent = dsName;
 
-        dsRow.appendChild(chevron);
+        if (!hasAnyChildren) {
+          const dsDot = document.createElement('span');
+          dsDot.className = 'ds-leaf-dot';
+          dsRow.appendChild(dsDot);
+        } else {
+          dsRow.appendChild(chevron);
+        }
+
         dsRow.appendChild(label);
         nodeWrapper.appendChild(dsRow);
 
         const childrenContainer = document.createElement('div');
         childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
 
-        // 1. Append direct algorithms FIRST
         // 1. Append direct algorithms FIRST
         if (!isAlgosHidden) {
           for (const algo of visibleAlgos) {
@@ -3639,58 +3740,10 @@
 
             algoRow.addEventListener('click', (e) => {
               e.stopPropagation();
-              selectDsaItem(algo.name);
+              selectDsaItem(algo.name, dsName);
             });
 
             algoWrapper.appendChild(algoRow);
-
-            // Render constraints and tags
-            const constraintEntries = Object.entries(algo.constraints || {});
-            const tagList = algo.tags || [];
-
-            if (constraintEntries.length > 0 || tagList.length > 0) {
-              const metaContainer = document.createElement('div');
-              metaContainer.className = 'algo-meta-container';
-
-              for (const [cKey, cVal] of constraintEntries) {
-                const cBadge = document.createElement('span');
-                cBadge.className = 'algo-meta-badge constraint-badge';
-                if (constraintsJson[cKey]) cBadge.setAttribute('title', constraintsJson[cKey]);
-
-                const cImg = document.createElement('img');
-                cImg.src = 'images/constraint.png';
-                cImg.alt = 'constraint';
-                cImg.className = 'algo-meta-icon';
-                if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
-
-                const cText = document.createElement('span');
-                cText.textContent = `${cKey}:${cVal}`;
-
-                cBadge.appendChild(cImg);
-                cBadge.appendChild(cText);
-                metaContainer.appendChild(cBadge);
-              }
-
-              for (const tagName of tagList) {
-                const tBadge = document.createElement('span');
-                tBadge.className = 'algo-meta-badge tag-badge';
-
-                const tImg = document.createElement('img');
-                tImg.src = 'images/tag.png';
-                tImg.alt = 'tag';
-                tImg.className = 'algo-meta-icon';
-
-                const tText = document.createElement('span');
-                tText.textContent = tagName;
-
-                tBadge.appendChild(tImg);
-                tBadge.appendChild(tText);
-                metaContainer.appendChild(tBadge);
-              }
-
-              algoWrapper.appendChild(metaContainer);
-            }
-
             childrenContainer.appendChild(algoWrapper);
           }
         }
