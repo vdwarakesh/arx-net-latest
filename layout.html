@@ -501,10 +501,9 @@
     .left-column {
       display: flex;
       flex-direction: row;
-      /* Changed from column to row */
       width: var(--desktop-left-col-width);
-      min-width: var(--left-col-min-width-desktop);
-      max-width: calc(100% - var(--algorithms-collapsed-width-desktop) - var(--code-card-min-width) - (var(--splitter-thickness-desktop) * 2));
+      min-width: calc((var(--algorithms-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
+      max-width: calc(100% - var(--algorithms-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
       min-height: 0;
       flex: 0 0 auto;
     }
@@ -721,6 +720,10 @@
     #state-card {
       flex: 1 1 0%;
       min-width: var(--bottom-cards-min-width);
+    }
+
+    #algo-fav-filter-btn .algo-filter-icon {
+      filter: none !important;
     }
 
     /* Card Internal Body Containers */
@@ -2007,6 +2010,270 @@
     }
 
     /* =========================================================================
+       COLLAPSIBLE GRAPH & CODE STACKS, ZEN MODE, AND FAVOURITES
+       ========================================================================= */
+    #left-main-stack.is-collapsed {
+      width: var(--algorithms-collapsed-width-desktop) !important;
+      min-width: var(--algorithms-collapsed-width-desktop) !important;
+      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      flex: 0 0 auto !important;
+      gap: var(--splitter-thickness-desktop);
+    }
+
+    #left-main-stack.is-collapsed .vscode-card-header,
+    #left-main-stack.is-collapsed .graph-body-wrapper,
+    #left-main-stack.is-collapsed #log-card .card-scroll-body,
+    #left-main-stack.is-collapsed #splitter-left-h {
+      display: none !important;
+    }
+
+    #left-main-stack.is-collapsed .vscode-card {
+      background-color: var(--bg-card-header);
+    }
+
+    #graph-collapsed-strip,
+    #log-collapsed-strip,
+    #code-collapsed-strip {
+      display: none;
+      flex: 1 1 0%;
+      min-height: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 0;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    #left-main-stack.is-collapsed #graph-collapsed-strip,
+    #left-main-stack.is-collapsed #log-collapsed-strip {
+      display: flex;
+    }
+
+    #code-card.is-collapsed {
+      width: var(--algorithms-collapsed-width-desktop) !important;
+      min-width: var(--algorithms-collapsed-width-desktop) !important;
+      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      flex: 0 0 auto !important;
+      background-color: var(--bg-card-header);
+    }
+
+    /* Allow #algo-column to fill remaining space when #code-card is collapsed */
+    #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
+      flex: 1 1 0% !important;
+      max-width: none !important;
+    }
+
+    /* Allow #history-column to fill remaining space when #left-main-stack is collapsed */
+    #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed) {
+      flex: 1 1 0% !important;
+      max-width: none !important;
+    }
+
+    #code-card.is-collapsed .vscode-card-header,
+    #code-card.is-collapsed #codeViewPane {
+      display: none !important;
+    }
+
+    #code-card.is-collapsed #code-collapsed-strip {
+      display: flex;
+    }
+
+    /* --- Zen Mode (Hides all collapsed vertical/horizontal panes & their splitters) --- */
+    .activity-btn.active {
+      background-color: var(--bg-active-item);
+      color: var(--text-bright);
+    }
+
+    /* --- Keep favourite-selection.png exact same image in light & dark mode --- */
+    #algo-fav-filter-btn .algo-filter-icon {
+      filter: none !important;
+    }
+
+    /* --- Horizontal Card Collapse (Minimum Height) Support in Zen Mode --- */
+    .vscode-card.is-h-collapsed .card-scroll-body,
+    .vscode-card.is-h-collapsed .graph-body-wrapper,
+    .vscode-card.is-h-collapsed #algo-body {
+      display: none !important;
+    }
+
+    /* =========================================================================
+       COMPLETE ZEN MODE STYLES (BOTH VERTICAL & HORIZONTAL COLLAPSED PANELS)
+       ========================================================================= */
+
+    /* --- Part A: Vertical Collapsed Panels (.is-collapsed) --- */
+    body.zen-mode #history-column.is-collapsed,
+    body.zen-mode #history-column.is-collapsed+#splitter-history-graph-v,
+    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #splitter-history-graph-v,
+    body.zen-mode #left-main-stack.is-collapsed,
+    body.zen-mode #algo-column.is-collapsed,
+    body.zen-mode #algo-column.is-collapsed+#splitter-algo-code-v,
+    body.zen-mode #right-top-row:has(#code-card.is-collapsed) #splitter-algo-code-v,
+    body.zen-mode #code-card.is-collapsed {
+      display: none !important;
+    }
+
+    /* Expand the remaining open sibling when the other vertical column is hidden in Zen Mode */
+    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed),
+    body.zen-mode #left-column:has(#history-column.is-collapsed) #left-main-stack:not(.is-collapsed),
+    body.zen-mode #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed),
+    body.zen-mode #right-top-row:has(#algo-column.is-collapsed) #code-card:not(.is-collapsed) {
+      flex: 1 1 0% !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* If BOTH children in left-column or right-top-row are vertically collapsed, hide the parent & its splitter */
+    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed),
+    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)+#splitter-main-v,
+    body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed),
+    body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)+#splitter-right-h {
+      display: none !important;
+    }
+
+    /* If the entire right-column is collapsed, let left-column take 100% width */
+    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #splitter-main-v,
+    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #right-column {
+      display: none !important;
+    }
+
+    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #left-column {
+      flex: 1 1 0% !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* --- Part B: Horizontal Collapsed Cards (.is-h-collapsed & .is-row-h-collapsed) --- */
+    .vscode-card.is-h-collapsed .card-scroll-body,
+    .vscode-card.is-h-collapsed .graph-body-wrapper,
+    .vscode-card.is-h-collapsed #algo-body {
+      display: none !important;
+    }
+
+    body.zen-mode .vscode-card.is-h-collapsed {
+      display: none !important;
+    }
+
+    /* 1. Graph <-> Traversal (Desktop Left Stack) */
+    body.zen-mode #graph-card.is-h-collapsed+#splitter-left-h,
+    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #splitter-left-h,
+    body.zen-mode #desktop-traversal-slot:has(#log-card.is-h-collapsed) {
+      display: none !important;
+    }
+
+    body.zen-mode #left-main-stack:has(#graph-card.is-h-collapsed) #desktop-traversal-slot,
+    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #graph-card {
+      flex: 1 1 0% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* 2. Algorithms <-> Settings (Algo Column) */
+    body.zen-mode #algorithms-card.is-h-collapsed+#splitter-algo-settings-h,
+    body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #splitter-algo-settings-h {
+      display: none !important;
+    }
+
+    body.zen-mode #algo-column:has(#algorithms-card.is-h-collapsed) #algo-settings-card,
+    body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #algorithms-card {
+      flex: 1 1 0% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* 3. Metadata <-> History (History Column) */
+    body.zen-mode #metadata-card.is-h-collapsed+#splitter-metadata-history-h,
+    body.zen-mode #history-column:has(#history-card.is-h-collapsed) #splitter-metadata-history-h {
+      display: none !important;
+    }
+
+    body.zen-mode #history-column:has(#metadata-card.is-h-collapsed) #history-card,
+    body.zen-mode #history-column:has(#history-card.is-h-collapsed) #metadata-card {
+      flex: 1 1 0% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* 4. Right Top Row (Algorithms/Settings + Code) <-> Bottom Split Row (State Variables / Mobile Traversal) */
+    body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #splitter-right-h,
+    body.zen-mode #bottom-split-row.is-row-h-collapsed,
+    body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #splitter-right-h,
+    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed:first-child),
+    body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #splitter-right-h,
+    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed):has(> #state-card.is-h-collapsed),
+    body.zen-mode #right-top-row.is-row-h-collapsed,
+    body.zen-mode #right-top-row.is-row-h-collapsed + #splitter-right-h {
+      display: none !important;
+    }
+
+    body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #right-top-row,
+    body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #right-top-row,
+    body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #right-top-row,
+    body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row,
+    body.zen-mode #right-column:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)) #bottom-split-row {
+      flex: 1 1 0% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* On Mobile: if only State Card or only Traversal Card is collapsed at the bottom, hide the mobile splitter and expand the other */
+    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #splitter-bottom-mobile-v,
+    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #splitter-bottom-mobile-v {
+      display: none !important;
+    }
+
+    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #log-card:not(.is-h-collapsed),
+    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #state-card:not(.is-h-collapsed) {
+      flex: 1 1 0% !important;
+      width: 100% !important;
+      max-width: none !important;
+    }
+
+    /* 5. Mobile Top Graph Row <-> Right Column */
+    body.zen-mode #left-column.is-row-h-collapsed,
+    body.zen-mode #left-column.is-row-h-collapsed+#splitter-left-h,
+    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #splitter-left-h,
+    body.zen-mode #right-column.is-row-h-collapsed {
+      display: none !important;
+    }
+
+    body.zen-mode #workspace:has(#left-column.is-row-h-collapsed) #right-column,
+    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #left-column {
+      flex: 1 1 0% !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* --- Favourite Star Icon in Tree --- */
+    .fav-toggle-btn {
+      width: 1.15rem;
+      height: 1.15rem;
+      padding: 0;
+      margin-left: auto;
+      background: transparent;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      opacity: 0.75;
+      transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+
+    .fav-toggle-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .fav-toggle-icon {
+      width: 0.9rem;
+      height: 0.9rem;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* =========================================================================
        PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
        ========================================================================= */
     @media (max-width: 56.25rem) {
@@ -2265,6 +2532,13 @@
         min-width: var(--splitter-thickness-mobile);
       }
 
+      #left-main-stack.is-collapsed,
+      #code-card.is-collapsed {
+        width: var(--algorithms-collapsed-width-mobile) !important;
+        min-width: var(--algorithms-collapsed-width-mobile) !important;
+        max-width: var(--algorithms-collapsed-width-mobile) !important;
+      }
+
       code[class*="language-"] {
         padding-top: 0;
       }
@@ -2333,6 +2607,11 @@
       <button type="button" id="mobile-theme-cycle-btn" class="mobile-theme-cycle-btn" title="Theme: System"
         aria-label="Cycle Color Theme">
         <img id="mobile-theme-cycle-img" src="images/system.png" alt="System Theme" class="theme-icon-img" />
+      </button>
+
+      <button type="button" id="zen-mode-btn" class="activity-btn" title="Toggle Zen Mode (Hide collapsed panels)"
+        aria-pressed="false">
+        <img src="images/zen.png" alt="Zen Mode" class="activity-icon-img" />
       </button>
 
       <button type="button" id="reset-layout-btn" class="activity-btn" title="Reset panel proportions">
@@ -2448,6 +2727,9 @@
                 </div>
               </div>
             </div>
+            <div id="graph-collapsed-strip" title="Click to expand Graph">
+              <span class="algo-collapsed-label">Graph</span>
+            </div>
           </section>
 
           <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
@@ -2480,6 +2762,10 @@
                       <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
                         aria-label="Clear search" style="display: none;">&times;</button>
                     </div>
+                    <button type="button" id="algo-fav-filter-btn" class="algo-filter-btn" title="Show Favourites Only"
+                      aria-pressed="false">
+                      <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
+                    </button>
                     <button type="button" id="algo-hide-btn" class="algo-filter-btn"
                       title="Hide Algorithms (Show Data Structures only)" aria-pressed="false">
                       <img src="images/hide.png" alt="Hide Algorithms" class="algo-filter-icon" />
@@ -2678,7 +2964,9 @@
                 </span>
               </div>
             </div>
-
+            <div id="code-collapsed-strip" title="Click to expand Code">
+              <span class="algo-collapsed-label">Code</span>
+            </div>
           </section>
 
         </div>
@@ -2883,7 +3171,11 @@
       MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
       MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
       LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
-      LANG_STORAGE_KEY: 'shard-spiral-lang-pref'
+      LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
+      LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
+      LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
+      FAVOURITES_STORAGE_KEY: 'shard-spiral-favourites',
+      ZEN_STORAGE_KEY: 'shard-spiral-zen-mode'
     };
 
     function getRootCssVarRem(varName, fallbackRem) {
@@ -3478,6 +3770,80 @@
       return qIdx === cleanQuery.length;
     }
 
+    const algoFavFilterBtn = document.getElementById('algo-fav-filter-btn');
+    let isFavFilterActive = false;
+    let favouritesSet = new Set();
+
+    function loadFavourites() {
+      try {
+        const stored = localStorage.getItem(LAYOUT_CONFIG.FAVOURITES_STORAGE_KEY);
+        if (stored) {
+          favouritesSet = new Set(JSON.parse(stored));
+        }
+      } catch (e) { }
+    }
+
+    function saveFavourites() {
+      try {
+        localStorage.setItem(LAYOUT_CONFIG.FAVOURITES_STORAGE_KEY, JSON.stringify([...favouritesSet]));
+      } catch (e) { }
+    }
+
+    function toggleFavourite(itemName) {
+      if (favouritesSet.has(itemName)) {
+        favouritesSet.delete(itemName);
+      } else {
+        favouritesSet.add(itemName);
+      }
+      saveFavourites();
+      renderMainAlgoTree();
+    }
+
+    function createFavStarButton(itemName) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fav-toggle-btn';
+      const isFav = favouritesSet.has(itemName);
+      btn.title = isFav ? 'Remove from favourites' : 'Add to favourites';
+
+      const img = document.createElement('img');
+      img.className = 'fav-toggle-icon';
+      img.src = isFav ? 'images/favourite-enabled.png' : 'images/favourite-disabled.png';
+      img.alt = isFav ? 'Favourite' : 'Not favourite';
+
+      btn.appendChild(img);
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavourite(itemName);
+      });
+      return btn;
+    }
+
+    function dsSubtreeHasFavourite(dsName, dsObj) {
+      if (favouritesSet.has(dsName)) return true;
+      if (!isAlgosHidden) {
+        const algos = dsDirectAlgorithmsMap[dsName] || [];
+        if (algos.some(a => favouritesSet.has(a.name))) return true;
+      }
+      const children = (dsObj && dsObj.children) || {};
+      for (const [childName, childObj] of Object.entries(children)) {
+        if (dsSubtreeHasFavourite(childName, childObj)) return true;
+      }
+      return false;
+    }
+
+    loadFavourites();
+
+    if (algoFavFilterBtn) {
+      algoFavFilterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isFavFilterActive = !isFavFilterActive;
+        algoFavFilterBtn.classList.toggle('has-active-filter', isFavFilterActive);
+        algoFavFilterBtn.setAttribute('aria-pressed', String(isFavFilterActive));
+        renderMainAlgoTree();
+      });
+    }
+
     // Check if a DS node or any of its descendants is permitted by the active DS filter
     function isNodeInFilterScope(dsName, dsObj) {
       if (activeDsFilterSet.size === 0) return true;
@@ -3655,9 +4021,13 @@
 
       function buildDsSubtree(dsName, dsObj, ancestorMatchedSearch = false) {
         if (!isNodeInFilterScope(dsName, dsObj)) return null;
+        if (isFavFilterActive && !dsSubtreeHasFavourite(dsName, dsObj)) return null;
 
         const directAllowed = isDirectDsAllowedByFilter(dsName);
-        const allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
+        let allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
+        if (isFavFilterActive && !favouritesSet.has(dsName)) {
+          allDirectAlgos = allDirectAlgos.filter(algo => favouritesSet.has(algo.name));
+        }
         const childEntries = Object.entries((dsObj && dsObj.children) || {});
 
         const selfMatchesSearch = isSearching && directAllowed && matchFn(rawQuery, dsName);
@@ -3701,6 +4071,8 @@
           isExpanded = true;
         } else if (activeDsFilterSet.size > 0 && !activeDsFilterSet.has(dsName) && hasVisibleChildDs) {
           isExpanded = true;
+        } else if (isFavFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
+          isExpanded = true;
         }
 
         const nodeWrapper = document.createElement('div');
@@ -3724,6 +4096,7 @@
         }
 
         dsRow.appendChild(label);
+        dsRow.appendChild(createFavStarButton(dsName));
         nodeWrapper.appendChild(dsRow);
 
         const childrenContainer = document.createElement('div');
@@ -3749,6 +4122,7 @@
 
             algoRow.appendChild(dot);
             algoRow.appendChild(algoLabel);
+            algoRow.appendChild(createFavStarButton(algo.name));
 
             algoRow.addEventListener('click', (e) => {
               e.stopPropagation();
@@ -4039,6 +4413,137 @@
       });
     }
 
+    const codeCard = document.getElementById('code-card');
+    const graphCollapsedStrip = document.getElementById('graph-collapsed-strip');
+    const logCollapsedStrip = document.getElementById('log-collapsed-strip');
+    const codeCollapsedStrip = document.getElementById('code-collapsed-strip');
+    const zenModeBtn = document.getElementById('zen-mode-btn');
+
+    let isGraphCollapsed = false;
+    let isCodeCollapsed = false;
+    let isZenMode = false;
+
+    function setZenMode(enabled) {
+      isZenMode = Boolean(enabled);
+      if (isZenMode) {
+        updateHorizontalCollapsedStates();
+      }
+      document.body.classList.toggle('zen-mode', isZenMode);
+      if (!isZenMode) {
+        requestAnimationFrame(updateHorizontalCollapsedStates);
+      }
+      if (zenModeBtn) {
+        zenModeBtn.classList.toggle('active', isZenMode);
+        zenModeBtn.setAttribute('aria-pressed', String(isZenMode));
+      }
+      try {
+        localStorage.setItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY, isZenMode ? '1' : '0');
+      } catch (e) { }
+    }
+
+    function updateHorizontalCollapsedStates() {
+      const isPhone = phoneMedia.matches;
+      const minCardH = isPhone
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.15);
+      const tolerance = 4; // px tolerance for borders & subpixel rounding
+
+      const checkCardMinHeight = (cardEl, parentCollapsed = false) => {
+        if (!cardEl) return false;
+        if (parentCollapsed) {
+          cardEl.classList.remove('is-h-collapsed');
+          return false;
+        }
+        const rect = cardEl.getBoundingClientRect();
+        // If hidden by Zen Mode already (rect.height === 0), preserve its current state
+        if (rect.height === 0) {
+          return cardEl.classList.contains('is-h-collapsed');
+        }
+        const isAtMin = rect.height <= (minCardH + tolerance);
+        cardEl.classList.toggle('is-h-collapsed', isAtMin);
+        return isAtMin;
+      };
+
+      // 1. Check individual cards
+      checkCardMinHeight(graphCard, isGraphCollapsed);
+      const logCollapsed = checkCardMinHeight(logCard, isGraphCollapsed);
+      const stateCollapsed = checkCardMinHeight(stateCard, false);
+      const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
+      const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
+      checkCardMinHeight(metadataCard, isHistoryCollapsed);
+      checkCardMinHeight(historyCard, isHistoryCollapsed);
+      const codeHCollapsed = checkCardMinHeight(codeCard, isCodeCollapsed);
+
+      // 2. Check #bottom-split-row (State variables on Desktop; Traversal + State variables on Mobile)
+      if (bottomSplitRow) {
+        const isBottomRowMin = isPhone
+          ? (logCollapsed && stateCollapsed)
+          : stateCollapsed;
+        bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
+      }
+
+      // 3. Check #right-top-row (when dragged all the way up to minimum height)
+      if (rightTopRow) {
+        const rtRect = rightTopRow.getBoundingClientRect();
+        if (rtRect.height > 0) {
+          const isRightTopMin = rtRect.height <= (minCardH + tolerance) ||
+            ((isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) && (isCodeCollapsed || codeHCollapsed));
+          rightTopRow.classList.toggle('is-row-h-collapsed', isRightTopMin);
+        }
+      }
+
+      // 4. On Mobile, check if top #left-column (Graph row) is dragged to minimum height
+      if (leftColumn) {
+        if (isPhone) {
+          const lcRect = leftColumn.getBoundingClientRect();
+          if (lcRect.height > 0) {
+            leftColumn.classList.toggle('is-row-h-collapsed', lcRect.height <= (minCardH + tolerance));
+          }
+        } else {
+          leftColumn.classList.remove('is-row-h-collapsed');
+        }
+      }
+    }
+
+    if (zenModeBtn) {
+      zenModeBtn.addEventListener('click', () => setZenMode(!isZenMode));
+    }
+
+    try {
+      if (localStorage.getItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY) === '1') {
+        setZenMode(true);
+      }
+    } catch (e) { }
+
+    function setGraphCollapsed(collapse) {
+      isGraphCollapsed = Boolean(collapse);
+      leftMainStack.classList.toggle('is-collapsed', isGraphCollapsed);
+    }
+
+    function setCodeCollapsed(collapse) {
+      isCodeCollapsed = Boolean(collapse);
+      codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
+    }
+
+    if (graphCollapsedStrip) {
+      graphCollapsedStrip.addEventListener('click', () => {
+        setGraphCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
+    }
+    if (logCollapsedStrip) {
+      logCollapsedStrip.addEventListener('click', () => {
+        setGraphCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
+    }
+    if (codeCollapsedStrip) {
+      codeCollapsedStrip.addEventListener('click', () => {
+        setCodeCollapsed(false);
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      });
+    }
+
     function syncResponsiveStructure() {
       const isPhone = phoneMedia.matches;
 
@@ -4085,6 +4590,8 @@
           logCardW: logCard.style.width,
           isAlgoCollapsed,
           isHistoryCollapsed,
+          isGraphCollapsed,
+          isCodeCollapsed,
           savedAlgoWidth,
           savedHistoryWidth
         };
@@ -4109,6 +4616,8 @@
 
           setAlgoCollapsed(layout.isAlgoCollapsed, layout.isAlgoCollapsed ? null : savedAlgoWidth);
           setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
+          setGraphCollapsed(Boolean(layout.isGraphCollapsed));
+          setCodeCollapsed(Boolean(layout.isCodeCollapsed));
         }
       } catch (e) { }
     }
@@ -4157,6 +4666,7 @@
           const clampedU = Math.max(minU, Math.min(maxU, clientY - rect.top));
           const newPercent = (clampedU / totalHeight) * 100;
           targetPane.style.height = `${newPercent.toFixed(2)}%`;
+          updateHorizontalCollapsedStates();
         }
       };
 
@@ -4165,6 +4675,7 @@
         isDragging = false;
         splitter.classList.remove('dragging');
         document.body.style.cursor = '';
+        updateHorizontalCollapsedStates();
         if (typeof saveLayoutState === 'function') saveLayoutState();
       };
 
@@ -4178,22 +4689,76 @@
       window.addEventListener('touchend', stopDrag);
     }
 
-    // 1. Desktop Main Vertical Splitter
-    makeResizable({
-      splitter: document.getElementById('splitter-main-v'),
-      getContainer: () => workspace,
-      getTargetPane: () => leftColumn,
-      getDirection: () => 'horizontal',
-      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.LEFT_COL_MIN_WIDTH_DESKTOP_VAR, 12),
-      getMaxReservedUnits: () => {
-        const algoMin = isAlgoCollapsed
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 3)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 8.5);
-        const codeMin = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
-        const subSplitter = splitterAlgoCode.getBoundingClientRect().width;
-        return algoMin + codeMin + subSplitter;
-      }
-    });
+    // 1. Desktop Main Vertical Splitter (Supports collapsing Graph or Code)
+    (function setupMainVerticalSplitter() {
+      const mainSplitter = document.getElementById('splitter-main-v');
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        mainSplitter.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = workspace.getBoundingClientRect();
+        if (rect.width <= 0) return;
+
+        const collapsedStripW = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
+        const collapseThresholdU = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
+        const splitterW = mainSplitter.getBoundingClientRect().width;
+
+        const desiredLeftW = clientX - rect.left;
+        const desiredRightW = rect.width - desiredLeftW - splitterW;
+
+        const histW = isHistoryCollapsed ? collapsedStripW : historyColumn.getBoundingClientRect().width;
+        const histSplitW = splitterHistoryGraph.getBoundingClientRect().width;
+
+        // Collapse Graph if left-main-stack is squeezed below threshold
+        const graphAvailableW = desiredLeftW - histW - histSplitW;
+        if (graphAvailableW < collapseThresholdU) {
+          if (!isGraphCollapsed) setGraphCollapsed(true);
+        } else if (isGraphCollapsed) {
+          setGraphCollapsed(false);
+        }
+
+        // Collapse Code if right column is squeezed so Code falls below threshold
+        const algoW = isAlgoCollapsed ? collapsedStripW : algoColumn.getBoundingClientRect().width;
+        const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
+        const codeAvailableW = desiredRightW - algoW - algoSplitW;
+        if (codeAvailableW < collapseThresholdU) {
+          if (!isCodeCollapsed) setCodeCollapsed(true);
+        } else if (isCodeCollapsed) {
+          setCodeCollapsed(false);
+        }
+
+        const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
+          (isGraphCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
+        const minRightW = (isAlgoCollapsed ? collapsedStripW : collapseThresholdU) +
+          (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
+
+        const clampedLeftW = Math.max(minLeftW, Math.min(rect.width - minRightW - splitterW, desiredLeftW));
+        leftColumn.style.width = `${((clampedLeftW / rect.width) * 100).toFixed(2)}%`;
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        mainSplitter.classList.remove('dragging');
+        document.body.style.cursor = '';
+        if (typeof saveLayoutState === 'function') saveLayoutState();
+      };
+
+      mainSplitter.addEventListener('mousedown', startDrag);
+      mainSplitter.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    })();
 
     // 2. Top Horizontal Splitter
     makeResizable({
@@ -4228,7 +4793,7 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
     });
 
-    // 4. Algorithms <-> Code Vertical Splitter
+    // 4. Algorithms <-> Code Vertical Splitter (Supports collapsing either Algorithms OR Code)
     (function setupAlgoSplitter() {
       let isDragging = false;
 
@@ -4246,18 +4811,26 @@
         if (rect.width <= 0) return;
 
         const collapseThresholdU = phoneMedia.matches
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 6.5)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 8.5);
-        const codeMinU = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
+        const collapsedStripW = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
         const splitterW = splitterAlgoCode.getBoundingClientRect().width;
         const desiredWidthU = clientX - rect.left;
+        const remainingCodeWidthU = rect.width - desiredWidthU - splitterW;
 
         if (desiredWidthU < collapseThresholdU) {
-          if (!isAlgoCollapsed) {
-            setAlgoCollapsed(true);
-          }
+          if (isCodeCollapsed) setCodeCollapsed(false);
+          if (!isAlgoCollapsed) setAlgoCollapsed(true);
+        } else if (remainingCodeWidthU < collapseThresholdU) {
+          if (isAlgoCollapsed) setAlgoCollapsed(false);
+          if (!isCodeCollapsed) setCodeCollapsed(true);
+          const expandedAlgoW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
+          algoColumn.style.width = expandedAlgoW;
         } else {
-          const maxU = Math.max(collapseThresholdU, rect.width - codeMinU - splitterW);
+          if (isCodeCollapsed) setCodeCollapsed(false);
+          const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
           const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
           const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
           savedAlgoWidth = widthStr;
@@ -4265,11 +4838,7 @@
           if (isAlgoCollapsed) {
             setAlgoCollapsed(false, widthStr);
           } else {
-            if (isAlgoCollapsed) {
-              setAlgoCollapsed(false, widthStr);
-            } else {
-              algoColumn.style.width = widthStr;
-            }
+            algoColumn.style.width = widthStr;
           }
         }
       };
@@ -4318,7 +4887,7 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 
-    // 7. History Column <-> Graph/Traversal Stack Vertical Splitter (Supports Drag-Collapse & Max 40%)
+    // 7. History Column <-> Graph/Traversal Stack Vertical Splitter (Supports collapsing History OR Graph)
     (function setupHistorySplitter() {
       let isDragging = false;
 
@@ -4336,20 +4905,27 @@
         if (rect.width <= 0) return;
 
         const collapseThresholdU = phoneMedia.matches
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 6.5)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 11);
-        const graphMinU = getRootCssVarUnits(LAYOUT_CONFIG.CODE_CARD_MIN_WIDTH_VAR, 8);
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
+        const collapsedStripW = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
         const splitterW = splitterHistoryGraph.getBoundingClientRect().width;
         const desiredWidthU = clientX - rect.left;
+        const remainingGraphWidthU = rect.width - desiredWidthU - splitterW;
 
         if (desiredWidthU < collapseThresholdU) {
-          if (!isHistoryCollapsed) {
-            setHistoryCollapsed(true);
-          }
+          if (isGraphCollapsed) setGraphCollapsed(false);
+          if (!isHistoryCollapsed) setHistoryCollapsed(true);
+        } else if (remainingGraphWidthU < collapseThresholdU) {
+          if (isHistoryCollapsed) setHistoryCollapsed(false);
+          if (!isGraphCollapsed) setGraphCollapsed(true);
+          const expandedHistW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
+          historyColumn.style.width = expandedHistW;
         } else {
-          // Cap at 40% of leftColumn width (or available space before Graph min-width)
+          if (isGraphCollapsed) setGraphCollapsed(false);
           const maxByPercentU = rect.width * 0.40;
-          const maxByReserveU = rect.width - graphMinU - splitterW;
+          const maxByReserveU = rect.width - collapseThresholdU - splitterW;
           const maxU = Math.max(collapseThresholdU, Math.min(maxByPercentU, maxByReserveU));
           const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
           const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
@@ -4392,6 +4968,11 @@
     function resetAllProportions() {
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+      setGraphCollapsed(false);
+      setCodeCollapsed(false);
+      document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
+        el.classList.remove('is-h-collapsed', 'is-row-h-collapsed');
+      });
       try { localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY); } catch (e) { }
       syncResponsiveStructure();
     }
