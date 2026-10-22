@@ -5,26 +5,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shard Spiral</title>
-  <script src="js/tailwind.js"></script>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/prism.css" />
+  <script src="js/tailwind.js"></script>
+  <script src="js/prism.js"></script>
   <style>
-    /* =========================================================================
-       IMPORTANT LAYOUT & SIZING CONFIGURATION VARIABLES
-       (Single source of truth for global sizing, proportions, and dimensions)
-       ========================================================================= */
     :root {
       /* --- Typography & Base Scaling --- */
       --base-root-font-size: 0.9rem;
       /* Base root font scaling across the entire app */
-      --desktop-body-font-size: 1rem;
-      /* Standard font size on desktop viewports */
       --mobile-body-font-size: 0.8rem;
       /* Compact font size on mobile/phone viewports (<= 56.25rem) */
 
       /* --- Header, Card Bar & Card Minimum Heights --- */
       --header-height-desktop: 2.75rem;
-      /* Height of the top application header bar on desktop */
+      /* Height of the application header bar (Shows shard spiral name, themes, zem mode etc. on desktop */
       --header-height-mobile: 2.625rem;
       /* Height of the top application header bar on mobile */
       --card-header-height-desktop: 2.15rem;
@@ -35,7 +30,7 @@
       /* Minimum height of each card on desktop (matches card header height) */
       --card-min-height-mobile: 1.6rem;
       /* Minimum height of each card on mobile (matches card header height) */
-      --playback-bar-height-desktop: 2.375rem;
+      --playback-bar-height-desktop: 2.5rem;
       /* Height of the bottom playback controls bar inside the Graph card on desktop */
       --playback-bar-height-mobile: 2rem;
       /* Height of the bottom playback controls bar on mobile */
@@ -55,7 +50,7 @@
       /* Default height of the top Graph row on mobile */
       --mobile-code-row-height: 100%;
       /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
-      --mobile-traversal-width: 58%;
+      --mobile-traversal-width: 60%;
       /* Default width of the Traversal card in the bottom side-by-side row on mobile */
 
       /* --- Icon & Action Button Sizes --- */
@@ -93,9 +88,6 @@
       /* Visual width and height of run.png, step.png, pause.png, reset.png on desktop */
       --playback-icon-size-mobile: 1rem;
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
-      /* --playback-label-img-size-desktop: 1.75rem; */
-      /* Visual width and height of speed.png on desktop */
-
 
       /* --- Algorithms, Code & Row Constraints --- */
       --left-col-min-width-desktop: 12rem;
@@ -178,9 +170,6 @@
       /* Width and height of the circular user avatar badge in the Profile modal */
     }
 
-    /* =========================================================================
-       VS CODE DARK MODERN & LIGHT MODERN COLOR PALETTE VARIABLES
-       ========================================================================= */
     :root,
     [data-theme="dark"] {
       --bg-app: #181818;
@@ -202,7 +191,43 @@
       --scrollbar-thumb-hover: #4f4f4f;
       --splitter-pill: #6e6e6e;
       --sidebar-icon-filter: invert(0.85);
+
+      /* Prism color values - dark */
+      --prism-color: #cccccc;
+      --prism-bg: #1f1f1f;
+      --prism-inline-bg: #2b2b2b;
+      --prism-selection-bg: #264f78;
+
+      --prism-comment: #6a9955;
+      --prism-punctuation: #cccccc;
+      --prism-boolean: #569cd6;
+      --prism-constant: #569cd6;
+      --prism-tag: #569cd6;
+      --prism-number: #b5cea8;
+      --prism-property: #9cdcfe;
+      --prism-attr-name: #9cdcfe;
+      --prism-string: #ce9178;
+      --prism-selector: #d7ba7d;
+      --prism-operator: #cccccc;
+      --prism-keyword: #c586c0;
+      --prism-attr-value: #ce9178;
+      --prism-function: #dcdcaa;
+      --prism-regex: #d16969;
+
+      --prism-line-highlight-bg: #ffffff1a;
+      /* increased opacity from 0.04 to ~10% for visibility */
+      --prism-line-highlight-grad: #ffffff1d;
+      /* increased opacity from 0.05 to ~15% */
+      --prism-line-highlight-transparent: #ffffff00;
+      --prism-line-highlight-label-bg: #3c3c3c;
+      --prism-line-highlight-label-text: #cccccc;
+
+      --prism-line-numbers-hover: #ffffff26;
+      --prism-line-numbers-border: #2b2b2b;
+
+      --prism-invisibles: #6e7681;
       --code-line-highlight: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 75%, transparent 100%);
+
     }
 
     [data-theme="light"] {
@@ -225,9 +250,45 @@
       --scrollbar-thumb-hover: #a6a6a6;
       --splitter-pill: #9e9e9e;
       --sidebar-icon-filter: invert(0.25);
+
+      /* Prism color values - light */
+      --prism-color: #3b3b3b;
+      --prism-bg: #ffffff;
+      --prism-inline-bg: #f8f8f8;
+      --prism-selection-bg: #add6ff80;
+
+      --prism-comment: #008000;
+      --prism-punctuation: #3b3b3b;
+      --prism-boolean: #0000ff;
+      --prism-constant: #0070c1;
+      --prism-tag: #800000;
+      --prism-number: #098658;
+      --prism-property: #001080;
+      --prism-attr-name: #ff0000;
+      --prism-string: #a31515;
+      --prism-selector: #800000;
+      --prism-operator: #3b3b3b;
+      --prism-keyword: #af00db;
+      --prism-attr-value: #0000ff;
+      --prism-function: #795e26;
+      --prism-regex: #d16969;
+
+      --prism-line-highlight-bg: #0000001a;
+      /* increased opacity from 0.04 to ~10% for visibility */
+      --prism-line-highlight-grad: #0000001d;
+      /* increased opacity from 0.05 to ~15% */
+      --prism-line-highlight-transparent: #00000000;
+      --prism-line-highlight-label-bg: #e5e5e5;
+      --prism-line-highlight-label-text: #3b3b3b;
+
+      --prism-line-numbers-hover: #0000001a;
+      --prism-line-numbers-border: #e5e5e5;
+
+      --prism-invisibles: #6e7681;
       --code-line-highlight: linear-gradient(90deg, rgba(0, 95, 184, 0.1) 0%, rgba(0, 95, 184, 0.03) 75%, transparent 100%);
     }
 
+    /* ========== GLOBAL STYLES ========== */
     * {
       box-sizing: border-box;
       font-size: inherit;
@@ -243,21 +304,47 @@
       background-color: var(--bg-app);
       color: var(--text-primary);
       font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: var(--desktop-body-font-size);
       height: 100dvh;
       width: 100vw;
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
-    /* =========================================================================
-       LOADING SCREEN STYLES
-       ========================================================================= */
+    /* ========== END OF GLOBAL STYLES ========== */
+
+    /* ========== SCROLLBARS ========== */
+    ::-webkit-scrollbar {
+      width: 0.375rem;
+      height: 0.375rem;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+      margin: 0.5rem;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 0.2rem;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    /* ========== END OF SCROLLBARS ========== */
+
+    /* ========== LOADING SCREEN ========== */
     .loading-screen {
       position: fixed;
       inset: 0;
       background-color: var(--bg-app);
       z-index: 9999;
+      /* Highest Z-Index */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -309,31 +396,9 @@
       }
     }
 
-    /* Unified Scrollbars */
-    ::-webkit-scrollbar {
-      width: 0.375rem;
-      height: 0.375rem;
-    }
+    /* ========== END OF LOADING SCREEN ========== */
 
-    ::-webkit-scrollbar-track {
-      background: transparent;
-      margin: 0.5rem;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--scrollbar-thumb);
-      border-radius: 0.2rem;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--scrollbar-thumb-hover);
-    }
-
-    ::-webkit-scrollbar-corner {
-      background: transparent;
-    }
-
-    /* Fix nested scrollbars & enable responsive Prism word-wrap */
+    /* ========== CODE SECTION ========== */
     #codeViewPane {
       overflow-x: hidden;
       overflow-y: auto;
@@ -341,7 +406,8 @@
       min-width: 0;
     }
 
-    #codeViewPane pre[class*="language-"] {
+    /* ========== PRISM OVERRIDES ========== */
+    pre[class*=language-] {
       margin: 0 !important;
       border-radius: 0;
       flex: 1 0 auto;
@@ -357,9 +423,10 @@
       font-variant-ligatures: none !important;
     }
 
-    #codeViewPane code[class*="language-"],
-    #codeViewPane .line-numbers-sizer,
-    #codeViewPane .line-numbers-sizer>span {
+    code[class*=language-],
+    .line-numbers-sizer,
+    .line-numbers-sizer>span {
+      /* These tags are declared important because they override default prism values */
       display: block !important;
       width: 100% !important;
       min-width: 0 !important;
@@ -373,22 +440,17 @@
       font-variant-ligatures: none !important;
     }
 
-    /* Prevent bold/italic tokens from having slightly wider glyphs than the plain-text sizer */
-    #codeViewPane code[class*="language-"] .token {
-      font-weight: normal !important;
-      font-style: normal !important;
-    }
-
     /* Keep line highlights aligned across wrapped lines */
     .line-highlight {
       background: var(--code-line-highlight) !important;
       pointer-events: none;
     }
 
-    /* =========================================================================
-       CORE DESKTOP LAYOUT & CARD COMPONENTS (REM / EM / % ONLY)
-       ========================================================================= */
+    /* ========== END OF PRISM OVERRIDES ========== */
+    /* ========== CHECK css/Prism.css FOR PRISM COLOR VALUES ========== */
+
     .app-shell {
+      /* Body class is app-shell */
       display: flex;
       flex-direction: column;
       height: 100dvh;
@@ -396,7 +458,9 @@
       overflow: hidden;
     }
 
+    /* ========== Title Bar ========== */
     .top-titlebar {
+      /* The titlebar that has logo, themes, zen mode, etc. */
       height: var(--header-height-desktop);
       min-height: var(--header-height-desktop);
       padding: 0 0.625rem;
@@ -407,10 +471,11 @@
       background-color: var(--bg-app);
       flex-shrink: 0;
       gap: 0.5rem;
-      z-index: 30;
     }
 
-    .header-left-group {
+    .header-left-group,
+    .header-right-group {
+      /* Sides of the titlebar */
       display: flex;
       align-items: center;
       gap: 0.375rem;
@@ -418,42 +483,22 @@
     }
 
     .brand-title {
+      /* Logo and name */
       display: flex;
       align-items: center;
       gap: 0.45rem;
       min-width: 0;
     }
 
-    .header-right-group {
-      display: flex;
-      align-items: center;
-      gap: 0.375rem;
-      flex-shrink: 0;
-    }
-
-    .main-area {
-      display: flex;
-      flex: 1 1 0%;
-      min-height: 0;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    .header-actions-group {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .header-divider {
-      width: 0.0625rem;
-      height: 1.25rem;
-      background-color: var(--border-color);
-      margin: 0 0.125rem;
-      flex-shrink: 0;
+    .brand-name-text {
+      /* Logo text */
+      font-weight: 600;
+      color: var(--text-bright);
+      white-space: nowrap;
     }
 
     .activity-btn {
+      /* Fullscreen, New, Zen, Reset layout, Profile buttons */
       width: var(--header-action-btn-size);
       height: var(--header-action-btn-size);
       min-width: var(--header-action-btn-size);
@@ -478,13 +523,18 @@
     }
 
     #btnReload {
+      /* Reload button is only displayed on phone */
       display: none;
     }
 
-    .brand-name-text {
-      font-weight: 600;
-      color: var(--text-bright);
-      white-space: nowrap;
+    /* ========== END OF TITLE BAR ========== */
+
+    .main-area {
+      display: flex;
+      flex: 1 1 0%;
+      min-height: 0;
+      min-width: 0;
+      overflow: hidden;
     }
 
     /* Workspace Container & Columns */
@@ -499,6 +549,7 @@
     }
 
     .left-column {
+      /* Contains History, Metadata, Traversal, and Main card */
       display: flex;
       flex-direction: row;
       width: var(--desktop-left-col-width);
@@ -517,6 +568,7 @@
     }
 
     .right-column {
+      /* Contains Algorithms, Settings, State Variables/Explanation, and Code/Notes card */
       flex: 1 1 0%;
       display: flex;
       flex-direction: column;
@@ -785,17 +837,11 @@
       min-height: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-    }
-
-    .algo-body-inner {
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
       padding: 0.45rem;
       gap: 0.45rem;
       min-height: 0;
       position: relative;
+      overflow: hidden;
     }
 
     .algo-search-row {
@@ -1412,7 +1458,8 @@
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 9998;
+      /* Second highest Z-Index */
       padding: 1rem;
     }
 
@@ -1617,7 +1664,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      z-index: 20;
+      z-index: 1;
       flex-shrink: 0;
       touch-action: none;
     }
@@ -1647,7 +1694,7 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      z-index: 20;
+      z-index: 1;
       flex-shrink: 0;
       touch-action: none;
     }
@@ -1860,7 +1907,7 @@
       border-radius: 0.3125rem;
       padding: 0.2rem;
       box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.35);
-      z-index: 60;
+      z-index: 2;
       display: none;
       flex-direction: column;
       gap: 0.1rem;
@@ -2571,7 +2618,7 @@
 </head>
 
 <body class="app-shell">
-  <!-- ================= LOADING SCREEN ================= -->
+  <!-- ================= Loading screen ================= -->
   <div id="loading-screen" class="loading-screen">
     <div class="loading-content">
       <h1 class="loading-title">Shard Spiral</h1>
@@ -2579,31 +2626,38 @@
       <p class="loading-subtitle">Visualization done differently</p>
     </div>
   </div>
+  <!--==========-->
 
-  <!-- ================= UNIFIED TOP TITLE BAR ================= -->
+  <!--========== The titlebar that has logo, themes, zen mode, etc. ==========-->
   <header class="top-titlebar">
+    <!--========== Left side of header ==========-->
     <div class="header-left-group">
+
       <div class="brand-title">
         <img src="images/logo.png" alt="Shard Spiral Logo" class="brand-logo" />
         <span class="brand-name-text">Shard Spiral</span>
       </div>
 
-      <div class="header-divider"></div>
+      <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
+        <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
+      </button>
+      <button type="button" id="btnNew" class="activity-btn" title="New">
+        <img src="images/new.png" alt="New" class="activity-icon-img" />
+      </button>
 
-      <div class="header-actions-group" role="toolbar" aria-label="Workspace Actions">
-        <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
-          <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
-        </button>
-        <button type="button" id="btnNew" class="activity-btn" title="New">
-          <img src="images/new.png" alt="New" class="activity-icon-img" />
-        </button>
-        <button type="button" id="btnReload" class="activity-btn" title="Reload page">
-          <img src="images/reload.png" alt="Reload" class="activity-icon-img" />
-        </button>
-      </div>
+      <!--===== Reload page button - This button is invisible on desktop =====-->
+      <button type="button" id="btnReload" class="activity-btn" title="Reload page">
+        <img src="images/reload.png" alt="Reload" class="activity-icon-img" />
+      </button>
+      <!--==========-->
+
     </div>
+    <!--========== End of left side of header ==========-->
 
+    <!--========== Right side of header ==========-->
     <div class="header-right-group">
+
+      <!--========== This div is invisible on mobile - desktop theme switcher ==========-->
       <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
         <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
           <img src="images/system.png" alt="System Theme" class="theme-icon-img" />
@@ -2615,11 +2669,14 @@
           <img src="images/dark.png" alt="Dark Theme" class="theme-icon-img" />
         </button>
       </div>
+      <!--========== End of desktop theme switcher ==========-->
 
+      <!--===== This button is invisible on desktop - mobile theme switcher =====-->
       <button type="button" id="mobile-theme-cycle-btn" class="mobile-theme-cycle-btn" title="Theme: System"
         aria-label="Cycle Color Theme">
         <img id="mobile-theme-cycle-img" src="images/system.png" alt="System Theme" class="theme-icon-img" />
       </button>
+      <!--==========-->
 
       <button type="button" id="zen-mode-btn" class="activity-btn" title="Toggle Zen Mode (Hide collapsed panels)"
         aria-pressed="false">
@@ -2634,24 +2691,25 @@
         <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
       </button>
     </div>
+    <!--========== End of right side of header ==========-->
   </header>
+  <!--========== End of titlebar ==========-->
 
-  <!-- ================= MAIN BODY ================= -->
+  <!-- ================= Main body ================= -->
   <div class="main-area">
-
-    <!-- ================= ADAPTIVE WORKSPACE CONTAINER ================= -->
     <main id="workspace" class="workspace-container">
-      <!-- ===============================================================
-           SECTION A: METADATA/HISTORY COLUMN + GRAPH & TRAVERSAL STACK
-           =============================================================== -->
+      <!--========== Left column contents ==========-->
       <div id="left-column" class="left-column">
 
-        <!-- COLLAPSIBLE METADATA + HISTORY COLUMN -->
+        <!--========== Metadata + History column ==========-->
         <div id="history-column" class="is-collapsed">
+
+          <!--========== Metadata card ==========-->
           <section id="metadata-card" class="vscode-card">
             <div class="vscode-card-header">
               <span id="metadata-title">Metadata</span>
             </div>
+
             <div id="metadata-body" class="card-scroll-body">
               <div class="card-inner-pad">
                 <span class="card-body-text">
@@ -2659,19 +2717,28 @@
                 </span>
               </div>
             </div>
+
+            <!--========== Collapsed metadata strip - Visible only on collapse ==========-->
             <div id="metadata-collapsed-strip" title="Click to expand Metadata">
               <span class="algo-collapsed-label">
                 Metadata
               </span>
             </div>
+            <!--==========-->
+
           </section>
+          <!--====================-->
 
+          <!--===== Horizontal splitter to adjust size of History / Metadata cards =====-->
           <div id="splitter-metadata-history-h" class="splitter-h" title="Drag to resize"></div>
+          <!--==========-->
 
+          <!--========== History card ==========-->
           <section id="history-card" class="vscode-card">
             <div class="vscode-card-header">
               <span id="history-title">History</span>
             </div>
+
             <div id="history-body" class="card-scroll-body">
               <div class="card-inner-pad">
                 <span class="card-body-text">
@@ -2679,18 +2746,29 @@
                 </span>
               </div>
             </div>
+
+            <!--========== Collapsed history strip - Visible only on collapse ==========-->
             <div id="history-collapsed-strip" title="Click to expand History">
               <span class="algo-collapsed-label">
                 History
               </span>
             </div>
+            <!--==========-->
+
           </section>
+          <!--====================-->
+
         </div>
+        <!--========== End of collapsible History + Metadata column ==========-->
 
+        <!--===== Vertical splitter to adjust size of History + Metadata / DS cards =====-->
         <div id="splitter-history-graph-v" class="splitter-v" title="Drag to resize"></div>
+        <!--==========-->
 
-        <!-- GRAPH CARD & DESKTOP TRAVERSAL SLOT STACK -->
+        <!--========== DS card and desktop Traversal slot stack ==========-->
         <div id="left-main-stack" class="left-main-stack">
+
+          <!-- DS card - Contains the data structure diagram and visualization controls ==========-->
           <section id="graph-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Graph</span>
@@ -2705,6 +2783,7 @@
                 </div>
               </div>
 
+              <!--========== Playback bar - Speed and step controls - Right side shows step x/y ==========-->
               <div class="playback-bar">
                 <div class="playback-controls-left">
                   <button type="button" class="playback-text-btn" title="Run">
@@ -2738,108 +2817,141 @@
                   <span class="playback-muted-label">0 / 0</span>
                 </div>
               </div>
+              <!--========== End of playback bar ==========-->
             </div>
+
+            <!--===== Collapsed DS strip - Visible only on collapse =====-->
             <div id="graph-collapsed-strip" title="Click to expand Graph">
               <span class="algo-collapsed-label">Graph</span>
             </div>
+            <!--==========-->
+
           </section>
+          <!--========== End of data structures and visualization controls card ==========-->
 
           <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
-
           <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
+
         </div>
+        <!--========== End of DS card and desktop Traversal slot stack ==========-->
+
       </div>
+      <!--========== End of left column contents ==========-->
+
       <div id="splitter-main-v" class="splitter-v desktop-only-el" title="Drag to resize"></div>
 
-
-      <!-- ===============================================================
-           SECTION B: RIGHT COLUMN (DESKTOP) / MIDDLE + BOTTOM ROWS (PHONE)
-           =============================================================== -->
+      <!--========== Right column contents ==========-->
       <div id="right-column" class="right-column">
 
-        <!-- TOP-RIGHT ROW / PHONE MIDDLE ROW (ALGORITHMS + CODE CARD) -->
+        <!--========== Top right row: desktop / Middle row: phone (Algorithms + Code card) ==========-->
         <div id="right-top-row" class="right-top-row">
+
+          <!--========== Contains Algorithms and Settings cards ==========-->
           <div id="algo-column">
+
+            <!--========== Algorithms card ==========-->
             <section id="algorithms-card" class="vscode-card">
               <div class="vscode-card-header" id="algo-card-header">
                 <span id="algo-title">Algorithms</span>
               </div>
 
+              <!--========== Algorithms card content ==========-->
               <div id="algo-body">
-                <div class="algo-body-inner">
-                  <div class="algo-search-row">
-                    <div class="algo-search-input-wrapper">
-                      <input type="text" id="algo-search-input" placeholder="Search algorithms..."
-                        class="algo-search-input" />
-                      <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
-                        aria-label="Clear search" style="display: none;">&times;</button>
-                    </div>
-                    <button type="button" id="algo-fav-filter-btn" class="algo-filter-btn" title="Show Favourites Only"
-                      aria-pressed="false">
-                      <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
-                    </button>
-                    <button type="button" id="algo-hide-btn" class="algo-filter-btn"
-                      title="Hide Algorithms (Show Data Structures only)" aria-pressed="false">
-                      <img src="images/hide.png" alt="Hide Algorithms" class="algo-filter-icon" />
-                    </button>
-                    <button type="button" id="algo-filter-btn" class="algo-filter-btn" title="Filter by data structure"
-                      aria-expanded="false">
-                      <img src="images/filter.png" alt="Filter" class="algo-filter-icon" />
-                    </button>
-                  </div>
 
-                  <!-- Collapsible Filter Panel (Data Structure Folder Tree Only) -->
-                  <div id="algo-filter-panel" class="algo-filter-panel">
-                    <div class="algo-filter-panel-header">
-                      <span>Filter by Data Structure</span>
-                      <button type="button" id="algo-filter-clear-btn" class="algo-filter-clear-btn">Clear</button>
-                    </div>
-                    <div id="algo-filter-tree" class="algo-filter-tree-scroll"></div>
-                  </div>
+                <!--========== Search algorithms, favourites, show only DS, filter options ==========-->
+                <div class="algo-search-row">
 
-                  <!-- Main Collapsible Data Structure & Algorithm Tree -->
-                  <div id="algo-tree-container" class="algo-tree-container"></div>
+                  <!--========== Search algorithm and clear inputs ==========-->
+                  <div class="algo-search-input-wrapper">
+                    <input type="text" id="algo-search-input" placeholder="Search algorithms..."
+                      class="algo-search-input" />
+                    <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
+                      aria-label="Clear search" style="display: none;">&times;</button>
+                  </div>
+                  <!--====================-->
+
+                  <button type="button" id="algo-fav-filter-btn" class="algo-filter-btn" title="Show Favourites Only"
+                    aria-pressed="false">
+                    <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
+                  </button>
+                  <button type="button" id="algo-hide-btn" class="algo-filter-btn"
+                    title="Hide Algorithms (Show Data Structures only)" aria-pressed="false">
+                    <img src="images/hide.png" alt="Hide Algorithms" class="algo-filter-icon" />
+                  </button>
+                  <button type="button" id="algo-filter-btn" class="algo-filter-btn" title="Filter by data structure"
+                    aria-expanded="false">
+                    <img src="images/filter.png" alt="Filter" class="algo-filter-icon" />
+                  </button>
                 </div>
-              </div>
+                <!--========== End of algorithms utility row ==========-->
 
+                <!--========== Collapsible Filter Panel (Data Structure Folder Tree Only) Visible only when filter button is clicked ==========-->
+                <div id="algo-filter-panel" class="algo-filter-panel">
+                  <div class="algo-filter-panel-header">
+                    <span>Filter by Data Structure</span>
+                    <button type="button" id="algo-filter-clear-btn" class="algo-filter-clear-btn">Clear</button>
+                  </div>
+                  <div id="algo-filter-tree" class="algo-filter-tree-scroll"></div>
+                </div>
+                <!--========== End of filter panel ==========-->
+
+                <!--========== Main Collapsible Data Structure & Algorithm Tree - Javascript populates values here ==========-->
+                <div id="algo-tree-container" class="algo-tree-container"></div>
+                <!--====================-->
+
+              </div>
+              <!--========== End of algorithms card content ==========-->
+
+              <!--========== Collapsed algorithms strip - Visible only on collapse ==========-->
               <div id="algo-collapsed-strip" title="Click to expand Algorithms">
                 <span class="algo-collapsed-label">
                   Algorithms
                 </span>
               </div>
+              <!--==========-->
+
             </section>
+            <!--========== End of algorithms card ==========-->
+
             <div id="splitter-algo-settings-h" class="splitter-h" title="Drag to resize"></div>
 
+            <!--========== Settings card ==========-->
             <section id="algo-settings-card" class="vscode-card">
               <div class="vscode-card-header">
                 <span id="algo-settings-title">Settings</span>
               </div>
+
+              <!--========== Settings card content ==========-->
               <div id="algo-settings-body" class="card-scroll-body">
                 <div class="card-inner-pad">
-                  <!-- Constraints & Tags -->
+                  <!--===== Constraints & Tags =====-->
                   <div id="algo-settings-meta-section" style="display: none; margin-bottom: 0.75rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.35rem;">Constraints &amp; Tags
                     </h4>
                     <div id="algo-settings-meta-container" class="algo-meta-container" style="padding: 0;"></div>
                   </div>
-                  <!-- Parameters -->
+                  <!--==========-->
+
+                  <!--===== Parameters =====-->
                   <div style="margin-bottom: 0.75rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Parameters</h4>
                     <span class="card-body-text" id="algo-params-container" style="color: var(--text-muted);"></span>
                   </div>
+                  <!--==========-->
 
-                  <!-- Optional Parameters -->
+                  <!--===== Optional Parameters =====-->
                   <div style="margin-bottom: 1rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Optional Parameters
                     </h4>
                     <span class="card-body-text" id="algo-optional-params-container"
                       style="color: var(--text-muted);"></span>
                   </div>
+                  <!--==========-->
 
                   <button type="button" class="vscode-btn-secondary"
                     style="width: 100%; margin-bottom: 1rem;">Run</button>
 
-                  <!-- Visualize Controls -->
+                  <!--========== Visualize Controls - These are the same as in DS-card ==========-->
                   <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.5rem;">Steps</h4>
                   <div class="playback-controls-left" style="flex-wrap: wrap; gap: 0.5rem;">
                     <div class="visualization-options" style="margin: 0; padding: 0; border: none;">
@@ -2863,36 +2975,50 @@
                         <span class="playback-speed-value sync-speed-label">1x</span>
                       </div>
                     </div>
-
                     <div class="playback-controls-right" style="margin-left: auto;">
                       <span class="playback-muted-label sync-steps-label">0 / 0</span>
                     </div>
                   </div>
-                </div>
+                  <!--========== End of visualization in Settings card ==========-->
+                </div> <!-- This div only exists to give some padding -->
               </div>
+              <!--========== End of settings card content ==========-->
+
+              <!--========== Collapsed settings strip - Visible only on collapse ==========-->
               <div id="algo-settings-collapsed-strip" title="Click to expand Algorithms">
                 <span class="algo-collapsed-label">
                   Settings
                 </span>
               </div>
+              <!--========== End of collapsed strip ==========-->
+
             </section>
+            <!--========== End of settings card ==========-->
+
           </div>
+          <!--========== End of algorithms and settings cards ==========-->
 
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
 
-          <!-- CODE / EXPLANATION / NOTES CARD -->
+          <!--========== Code / Notes card ==========-->
           <section id="code-card" class="vscode-card">
+
+            <!--===== Card header for Code and Notes =====-->
             <div class="vscode-card-header code-card-header">
+
+              <!--========== Contains Code and Notes tabs ==========-->
               <div class="code-tabs-container">
-                <!-- Desktop Tabs (Hidden on Mobile) -->
+
+                <!--===== Desktop Tabs - Placed side by side (Hidden on Mobile) =====-->
                 <div class="card-tabs-group desktop-tabs">
                   <button type="button" class="vscode-tab active" data-tab-group="right-top"
                     data-tab-type="code">Code</button>
                   <button type="button" class="vscode-tab" data-tab-group="right-top"
                     data-tab-type="notes">Notes</button>
                 </div>
+                <!--==========-->
 
-                <!-- Mobile Tabs Dropdown (Hidden on Desktop) -->
+                <!--========== Mobile Tabs - Dropdown (Hidden on Desktop) ==========-->
                 <div class="tab-dropdown-wrapper mobile-tabs" id="tab-dropdown-wrapper">
                   <button type="button" id="tab-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
                     aria-expanded="false">
@@ -2912,23 +3038,40 @@
                     </div>
                   </div>
                 </div>
-              </div>
+                <!--====================-->
 
+              </div>
+              <!--========== End of Code and Notes Tabs ==========-->
+
+              <!--========== Language selector, copy and code download buttons ==========-->
               <div style="display: flex; align-items: center; gap: 0.25rem;">
-                <!-- Compact Language Selector: Python, C++, Java -->
+
+                <!--========== Language Selector: Python, C++, Java ==========-->
                 <div class="lang-dropdown-wrapper" id="lang-dropdown-wrapper">
+
+                  <!--===== Shown initially =====-->
                   <button type="button" id="lang-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
                     aria-expanded="false">
+
+
                     <span id="lang-active-dot" class="lang-badge-dot dot-python"></span>
                     <span id="lang-active-label">Python</span>
+
+                    <!--===== The small downward arrow mark =====-->
                     <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                       stroke-width="2">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
-                  </button>
+                    <!--==========-->
 
+                  </button>
+                  <!--==========-->
+
+                  <!--========== Language selector dropdown menu ==========-->
                   <div id="lang-dropdown-menu" class="lang-dropdown-menu" role="listbox"
                     aria-label="Select Programming Language">
+
+                    <!--===== Python =====-->
                     <div class="lang-option-item active" role="option" aria-selected="true" data-lang="Python"
                       data-color="#3572A5" data-ext=".py" data-prism="python">
                       <span class="lang-option-label">
@@ -2937,6 +3080,9 @@
                       </span>
                       <span class="playback-muted-label">.py</span>
                     </div>
+                    <!--==========-->
+
+                    <!--===== C++ =====-->
                     <div class="lang-option-item" role="option" aria-selected="false" data-lang="C++"
                       data-color="#f34b7d" data-ext=".cpp" data-prism="cpp">
                       <span class="lang-option-label">
@@ -2945,6 +3091,9 @@
                       </span>
                       <span class="playback-muted-label">.cpp</span>
                     </div>
+                    <!--==========-->
+
+                    <!--==== Java =====-->
                     <div class="lang-option-item" role="option" aria-selected="false" data-lang="Java"
                       data-color="#b07219" data-ext=".java" data-prism="java">
                       <span class="lang-option-label">
@@ -2953,45 +3102,68 @@
                       </span>
                       <span class="playback-muted-label">.java</span>
                     </div>
+                    <!--==========-->
+
                   </div>
+                  <!--========== End of language selector dropdown ==========-->
+
                 </div>
-                <!-- Copy and Download Buttons -->
+                <!--========== End of language selector ==========-->
+
+                <!--===== Copy and Download Buttons =====-->
                 <button type="button" id="btn-copy-code" class="card-icon-btn" title="Copy Code">
                   <img id="img-copy-code" src="images/copy.png" alt="Copy Code" class="sidebar-toggle-img" />
                 </button>
                 <button type="button" id="btn-download-code" class="card-icon-btn" title="Download Code">
                   <img src="images/download.png" alt="Download Code" class="sidebar-toggle-img" />
                 </button>
+                <!--==========-->
 
-                <div class="header-divider" style="height: 1rem; margin: 0 0.125rem;"></div>
               </div>
-            </div>
+              <!--========== End of code selection, copy and download buttons ==========-->
 
-            <!-- Code / Explanation / Notes Content Surface -->
+            </div>
+            <!--==========-->
+
+            <!--========== Code / Notes Content ==========-->
             <div id="codeViewPane" class="card-scroll-body">
               <div class="card-inner-pad">
+
+                <!--===== Code / Notes card initial content =====-->
                 <span class="card-body-text"
                   style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">
                   Pick an algorithm or data structure from the sidebar and explore how it works.
                 </span>
-              </div>
+                <!--==========-->
+
+              </div> <!-- This div only exists to give some padding -->
+
             </div>
+            <!--========== End of Code / Notes content ==========-->
+
+            <!--========== Collapsed code strip - Visible only on collapse ==========-->
             <div id="code-collapsed-strip" title="Click to expand Code">
               <span class="algo-collapsed-label">Code</span>
             </div>
+            <!--========== End of collapsed section ==========-->
+
           </section>
+          <!--========== End of Code / Notes Card ==========-->
 
         </div>
+        <!--========== End of Top right row: desktop / Middle row: phone (Algorithms + Code card) ==========-->
 
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
 
-        <!-- BOTTOM ROW: SIDE-BY-SIDE ON PHONE (TRAVERSAL | STATE VARIABLES) -->
+        <!--========== Bottom row: desktop / Side by side: phone (Traversal | State variables) ==========-->
         <div id="bottom-split-row" class="bottom-split-row">
 
+          <!--===== Traversal card =====-->
           <section id="log-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Traversal</span>
             </div>
+
             <div class="card-scroll-body">
               <div class="card-inner-pad">
                 <span class="card-body-text">
@@ -3000,21 +3172,29 @@
               </div>
             </div>
           </section>
+          <!--==========-->
 
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
 
+          <!--========== State variables / Explanation card ==========-->
           <section id="state-card" class="vscode-card">
+
+            <!--===== Card header for State variables and Explanation =====-->
             <div class="vscode-card-header code-card-header">
+
+              <!--========== Contains Explanation and State Variables Tabs ==========-->
               <div class="code-tabs-container">
-                <!-- Desktop Tabs (Hidden on Mobile) -->
+
+                <!--===== Desktop Tabs - Placed side by side (Hidden on Mobile) =====-->
                 <div class="card-tabs-group desktop-tabs">
                   <button type="button" class="vscode-tab active" data-tab-group="state-bottom"
                     data-tab-type="state">State variables</button>
                   <button type="button" class="vscode-tab" data-tab-group="state-bottom"
                     data-tab-type="explanation">Explanation</button>
                 </div>
+                <!--==========-->
 
-                <!-- Mobile Tabs Dropdown (Hidden on Desktop) -->
+                <!--===== Mobile Tabs - Dropdown (Hidden on Desktop) =====-->
                 <div class="tab-dropdown-wrapper mobile-tabs" id="state-tab-dropdown-wrapper">
                   <button type="button" id="state-tab-trigger-btn" class="lang-trigger-btn" aria-haspopup="listbox"
                     aria-expanded="false">
@@ -3035,7 +3215,11 @@
                     </div>
                   </div>
                 </div>
+                <!--==========-->
+      
               </div>
+              <!--========== End of State variables and Explanation tabs ==========-->
+
             </div>
             <div id="stateViewPane" class="card-scroll-body">
               <div class="card-inner-pad">
@@ -3045,15 +3229,19 @@
               </div>
             </div>
           </section>
+          <!--========== End of State variables / Explanation card ==========-->
 
         </div>
+        <!--========== End of Bottom row: desktop / Side by side: phone (Traversal | State variables) ==========-->
 
       </div>
+      <!--========== End of right column contents ==========-->
 
     </main>
   </div>
+  <!--========== End of main body content ==========-->
 
-  <!-- ================= PROFILE FLOATING WINDOW (MODAL) ================= -->
+  <!--========== Sample profile window - Delete this later ==========-->
   <div id="profile-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true"
     aria-labelledby="profile-modal-title">
     <div class="profile-modal">
@@ -3131,6 +3319,7 @@
       </div>
     </div>
   </div>
+  <!--========== End of sample profile window ==========-->
 
   <script>
     // =========================================================================
@@ -5030,7 +5219,6 @@
 
     document.getElementById('reset-layout-btn').addEventListener('click', resetAllProportions);
   </script>
-  <script src="js/prism.js"></script>
 </body>
 
 </html>
