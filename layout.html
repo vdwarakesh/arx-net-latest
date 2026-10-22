@@ -2132,12 +2132,12 @@
     }
 
     /* If the entire right-column is collapsed, let left-column take 100% width */
-    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #splitter-main-v,
-    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #right-column {
+    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #splitter-main-v,
+    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #right-column {
       display: none !important;
     }
 
-    body.zen-mode #workspace:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)):has(#bottom-split-row.is-row-h-collapsed) #left-column {
+    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #left-column {
       flex: 1 1 0% !important;
       width: 100% !important;
       max-width: none !important;
@@ -2209,8 +2209,7 @@
     body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #right-top-row,
     body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #right-top-row,
     body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #right-top-row,
-    body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row,
-    body.zen-mode #right-column:has(#right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)) #bottom-split-row {
+    body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row {
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
