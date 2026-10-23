@@ -5,19 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shard Spiral</title>
-  <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/prism.css" />
   <script src="js/tailwind.js"></script>
   <script src="js/prism.js"></script>
   <style>
     :root {
-      /* --- Typography & Base Scaling --- */
+      /* ========== Typography & Base Scaling ========== */
       --base-root-font-size: 0.9rem;
       /* Base root font scaling across the entire app */
       --mobile-body-font-size: 0.8rem;
       /* Compact font size on mobile/phone viewports (<= 56.25rem) */
 
-      /* --- Header, Card Bar & Card Minimum Heights --- */
+      /* ========== Header, Card Bar & Card Minimum Heights ========== */
       --header-height-desktop: 2.75rem;
       /* Height of the application header bar (Shows shard spiral name, themes, zem mode etc. on desktop */
       --header-height-mobile: 2.625rem;
@@ -35,7 +34,7 @@
       --playback-bar-height-mobile: 2rem;
       /* Height of the bottom playback controls bar on mobile */
 
-      /* --- Default Panel Proportions --- */
+      /* ========== Default Panel Proportions ========== */
       --desktop-left-col-width: 45%;
       /* Default width of the left column (Graph + Traversal) on desktop */
       --desktop-graph-height: 100%;
@@ -53,7 +52,7 @@
       --mobile-traversal-width: 60%;
       /* Default width of the Traversal card in the bottom side-by-side row on mobile */
 
-      /* --- Icon & Action Button Sizes --- */
+      /* ========== Icon & Action Button (Fullscreen, New, Library, Reset, Profile) Sizes ========== */
       --brand-logo-size: 2rem;
       /* Width and height of the main Shard Spiral logo in the header */
       --header-action-btn-size: 2.25rem;
@@ -89,16 +88,16 @@
       --playback-icon-size-mobile: 1rem;
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
 
-      /* --- Algorithms, Code & Row Constraints --- */
+      /* ========== Algorithms, Code & Row Constraints ========== */
       --left-col-min-width-desktop: 12rem;
       /* Minimum width of the left column on desktop */
       --algorithms-min-width-desktop: 5rem;
       /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
       --algorithms-min-width-mobile: 5rem;
       /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
-      --algorithms-collapsed-width-desktop: 2.15rem;
+      --card-collapsed-width-desktop: 2.15rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
-      --algorithms-collapsed-width-mobile: 1.6rem;
+      --card-collapsed-width-mobile: 1.6rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
       --history-default-width-desktop: 20%;
       /* Default width of history section on desktop */
@@ -109,7 +108,7 @@
       --history-top-height: 30%;
       /* Ratio of history to metadata */
       --code-card-min-width: 8rem;
-      /* Minimum width of the Code / Explanation card so tabs and dropdown remain usable */
+      /* Minimum width of the Code / Notes card so tabs and dropdown remain usable */
       --right-top-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the top-right row containing Algorithms and Code */
       --bottom-row-min-height: var(--card-min-height-desktop);
@@ -119,9 +118,9 @@
       --algo-top-height: 50%;
       /* Default height for algorithms list split */
 
-      /* --- Interactive Controls & Sliders --- */
+      /* ========== Interactive Controls & Sliders ========== */
       --control-btn-height-desktop: 1.5625rem;
-      /* Height of standard secondary buttons and inputs on desktop */
+      /* Height of standard secondary buttons and inputs on desktop (Run, Filter, Favourites, Input fiels) */
       --control-btn-height-mobile: 1.35rem;
       /* Height of standard secondary buttons and inputs on mobile */
       --tab-height-desktop: 1.5rem;
@@ -137,7 +136,7 @@
       --speed-slider-thumb-size: 0.6875rem;
       /* Diameter of the draggable thumb on the playback speed slider */
 
-      /* --- Resizer / Splitter Dimensions --- */
+      /* ========== Resizer / Splitter Dimensions ========== */
       --splitter-thickness-desktop: 0.5rem;
       /* Interactive grab thickness of horizontal and vertical splitters on desktop */
       --splitter-thickness-mobile: 0.45rem;
@@ -153,7 +152,7 @@
       --splitter-h-pill-hover-length: 3.5rem;
       /* Expanded horizontal length of the pill of horizontal splitters */
 
-      /* --- Profile Floating Modal Dimensions --- */
+      /* ========== Profile Floating Modal Dimensions ========== MARKED FOR CHANGE ========== */
       --profile-modal-max-width: 55rem;
       /* Maximum width of the floating Profile modal window */
       --profile-modal-height-desktop: 35rem;
@@ -288,7 +287,7 @@
       --code-line-highlight: linear-gradient(90deg, rgba(0, 95, 184, 0.1) 0%, rgba(0, 95, 184, 0.03) 75%, transparent 100%);
     }
 
-    /* ========== GLOBAL STYLES ========== */
+    /* ========== Global styles ========== */
     * {
       box-sizing: border-box;
       font-size: inherit;
@@ -310,9 +309,9 @@
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
-    /* ========== END OF GLOBAL STYLES ========== */
+    /* ========== End of global styles ========== */
 
-    /* ========== SCROLLBARS ========== */
+    /* ========== Scrollbars ========== */
     ::-webkit-scrollbar {
       width: 0.375rem;
       height: 0.375rem;
@@ -336,9 +335,9 @@
       background: transparent;
     }
 
-    /* ========== END OF SCROLLBARS ========== */
+    /* ========== End of scrollbars ========== */
 
-    /* ========== LOADING SCREEN ========== */
+    /* ========== Loading screen ========== */
     .loading-screen {
       position: fixed;
       inset: 0;
@@ -396,9 +395,9 @@
       }
     }
 
-    /* ========== END OF LOADING SCREEN ========== */
+    /* ========== End of loading screen ========== */
 
-    /* ========== WELCOME TOUR ========== */
+    /* ========== Welcome tour ========== */
     .tour-spotlight {
       position: fixed;
       z-index: 9995;
@@ -525,9 +524,9 @@
       background-color: var(--accent-hover);
     }
 
-    /* ========== END OF WELCOME TOUR ========== */
+    /* ========== End of welcome tour ========== */
 
-    /* ========== CODE SECTION ========== */
+    /* ========== Code section ========== */
     #codeViewPane {
       overflow-x: hidden;
       overflow-y: auto;
@@ -535,7 +534,7 @@
       min-width: 0;
     }
 
-    /* ========== PRISM OVERRIDES ========== */
+    /* ========== Prism overrides ========== */
     pre[class*=language-] {
       margin: 0 !important;
       border-radius: 0;
@@ -575,8 +574,8 @@
       pointer-events: none;
     }
 
-    /* ========== END OF PRISM OVERRIDES ========== */
-    /* ========== CHECK css/Prism.css FOR PRISM COLOR VALUES ========== */
+    /* ========== End of prism overrides ========== */
+    /* ========== Check css/Prism.css for prism color values ========== */
 
     .app-shell {
       /* Body class is app-shell */
@@ -682,18 +681,10 @@
       display: flex;
       flex-direction: row;
       width: var(--desktop-left-col-width);
-      min-width: calc((var(--algorithms-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
-      max-width: calc(100% - var(--algorithms-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
+      min-width: calc((var(--card-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
+      max-width: calc(100% - var(--card-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
       min-height: 0;
       flex: 0 0 auto;
-    }
-
-    .left-main-stack {
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-      min-width: var(--code-card-min-width);
-      min-height: 0;
     }
 
     .right-column {
@@ -705,7 +696,16 @@
       min-height: 0;
     }
 
+    .left-main-stack {
+      flex: 1 1 0%;
+      display: flex;
+      flex-direction: column;
+      min-width: var(--code-card-min-width);
+      min-height: 0;
+    }
+
     .desktop-traversal-slot {
+      /* Traversal section is dynamically inserted here by JS */
       flex: 1 1 0%;
       display: flex;
       flex-direction: column;
@@ -713,7 +713,9 @@
       min-width: 0;
     }
 
+
     .right-top-row {
+      /* Top right styles - Algorithms and Code / Notes */
       display: flex;
       height: var(--desktop-right-top-height);
       min-height: var(--right-top-row-min-height);
@@ -788,9 +790,9 @@
     }
 
     #algo-column.is-collapsed {
-      width: var(--algorithms-collapsed-width-desktop) !important;
-      min-width: var(--algorithms-collapsed-width-desktop) !important;
-      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
       gap: var(--splitter-thickness-desktop);
     }
 
@@ -836,9 +838,9 @@
     }
 
     #history-column.is-collapsed {
-      width: var(--algorithms-collapsed-width-desktop) !important;
-      min-width: var(--algorithms-collapsed-width-desktop) !important;
-      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
       gap: var(--splitter-thickness-desktop);
     }
 
@@ -2189,9 +2191,9 @@
        COLLAPSIBLE GRAPH & CODE STACKS, ZEN MODE, AND FAVOURITES
        ========================================================================= */
     #left-main-stack.is-collapsed {
-      width: var(--algorithms-collapsed-width-desktop) !important;
-      min-width: var(--algorithms-collapsed-width-desktop) !important;
-      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
       flex: 0 0 auto !important;
       gap: var(--splitter-thickness-desktop);
     }
@@ -2227,9 +2229,9 @@
     }
 
     #code-card.is-collapsed {
-      width: var(--algorithms-collapsed-width-desktop) !important;
-      min-width: var(--algorithms-collapsed-width-desktop) !important;
-      max-width: var(--algorithms-collapsed-width-desktop) !important;
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
       flex: 0 0 auto !important;
       background-color: var(--bg-card-header);
     }
@@ -2582,9 +2584,9 @@
       }
 
       #algo-column.is-collapsed {
-        width: var(--algorithms-collapsed-width-mobile) !important;
-        min-width: var(--algorithms-collapsed-width-mobile) !important;
-        max-width: var(--algorithms-collapsed-width-mobile) !important;
+        width: var(--card-collapsed-width-mobile) !important;
+        min-width: var(--card-collapsed-width-mobile) !important;
+        max-width: var(--card-collapsed-width-mobile) !important;
       }
 
       #algorithms-card {
@@ -2604,9 +2606,9 @@
       }
 
       #history-column.is-collapsed {
-        width: var(--algorithms-collapsed-width-mobile) !important;
-        min-width: var(--algorithms-collapsed-width-mobile) !important;
-        max-width: var(--algorithms-collapsed-width-mobile) !important;
+        width: var(--card-collapsed-width-mobile) !important;
+        min-width: var(--card-collapsed-width-mobile) !important;
+        max-width: var(--card-collapsed-width-mobile) !important;
       }
 
       #metadata-card,
@@ -2722,9 +2724,9 @@
 
       #left-main-stack.is-collapsed,
       #code-card.is-collapsed {
-        width: var(--algorithms-collapsed-width-mobile) !important;
-        min-width: var(--algorithms-collapsed-width-mobile) !important;
-        max-width: var(--algorithms-collapsed-width-mobile) !important;
+        width: var(--card-collapsed-width-mobile) !important;
+        min-width: var(--card-collapsed-width-mobile) !important;
+        max-width: var(--card-collapsed-width-mobile) !important;
       }
 
       code[class*="language-"] {
@@ -2816,6 +2818,11 @@
         <img src="images/reset-layout.png" alt="Reset Layout" class="activity-icon-img" />
       </button>
 
+      <button type="button" id="btnHelp" class="activity-btn" title="Replay Welcome Tour"
+        aria-label="Replay Welcome Tour">
+        <img src="images/help.png" alt="Help" class="activity-icon-img" />
+      </button>
+
       <button type="button" id="btnProfile" class="activity-btn" title="Profile">
         <img src="images/profile.png" alt="Profile" class="activity-icon-img" />
       </button>
@@ -2858,7 +2865,7 @@
           </section>
           <!--====================-->
 
-          <!--===== Horizontal splitter to adjust size of History / Metadata cards =====-->
+          <!--===== Horizontal splitter to adjust size of Metadata / History cards =====-->
           <div id="splitter-metadata-history-h" class="splitter-h" title="Drag to resize"></div>
           <!--==========-->
 
@@ -2897,7 +2904,7 @@
         <!--========== DS card and desktop Traversal slot stack ==========-->
         <div id="left-main-stack" class="left-main-stack">
 
-          <!-- DS card - Contains the data structure diagram and visualization controls ==========-->
+          <!--========== DS card - Contains the data structure diagram and visualization controls ==========-->
           <section id="graph-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Graph</span>
@@ -2958,8 +2965,14 @@
           </section>
           <!--========== End of data structures and visualization controls card ==========-->
 
+          <!--===== Horizontal splitter to adjust size of Graph / Traversal cards (Moves below Graph Row on Mobile) =====-->
           <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
+          <!--==========-->
+
+          <!--===== Desktop Traversal Slot: Dynamic placeholder for the Traversal card =====-->
+          <!-- This div is initially empty. JavaScript (syncResponsiveStructure) dynamically moves the Traversal (#log-card) into this slot on desktop screens, and moves it down to the bottom row on mobile screens. -->
           <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
+          <!--==========-->
 
         </div>
         <!--========== End of DS card and desktop Traversal slot stack ==========-->
@@ -2967,7 +2980,9 @@
       </div>
       <!--========== End of left column contents ==========-->
 
+      <!--===== Vertical splitter to adjust size of Left / Right columns (Visible only on Desktop) =====-->
       <div id="splitter-main-v" class="splitter-v desktop-only-el" title="Drag to resize"></div>
+      <!--==========-->
 
       <!--========== Right column contents ==========-->
       <div id="right-column" class="right-column">
@@ -3042,7 +3057,9 @@
             </section>
             <!--========== End of algorithms card ==========-->
 
+            <!--===== Horizontal splitter to adjust size of Algorithms / Settings cards =====-->
             <div id="splitter-algo-settings-h" class="splitter-h" title="Drag to resize"></div>
+            <!--==========-->
 
             <!--========== Settings card ==========-->
             <section id="algo-settings-card" class="vscode-card">
@@ -3127,7 +3144,9 @@
           </div>
           <!--========== End of algorithms and settings cards ==========-->
 
+          <!--===== Vertical splitter to adjust size of Algorithms column / Code card =====-->
           <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
+          <!--==========-->
 
           <!--========== Code / Notes card ==========-->
           <section id="code-card" class="vscode-card">
@@ -3282,7 +3301,9 @@
         </div>
         <!--========== End of Top right row: desktop / Middle row: phone (Algorithms + Code card) ==========-->
 
+        <!--===== Horizontal splitter to adjust size of Top Row (Algorithms & Code) / Bottom Row (State Variables) =====-->
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
+        <!--==========-->
 
         <!--========== Bottom row: desktop / Side by side: phone (Traversal | State variables) ==========-->
         <div id="bottom-split-row" class="bottom-split-row">
@@ -3303,7 +3324,9 @@
           </section>
           <!--==========-->
 
+          <!--===== Vertical splitter to adjust size of Traversal / State variables cards (Visible only on Mobile) =====-->
           <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
+          <!--==========-->
 
           <!--========== State variables / Explanation card ==========-->
           <section id="state-card" class="vscode-card">
@@ -3482,8 +3505,8 @@
       ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
       ALGO_MIN_WIDTH_DESKTOP_VAR: '--algorithms-min-width-desktop',
       ALGO_MIN_WIDTH_MOBILE_VAR: '--algorithms-min-width-mobile',
-      ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--algorithms-collapsed-width-desktop',
-      ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--algorithms-collapsed-width-mobile',
+      ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--card-collapsed-width-desktop',
+      ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--card-collapsed-width-mobile',
       HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
       HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
       CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
@@ -5314,13 +5337,21 @@
     });
 
     function resetAllProportions() {
+      // 1. Disable Zen Mode first (removes body.zen-mode, updates button state & localStorage)
+      setZenMode(false);
+
+      // 2. Reset saved widths & vertical collapse states
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
       setGraphCollapsed(false);
       setCodeCollapsed(false);
+
+      // 3. Clear any horizontal collapse states
       document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
         el.classList.remove('is-h-collapsed', 'is-row-h-collapsed');
       });
+
+      // 4. Clear stored layout state and restore initial responsive structure
       try { localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY); } catch (e) { }
       syncResponsiveStructure();
     }
@@ -5369,28 +5400,27 @@
 
   <script>
     // =========================================================================
-    // MODULAR & CONFIGURABLE WELCOME TOUR
+    // MODULAR & CONFIGURABLE WELCOME TOUR (DESKTOP + MOBILE READY)
     // =========================================================================
     const TOUR_STORAGE_KEY = 'shard-spiral-welcome-tour-completed-v1';
 
     /**
      * 1. TOUR STEPS REGISTRY
-     * Easily plug in new steps here.
      * - `id`: Primary HTML element ID to point to.
-     * - `fallbackIds`: Optional array of backup IDs if the primary element is
-     *                  collapsed or hidden on mobile/desktop viewports.
-     * - `onEnter`: Optional hook called before measuring & pointing at the element.
+     * - `fallbackIds`: Backup IDs if the primary element is collapsed or on mobile.
+     * - `onEnter`: Executed before measuring the element (e.g., auto-expanding a
+     *              collapsed mobile column so inner buttons are visible).
      */
     const TOUR_STEPS_REGISTRY = {
       metadata: {
         id: 'metadata-card',
-        fallbackIds: ['metadata-collapsed-strip'],
+        fallbackIds: ['metadata-collapsed-strip', 'history-column'],
         title: 'Metadata',
         description: 'Displays key properties, complexity metrics, and structural details about the active graph or data structure.'
       },
       history: {
         id: 'history-card',
-        fallbackIds: ['history-collapsed-strip'],
+        fallbackIds: ['history-collapsed-strip', 'history-column'],
         title: 'History',
         description: 'Tracks your recent operations and modifications so you can review or revisit previous states.'
       },
@@ -5407,40 +5437,48 @@
       },
       algorithms: {
         id: 'algorithms-card',
-        fallbackIds: ['algo-collapsed-strip'],
+        fallbackIds: ['algo-collapsed-strip', 'algo-column'],
         title: 'Algorithms',
         description: 'Browse, search, and select from available algorithms and data structures to visualize.'
       },
       dataStructures: {
         id: 'graph-card',
-        fallbackIds: ['graph-collapsed-strip'],
+        fallbackIds: ['graph-collapsed-strip', 'left-main-stack'],
         title: 'Data Structures & Canvas',
         description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
       },
       filterByAlgorithm: {
         id: 'algo-hide-btn',
-        fallbackIds: ['algo-collapsed-strip'],
+        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
         title: 'Hide Algorithms Filter',
-        description: 'Toggle this button to hide algorithms in the tree and view only Data Structures.'
+        description: 'Toggle this button to hide algorithms in the tree and view only Data Structures.',
+        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
       filterByDataStructure: {
         id: 'algo-filter-btn',
-        fallbackIds: ['algo-collapsed-strip'],
+        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
         title: 'Filter by Data Structure',
-        description: 'Open the collapsible filter tree to narrow down items by specific data structure categories.'
+        description: 'Open the collapsible filter tree to narrow down items by specific data structure categories.',
+        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
       favourites: {
         id: 'algo-fav-filter-btn',
-        fallbackIds: ['algo-collapsed-strip'],
+        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
         title: 'Favourites',
-        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.'
+        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
+        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
       code: {
         id: 'tab-code',
         fallbackIds: ['tab-trigger-btn', 'code-card', 'code-collapsed-strip'],
         title: 'Code',
         description: 'View the syntax-highlighted implementation of the selected algorithm with real-time line execution highlights.',
-        onEnter: () => { if (typeof setActiveTab === 'function') setActiveTab('code', 'Code'); }
+        onEnter: () => {
+          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 56.25rem)').matches)) {
+            if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
+          }
+          if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
+        }
       },
       notes: {
         id: 'tab-notes',
@@ -5488,8 +5526,7 @@
 
     /**
      * 2. TOUR STEP ORDER
-     * Rearrange, remove, or add keys from `TOUR_STEPS_REGISTRY` here to change
-     * the exact order in which the tour cards are shown.
+     * Rearrange, remove, or add keys from `TOUR_STEPS_REGISTRY` here.
      */
     const TOUR_STEP_ORDER = [
       'metadata',
@@ -5524,9 +5561,12 @@
       const skipBtn = document.getElementById('tour-skip-btn');
       const prevBtn = document.getElementById('tour-prev-btn');
       const nextBtn = document.getElementById('tour-next-btn');
+      const btnHelp = document.getElementById('btnHelp');
 
       let activeStepIndex = 0;
       let isTourRunning = false;
+      let wasZenModeBeforeTour = false;
+      let wasAlgoCollapsedBeforeTour = false;
 
       function isElementVisible(el) {
         if (!el) return false;
@@ -5535,10 +5575,9 @@
           return false;
         }
         const rect = el.getBoundingClientRect();
-        return rect.width > 2 && rect.height > 2;
+        return rect.width > 1 && rect.height > 1;
       }
 
-      // Finds the primary element by ID, or falls back if collapsed/hidden on mobile
       function resolveStepTargetElement(stepConfig) {
         const candidateIds = [stepConfig.id, ...(stepConfig.fallbackIds || [])];
         for (const id of candidateIds) {
@@ -5565,9 +5604,9 @@
 
         // 2. Measure Tour Card & Compute Best Placement Side
         const cardRect = cardEl.getBoundingClientRect();
-        const cardW = cardRect.width || 320;
+        const cardW = cardRect.width || Math.min(320, vw - 24);
         const cardH = cardRect.height || 165;
-        const gap = 14;
+        const gap = 12;
         const edgeMargin = 10;
 
         const spaceBottom = vh - rect.bottom;
@@ -5585,12 +5624,8 @@
         } else if (spaceLeft >= cardW + gap) {
           placement = 'left';
         } else {
-          // Pick whichever side has the greatest available space
-          const maxSpace = Math.max(spaceBottom, spaceTop, spaceRight, spaceLeft);
-          if (maxSpace === spaceBottom) placement = 'bottom';
-          else if (maxSpace === spaceTop) placement = 'top';
-          else if (maxSpace === spaceRight) placement = 'right';
-          else placement = 'left';
+          // On small mobile screens when pointing to large cards, prefer top or bottom
+          placement = spaceBottom >= spaceTop ? 'bottom' : 'top';
         }
 
         const targetCenterX = rect.left + rect.width / 2;
@@ -5612,14 +5647,14 @@
           top = targetCenterY - cardH / 2;
         }
 
-        // Clamp card coordinates so it never overflows the screen
+        // Clamp card coordinates so it never overflows the screen on mobile
         left = Math.max(edgeMargin, Math.min(vw - cardW - edgeMargin, left));
         top = Math.max(edgeMargin, Math.min(vh - cardH - edgeMargin, top));
 
         cardEl.style.left = `${left}px`;
         cardEl.style.top = `${top}px`;
 
-        // 3. Position the Pointer Arrow dynamically toward the target's center
+        // 3. Position the Pointer Arrow toward the target's center
         arrowEl.style.top = '';
         arrowEl.style.bottom = '';
         arrowEl.style.left = '';
@@ -5656,7 +5691,7 @@
         }
       }
 
-      function showStep(index) {
+      function showStep(index, direction = 1) {
         if (index < 0 || index >= TOUR_STEP_ORDER.length) {
           endTour(true);
           return;
@@ -5667,7 +5702,7 @@
         const stepConfig = TOUR_STEPS_REGISTRY[stepKey];
 
         if (!stepConfig) {
-          showStep(index + 1);
+          showStep(index + direction, direction);
           return;
         }
 
@@ -5675,22 +5710,24 @@
           stepConfig.onEnter();
         }
 
-        const targetEl = resolveStepTargetElement(stepConfig);
-        if (!targetEl) {
-          // If an element doesn't exist or is completely hidden (e.g. Zen Mode), skip to next
-          showStep(index + 1);
-          return;
-        }
+        // Wait a frame so any DOM layout changes from `onEnter` settle before measuring
+        requestAnimationFrame(() => {
+          const targetEl = resolveStepTargetElement(stepConfig);
+          if (!targetEl) {
+            showStep(index + direction, direction);
+            return;
+          }
 
-        titleEl.textContent = stepConfig.title;
-        descEl.textContent = stepConfig.description;
-        counterEl.textContent = `${activeStepIndex + 1} / ${TOUR_STEP_ORDER.length}`;
+          titleEl.textContent = stepConfig.title;
+          descEl.textContent = stepConfig.description;
+          counterEl.textContent = `${activeStepIndex + 1} / ${TOUR_STEP_ORDER.length}`;
 
-        prevBtn.style.display = activeStepIndex === 0 ? 'none' : 'inline-flex';
-        nextBtn.textContent = activeStepIndex === TOUR_STEP_ORDER.length - 1 ? 'Finish' : 'Next';
+          prevBtn.style.display = activeStepIndex === 0 ? 'none' : 'inline-flex';
+          nextBtn.textContent = activeStepIndex === TOUR_STEP_ORDER.length - 1 ? 'Finish' : 'Next';
 
-        cardEl.classList.add('open');
-        requestAnimationFrame(() => positionTourAroundTarget(targetEl));
+          cardEl.classList.add('open');
+          requestAnimationFrame(() => positionTourAroundTarget(targetEl));
+        });
       }
 
       function refreshCurrentStepPosition() {
@@ -5706,9 +5743,12 @@
         isTourRunning = false;
         cardEl.classList.remove('open');
         spotlightEl.style.display = 'none';
-        // Restore default tabs after tour finishes
+
+        // Restore tabs & layout states that were modified during the tour
         if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
         if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
+        if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(wasAlgoCollapsedBeforeTour);
+        if (wasZenModeBeforeTour && typeof setZenMode === 'function') setZenMode(true);
 
         if (markCompleted) {
           try {
@@ -5724,13 +5764,22 @@
           }
         } catch (e) { }
 
+        // Save current states so we can restore them when the tour finishes
+        wasZenModeBeforeTour = document.body.classList.contains('zen-mode');
+        wasAlgoCollapsedBeforeTour = typeof isAlgoCollapsed !== 'undefined' ? isAlgoCollapsed : false;
+
+        // Temporarily turn off Zen Mode during the tour so collapsed strips are visible
+        if (wasZenModeBeforeTour && typeof setZenMode === 'function') {
+          setZenMode(false);
+        }
+
         isTourRunning = true;
-        showStep(0);
+        showStep(0, 1);
       }
 
       nextBtn.addEventListener('click', () => {
         if (activeStepIndex < TOUR_STEP_ORDER.length - 1) {
-          showStep(activeStepIndex + 1);
+          showStep(activeStepIndex + 1, 1);
         } else {
           endTour(true);
         }
@@ -5738,28 +5787,43 @@
 
       prevBtn.addEventListener('click', () => {
         if (activeStepIndex > 0) {
-          showStep(activeStepIndex - 1);
+          showStep(activeStepIndex - 1, -1);
         }
       });
 
       skipBtn.addEventListener('click', () => endTour(true));
 
-      // Keep tour card synced if window resizes or splitters are dragged
+      // Replay the entire tour anytime when the Help button in the titlebar is clicked
+      if (btnHelp) {
+        btnHelp.addEventListener('click', () => {
+          startTour(true);
+        });
+      }
+
+      // Keep tour card synced if window resizes, orientation changes, or splitters are dragged
       window.addEventListener('resize', refreshCurrentStepPosition);
+      window.addEventListener('orientationchange', () => setTimeout(refreshCurrentStepPosition, 150));
       window.addEventListener('mousemove', () => {
         if (isTourRunning && document.querySelector('.dragging')) {
           refreshCurrentStepPosition();
         }
       });
+      window.addEventListener('touchmove', () => {
+        if (isTourRunning && document.querySelector('.dragging')) {
+          refreshCurrentStepPosition();
+        }
+      }, { passive: true });
 
-      // Expose a global helper so you can manually test or re-trigger the tour anytime from console:
-      // window.startShardSpiralTour(true)
       window.startShardSpiralTour = startTour;
 
-      // Launch automatically after the loading screen fades out on first visit
-      window.addEventListener('load', () => {
+      // Safely launch on first load whether `load` has already fired or not
+      if (document.readyState === 'complete') {
         setTimeout(() => startTour(false), 450);
-      });
+      } else {
+        window.addEventListener('load', () => {
+          setTimeout(() => startTour(false), 450);
+        });
+      }
     })();
   </script>
 </body>
