@@ -5707,28 +5707,23 @@
      *              collapsed mobile column so inner buttons are visible).
      */
     const TOUR_STEPS_REGISTRY = {
-      metadata: {
-        id: 'metadata-card',
-        fallbackIds: ['metadata-collapsed-strip', 'history-column'],
-        title: 'Metadata',
-        description: 'Displays key properties, complexity metrics, and structural details about the active graph or data structure.'
+      dataStructures: {
+        id: 'graph-card',
+        fallbackIds: ['graph-collapsed-strip', 'left-main-stack'],
+        title: 'Data Structures & Canvas',
+        description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
       },
-      history: {
-        id: 'history-card',
-        fallbackIds: ['history-collapsed-strip', 'history-column'],
-        title: 'History',
-        description: 'Tracks your recent operations and modifications so you can review or revisit previous states.'
-      },
-      fullscreen: {
-        id: 'btnFullscreen',
-        title: 'Fullscreen',
-        description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.'
-      },
-      themes: {
-        id: 'theme-switcher-desktop',
-        fallbackIds: ['mobile-theme-cycle-btn'],
-        title: 'Themes',
-        description: 'Switch seamlessly between System default, Light Modern, and Dark Modern color themes.'
+      codeAndNotes: {
+        id: 'code-card',
+        fallbackIds: ['tab-code', 'tab-trigger-btn', 'code-collapsed-strip'],
+        title: 'Code & Notes',
+        description: 'View the syntax-highlighted code implementation with real-time execution highlights, or switch tabs to read detailed conceptual notes, intuition, and complexity breakdowns.',
+        onEnter: () => {
+          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 56.25rem)').matches)) {
+            if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
+          }
+          if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
+        }
       },
       algorithms: {
         id: 'algorithms-card',
@@ -5736,11 +5731,21 @@
         title: 'Algorithms',
         description: 'Browse, search, and select from available algorithms and data structures to visualize.'
       },
-      dataStructures: {
-        id: 'graph-card',
-        fallbackIds: ['graph-collapsed-strip', 'left-main-stack'],
-        title: 'Data Structures & Canvas',
-        description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
+      algorithmSettings: {
+        id: 'algo-settings-card',
+        fallbackIds: ['algo-settings-collapsed-strip', 'algo-column'],
+        title: 'Settings',
+        description: 'View parameters, tags and constraints for an algorithm.',
+        onEnter: () => {
+          if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false);
+        }
+      },
+      favourites: {
+        id: 'algo-fav-filter-btn',
+        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
+        title: 'Favourites',
+        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
+        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
       filterByAlgorithm: {
         id: 'algo-hide-btn',
@@ -5756,51 +5761,40 @@
         description: 'Open the collapsible filter tree to narrow down items by specific data structure categories.',
         onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
-      favourites: {
-        id: 'algo-fav-filter-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
-        title: 'Favourites',
-        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
-      },
-      code: {
-        id: 'tab-code',
-        fallbackIds: ['tab-trigger-btn', 'code-card', 'code-collapsed-strip'],
-        title: 'Code',
-        description: 'View the syntax-highlighted implementation of the selected algorithm with real-time line execution highlights.',
+      stateAndExplanation: {
+        id: 'state-card',
+        fallbackIds: ['tab-state-variables', 'state-tab-trigger-btn'],
+        title: 'State Variables & Explanation',
+        description: 'Inspect live pointer values and algorithm counters at each step, or switch tabs to look at the algorithm execution steps all at once.',
         onEnter: () => {
-          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 56.25rem)').matches)) {
-            if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
-          }
-          if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
+          if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
         }
       },
-      notes: {
-        id: 'tab-notes',
-        fallbackIds: ['tab-trigger-btn', 'code-card', 'code-collapsed-strip'],
-        title: 'Notes',
-        description: 'Read detailed conceptual notes, intuition, and time/space complexity breakdowns for the selected topic.',
-        onEnter: () => { if (typeof setActiveTab === 'function') setActiveTab('notes', 'Notes'); }
+      traversal: {
+        id: 'log-card',
+        fallbackIds: ['log-collapsed-strip', 'desktop-traversal-slot', 'bottom-split-row'],
+        title: 'Traversal',
+        description: 'Displays the active traversal sequence in real time, showing the order in which nodes and elements in the data structure are being visited, processed, or read.',
+        onEnter: () => {
+          if (typeof setGraphCollapsed === 'function') setGraphCollapsed(false);
+        }
       },
-      stateVariables: {
-        id: 'tab-state-variables',
-        fallbackIds: ['state-tab-trigger-btn', 'state-card'],
-        title: 'State Variables',
-        description: 'Inspect live values of pointers, counters, queues, and other local variables at every step of execution.',
-        onEnter: () => { if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables'); }
+      metadata: {
+        id: 'metadata-card',
+        fallbackIds: ['metadata-collapsed-strip', 'history-column'],
+        title: 'Metadata',
+        description: 'Displays key properties and structural details about the data structure.'
       },
-      explanation: {
-        id: 'tab-explanation',
-        fallbackIds: ['state-tab-trigger-btn', 'state-card'],
-        title: 'Explanation',
-        description: 'Follow a plain-English narration explaining exactly what is happening at the current simulation step.',
-        onEnter: () => { if (typeof setActiveStateTab === 'function') setActiveStateTab('explanation', 'Explanation'); }
+      history: {
+        id: 'history-card',
+        fallbackIds: ['history-collapsed-strip', 'history-column'],
+        title: 'History',
+        description: 'Tracks your recent operations and modifications so you can review or revisit previous data structures.'
       },
-      languageSelector: {
-        id: 'lang-trigger-btn',
-        fallbackIds: ['code-card', 'code-collapsed-strip'],
-        title: 'Language Selector',
-        description: 'Switch the code implementation language between Python, C++, and Java.'
+      fullscreen: {
+        id: 'btnFullscreen',
+        title: 'Fullscreen',
+        description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.'
       },
       zenMode: {
         id: 'zen-mode-btn',
@@ -5811,11 +5805,6 @@
         id: 'reset-layout-btn',
         title: 'Reset Layout',
         description: 'Restore all resized or collapsed panels back to their default proportions with a single click.'
-      },
-      profile: {
-        id: 'btnProfile',
-        title: 'Profile & Shortcuts',
-        description: 'Access your account preferences and view keyboard shortcuts for faster playback control.'
       }
     };
 
@@ -5824,23 +5813,20 @@
      * Rearrange, remove, or add keys from `TOUR_STEPS_REGISTRY` here.
      */
     const TOUR_STEP_ORDER = [
+      'dataStructures',
+      'codeAndNotes',
+      'algorithms',
+      'favourites',
+      'filterByAlgorithm',
+      'filterByDataStructure',
+      'algorithmSettings',
+      'stateAndExplanation',
+      'traversal',
       'metadata',
       'history',
       'fullscreen',
-      'themes',
-      'algorithms',
-      'dataStructures',
-      'filterByAlgorithm',
-      'filterByDataStructure',
-      'favourites',
-      'code',
-      'notes',
-      'stateVariables',
-      'explanation',
-      'languageSelector',
       'zenMode',
       'resetLayout',
-      'profile'
     ];
 
     // ========== TOUR ENGINE (LOCATION-INSENSITIVE DYNAMIC POSITIONING) ========== //
