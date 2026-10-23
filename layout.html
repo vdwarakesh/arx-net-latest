@@ -398,6 +398,135 @@
 
     /* ========== END OF LOADING SCREEN ========== */
 
+    /* ========== WELCOME TOUR ========== */
+    .tour-spotlight {
+      position: fixed;
+      z-index: 9995;
+      pointer-events: none;
+      border-radius: 0.45rem;
+      border: 0.125rem solid var(--accent-primary);
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
+      transition: top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        height 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .tour-card {
+      position: fixed;
+      z-index: 9996;
+      width: 21rem;
+      max-width: calc(100vw - 1.5rem);
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--accent-primary);
+      border-radius: 0.5rem;
+      padding: 0.9rem 1rem;
+      box-shadow: 0 0.75rem 2.25rem rgba(0, 0, 0, 0.55);
+      color: var(--text-primary);
+      display: none;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: top 0.22s ease, left 0.22s ease;
+    }
+
+    .tour-card.open {
+      display: flex;
+    }
+
+    .tour-arrow {
+      position: absolute;
+      width: 0.7rem;
+      height: 0.7rem;
+      background-color: var(--bg-elevated);
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+
+    .tour-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .tour-card-title {
+      font-weight: 700;
+      color: var(--text-bright);
+      font-size: 1.05em;
+    }
+
+    .tour-step-counter {
+      font-size: 0.8em;
+      color: var(--text-muted);
+      font-weight: 600;
+      background-color: var(--bg-card);
+      padding: 0.12rem 0.45rem;
+      border-radius: 0.25rem;
+      border: 0.0625rem solid var(--border-color);
+    }
+
+    .tour-card-desc {
+      margin: 0;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+
+    .tour-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+      padding-top: 0.55rem;
+      border-top: 0.0625rem solid var(--border-color);
+    }
+
+    .tour-btn {
+      height: 1.85rem;
+      padding: 0 0.75rem;
+      border-radius: 0.3rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+
+    .tour-btn-skip {
+      background: transparent;
+      border: 0.0625rem solid transparent;
+      color: var(--text-muted);
+      padding-left: 0.35rem;
+      padding-right: 0.35rem;
+    }
+
+    .tour-btn-skip:hover {
+      color: var(--text-bright);
+      text-decoration: underline;
+    }
+
+    .tour-btn-secondary {
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .tour-btn-secondary:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .tour-btn-primary {
+      background-color: var(--accent-primary);
+      border: 0.0625rem solid var(--accent-primary);
+      color: #ffffff;
+    }
+
+    .tour-btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* ========== END OF WELCOME TOUR ========== */
+
     /* ========== CODE SECTION ========== */
     #codeViewPane {
       overflow-x: hidden;
@@ -2658,7 +2787,7 @@
     <div class="header-right-group">
 
       <!--========== This div is invisible on mobile - desktop theme switcher ==========-->
-      <div class="theme-switcher" role="group" aria-label="Color Theme Toggle">
+      <div id="theme-switcher-desktop" class="theme-switcher" role="group" aria-label="Color Theme Toggle">
         <button type="button" class="theme-option-btn active" data-theme-pref="system" title="System Default Theme">
           <img src="images/system.png" alt="System Theme" class="theme-icon-img" />
         </button>
@@ -3011,9 +3140,9 @@
 
                 <!--===== Desktop Tabs - Placed side by side (Hidden on Mobile) =====-->
                 <div class="card-tabs-group desktop-tabs">
-                  <button type="button" class="vscode-tab active" data-tab-group="right-top"
+                  <button type="button" id="tab-code" class="vscode-tab active" data-tab-group="right-top"
                     data-tab-type="code">Code</button>
-                  <button type="button" class="vscode-tab" data-tab-group="right-top"
+                  <button type="button" id="tab-notes" class="vscode-tab" data-tab-group="right-top"
                     data-tab-type="notes">Notes</button>
                 </div>
                 <!--==========-->
@@ -3187,9 +3316,9 @@
 
                 <!--===== Desktop Tabs - Placed side by side (Hidden on Mobile) =====-->
                 <div class="card-tabs-group desktop-tabs">
-                  <button type="button" class="vscode-tab active" data-tab-group="state-bottom"
+                  <button type="button" id="tab-state-variables" class="vscode-tab active" data-tab-group="state-bottom"
                     data-tab-type="state">State variables</button>
-                  <button type="button" class="vscode-tab" data-tab-group="state-bottom"
+                  <button type="button" id="tab-explanation" class="vscode-tab" data-tab-group="state-bottom"
                     data-tab-type="explanation">Explanation</button>
                 </div>
                 <!--==========-->
@@ -3216,7 +3345,7 @@
                   </div>
                 </div>
                 <!--==========-->
-      
+
               </div>
               <!--========== End of State variables and Explanation tabs ==========-->
 
@@ -5218,6 +5347,420 @@
     document.querySelectorAll('.sync-reset').forEach(btn => btn.addEventListener('click', () => { /* Call reset fn */ }));
 
     document.getElementById('reset-layout-btn').addEventListener('click', resetAllProportions);
+  </script>
+
+  <!--========== Welcome Tour Spotlight & Card DOM ==========-->
+  <div id="tour-spotlight" class="tour-spotlight" style="display: none;"></div>
+  <div id="tour-card" class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-card-title">
+    <div id="tour-arrow" class="tour-arrow"></div>
+    <div class="tour-card-header">
+      <span id="tour-card-title" class="tour-card-title"></span>
+      <span id="tour-step-counter" class="tour-step-counter"></span>
+    </div>
+    <p id="tour-card-desc" class="tour-card-desc"></p>
+    <div class="tour-card-footer">
+      <button type="button" id="tour-skip-btn" class="tour-btn tour-btn-skip">Skip tour</button>
+      <div style="display: flex; gap: 0.4rem;">
+        <button type="button" id="tour-prev-btn" class="tour-btn tour-btn-secondary">Back</button>
+        <button type="button" id="tour-next-btn" class="tour-btn tour-btn-primary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // MODULAR & CONFIGURABLE WELCOME TOUR
+    // =========================================================================
+    const TOUR_STORAGE_KEY = 'shard-spiral-welcome-tour-completed-v1';
+
+    /**
+     * 1. TOUR STEPS REGISTRY
+     * Easily plug in new steps here.
+     * - `id`: Primary HTML element ID to point to.
+     * - `fallbackIds`: Optional array of backup IDs if the primary element is
+     *                  collapsed or hidden on mobile/desktop viewports.
+     * - `onEnter`: Optional hook called before measuring & pointing at the element.
+     */
+    const TOUR_STEPS_REGISTRY = {
+      metadata: {
+        id: 'metadata-card',
+        fallbackIds: ['metadata-collapsed-strip'],
+        title: 'Metadata',
+        description: 'Displays key properties, complexity metrics, and structural details about the active graph or data structure.'
+      },
+      history: {
+        id: 'history-card',
+        fallbackIds: ['history-collapsed-strip'],
+        title: 'History',
+        description: 'Tracks your recent operations and modifications so you can review or revisit previous states.'
+      },
+      fullscreen: {
+        id: 'btnFullscreen',
+        title: 'Fullscreen',
+        description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.'
+      },
+      themes: {
+        id: 'theme-switcher-desktop',
+        fallbackIds: ['mobile-theme-cycle-btn'],
+        title: 'Themes',
+        description: 'Switch seamlessly between System default, Light Modern, and Dark Modern color themes.'
+      },
+      algorithms: {
+        id: 'algorithms-card',
+        fallbackIds: ['algo-collapsed-strip'],
+        title: 'Algorithms',
+        description: 'Browse, search, and select from available algorithms and data structures to visualize.'
+      },
+      dataStructures: {
+        id: 'graph-card',
+        fallbackIds: ['graph-collapsed-strip'],
+        title: 'Data Structures & Canvas',
+        description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
+      },
+      filterByAlgorithm: {
+        id: 'algo-hide-btn',
+        fallbackIds: ['algo-collapsed-strip'],
+        title: 'Hide Algorithms Filter',
+        description: 'Toggle this button to hide algorithms in the tree and view only Data Structures.'
+      },
+      filterByDataStructure: {
+        id: 'algo-filter-btn',
+        fallbackIds: ['algo-collapsed-strip'],
+        title: 'Filter by Data Structure',
+        description: 'Open the collapsible filter tree to narrow down items by specific data structure categories.'
+      },
+      favourites: {
+        id: 'algo-fav-filter-btn',
+        fallbackIds: ['algo-collapsed-strip'],
+        title: 'Favourites',
+        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.'
+      },
+      code: {
+        id: 'tab-code',
+        fallbackIds: ['tab-trigger-btn', 'code-card', 'code-collapsed-strip'],
+        title: 'Code',
+        description: 'View the syntax-highlighted implementation of the selected algorithm with real-time line execution highlights.',
+        onEnter: () => { if (typeof setActiveTab === 'function') setActiveTab('code', 'Code'); }
+      },
+      notes: {
+        id: 'tab-notes',
+        fallbackIds: ['tab-trigger-btn', 'code-card', 'code-collapsed-strip'],
+        title: 'Notes',
+        description: 'Read detailed conceptual notes, intuition, and time/space complexity breakdowns for the selected topic.',
+        onEnter: () => { if (typeof setActiveTab === 'function') setActiveTab('notes', 'Notes'); }
+      },
+      stateVariables: {
+        id: 'tab-state-variables',
+        fallbackIds: ['state-tab-trigger-btn', 'state-card'],
+        title: 'State Variables',
+        description: 'Inspect live values of pointers, counters, queues, and other local variables at every step of execution.',
+        onEnter: () => { if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables'); }
+      },
+      explanation: {
+        id: 'tab-explanation',
+        fallbackIds: ['state-tab-trigger-btn', 'state-card'],
+        title: 'Explanation',
+        description: 'Follow a plain-English narration explaining exactly what is happening at the current simulation step.',
+        onEnter: () => { if (typeof setActiveStateTab === 'function') setActiveStateTab('explanation', 'Explanation'); }
+      },
+      languageSelector: {
+        id: 'lang-trigger-btn',
+        fallbackIds: ['code-card', 'code-collapsed-strip'],
+        title: 'Language Selector',
+        description: 'Switch the code implementation language between Python, C++, and Java.'
+      },
+      zenMode: {
+        id: 'zen-mode-btn',
+        title: 'Zen Mode',
+        description: 'Automatically hides any collapsed panels and splitters for a clean, distraction-free workspace.'
+      },
+      resetLayout: {
+        id: 'reset-layout-btn',
+        title: 'Reset Layout',
+        description: 'Restore all resized or collapsed panels back to their default proportions with a single click.'
+      },
+      profile: {
+        id: 'btnProfile',
+        title: 'Profile & Shortcuts',
+        description: 'Access your account preferences and view keyboard shortcuts for faster playback control.'
+      }
+    };
+
+    /**
+     * 2. TOUR STEP ORDER
+     * Rearrange, remove, or add keys from `TOUR_STEPS_REGISTRY` here to change
+     * the exact order in which the tour cards are shown.
+     */
+    const TOUR_STEP_ORDER = [
+      'metadata',
+      'history',
+      'fullscreen',
+      'themes',
+      'algorithms',
+      'dataStructures',
+      'filterByAlgorithm',
+      'filterByDataStructure',
+      'favourites',
+      'code',
+      'notes',
+      'stateVariables',
+      'explanation',
+      'languageSelector',
+      'zenMode',
+      'resetLayout',
+      'profile'
+    ];
+
+    // =========================================================================
+    // TOUR ENGINE (LOCATION-INSENSITIVE DYNAMIC POSITIONING)
+    // =========================================================================
+    (function initWelcomeTour() {
+      const spotlightEl = document.getElementById('tour-spotlight');
+      const cardEl = document.getElementById('tour-card');
+      const arrowEl = document.getElementById('tour-arrow');
+      const titleEl = document.getElementById('tour-card-title');
+      const counterEl = document.getElementById('tour-step-counter');
+      const descEl = document.getElementById('tour-card-desc');
+      const skipBtn = document.getElementById('tour-skip-btn');
+      const prevBtn = document.getElementById('tour-prev-btn');
+      const nextBtn = document.getElementById('tour-next-btn');
+
+      let activeStepIndex = 0;
+      let isTourRunning = false;
+
+      function isElementVisible(el) {
+        if (!el) return false;
+        const style = window.getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden' || parseFloat(style.opacity) === 0) {
+          return false;
+        }
+        const rect = el.getBoundingClientRect();
+        return rect.width > 2 && rect.height > 2;
+      }
+
+      // Finds the primary element by ID, or falls back if collapsed/hidden on mobile
+      function resolveStepTargetElement(stepConfig) {
+        const candidateIds = [stepConfig.id, ...(stepConfig.fallbackIds || [])];
+        for (const id of candidateIds) {
+          const el = document.getElementById(id);
+          if (isElementVisible(el)) return el;
+        }
+        return null;
+      }
+
+      function positionTourAroundTarget(targetEl) {
+        if (!targetEl || !isTourRunning) return;
+
+        const rect = targetEl.getBoundingClientRect();
+        const pad = 4;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        // 1. Position Spotlight Highlight Box
+        spotlightEl.style.display = 'block';
+        spotlightEl.style.top = `${Math.max(0, rect.top - pad)}px`;
+        spotlightEl.style.left = `${Math.max(0, rect.left - pad)}px`;
+        spotlightEl.style.width = `${Math.min(vw, rect.width + pad * 2)}px`;
+        spotlightEl.style.height = `${Math.min(vh, rect.height + pad * 2)}px`;
+
+        // 2. Measure Tour Card & Compute Best Placement Side
+        const cardRect = cardEl.getBoundingClientRect();
+        const cardW = cardRect.width || 320;
+        const cardH = cardRect.height || 165;
+        const gap = 14;
+        const edgeMargin = 10;
+
+        const spaceBottom = vh - rect.bottom;
+        const spaceTop = rect.top;
+        const spaceRight = vw - rect.right;
+        const spaceLeft = rect.left;
+
+        let placement = 'bottom';
+        if (spaceBottom >= cardH + gap) {
+          placement = 'bottom';
+        } else if (spaceTop >= cardH + gap) {
+          placement = 'top';
+        } else if (spaceRight >= cardW + gap) {
+          placement = 'right';
+        } else if (spaceLeft >= cardW + gap) {
+          placement = 'left';
+        } else {
+          // Pick whichever side has the greatest available space
+          const maxSpace = Math.max(spaceBottom, spaceTop, spaceRight, spaceLeft);
+          if (maxSpace === spaceBottom) placement = 'bottom';
+          else if (maxSpace === spaceTop) placement = 'top';
+          else if (maxSpace === spaceRight) placement = 'right';
+          else placement = 'left';
+        }
+
+        const targetCenterX = rect.left + rect.width / 2;
+        const targetCenterY = rect.top + rect.height / 2;
+        let top = 0;
+        let left = 0;
+
+        if (placement === 'bottom') {
+          top = rect.bottom + gap;
+          left = targetCenterX - cardW / 2;
+        } else if (placement === 'top') {
+          top = rect.top - cardH - gap;
+          left = targetCenterX - cardW / 2;
+        } else if (placement === 'right') {
+          left = rect.right + gap;
+          top = targetCenterY - cardH / 2;
+        } else if (placement === 'left') {
+          left = rect.left - cardW - gap;
+          top = targetCenterY - cardH / 2;
+        }
+
+        // Clamp card coordinates so it never overflows the screen
+        left = Math.max(edgeMargin, Math.min(vw - cardW - edgeMargin, left));
+        top = Math.max(edgeMargin, Math.min(vh - cardH - edgeMargin, top));
+
+        cardEl.style.left = `${left}px`;
+        cardEl.style.top = `${top}px`;
+
+        // 3. Position the Pointer Arrow dynamically toward the target's center
+        arrowEl.style.top = '';
+        arrowEl.style.bottom = '';
+        arrowEl.style.left = '';
+        arrowEl.style.right = '';
+        arrowEl.style.borderTop = 'none';
+        arrowEl.style.borderLeft = 'none';
+        arrowEl.style.borderRight = 'none';
+        arrowEl.style.borderBottom = 'none';
+
+        const arrowHalf = 6;
+        const arrowOffsetLimitX = Math.max(16, Math.min(cardW - 22, targetCenterX - left - arrowHalf));
+        const arrowOffsetLimitY = Math.max(16, Math.min(cardH - 22, targetCenterY - top - arrowHalf));
+
+        if (placement === 'bottom') {
+          arrowEl.style.top = '-0.38rem';
+          arrowEl.style.left = `${arrowOffsetLimitX}px`;
+          arrowEl.style.borderTop = '0.0625rem solid var(--accent-primary)';
+          arrowEl.style.borderLeft = '0.0625rem solid var(--accent-primary)';
+        } else if (placement === 'top') {
+          arrowEl.style.bottom = '-0.38rem';
+          arrowEl.style.left = `${arrowOffsetLimitX}px`;
+          arrowEl.style.borderBottom = '0.0625rem solid var(--accent-primary)';
+          arrowEl.style.borderRight = '0.0625rem solid var(--accent-primary)';
+        } else if (placement === 'right') {
+          arrowEl.style.left = '-0.38rem';
+          arrowEl.style.top = `${arrowOffsetLimitY}px`;
+          arrowEl.style.borderBottom = '0.0625rem solid var(--accent-primary)';
+          arrowEl.style.borderLeft = '0.0625rem solid var(--accent-primary)';
+        } else if (placement === 'left') {
+          arrowEl.style.right = '-0.38rem';
+          arrowEl.style.top = `${arrowOffsetLimitY}px`;
+          arrowEl.style.borderTop = '0.0625rem solid var(--accent-primary)';
+          arrowEl.style.borderRight = '0.0625rem solid var(--accent-primary)';
+        }
+      }
+
+      function showStep(index) {
+        if (index < 0 || index >= TOUR_STEP_ORDER.length) {
+          endTour(true);
+          return;
+        }
+
+        activeStepIndex = index;
+        const stepKey = TOUR_STEP_ORDER[activeStepIndex];
+        const stepConfig = TOUR_STEPS_REGISTRY[stepKey];
+
+        if (!stepConfig) {
+          showStep(index + 1);
+          return;
+        }
+
+        if (typeof stepConfig.onEnter === 'function') {
+          stepConfig.onEnter();
+        }
+
+        const targetEl = resolveStepTargetElement(stepConfig);
+        if (!targetEl) {
+          // If an element doesn't exist or is completely hidden (e.g. Zen Mode), skip to next
+          showStep(index + 1);
+          return;
+        }
+
+        titleEl.textContent = stepConfig.title;
+        descEl.textContent = stepConfig.description;
+        counterEl.textContent = `${activeStepIndex + 1} / ${TOUR_STEP_ORDER.length}`;
+
+        prevBtn.style.display = activeStepIndex === 0 ? 'none' : 'inline-flex';
+        nextBtn.textContent = activeStepIndex === TOUR_STEP_ORDER.length - 1 ? 'Finish' : 'Next';
+
+        cardEl.classList.add('open');
+        requestAnimationFrame(() => positionTourAroundTarget(targetEl));
+      }
+
+      function refreshCurrentStepPosition() {
+        if (!isTourRunning) return;
+        const stepKey = TOUR_STEP_ORDER[activeStepIndex];
+        const stepConfig = TOUR_STEPS_REGISTRY[stepKey];
+        if (!stepConfig) return;
+        const targetEl = resolveStepTargetElement(stepConfig);
+        if (targetEl) positionTourAroundTarget(targetEl);
+      }
+
+      function endTour(markCompleted = true) {
+        isTourRunning = false;
+        cardEl.classList.remove('open');
+        spotlightEl.style.display = 'none';
+        // Restore default tabs after tour finishes
+        if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
+        if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
+
+        if (markCompleted) {
+          try {
+            localStorage.setItem(TOUR_STORAGE_KEY, 'true');
+          } catch (e) { }
+        }
+      }
+
+      function startTour(force = false) {
+        try {
+          if (!force && localStorage.getItem(TOUR_STORAGE_KEY) === 'true') {
+            return;
+          }
+        } catch (e) { }
+
+        isTourRunning = true;
+        showStep(0);
+      }
+
+      nextBtn.addEventListener('click', () => {
+        if (activeStepIndex < TOUR_STEP_ORDER.length - 1) {
+          showStep(activeStepIndex + 1);
+        } else {
+          endTour(true);
+        }
+      });
+
+      prevBtn.addEventListener('click', () => {
+        if (activeStepIndex > 0) {
+          showStep(activeStepIndex - 1);
+        }
+      });
+
+      skipBtn.addEventListener('click', () => endTour(true));
+
+      // Keep tour card synced if window resizes or splitters are dragged
+      window.addEventListener('resize', refreshCurrentStepPosition);
+      window.addEventListener('mousemove', () => {
+        if (isTourRunning && document.querySelector('.dragging')) {
+          refreshCurrentStepPosition();
+        }
+      });
+
+      // Expose a global helper so you can manually test or re-trigger the tour anytime from console:
+      // window.startShardSpiralTour(true)
+      window.startShardSpiralTour = startTour;
+
+      // Launch automatically after the loading screen fades out on first visit
+      window.addEventListener('load', () => {
+        setTimeout(() => startTour(false), 450);
+      });
+    })();
   </script>
 </body>
 
