@@ -3057,6 +3057,25 @@
   </div>
   <!--==========-->
 
+  <!--========== Welcome Tour Spotlight ==========-->
+  <div id="tour-spotlight" class="tour-spotlight" style="display: none;"></div>
+  <div id="tour-card" class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-card-title">
+    <div id="tour-arrow" class="tour-arrow"></div>
+    <div class="tour-card-header">
+      <span id="tour-card-title" class="tour-card-title"></span>
+      <span id="tour-step-counter" class="tour-step-counter"></span>
+    </div>
+    <p id="tour-card-desc" class="tour-card-desc"></p>
+    <div class="tour-card-footer">
+      <button type="button" id="tour-skip-btn" class="tour-btn tour-btn-skip">Skip tour</button>
+      <div style="display: flex; gap: 0.4rem;">
+        <button type="button" id="tour-prev-btn" class="tour-btn tour-btn-secondary">Back</button>
+        <button type="button" id="tour-next-btn" class="tour-btn tour-btn-primary">Next</button>
+      </div>
+    </div>
+  </div>
+  <!--====================-->
+
   <!--========== The titlebar that has logo, themes, zen mode, etc. ==========-->
   <header class="top-titlebar">
     <!--========== Left side of header ==========-->
@@ -3772,26 +3791,21 @@
   <!--========== End of sample profile window ==========-->
 
   <script>
-    // =========================================================================
-    // ASSET LOADING SCREEN HANDLER
-    // =========================================================================
-    window.addEventListener('load', () => {
-      const loadingScreen = document.getElementById('loading-screen');
-      if (loadingScreen) {
-        loadingScreen.classList.add('fade-out');
-        // Remove it from the DOM completely after the fade transition finishes
-        setTimeout(() => {
-          loadingScreen.remove();
-        }, 400);
-      }
-    });
-
-    // =========================================================================
-    // IMPORTANT JAVASCRIPT LAYOUT, BREAKPOINT & SPLITTER CONFIGURATION
-    // =========================================================================
+    /* ========== Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
+      /* LAYOUT_CONFIG is used here to centralize breakpoint queries, localStorage keys, and CSS custom property references across the app */
+
+      /* Responsive Breakpoints */
       MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)',
+
+      /* LocalStorage Persistence Keys */
       THEME_STORAGE_KEY: 'shard-spiral-theme-preference',
+      LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
+      LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
+      FAVOURITES_STORAGE_KEY: 'shard-spiral-favourites',
+      ZEN_STORAGE_KEY: 'shard-spiral-zen-mode',
+
+      /* Theme Cycling & Icon Paths */
       THEME_CYCLE_ORDER: ['system', 'light', 'dark'],
       THEME_ICONS: {
         system: 'images/system.png',
@@ -3799,37 +3813,34 @@
         dark: 'images/dark.png'
       },
 
+      /* Default Panel Proportions (CSS Variables) */
+      DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
+      DESKTOP_GRAPH_HEIGHT: 'var(--desktop-graph-height)',
+      DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
       ALGO_DEFAULT_WIDTH_DESKTOP: 'var(--algorithms-default-width-desktop)',
       ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
+      HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
+      HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
+      MOBILE_GRAPH_ROW_HEIGHT: 'var(--mobile-graph-row-height)',
+      MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
+      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
+
+      /* Minimum & Collapsed Panel Constraints (CSS Variable Names) */
+      LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
       ALGO_MIN_WIDTH_DESKTOP_VAR: '--algorithms-min-width-desktop',
       ALGO_MIN_WIDTH_MOBILE_VAR: '--algorithms-min-width-mobile',
       ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--card-collapsed-width-desktop',
       ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--card-collapsed-width-mobile',
-      HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
-      HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
       CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
-      LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
       BOTTOM_CARDS_MIN_WIDTH_VAR: '--bottom-cards-min-width',
       CARD_MIN_HEIGHT_DESKTOP_VAR: '--card-min-height-desktop',
       CARD_MIN_HEIGHT_MOBILE_VAR: '--card-min-height-mobile',
       RIGHT_TOP_ROW_MIN_HEIGHT_VAR: '--right-top-row-min-height',
-      BOTTOM_ROW_MIN_HEIGHT_VAR: '--bottom-row-min-height',
-
-      DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
-      DESKTOP_GRAPH_HEIGHT: 'var(--desktop-graph-height)',
-      DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
-      MOBILE_GRAPH_ROW_HEIGHT: 'var(--mobile-graph-row-height)',
-      MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
-      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
-      LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
-      LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
-      LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
-      LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
-      FAVOURITES_STORAGE_KEY: 'shard-spiral-favourites',
-      ZEN_STORAGE_KEY: 'shard-spiral-zen-mode'
+      BOTTOM_ROW_MIN_HEIGHT_VAR: '--bottom-row-min-height'
     };
 
     function getRootCssVarRem(varName, fallbackRem) {
+      /* getRootCssVarRem is used here to resolve a CSS custom property on :root (including nested var() references) into a numeric rem value */
       let rawVal = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
       while (rawVal.startsWith('var(')) {
         const innerVar = rawVal.slice(4, -1).split(',')[0].trim();
@@ -3840,19 +3851,66 @@
     }
 
     function getRootCssVarUnits(varName, fallbackRem) {
+      /* getRootCssVarUnits is used here to convert a resolved rem CSS variable into actual pixel units based on the current root font size */
       const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       return getRootCssVarRem(varName, fallbackRem) * rootFontSize;
     }
+    /* ========== End of Layout, Breakpoint & Storage Configuration ========== */
 
-    // =========================================================================
-    // THEME MANAGEMENT (SYSTEM DEFAULT + DESKTOP & MOBILE SINGLE-ICON CYCLER)
-    // =========================================================================
+
+    /* ========== Loading Screen Handler ========== */
+    window.addEventListener('load', () => {
+      /* Fades out and removes the full-screen loading overlay (#loading-screen) once all window assets finish loading */
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+          loadingScreen.remove();
+        }, 400);
+      }
+    });
+    /* ========== End of Loading Screen Handler ========== */
+
+
+    /* ========== Top Title Bar: Left Group (Fullscreen & Reload Buttons) ========== */
+    /* DOM Elements for Fullscreen (#btnFullscreen, #imgFullscreen) and Mobile Reload (#btnReload) buttons */
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    const imgFullscreen = document.getElementById('imgFullscreen');
+    const btnReload = document.getElementById('btnReload');
+
+    function updateFullscreenIcon() {
+      /* updateFullscreenIcon swaps the Fullscreen button (#btnFullscreen) icon between fullscreen.png and windowed.png */
+      const isFs = Boolean(document.fullscreenElement);
+      imgFullscreen.src = isFs ? 'images/windowed.png' : 'images/fullscreen.png';
+      imgFullscreen.alt = isFs ? 'Windowed' : 'Fullscreen';
+    }
+
+    /* Event Listeners for Fullscreen (#btnFullscreen) and Reload (#btnReload) buttons */
+    btnFullscreen.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => { });
+      } else if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => { });
+      }
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+    btnReload.addEventListener('click', () => {
+      window.location.reload();
+    });
+    /* ========== End of Top Title Bar: Left Group (Fullscreen & Reload Buttons) ========== */
+
+
+    /* ========== Top Title Bar: Right Group (Theme Switcher) ========== */
+    /* DOM Elements & State for Desktop 3-way theme buttons (.theme-option-btn) and Mobile cycle button (#mobile-theme-cycle-btn) */
     const systemDarkMedia = window.matchMedia('(prefers-color-scheme: dark)');
     const themeOptionButtons = document.querySelectorAll('.theme-option-btn');
     const mobileThemeCycleBtn = document.getElementById('mobile-theme-cycle-btn');
     const mobileThemeCycleImg = document.getElementById('mobile-theme-cycle-img');
 
     function getStoredThemePreference() {
+      /* getStoredThemePreference reads the saved theme ('system', 'light', or 'dark') from localStorage */
       try {
         return localStorage.getItem(LAYOUT_CONFIG.THEME_STORAGE_KEY) || 'system';
       } catch (err) {
@@ -3861,11 +3919,13 @@
     }
 
     function resolveEffectiveTheme(pref) {
+      /* resolveEffectiveTheme maps 'system' to 'dark' or 'light' based on OS media query preferences */
       if (pref === 'light' || pref === 'dark') return pref;
       return systemDarkMedia.matches ? 'dark' : 'light';
     }
 
     function applyThemePreference(pref, save = true) {
+      /* applyThemePreference updates data-theme on <html>, highlights the active desktop theme button (.theme-option-btn), and updates the mobile theme cycle button (#mobile-theme-cycle-btn) */
       const effectiveTheme = resolveEffectiveTheme(pref);
       document.documentElement.setAttribute('data-theme', effectiveTheme);
 
@@ -3886,6 +3946,7 @@
       }
     }
 
+    /* Initial Theme Application & Event Listeners for Desktop and Mobile Theme Buttons */
     let currentThemePref = getStoredThemePreference();
     applyThemePreference(currentThemePref, false);
 
@@ -3906,526 +3967,428 @@
       currentThemePref = order[nextIndex];
       applyThemePreference(currentThemePref, true);
     });
+    /* ========== End of Top Title Bar: Right Group (Theme Switcher) ========== */
 
-    // =========================================================================
-    // FULLSCREEN TOGGLE & PROFILE FLOATING MODAL WINDOW
-    // =========================================================================
-    const btnFullscreen = document.getElementById('btnFullscreen');
-    const imgFullscreen = document.getElementById('imgFullscreen');
 
-    function updateFullscreenIcon() {
-      const isFs = Boolean(document.fullscreenElement);
-      imgFullscreen.src = isFs ? 'images/windowed.png' : 'images/fullscreen.png';
-      imgFullscreen.alt = isFs ? 'Windowed' : 'Fullscreen';
-    }
+    /* ========== Main Workspace DOM References & Panel Collapse State ========== */
+    /* Core Workspace Containers, Columns, Cards, Collapsed Strips, and Splitters following DOM hierarchy */
+    const phoneMedia = window.matchMedia(LAYOUT_CONFIG.MOBILE_BREAKPOINT_QUERY);
+    const workspace = document.getElementById('workspace');
 
-    btnFullscreen.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => { });
-      } else if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => { });
-      }
-    });
+    /* Left Column DOM Elements (History, Metadata, Graph, and Desktop Traversal Slot) */
+    const leftColumn = document.getElementById('left-column');
+    const historyColumn = document.getElementById('history-column');
+    const metadataCard = document.getElementById('metadata-card');
+    const metadataCollapsedStrip = document.getElementById('metadata-collapsed-strip');
+    const splitterMetadataHistoryH = document.getElementById('splitter-metadata-history-h');
+    const historyCard = document.getElementById('history-card');
+    const historyCollapsedStrip = document.getElementById('history-collapsed-strip');
+    const splitterHistoryGraph = document.getElementById('splitter-history-graph-v');
+    const leftMainStack = document.getElementById('left-main-stack');
+    const graphCard = document.getElementById('graph-card');
+    const graphCollapsedStrip = document.getElementById('graph-collapsed-strip');
+    const splitterLeftH = document.getElementById('splitter-left-h');
+    const desktopTraversalSlot = document.getElementById('desktop-traversal-slot');
 
-    document.addEventListener('fullscreenchange', updateFullscreenIcon);
+    /* Right Column DOM Elements (Algorithms, Settings, Code, Traversal, and State Variables) */
+    const rightColumn = document.getElementById('right-column');
+    const rightTopRow = document.getElementById('right-top-row');
+    const algoColumn = document.getElementById('algo-column');
+    const algoCard = document.getElementById('algorithms-card');
+    const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
+    const splitterAlgoSettingsH = document.getElementById('splitter-algo-settings-h');
+    const algoSettingsCard = document.getElementById('algo-settings-card');
+    const algoSettingsCollapsedStrip = document.getElementById('algo-settings-collapsed-strip');
+    const splitterAlgoCode = document.getElementById('splitter-algo-code-v');
+    const codeCard = document.getElementById('code-card');
+    const codeCollapsedStrip = document.getElementById('code-collapsed-strip');
+    const splitterRightH = document.getElementById('splitter-right-h');
+    const bottomSplitRow = document.getElementById('bottom-split-row');
+    const logCard = document.getElementById('log-card');
+    const logCollapsedStrip = document.getElementById('log-collapsed-strip');
+    const splitterBottomMobileV = document.getElementById('splitter-bottom-mobile-v');
+    const stateCard = document.getElementById('state-card');
 
-    const btnReload = document.getElementById('btnReload');
-    btnReload.addEventListener('click', () => { window.location.reload(); });
+    /* Top Titlebar Zen Mode (#zen-mode-btn) and Reset Layout (#reset-layout-btn) Buttons */
+    const zenModeBtn = document.getElementById('zen-mode-btn');
+    const resetLayoutBtn = document.getElementById('reset-layout-btn');
 
-    const btnProfile = document.getElementById('btnProfile');
-    const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
-    const closeProfileModalBtn = document.getElementById('close-profile-modal');
-    const profileNavTabs = document.querySelectorAll('.profile-nav-tab');
-    const profilePaneAccount = document.getElementById('profile-pane-account');
-    const profilePaneShortcuts = document.getElementById('profile-pane-shortcuts');
+    /* Panel Collapse & Saved Dimension State Variables */
+    let isHistoryCollapsed = true;
+    let savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+    let isGraphCollapsed = false;
+    let isAlgoCollapsed = false;
+    let savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
+    let isCodeCollapsed = false;
+    let isZenMode = false;
 
-    function setProfileModalOpen(open) {
-      profileModalBackdrop.classList.toggle('open', open);
-    }
+    function setHistoryCollapsed(collapse, customExpandedWidth) {
+      /* setHistoryCollapsed collapses or expands #history-column (Metadata + History cards) and restores its saved width */
+      isHistoryCollapsed = collapse;
+      const isPhone = phoneMedia.matches;
 
-    btnProfile.addEventListener('click', () => {
-      setProfileModalOpen(!profileModalBackdrop.classList.contains('open'));
-    });
-
-    closeProfileModalBtn.addEventListener('click', () => setProfileModalOpen(false));
-
-    profileModalBackdrop.addEventListener('click', (e) => {
-      if (e.target === profileModalBackdrop) setProfileModalOpen(false);
-    });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && profileModalBackdrop.classList.contains('open')) {
-        setProfileModalOpen(false);
-      }
-    });
-
-    profileNavTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.getAttribute('data-profile-tab');
-        profileNavTabs.forEach(t => t.classList.toggle('active', t === tab));
-        profilePaneAccount.classList.toggle('active', target === 'account');
-        profilePaneShortcuts.classList.toggle('active', target === 'shortcuts');
-      });
-    });
-
-    // =========================================================================
-    // STATE FOR SELECTED DSA ITEM, ACTIVE TAB & LANGUAGE
-    // =========================================================================
-    const codeViewPane = document.getElementById('codeViewPane');
-    const stateViewPane = document.getElementById('stateViewPane');
-    let selectedDsaName = null; // Stores exact DS or algorithm name when clicked
-    let activeRightTopTab = 'code'; // 'code' | 'notes'
-    let activeStateBottomTab = 'state'; // 'state' | 'explanation'
-
-    function updateStateViewPane() {
-      if (!stateViewPane) return;
-      if (activeStateBottomTab === 'explanation') {
-        stateViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">Explanations not implemented yet</span>
-          </div>
-        `;
+      if (isHistoryCollapsed) {
+        if (!customExpandedWidth && historyColumn.style.width) {
+          savedHistoryWidth = historyColumn.style.width;
+        }
+        historyColumn.classList.add('is-collapsed');
+        historyColumn.style.width = '';
       } else {
-        stateViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">State variables content goes here.</span>
-          </div>
-        `;
+        historyColumn.classList.remove('is-collapsed');
+        historyColumn.style.width = customExpandedWidth || savedHistoryWidth || (isPhone ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
       }
     }
-    let currentLangExt = '.py';
-    let currentPrismLang = 'python';
 
-    async function updateCodeViewPane() {
-      // 1. If nothing is selected, show the placeholder universally across all tabs
-      if (!selectedDsaName) {
-        codeViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text" style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">
-              Pick an algorithm or data structure from the sidebar and explore how it works.
-            </span>
-          </div>
-        `;
-        return;
+    function setGraphCollapsed(collapse) {
+      /* setGraphCollapsed collapses or expands #left-main-stack (Graph + Desktop Traversal stack) */
+      isGraphCollapsed = Boolean(collapse);
+      leftMainStack.classList.toggle('is-collapsed', isGraphCollapsed);
+    }
+
+    function setAlgoCollapsed(collapse, customExpandedWidth) {
+      /* setAlgoCollapsed collapses or expands #algo-column (Algorithms + Settings cards) and restores its saved width */
+      isAlgoCollapsed = collapse;
+      const isPhone = phoneMedia.matches;
+
+      if (isAlgoCollapsed) {
+        if (!customExpandedWidth && algoColumn.style.width) {
+          savedAlgoWidth = algoColumn.style.width;
+        }
+        algoColumn.classList.add('is-collapsed');
+        algoColumn.style.width = '';
+      } else {
+        algoColumn.classList.remove('is-collapsed');
+        algoColumn.style.width = customExpandedWidth || savedAlgoWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
+      }
+    }
+
+    function setCodeCollapsed(collapse) {
+      /* setCodeCollapsed collapses or expands #code-card (Code / Notes card) */
+      isCodeCollapsed = Boolean(collapse);
+      codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
+    }
+
+    function updateHorizontalCollapsedStates() {
+      /* updateHorizontalCollapsedStates checks if any card or row has been vertically dragged to its minimum header height and toggles .is-h-collapsed / .is-row-h-collapsed */
+      const isPhone = phoneMedia.matches;
+      const minCardH = isPhone
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.15);
+      const tolerance = 4;
+
+      const checkCardMinHeight = (cardEl, parentCollapsed = false) => {
+        if (!cardEl) return false;
+        if (parentCollapsed) {
+          cardEl.classList.remove('is-h-collapsed');
+          return false;
+        }
+        const rect = cardEl.getBoundingClientRect();
+        if (rect.height === 0) {
+          return cardEl.classList.contains('is-h-collapsed');
+        }
+        const isAtMin = rect.height <= (minCardH + tolerance);
+        cardEl.classList.toggle('is-h-collapsed', isAtMin);
+        return isAtMin;
+      };
+
+      /* 1. Check individual cards */
+      checkCardMinHeight(graphCard, isGraphCollapsed);
+      const logCollapsed = checkCardMinHeight(logCard, isGraphCollapsed);
+      const stateCollapsed = checkCardMinHeight(stateCard, false);
+      const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
+      const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
+      checkCardMinHeight(metadataCard, isHistoryCollapsed);
+      checkCardMinHeight(historyCard, isHistoryCollapsed);
+      const codeHCollapsed = checkCardMinHeight(codeCard, isCodeCollapsed);
+
+      /* 2. Check #bottom-split-row (State variables on Desktop; Traversal + State variables on Mobile) */
+      if (bottomSplitRow) {
+        const isBottomRowMin = isPhone
+          ? (logCollapsed && stateCollapsed)
+          : stateCollapsed;
+        bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
       }
 
-      // 2. If an item IS selected but we are on the Explanation tab
-      if (activeRightTopTab === 'explanation') {
-        codeViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">Explanations not implemented yet</span>
-          </div>
-        `;
-        return;
+      /* 3. Check #right-top-row (when dragged all the way up to minimum height) */
+      if (rightTopRow) {
+        const rtRect = rightTopRow.getBoundingClientRect();
+        const allRightTopChildrenCollapsed = (isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) && (isCodeCollapsed || codeHCollapsed);
+        if (rtRect.height > 0) {
+          const isRightTopMin = rtRect.height <= (minCardH + tolerance) || allRightTopChildrenCollapsed;
+          rightTopRow.classList.toggle('is-row-h-collapsed', isRightTopMin);
+        } else if (allRightTopChildrenCollapsed) {
+          rightTopRow.classList.add('is-row-h-collapsed');
+        }
       }
 
-      const currentTarget = selectedDsaName;
-      const currentTab = activeRightTopTab;
-      const ext = currentTab === 'notes' ? '.html' : currentLangExt;
-      const formattedTarget = currentTarget.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
-      const filePath = `dsa/${formattedTarget}${ext}`;
+      /* 4. On Mobile, check if #right-column or top #left-column (Graph row) is collapsed */
+      if (rightColumn) {
+        const isRightColCollapsed = rightTopRow.classList.contains('is-row-h-collapsed') &&
+          bottomSplitRow.classList.contains('is-row-h-collapsed');
+        rightColumn.classList.toggle('is-row-h-collapsed', isRightColCollapsed);
+      }
+
+      if (leftColumn) {
+        if (isPhone) {
+          const lcRect = leftColumn.getBoundingClientRect();
+          const allLeftColChildrenCollapsed = isHistoryCollapsed && isGraphCollapsed;
+          if (lcRect.height > 0) {
+            leftColumn.classList.toggle('is-row-h-collapsed', lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed);
+          } else if (allLeftColChildrenCollapsed) {
+            leftColumn.classList.add('is-row-h-collapsed');
+          }
+        } else {
+          leftColumn.classList.remove('is-row-h-collapsed');
+        }
+      }
+    }
+
+    function setZenMode(enabled) {
+      /* setZenMode toggles Zen Mode on body.zen-mode, updates the Zen Mode header button (#zen-mode-btn), and persists state to localStorage */
+      isZenMode = Boolean(enabled);
+      if (isZenMode) {
+        updateHorizontalCollapsedStates();
+      }
+      document.body.classList.toggle('zen-mode', isZenMode);
+      if (!isZenMode) {
+        requestAnimationFrame(updateHorizontalCollapsedStates);
+      }
+      if (zenModeBtn) {
+        zenModeBtn.classList.toggle('active', isZenMode);
+        zenModeBtn.setAttribute('aria-pressed', String(isZenMode));
+      }
+      try {
+        localStorage.setItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY, isZenMode ? '1' : '0');
+      } catch (e) { }
+    }
+
+    function syncResponsiveStructure() {
+      /* syncResponsiveStructure moves #log-card (Traversal) and #splitter-left-h between their desktop slots and mobile slots when crossing the 56.25rem breakpoint */
+      const isPhone = phoneMedia.matches;
+
+      leftColumn.style.width = '';
+      leftColumn.style.height = '';
+      graphCard.style.height = '';
+      rightTopRow.style.height = '';
+      logCard.style.width = '';
+      algoCard.style.height = '';
+      metadataCard.style.height = '';
+
+      if (isPhone) {
+        if (logCard.parentElement !== bottomSplitRow) {
+          bottomSplitRow.insertBefore(logCard, splitterBottomMobileV);
+        }
+        if (splitterLeftH.parentElement !== workspace) {
+          workspace.insertBefore(splitterLeftH, rightColumn);
+        }
+        setAlgoCollapsed(true);
+        setHistoryCollapsed(true);
+      } else {
+        if (splitterLeftH.parentElement !== leftMainStack) {
+          leftMainStack.insertBefore(splitterLeftH, desktopTraversalSlot);
+        }
+        if (logCard.parentElement !== desktopTraversalSlot) {
+          desktopTraversalSlot.appendChild(logCard);
+        }
+        setAlgoCollapsed(false);
+        setHistoryCollapsed(true);
+      }
+    }
+
+    function saveLayoutState() {
+      /* saveLayoutState serializes all custom splitter dimensions and collapse flags to localStorage */
+      try {
+        const layout = {
+          leftColumnW: leftColumn.style.width,
+          graphCardH: graphCard.style.height,
+          rightTopRowH: rightTopRow.style.height,
+          algoColumnW: algoColumn.style.width,
+          algorithmsCardH: algoCard.style.height,
+          historyColumnW: historyColumn.style.width,
+          metadataCardH: metadataCard.style.height,
+          logCardW: logCard.style.width,
+          isAlgoCollapsed,
+          isHistoryCollapsed,
+          isGraphCollapsed,
+          isCodeCollapsed,
+          savedAlgoWidth,
+          savedHistoryWidth
+        };
+        localStorage.setItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY, JSON.stringify(layout));
+      } catch (e) { }
+    }
+
+    function loadLayoutState() {
+      /* loadLayoutState restores saved panel widths, heights, and collapsed states from localStorage */
+      try {
+        const stored = localStorage.getItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY);
+        if (stored) {
+          const layout = JSON.parse(stored);
+          if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
+          if (layout.graphCardH) graphCard.style.height = layout.graphCardH;
+          if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
+          if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
+          if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
+          if (layout.logCardW) logCard.style.width = layout.logCardW;
+
+          savedAlgoWidth = layout.savedAlgoWidth || (phoneMedia.matches ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
+          savedHistoryWidth = layout.savedHistoryWidth || (phoneMedia.matches ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
+
+          setAlgoCollapsed(layout.isAlgoCollapsed, layout.isAlgoCollapsed ? null : savedAlgoWidth);
+          setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
+          setGraphCollapsed(Boolean(layout.isGraphCollapsed));
+          setCodeCollapsed(Boolean(layout.isCodeCollapsed));
+        }
+      } catch (e) { }
+    }
+
+    function resetAllProportions() {
+      /* resetAllProportions is triggered by the Reset Layout button (#reset-layout-btn) to clear Zen mode, expand collapsed panels, and restore default panel sizes */
+      setZenMode(false);
+
+      savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
+      savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+      setGraphCollapsed(false);
+      setCodeCollapsed(false);
+
+      document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
+        el.classList.remove('is-h-collapsed', 'is-row-h-collapsed');
+      });
 
       try {
-        const response = await fetch(filePath);
-        if (!response.ok) {
-          throw new Error('File not found');
-        }
-        const text = await response.text();
-
-        // Guard against race conditions if user clicked another item/tab while fetching
-        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
-
-        // Guard against SPA dev servers returning the main layout.html on 404
-        if (text.includes('<title>Shard Spiral</title>')) {
-          throw new Error('Fallback HTML returned');
-        }
-
-        if (currentTab === 'notes') {
-          codeViewPane.innerHTML = `<div class="card-inner-pad notes-content">${text}</div>`;
-        } else {
-          // If fetching .py/.cpp/.java but server returned an HTML error page
-          if (/^\s*<!doctype html/i.test(text) || /^\s*<html/i.test(text)) {
-            throw new Error('Unexpected HTML for code file');
-          }
-          const pre = document.createElement('pre');
-          pre.className = 'line-numbers';
-          pre.setAttribute('data-line', '1,3,7,10');
-
-          const code = document.createElement('code');
-          code.className = `language-${currentPrismLang}`;
-          // Normalize CRLF to LF so \r doesn't skew Prism's sizer
-          code.textContent = text.replace(/\r\n?/g, '\n');
-
-          pre.appendChild(code);
-          codeViewPane.innerHTML = '';
-          codeViewPane.appendChild(pre);
-
-          if (window.Prism) {
-            window.Prism.highlightElement(code);
-            // Re-measure on the next frame after scrollbars & fonts settle
-            requestAnimationFrame(() => syncPrismLayout(pre));
-          }
-        }
-      } catch (err) {
-        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
-        codeViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">Algorithm/Data structure not implemented yet</span>
-          </div>
-        `;
-      }
+        localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY);
+      } catch (e) { }
+      syncResponsiveStructure();
     }
 
-    function syncPrismLayout(pre) {
-      if (!pre || !window.Prism) return;
-
-      // 1. Recalculate Prism line numbers
-      if (window.Prism.plugins?.lineNumbers?.resize) {
-        window.Prism.plugins.lineNumbers.resize(pre);
-      }
-
-      // 2. Cleanly remove old highlight overlays and re-apply them for the new wrapped heights
-      if (window.Prism.plugins?.lineHighlight) {
-        const code = pre.querySelector('code');
-        pre.querySelectorAll('.line-highlight').forEach(el => el.remove());
-
-        const highlightLines = pre.getAttribute('data-line');
-        if (highlightLines) {
-          const reposition = window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines);
-          if (typeof reposition === 'function') reposition();
-        } else if (code) {
-          window.Prism.hooks.run('complete', { element: code });
-        }
-      }
+    /* Event Listeners for Collapsed Strips, Zen Mode Button (#zen-mode-btn), Reset Layout Button (#reset-layout-btn), and Responsive Media Query */
+    if (metadataCollapsedStrip) {
+      metadataCollapsedStrip.addEventListener('click', () => {
+        setHistoryCollapsed(false);
+        saveLayoutState();
+      });
     }
 
-    let resizeRafId = null;
-
-    const codePaneResizeObserver = new ResizeObserver(() => {
-      if (activeRightTopTab !== 'code' || !window.Prism) return;
-
-      if (resizeRafId) cancelAnimationFrame(resizeRafId);
-
-      resizeRafId = requestAnimationFrame(() => {
-        const pre = codeViewPane.querySelector('pre.line-numbers');
-        syncPrismLayout(pre);
+    if (historyCollapsedStrip) {
+      historyCollapsedStrip.addEventListener('click', () => {
+        setHistoryCollapsed(false);
+        saveLayoutState();
       });
-    });
+    }
 
-    codePaneResizeObserver.observe(codeViewPane);
-
-    // =========================================================================
-    // LANGUAGE SELECTOR (PYTHON, C++, JAVA)
-    // =========================================================================
-    const langWrapper = document.getElementById('lang-dropdown-wrapper');
-    const langTriggerBtn = document.getElementById('lang-trigger-btn');
-    const langMenu = document.getElementById('lang-dropdown-menu');
-    const langActiveDot = document.getElementById('lang-active-dot');
-    const langActiveLabel = document.getElementById('lang-active-label');
-    const langOptions = document.querySelectorAll('#lang-dropdown-menu .lang-option-item');
-
-    langTriggerBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = langMenu.classList.toggle('open');
-      langTriggerBtn.setAttribute('aria-expanded', String(isOpen));
-    });
-
-    langOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        const selectedLang = option.getAttribute('data-lang');
-        const selectedColor = option.getAttribute('data-color');
-        currentLangExt = option.getAttribute('data-ext') || '.py';
-        currentPrismLang = option.getAttribute('data-prism') || 'python';
-
-        langActiveLabel.textContent = selectedLang;
-        langActiveDot.style.backgroundColor = selectedColor;
-
-        langOptions.forEach(opt => {
-          const active = opt === option;
-          opt.classList.toggle('active', active);
-          opt.setAttribute('aria-selected', String(active));
-        });
-
-        langMenu.classList.remove('open');
-        langTriggerBtn.setAttribute('aria-expanded', 'false');
-
-        try {
-          localStorage.setItem(LAYOUT_CONFIG.LANG_STORAGE_KEY, selectedLang);
-        } catch (e) { }
-
-        if (activeRightTopTab === 'code' && selectedDsaName) {
-          updateCodeViewPane();
-        }
+    if (graphCollapsedStrip) {
+      graphCollapsedStrip.addEventListener('click', () => {
+        setGraphCollapsed(false);
+        saveLayoutState();
       });
-    });
+    }
 
-    window.addEventListener('click', (e) => {
-      if (!langWrapper.contains(e.target)) {
-        langMenu.classList.remove('open');
-        langTriggerBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
+    if (logCollapsedStrip) {
+      logCollapsedStrip.addEventListener('click', () => {
+        setGraphCollapsed(false);
+        saveLayoutState();
+      });
+    }
 
-    // Load saved language preference
+    if (algoCollapsedStrip) {
+      algoCollapsedStrip.addEventListener('click', () => {
+        setAlgoCollapsed(false);
+        saveLayoutState();
+      });
+    }
+
+    if (algoSettingsCollapsedStrip) {
+      algoSettingsCollapsedStrip.addEventListener('click', () => {
+        setAlgoCollapsed(false);
+        saveLayoutState();
+      });
+    }
+
+    if (codeCollapsedStrip) {
+      codeCollapsedStrip.addEventListener('click', () => {
+        setCodeCollapsed(false);
+        saveLayoutState();
+      });
+    }
+
+    if (zenModeBtn) {
+      zenModeBtn.addEventListener('click', () => setZenMode(!isZenMode));
+    }
+
+    if (resetLayoutBtn) {
+      resetLayoutBtn.addEventListener('click', resetAllProportions);
+    }
+
+    phoneMedia.addEventListener('change', syncResponsiveStructure);
+
+    /* Initialize Responsive Structure, Saved Layout Proportions, and Zen Mode State */
+    syncResponsiveStructure();
+    loadLayoutState();
+
     try {
-      const savedLang = localStorage.getItem(LAYOUT_CONFIG.LANG_STORAGE_KEY);
-      if (savedLang) {
-        const savedLangOpt = Array.from(langOptions).find(opt => opt.getAttribute('data-lang') === savedLang);
-        if (savedLangOpt) savedLangOpt.click();
+      if (localStorage.getItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY) === '1') {
+        setZenMode(true);
       }
     } catch (e) { }
+    /* ========== End of Main Workspace DOM References & Panel Collapse State ========== */
 
-    // =========================================================================
-    // COPY & DOWNLOAD CODE BUTTONS
-    // =========================================================================
-    const btnCopyCode = document.getElementById('btn-copy-code');
-    const imgCopyCode = document.getElementById('img-copy-code');
-    const btnDownloadCode = document.getElementById('btn-download-code');
 
-    btnCopyCode.addEventListener('click', () => {
-      const codeElement = document.querySelector('#codeViewPane code');
-      if (!codeElement) return;
-
-      navigator.clipboard.writeText(codeElement.textContent).then(() => {
-        imgCopyCode.src = 'images/success.png';
-        setTimeout(() => {
-          imgCopyCode.src = 'images/copy.png';
-        }, 5000);
-      });
-    });
-
-    btnDownloadCode.addEventListener('click', () => {
-      const codeElement = document.querySelector('#codeViewPane code');
-      if (!codeElement) return;
-
-      const activeOption = document.querySelector('#lang-dropdown-menu .lang-option-item.active');
-      const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
-      const codeText = codeElement.textContent;
-      const baseName = (selectedDsaName || 'algorithm').replace(/\s+/g, '-').replace(/\+/g, 'Plus');
-
-      const blob = new Blob([codeText], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${baseName}${ext}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-
-    // =========================================================================
-    // TAB SWITCHING (CODE, EXPLANATION, NOTES) & SPEED SLIDER
-    // =========================================================================
-
-    // --- Tab Switching Logic (Desktop & Mobile Sync) ---
-    const desktopTabs = document.querySelectorAll('#code-card .desktop-tabs .vscode-tab');
-    const tabWrapper = document.getElementById('tab-dropdown-wrapper');
-    const tabTriggerBtn = document.getElementById('tab-trigger-btn');
-    const tabMenu = document.getElementById('tab-dropdown-menu');
-    const tabActiveLabel = document.getElementById('tab-active-label');
-    const tabOptions = tabMenu ? tabMenu.querySelectorAll('.lang-option-item') : [];
-
-    // Helper to sync state and update content for Code / Notes
-    function setActiveTab(tabType, tabText) {
-      activeRightTopTab = tabType;
-
-      // Update Desktop Tabs
-      desktopTabs.forEach(t => {
-        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
-      });
-
-      // Update Mobile Dropdown
-      if (tabActiveLabel) tabActiveLabel.textContent = tabText;
-      tabOptions.forEach(opt => {
-        const isActive = opt.getAttribute('data-tab-type') === tabType;
-        opt.classList.toggle('active', isActive);
-        opt.setAttribute('aria-selected', String(isActive));
-      });
-
-      updateCodeViewPane();
-    }
-
-    // Desktop Tab Clicks (Code / Notes)
-    desktopTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabType = tab.getAttribute('data-tab-type');
-        const tabText = tab.textContent.trim();
-        setActiveTab(tabType, tabText);
-      });
-    });
-
-    // Mobile Dropdown Toggle (Code / Notes)
-    if (tabTriggerBtn) {
-      tabTriggerBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = tabMenu.classList.toggle('open');
-        tabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
-      });
-    }
-
-    // Mobile Dropdown Selection (Code / Notes)
-    tabOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        const tabType = option.getAttribute('data-tab-type');
-        const tabText = option.querySelector('span').textContent.trim();
-
-        tabMenu.classList.remove('open');
-        tabTriggerBtn.setAttribute('aria-expanded', 'false');
-
-        setActiveTab(tabType, tabText);
-      });
-    });
-
-    // --- State Variables / Explanation Tab Switching Logic (Desktop & Mobile Sync) ---
-    const stateDesktopTabs = document.querySelectorAll('#state-card .desktop-tabs .vscode-tab');
-    const stateTabWrapper = document.getElementById('state-tab-dropdown-wrapper');
-    const stateTabTriggerBtn = document.getElementById('state-tab-trigger-btn');
-    const stateTabMenu = document.getElementById('state-tab-dropdown-menu');
-    const stateTabActiveLabel = document.getElementById('state-tab-active-label');
-    const stateTabOptions = stateTabMenu ? stateTabMenu.querySelectorAll('.lang-option-item') : [];
-
-    function setActiveStateTab(tabType, tabText) {
-      activeStateBottomTab = tabType;
-
-      stateDesktopTabs.forEach(t => {
-        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
-      });
-
-      if (stateTabActiveLabel) stateTabActiveLabel.textContent = tabText;
-      stateTabOptions.forEach(opt => {
-        const isActive = opt.getAttribute('data-tab-type') === tabType;
-        opt.classList.toggle('active', isActive);
-        opt.setAttribute('aria-selected', String(isActive));
-      });
-
-      updateStateViewPane();
-    }
-
-    stateDesktopTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabType = tab.getAttribute('data-tab-type');
-        const tabText = tab.textContent.trim();
-        setActiveStateTab(tabType, tabText);
-      });
-    });
-
-    if (stateTabTriggerBtn) {
-      stateTabTriggerBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = stateTabMenu.classList.toggle('open');
-        stateTabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
-      });
-    }
-
-    stateTabOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        const tabType = option.getAttribute('data-tab-type');
-        const tabText = option.querySelector('span').textContent.trim();
-
-        stateTabMenu.classList.remove('open');
-        stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
-
-        setActiveStateTab(tabType, tabText);
-      });
-    });
-
-    // Close Dropdowns when clicking outside
-    window.addEventListener('click', (e) => {
-      if (tabWrapper && !tabWrapper.contains(e.target)) {
-        tabMenu.classList.remove('open');
-        if (tabTriggerBtn) tabTriggerBtn.setAttribute('aria-expanded', 'false');
-      }
-      if (stateTabWrapper && !stateTabWrapper.contains(e.target)) {
-        stateTabMenu.classList.remove('open');
-        if (stateTabTriggerBtn) stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    // --- Speed Slider Logic ---
+    /* ========== Left Column: Playback Controls & Speed Slider Sync ========== */
+    /* DOM Elements for the Graph playback speed slider (#speed-slider) and synchronized playback controls across Graph and Settings cards */
     const speedSlider = document.getElementById('speed-slider');
     const speedLabel = document.getElementById('speed-label');
+    const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
+    const speedLabels = document.querySelectorAll('.playback-speed-value');
+
+    /* Event Listeners for Speed Sliders and Synchronized Playback Buttons (.sync-run, .sync-step-front, .sync-step-back, .sync-reset) */
     if (speedSlider && speedLabel) {
       speedSlider.addEventListener('input', (e) => {
         speedLabel.textContent = `${e.target.value}x`;
       });
     }
 
-    // =========================================================================
-    // DYNAMIC DSA TREE, EXACT + SUBSEQUENCE SEARCH, AND DS FILTER
-    // =========================================================================
+    speedSliders.forEach(slider => {
+      slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        speedSliders.forEach(s => s.value = val);
+        speedLabels.forEach(l => l.textContent = `${val}x`);
+      });
+    });
+
+    document.querySelectorAll('.sync-run').forEach(btn => btn.addEventListener('click', () => { /* Call run simulation fn */ }));
+    document.querySelectorAll('.sync-step-front').forEach(btn => btn.addEventListener('click', () => { /* Call step front fn */ }));
+    document.querySelectorAll('.sync-step-back').forEach(btn => btn.addEventListener('click', () => { /* Call step back fn */ }));
+    document.querySelectorAll('.sync-reset').forEach(btn => btn.addEventListener('click', () => { /* Call reset fn */ }));
+    /* ========== End of Left Column: Playback Controls & Speed Slider Sync ========== */
+
+
+    /* ========== Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
+    /* DOM Elements for Search Input (#algo-search-input), Clear Button (#algo-search-clear-btn), Filter Buttons (#algo-fav-filter-btn, #algo-hide-btn, #algo-filter-btn), Filter Panel (#algo-filter-panel), and Tree Containers */
     const algoSearchInput = document.getElementById('algo-search-input');
+    const algoSearchClearBtn = document.getElementById('algo-search-clear-btn');
+    const algoFavFilterBtn = document.getElementById('algo-fav-filter-btn');
+    const algoHideBtn = document.getElementById('algo-hide-btn');
     const algoFilterBtn = document.getElementById('algo-filter-btn');
     const algoFilterPanel = document.getElementById('algo-filter-panel');
     const algoFilterClearBtn = document.getElementById('algo-filter-clear-btn');
     const algoFilterTreeEl = document.getElementById('algo-filter-tree');
     const algoTreeContainer = document.getElementById('algo-tree-container');
 
+    /* State for Loaded JSON Metadata, Tree Folder Expansion, Active Filters, and Favourites */
     let dataStructuresJson = {};
     let algorithmsJson = {};
     let constraintsJson = {};
-    // Map: dsName -> Array of { name: algoName, constraints: {...}, tags: [...] }
     let dsDirectAlgorithmsMap = {};
-
-    // Track user-expanded folders in normal view & filter view
+    let selectedDsaName = null;
+    let isFavFilterActive = false;
+    let isAlgosHidden = false;
+    let favouritesSet = new Set();
     const expandedMainFolders = new Set();
     const expandedFilterFolders = new Set();
-    // Track selected data structures in filter
     const activeDsFilterSet = new Set();
 
-    function buildDirectAlgorithmsMap() {
-      dsDirectAlgorithmsMap = {};
-      for (const [algoName, algoData] of Object.entries(algorithmsJson)) {
-        const inputs = (algoData && algoData.inputs) || {};
-        const tags = Array.isArray(algoData && algoData.tags) ? algoData.tags : [];
-        // Rule 1: Associate ONLY with the exact data structure key in inputs (no bubbling to parent or child)
-        for (const [dsName, dsConstraints] of Object.entries(inputs)) {
-          if (!dsDirectAlgorithmsMap[dsName]) {
-            dsDirectAlgorithmsMap[dsName] = [];
-          }
-          dsDirectAlgorithmsMap[dsName].push({
-            name: algoName,
-            constraints: dsConstraints || {},
-            tags
-          });
-        }
-      }
-    }
-
-    // Exact / Contiguous match AND Acronym match check
-    function isExactOrAcronymMatch(query, target) {
-      const q = query.toLowerCase().trim();
-      const t = String(target).toLowerCase();
-
-      // 1. Direct substring match
-      if (t.includes(q)) return true;
-
-      // 2. Acronym match (e.g. "mst" -> "minimum-spanning-tree", "bst" -> "binary-search-tree")
-      const initials = t.split(/[-_\s]+/).map(w => w[0] || '').join('');
-      if (initials.includes(q.replace(/\s+/g, ''))) return true;
-
-      return false;
-    }
-
-    // Order-of-letters subsequence fuzzy match (e.g. "minsptr" -> "minimum-spanning-tree")
-    function isSubsequenceMatch(query, target) {
-      const cleanQuery = query.replace(/\s+/g, '').toLowerCase();
-      if (!cleanQuery) return true;
-      const cleanTarget = String(target).toLowerCase();
-      let qIdx = 0;
-      for (let i = 0; i < cleanTarget.length && qIdx < cleanQuery.length; i++) {
-        if (cleanTarget[i] === cleanQuery[qIdx]) {
-          qIdx++;
-        }
-      }
-      return qIdx === cleanQuery.length;
-    }
-
-    const algoFavFilterBtn = document.getElementById('algo-fav-filter-btn');
-    let isFavFilterActive = false;
-    let favouritesSet = new Set();
-
     function loadFavourites() {
+      /* loadFavourites loads the user's starred algorithms and data structures from localStorage */
       try {
         const stored = localStorage.getItem(LAYOUT_CONFIG.FAVOURITES_STORAGE_KEY);
         if (stored) {
@@ -4435,12 +4398,14 @@
     }
 
     function saveFavourites() {
+      /* saveFavourites saves the current set of starred algorithms and data structures to localStorage */
       try {
         localStorage.setItem(LAYOUT_CONFIG.FAVOURITES_STORAGE_KEY, JSON.stringify([...favouritesSet]));
       } catch (e) { }
     }
 
     function toggleFavourite(itemName) {
+      /* toggleFavourite adds or removes an item from favouritesSet and re-renders the main tree */
       if (favouritesSet.has(itemName)) {
         favouritesSet.delete(itemName);
       } else {
@@ -4451,6 +4416,7 @@
     }
 
     function createFavStarButton(itemName) {
+      /* createFavStarButton builds the inline star toggle button (.fav-toggle-btn) for each Data Structure and Algorithm row */
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'fav-toggle-btn';
@@ -4471,6 +4437,7 @@
     }
 
     function dsSubtreeHasFavourite(dsName, dsObj) {
+      /* dsSubtreeHasFavourite checks whether a Data Structure or any of its nested algorithms/children is starred */
       if (favouritesSet.has(dsName)) return true;
       if (!isAlgosHidden) {
         const algos = dsDirectAlgorithmsMap[dsName] || [];
@@ -4483,20 +4450,54 @@
       return false;
     }
 
-    loadFavourites();
-
-    if (algoFavFilterBtn) {
-      algoFavFilterBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isFavFilterActive = !isFavFilterActive;
-        algoFavFilterBtn.classList.toggle('has-active-filter', isFavFilterActive);
-        algoFavFilterBtn.setAttribute('aria-pressed', String(isFavFilterActive));
-        renderMainAlgoTree();
-      });
+    function buildDirectAlgorithmsMap() {
+      /* buildDirectAlgorithmsMap maps each Data Structure key to its directly associated algorithms, constraints, and tags */
+      dsDirectAlgorithmsMap = {};
+      for (const [algoName, algoData] of Object.entries(algorithmsJson)) {
+        const inputs = (algoData && algoData.inputs) || {};
+        const tags = Array.isArray(algoData && algoData.tags) ? algoData.tags : [];
+        for (const [dsName, dsConstraints] of Object.entries(inputs)) {
+          if (!dsDirectAlgorithmsMap[dsName]) {
+            dsDirectAlgorithmsMap[dsName] = [];
+          }
+          dsDirectAlgorithmsMap[dsName].push({
+            name: algoName,
+            constraints: dsConstraints || {},
+            tags
+          });
+        }
+      }
     }
 
-    // Check if a DS node or any of its descendants is permitted by the active DS filter
+    function isExactOrAcronymMatch(query, target) {
+      /* isExactOrAcronymMatch checks if the search query matches a contiguous substring or hyphen/underscore acronym of the target name */
+      const q = query.toLowerCase().trim();
+      const t = String(target).toLowerCase();
+
+      if (t.includes(q)) return true;
+
+      const initials = t.split(/[-_\s]+/).map(w => w[0] || '').join('');
+      if (initials.includes(q.replace(/\s+/g, ''))) return true;
+
+      return false;
+    }
+
+    function isSubsequenceMatch(query, target) {
+      /* isSubsequenceMatch performs fuzzy character-order matching when no exact or acronym match exists */
+      const cleanQuery = query.replace(/\s+/g, '').toLowerCase();
+      if (!cleanQuery) return true;
+      const cleanTarget = String(target).toLowerCase();
+      let qIdx = 0;
+      for (let i = 0; i < cleanTarget.length && qIdx < cleanQuery.length; i++) {
+        if (cleanTarget[i] === cleanQuery[qIdx]) {
+          qIdx++;
+        }
+      }
+      return qIdx === cleanQuery.length;
+    }
+
     function isNodeInFilterScope(dsName, dsObj) {
+      /* isNodeInFilterScope checks whether a Data Structure node or any of its descendants is permitted by activeDsFilterSet */
       if (activeDsFilterSet.size === 0) return true;
       if (activeDsFilterSet.has(dsName)) return true;
       const children = (dsObj && dsObj.children) || {};
@@ -4507,11 +4508,12 @@
     }
 
     function isDirectDsAllowedByFilter(dsName) {
+      /* isDirectDsAllowedByFilter checks if a specific Data Structure is directly enabled in activeDsFilterSet */
       return activeDsFilterSet.size === 0 || activeDsFilterSet.has(dsName);
     }
 
-    // Check if ANY visible node in the tree matches using `matchFn`
     function treeHasMatchWithFn(nodesObj, query, matchFn) {
+      /* treeHasMatchWithFn tests whether any visible node in the tree matches the search query under the given matchFn */
       for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
         if (!isNodeInFilterScope(dsName, dsObj)) continue;
 
@@ -4532,6 +4534,7 @@
     }
 
     function createChevronSvg(isExpanded, isEmpty) {
+      /* createChevronSvg creates the rotating SVG folder chevron icon for expandable Data Structure rows */
       const span = document.createElement('span');
       span.className = `tree-chevron${isExpanded ? ' expanded' : ''}${isEmpty ? ' empty' : ''}`;
       span.innerHTML = `
@@ -4543,13 +4546,13 @@
     }
 
     function updateAlgorithmSettings(name, parentDsName = null) {
+      /* updateAlgorithmSettings populates the Constraints & Tags badges and required/optional parameter inputs inside #algo-settings-card */
       const paramsContainer = document.getElementById('algo-params-container');
       const optParamsContainer = document.getElementById('algo-optional-params-container');
       const metaSection = document.getElementById('algo-settings-meta-section');
       const metaContainer = document.getElementById('algo-settings-meta-container');
       if (!paramsContainer || !optParamsContainer) return;
 
-      // If nothing is selected, or a data structure (not an algorithm) is selected
       const algoData = algorithmsJson[name];
       if (!name || !algoData) {
         paramsContainer.innerHTML = '';
@@ -4561,7 +4564,6 @@
         return;
       }
 
-      // Render Constraints & Tags in Algorithm Settings
       if (metaSection && metaContainer) {
         metaContainer.innerHTML = '';
         const inputs = algoData.inputs || {};
@@ -4641,13 +4643,12 @@
       paramsContainer.innerHTML = buildInputs(reqParams, noReqParamsMsg);
       optParamsContainer.innerHTML = buildInputs(optParams, noOptParamsMsg);
 
-      // Ensure text is styled correctly when inputs are rendered
       paramsContainer.style.color = reqParams && reqParams.length ? 'inherit' : 'var(--text-muted)';
       optParamsContainer.style.color = optParams && optParams.length ? 'inherit' : 'var(--text-muted)';
     }
 
-    // Select a data structure or algorithm and load its Notes / Code / Explanation
     function selectDsaItem(name, parentDsName = null) {
+      /* selectDsaItem highlights the clicked Data Structure or Algorithm row in #algo-tree-container and updates the Code/Notes pane and Settings card */
       selectedDsaName = name;
       algoTreeContainer.querySelectorAll('.tree-row[data-dsa-name]').forEach(row => {
         row.classList.toggle('selected', row.getAttribute('data-dsa-name') === name);
@@ -4656,12 +4657,11 @@
       updateAlgorithmSettings(name, parentDsName);
     }
 
-    // Render the main collapsible Data Structures & Algorithms tree
     function renderMainAlgoTree() {
+      /* renderMainAlgoTree builds and renders the collapsible Data Structure & Algorithm hierarchy inside #algo-tree-container */
       const rawQuery = algoSearchInput.value.trim();
       const isSearching = rawQuery.length > 0;
 
-      // Exact & Acronym matching first; if not found anywhere, fall back to subsequence fuzzy matching
       let matchFn = null;
       if (isSearching) {
         const hasExactOrAcronym = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactOrAcronymMatch);
@@ -4684,19 +4684,17 @@
         const selfMatchesSearch = isSearching && directAllowed && matchFn(rawQuery, dsName);
         const effectiveAncestorMatch = ancestorMatchedSearch || selfMatchesSearch;
 
-        // Filter direct algorithms
         let visibleAlgos = allDirectAlgos;
         let hasMatchingDirectAlgo = false;
 
         if (isSearching) {
           const matchedAlgos = allDirectAlgos.filter(algo =>
-            matchFn(rawQuery, algo.name) || algo.tags.some(tag => matchFn(rawQuery, tag))
+            matchFn(rawQuery, algo.name) || algo.tags.some(tag => matchFn(query = rawQuery, tag))
           );
           hasMatchingDirectAlgo = matchedAlgos.length > 0;
           visibleAlgos = hasMatchingDirectAlgo ? matchedAlgos : (effectiveAncestorMatch ? allDirectAlgos : []);
         }
 
-        // Build child data structures recursively
         const childFragment = document.createDocumentFragment();
         let hasVisibleChildDs = false;
         for (const [childName, childObj] of childEntries) {
@@ -4709,14 +4707,12 @@
 
         const effectiveHasMatchingAlgo = isAlgosHidden ? false : hasMatchingDirectAlgo;
 
-        // Determine if this DS node should be displayed
         if (isSearching && !selfMatchesSearch && !effectiveHasMatchingAlgo && !hasVisibleChildDs && !ancestorMatchedSearch) {
           return null;
         }
 
         const hasAnyChildren = hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0);
 
-        // Requirement 2: Automatically expand folders that contain the keyword when searching
         let isExpanded = expandedMainFolders.has(dsName);
         if (isSearching && (effectiveHasMatchingAlgo || hasVisibleChildDs || selfMatchesSearch)) {
           isExpanded = true;
@@ -4753,7 +4749,6 @@
         const childrenContainer = document.createElement('div');
         childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
 
-        // 1. Append direct algorithms FIRST
         if (!isAlgosHidden) {
           for (const algo of visibleAlgos) {
             const algoWrapper = document.createElement('div');
@@ -4763,7 +4758,6 @@
             algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
             algoRow.setAttribute('data-dsa-name', algo.name);
 
-            // Create the bullet dot instead of an empty chevron space
             const dot = document.createElement('span');
             dot.className = 'algo-dot';
 
@@ -4785,9 +4779,7 @@
           }
         }
 
-        // 2. Append nested child data structures NEXT (after the loop)
         childrenContainer.appendChild(childFragment);
-
         nodeWrapper.appendChild(childrenContainer);
 
         dsRow.addEventListener('click', (e) => {
@@ -4825,8 +4817,8 @@
       }
     }
 
-    // Render the Filter Tree (All data structures in the same collapsible folder format, without algorithms)
     function renderFilterDsTree() {
+      /* renderFilterDsTree builds the checkbox folder tree inside #algo-filter-tree for filtering by Data Structure */
       algoFilterTreeEl.innerHTML = '';
       algoFilterBtn.classList.toggle('has-active-filter', activeDsFilterSet.size > 0);
 
@@ -4849,7 +4841,7 @@
 
         const label = document.createElement('span');
         label.className = 'tree-label ds-label';
-        label.textContent = dsName; // Exact unformatted name
+        label.textContent = dsName;
 
         row.appendChild(chevron);
         row.appendChild(checkbox);
@@ -4865,7 +4857,6 @@
 
         nodeWrapper.appendChild(childrenContainer);
 
-        // Clicking chevron toggles folder open/close
         chevron.addEventListener('click', (e) => {
           if (!hasChildren) return;
           e.stopPropagation();
@@ -4879,7 +4870,6 @@
           }
         });
 
-        // Clicking checkbox or row toggles filter for this data structure
         const toggleFilterSelection = () => {
           if (activeDsFilterSet.has(dsName)) {
             activeDsFilterSet.delete(dsName);
@@ -4908,44 +4898,8 @@
       }
     }
 
-    const algoSearchClearBtn = document.getElementById('algo-search-clear-btn');
-    const algoHideBtn = document.getElementById('algo-hide-btn');
-    let isAlgosHidden = false;
-
-    algoHideBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      isAlgosHidden = !isAlgosHidden;
-      algoHideBtn.classList.toggle('has-active-filter', isAlgosHidden);
-      algoHideBtn.setAttribute('aria-pressed', String(isAlgosHidden));
-      renderMainAlgoTree();
-    });
-
-    algoSearchInput.addEventListener('input', () => {
-      algoSearchClearBtn.style.display = algoSearchInput.value.length > 0 ? 'flex' : 'none';
-      renderMainAlgoTree();
-    });
-
-    algoSearchClearBtn.addEventListener('click', () => {
-      algoSearchInput.value = '';
-      algoSearchClearBtn.style.display = 'none';
-      algoSearchInput.focus();
-      renderMainAlgoTree();
-    });
-
-    algoFilterBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = algoFilterPanel.classList.toggle('open');
-      algoFilterBtn.setAttribute('aria-expanded', String(isOpen));
-    });
-
-    algoFilterClearBtn.addEventListener('click', () => {
-      activeDsFilterSet.clear();
-      renderFilterDsTree();
-      renderMainAlgoTree();
-    });
-
-    // Dynamically load data-structures.json, algorithms.json, and constraints.json via fetch
     async function loadDsaMetadata() {
+      /* loadDsaMetadata fetches data-structures.json, algorithms.json, and constraints.json and initializes the filter and main trees */
       try {
         const [dsRes, algoRes, constRes] = await Promise.all([
           fetch('data-structures.json'),
@@ -4965,333 +4919,442 @@
       }
     }
 
-    loadDsaMetadata();
+    /* Initialize Favourites, Tree Event Listeners, and JSON Metadata Fetch */
+    loadFavourites();
 
-    // =========================================================================
-    // COLLAPSIBLE ALGORITHMS CARD & ADAPTIVE PHONE/DESKTOP PLACEMENT
-    // =========================================================================
-    const phoneMedia = window.matchMedia(LAYOUT_CONFIG.MOBILE_BREAKPOINT_QUERY);
-    const workspace = document.getElementById('workspace');
-    const leftColumn = document.getElementById('left-column');
-    const rightColumn = document.getElementById('right-column');
-    const graphCard = document.getElementById('graph-card');
-    const splitterLeftH = document.getElementById('splitter-left-h');
-    const desktopTraversalSlot = document.getElementById('desktop-traversal-slot');
-    const bottomSplitRow = document.getElementById('bottom-split-row');
-    const splitterBottomMobileV = document.getElementById('splitter-bottom-mobile-v');
-    const logCard = document.getElementById('log-card');
-    const stateCard = document.getElementById('state-card');
-    const rightTopRow = document.getElementById('right-top-row');
-    const splitterRightH = document.getElementById('splitter-right-h');
-
-    const algoCard = document.getElementById('algorithms-card');
-    const algoCollapsedStrip = document.getElementById('algo-collapsed-strip');
-    const splitterAlgoCode = document.getElementById('splitter-algo-code-v');
-    const algoColumn = document.getElementById('algo-column');
-    const algoSettingsCard = document.getElementById('algo-settings-card');
-    const splitterAlgoSettingsH = document.getElementById('splitter-algo-settings-h');
-
-    let isAlgoCollapsed = false;
-    let savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
-
-    function setAlgoCollapsed(collapse, customExpandedWidth) {
-      isAlgoCollapsed = collapse;
-      const isPhone = phoneMedia.matches;
-
-      if (isAlgoCollapsed) {
-        if (!customExpandedWidth && algoColumn.style.width) {
-          savedAlgoWidth = algoColumn.style.width;
-        }
-        algoColumn.classList.add('is-collapsed');
-        algoColumn.style.width = '';
-      } else {
-        algoColumn.classList.remove('is-collapsed');
-        algoColumn.style.width = customExpandedWidth || savedAlgoWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
-      }
-    }
-
-    algoCollapsedStrip.addEventListener('click', () => {
-      setAlgoCollapsed(false);
-      if (typeof saveLayoutState === 'function') saveLayoutState();
+    algoSearchInput.addEventListener('input', () => {
+      algoSearchClearBtn.style.display = algoSearchInput.value.length > 0 ? 'flex' : 'none';
+      renderMainAlgoTree();
     });
 
-    const leftMainStack = document.getElementById('left-main-stack');
-    const historyColumn = document.getElementById('history-column');
-    const metadataCard = document.getElementById('metadata-card');
-    const historyCard = document.getElementById('history-card');
-    const metadataCollapsedStrip = document.getElementById('metadata-collapsed-strip');
-    const historyCollapsedStrip = document.getElementById('history-collapsed-strip');
-    const splitterHistoryGraph = document.getElementById('splitter-history-graph-v');
-    const splitterMetadataHistoryH = document.getElementById('splitter-metadata-history-h');
+    algoSearchClearBtn.addEventListener('click', () => {
+      algoSearchInput.value = '';
+      algoSearchClearBtn.style.display = 'none';
+      algoSearchInput.focus();
+      renderMainAlgoTree();
+    });
 
-    let isHistoryCollapsed = true;
-    let savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
+    if (algoFavFilterBtn) {
+      algoFavFilterBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isFavFilterActive = !isFavFilterActive;
+        algoFavFilterBtn.classList.toggle('has-active-filter', isFavFilterActive);
+        algoFavFilterBtn.setAttribute('aria-pressed', String(isFavFilterActive));
+        renderMainAlgoTree();
+      });
+    }
 
-    function setHistoryCollapsed(collapse, customExpandedWidth) {
-      isHistoryCollapsed = collapse;
-      const isPhone = phoneMedia.matches;
+    algoHideBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isAlgosHidden = !isAlgosHidden;
+      algoHideBtn.classList.toggle('has-active-filter', isAlgosHidden);
+      algoHideBtn.setAttribute('aria-pressed', String(isAlgosHidden));
+      renderMainAlgoTree();
+    });
 
-      if (isHistoryCollapsed) {
-        if (!customExpandedWidth && historyColumn.style.width) {
-          savedHistoryWidth = historyColumn.style.width;
+    algoFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = algoFilterPanel.classList.toggle('open');
+      algoFilterBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    algoFilterClearBtn.addEventListener('click', () => {
+      activeDsFilterSet.clear();
+      renderFilterDsTree();
+      renderMainAlgoTree();
+    });
+
+    loadDsaMetadata();
+    /* ========== End of Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
+
+
+    /* ========== Right Column: Code / Notes Card & Bottom State / Explanation Card ========== */
+    /* DOM Elements for Code/Notes View (#codeViewPane), State/Explanation View (#stateViewPane), Tabs, Language Dropdown, and Copy/Download Buttons */
+    const codeViewPane = document.getElementById('codeViewPane');
+    const stateViewPane = document.getElementById('stateViewPane');
+
+    const desktopTabs = document.querySelectorAll('#code-card .desktop-tabs .vscode-tab');
+    const tabWrapper = document.getElementById('tab-dropdown-wrapper');
+    const tabTriggerBtn = document.getElementById('tab-trigger-btn');
+    const tabMenu = document.getElementById('tab-dropdown-menu');
+    const tabActiveLabel = document.getElementById('tab-active-label');
+    const tabOptions = tabMenu ? tabMenu.querySelectorAll('.lang-option-item') : [];
+
+    const langWrapper = document.getElementById('lang-dropdown-wrapper');
+    const langTriggerBtn = document.getElementById('lang-trigger-btn');
+    const langMenu = document.getElementById('lang-dropdown-menu');
+    const langActiveDot = document.getElementById('lang-active-dot');
+    const langActiveLabel = document.getElementById('lang-active-label');
+    const langOptions = document.querySelectorAll('#lang-dropdown-menu .lang-option-item');
+
+    const btnCopyCode = document.getElementById('btn-copy-code');
+    const imgCopyCode = document.getElementById('img-copy-code');
+    const btnDownloadCode = document.getElementById('btn-download-code');
+
+    const stateDesktopTabs = document.querySelectorAll('#state-card .desktop-tabs .vscode-tab');
+    const stateTabWrapper = document.getElementById('state-tab-dropdown-wrapper');
+    const stateTabTriggerBtn = document.getElementById('state-tab-trigger-btn');
+    const stateTabMenu = document.getElementById('state-tab-dropdown-menu');
+    const stateTabActiveLabel = document.getElementById('state-tab-active-label');
+    const stateTabOptions = stateTabMenu ? stateTabMenu.querySelectorAll('.lang-option-item') : [];
+
+    /* State for Active Tabs, Programming Language Selection, and Prism Resize Observer */
+    let activeRightTopTab = 'code';
+    let activeStateBottomTab = 'state';
+    let currentLangExt = '.py';
+    let currentPrismLang = 'python';
+    let resizeRafId = null;
+
+    function syncPrismLayout(pre) {
+      /* syncPrismLayout recalculates Prism.js line numbers and line-highlight overlays when #codeViewPane resizes or wraps lines */
+      if (!pre || !window.Prism) return;
+
+      if (window.Prism.plugins?.lineNumbers?.resize) {
+        window.Prism.plugins.lineNumbers.resize(pre);
+      }
+
+      if (window.Prism.plugins?.lineHighlight) {
+        const code = pre.querySelector('code');
+        pre.querySelectorAll('.line-highlight').forEach(el => el.remove());
+
+        const highlightLines = pre.getAttribute('data-line');
+        if (highlightLines) {
+          const reposition = window.Prism.plugins.lineHighlight.highlightLines(pre, highlightLines);
+          if (typeof reposition === 'function') reposition();
+        } else if (code) {
+          window.Prism.hooks.run('complete', { element: code });
         }
-        historyColumn.classList.add('is-collapsed');
-        historyColumn.style.width = '';
-      } else {
-        historyColumn.classList.remove('is-collapsed');
-        historyColumn.style.width = customExpandedWidth || savedHistoryWidth || (isPhone ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
       }
     }
 
-    if (metadataCollapsedStrip) {
-      metadataCollapsedStrip.addEventListener('click', () => {
-        setHistoryCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      });
-    }
-    if (historyCollapsedStrip) {
-      historyCollapsedStrip.addEventListener('click', () => {
-        setHistoryCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      });
-    }
-
-    const algoSettingsCollapsedStrip = document.getElementById('algo-settings-collapsed-strip');
-    if (algoSettingsCollapsedStrip) {
-      algoSettingsCollapsedStrip.addEventListener('click', () => {
-        setAlgoCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      });
-    }
-
-    const codeCard = document.getElementById('code-card');
-    const graphCollapsedStrip = document.getElementById('graph-collapsed-strip');
-    const logCollapsedStrip = document.getElementById('log-collapsed-strip');
-    const codeCollapsedStrip = document.getElementById('code-collapsed-strip');
-    const zenModeBtn = document.getElementById('zen-mode-btn');
-
-    let isGraphCollapsed = false;
-    let isCodeCollapsed = false;
-    let isZenMode = false;
-
-    function setZenMode(enabled) {
-      isZenMode = Boolean(enabled);
-      if (isZenMode) {
-        updateHorizontalCollapsedStates();
+    async function updateCodeViewPane() {
+      /* updateCodeViewPane loads and renders either the syntax-highlighted code file (.py, .cpp, .java) or the conceptual HTML notes (.html) into #codeViewPane */
+      if (!selectedDsaName) {
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: var(--text-muted); text-align: center; display: block; margin-top: 1rem;">
+              Pick an algorithm or data structure from the sidebar and explore how it works.
+            </span>
+          </div>
+        `;
+        return;
       }
-      document.body.classList.toggle('zen-mode', isZenMode);
-      if (!isZenMode) {
-        requestAnimationFrame(updateHorizontalCollapsedStates);
+
+      if (activeRightTopTab === 'explanation') {
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Explanations not implemented yet</span>
+          </div>
+        `;
+        return;
       }
-      if (zenModeBtn) {
-        zenModeBtn.classList.toggle('active', isZenMode);
-        zenModeBtn.setAttribute('aria-pressed', String(isZenMode));
-      }
+
+      const currentTarget = selectedDsaName;
+      const currentTab = activeRightTopTab;
+      const ext = currentTab === 'notes' ? '.html' : currentLangExt;
+      const formattedTarget = currentTarget.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+      const filePath = `dsa/${formattedTarget}${ext}`;
+
       try {
-        localStorage.setItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY, isZenMode ? '1' : '0');
-      } catch (e) { }
-    }
-
-    function updateHorizontalCollapsedStates() {
-      const isPhone = phoneMedia.matches;
-      const minCardH = isPhone
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.15);
-      const tolerance = 4; // px tolerance for borders & subpixel rounding
-
-      const checkCardMinHeight = (cardEl, parentCollapsed = false) => {
-        if (!cardEl) return false;
-        if (parentCollapsed) {
-          cardEl.classList.remove('is-h-collapsed');
-          return false;
+        const response = await fetch(filePath);
+        if (!response.ok) {
+          throw new Error('File not found');
         }
-        const rect = cardEl.getBoundingClientRect();
-        // If hidden by Zen Mode already (rect.height === 0), preserve its current state
-        if (rect.height === 0) {
-          return cardEl.classList.contains('is-h-collapsed');
+        const text = await response.text();
+
+        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
+
+        if (text.includes('<title>Shard Spiral</title>')) {
+          throw new Error('Fallback HTML returned');
         }
-        const isAtMin = rect.height <= (minCardH + tolerance);
-        cardEl.classList.toggle('is-h-collapsed', isAtMin);
-        return isAtMin;
-      };
 
-      // 1. Check individual cards
-      checkCardMinHeight(graphCard, isGraphCollapsed);
-      const logCollapsed = checkCardMinHeight(logCard, isGraphCollapsed);
-      const stateCollapsed = checkCardMinHeight(stateCard, false);
-      const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
-      const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
-      checkCardMinHeight(metadataCard, isHistoryCollapsed);
-      checkCardMinHeight(historyCard, isHistoryCollapsed);
-      const codeHCollapsed = checkCardMinHeight(codeCard, isCodeCollapsed);
-
-      // 2. Check #bottom-split-row (State variables on Desktop; Traversal + State variables on Mobile)
-      if (bottomSplitRow) {
-        const isBottomRowMin = isPhone
-          ? (logCollapsed && stateCollapsed)
-          : stateCollapsed;
-        bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
-      }
-
-      // 3. Check #right-top-row (when dragged all the way up to minimum height)
-      if (rightTopRow) {
-        const rtRect = rightTopRow.getBoundingClientRect();
-        const allRightTopChildrenCollapsed = (isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) && (isCodeCollapsed || codeHCollapsed);
-        if (rtRect.height > 0) {
-          const isRightTopMin = rtRect.height <= (minCardH + tolerance) || allRightTopChildrenCollapsed;
-          rightTopRow.classList.toggle('is-row-h-collapsed', isRightTopMin);
-        } else if (allRightTopChildrenCollapsed) {
-          rightTopRow.classList.add('is-row-h-collapsed');
-        }
-      }
-
-      // 4. On Mobile, check if #right-column or top #left-column (Graph row) is collapsed
-      if (rightColumn) {
-        const isRightColCollapsed = rightTopRow.classList.contains('is-row-h-collapsed') &&
-          bottomSplitRow.classList.contains('is-row-h-collapsed');
-        rightColumn.classList.toggle('is-row-h-collapsed', isRightColCollapsed);
-      }
-
-      if (leftColumn) {
-        if (isPhone) {
-          const lcRect = leftColumn.getBoundingClientRect();
-          const allLeftColChildrenCollapsed = isHistoryCollapsed && isGraphCollapsed;
-          if (lcRect.height > 0) {
-            leftColumn.classList.toggle('is-row-h-collapsed', lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed);
-          } else if (allLeftColChildrenCollapsed) {
-            leftColumn.classList.add('is-row-h-collapsed');
-          }
+        if (currentTab === 'notes') {
+          codeViewPane.innerHTML = `<div class="card-inner-pad notes-content">${text}</div>`;
         } else {
-          leftColumn.classList.remove('is-row-h-collapsed');
+          if (/^\s*<!doctype html/i.test(text) || /^\s*<html/i.test(text)) {
+            throw new Error('Unexpected HTML for code file');
+          }
+          const pre = document.createElement('pre');
+          pre.className = 'line-numbers';
+          pre.setAttribute('data-line', '1,3,7,10');
+
+          const code = document.createElement('code');
+          code.className = `language-${currentPrismLang}`;
+          code.textContent = text.replace(/\r\n?/g, '\n');
+
+          pre.appendChild(code);
+          codeViewPane.innerHTML = '';
+          codeViewPane.appendChild(pre);
+
+          if (window.Prism) {
+            window.Prism.highlightElement(code);
+            requestAnimationFrame(() => syncPrismLayout(pre));
+          }
         }
+      } catch (err) {
+        if (selectedDsaName !== currentTarget || activeRightTopTab !== currentTab) return;
+        codeViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Algorithm/Data structure not implemented yet</span>
+          </div>
+        `;
       }
     }
 
-    if (zenModeBtn) {
-      zenModeBtn.addEventListener('click', () => setZenMode(!isZenMode));
+    function setActiveTab(tabType, tabText) {
+      /* setActiveTab synchronizes the active state between desktop Code/Notes tabs (#tab-code, #tab-notes) and the mobile dropdown (#tab-trigger-btn) */
+      activeRightTopTab = tabType;
+
+      desktopTabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
+      });
+
+      if (tabActiveLabel) tabActiveLabel.textContent = tabText;
+      tabOptions.forEach(opt => {
+        const isActive = opt.getAttribute('data-tab-type') === tabType;
+        opt.classList.toggle('active', isActive);
+        opt.setAttribute('aria-selected', String(isActive));
+      });
+
+      updateCodeViewPane();
     }
+
+    function updateStateViewPane() {
+      /* updateStateViewPane updates #stateViewPane depending on whether the "State variables" or "Explanation" tab is active */
+      if (!stateViewPane) return;
+      if (activeStateBottomTab === 'explanation') {
+        stateViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">Explanations not implemented yet</span>
+          </div>
+        `;
+      } else {
+        stateViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text">State variables content goes here.</span>
+          </div>
+        `;
+      }
+    }
+
+    function setActiveStateTab(tabType, tabText) {
+      /* setActiveStateTab synchronizes the active state between desktop State/Explanation tabs (#tab-state-variables, #tab-explanation) and the mobile dropdown (#state-tab-trigger-btn) */
+      activeStateBottomTab = tabType;
+
+      stateDesktopTabs.forEach(t => {
+        t.classList.toggle('active', t.getAttribute('data-tab-type') === tabType);
+      });
+
+      if (stateTabActiveLabel) stateTabActiveLabel.textContent = tabText;
+      stateTabOptions.forEach(opt => {
+        const isActive = opt.getAttribute('data-tab-type') === tabType;
+        opt.classList.toggle('active', isActive);
+        opt.setAttribute('aria-selected', String(isActive));
+      });
+
+      updateStateViewPane();
+    }
+
+    /* ResizeObserver for Prism Code Layout & Event Listeners for Code/Notes Tabs, Language Selector, Copy/Download Buttons, and State/Explanation Tabs */
+    const codePaneResizeObserver = new ResizeObserver(() => {
+      if (activeRightTopTab !== 'code' || !window.Prism) return;
+      if (resizeRafId) cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        const pre = codeViewPane.querySelector('pre.line-numbers');
+        syncPrismLayout(pre);
+      });
+    });
+    codePaneResizeObserver.observe(codeViewPane);
+
+    desktopTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabType = tab.getAttribute('data-tab-type');
+        const tabText = tab.textContent.trim();
+        setActiveTab(tabType, tabText);
+      });
+    });
+
+    if (tabTriggerBtn) {
+      tabTriggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = tabMenu.classList.toggle('open');
+        tabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+
+    tabOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const tabType = option.getAttribute('data-tab-type');
+        const tabText = option.querySelector('span').textContent.trim();
+        tabMenu.classList.remove('open');
+        tabTriggerBtn.setAttribute('aria-expanded', 'false');
+        setActiveTab(tabType, tabText);
+      });
+    });
+
+    langTriggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = langMenu.classList.toggle('open');
+      langTriggerBtn.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    langOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const selectedLang = option.getAttribute('data-lang');
+        const selectedColor = option.getAttribute('data-color');
+        currentLangExt = option.getAttribute('data-ext') || '.py';
+        currentPrismLang = option.getAttribute('data-prism') || 'python';
+
+        langActiveLabel.textContent = selectedLang;
+        langActiveDot.style.backgroundColor = selectedColor;
+
+        langOptions.forEach(opt => {
+          const active = opt === option;
+          opt.classList.toggle('active', active);
+          opt.setAttribute('aria-selected', String(active));
+        });
+
+        langMenu.classList.remove('open');
+        langTriggerBtn.setAttribute('aria-expanded', 'false');
+
+        try {
+          localStorage.setItem(LAYOUT_CONFIG.LANG_STORAGE_KEY, selectedLang);
+        } catch (e) { }
+
+        if (activeRightTopTab === 'code' && selectedDsaName) {
+          updateCodeViewPane();
+        }
+      });
+    });
 
     try {
-      if (localStorage.getItem(LAYOUT_CONFIG.ZEN_STORAGE_KEY) === '1') {
-        setZenMode(true);
+      const savedLang = localStorage.getItem(LAYOUT_CONFIG.LANG_STORAGE_KEY);
+      if (savedLang) {
+        const savedLangOpt = Array.from(langOptions).find(opt => opt.getAttribute('data-lang') === savedLang);
+        if (savedLangOpt) savedLangOpt.click();
       }
     } catch (e) { }
 
-    function setGraphCollapsed(collapse) {
-      isGraphCollapsed = Boolean(collapse);
-      leftMainStack.classList.toggle('is-collapsed', isGraphCollapsed);
-    }
+    btnCopyCode.addEventListener('click', () => {
+      const codeElement = document.querySelector('#codeViewPane code');
+      if (!codeElement) return;
 
-    function setCodeCollapsed(collapse) {
-      isCodeCollapsed = Boolean(collapse);
-      codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
-    }
+      navigator.clipboard.writeText(codeElement.textContent).then(() => {
+        imgCopyCode.src = 'images/success.png';
+        setTimeout(() => {
+          imgCopyCode.src = 'images/copy.png';
+        }, 5000);
+      });
+    });
 
-    if (graphCollapsedStrip) {
-      graphCollapsedStrip.addEventListener('click', () => {
-        setGraphCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
+    btnDownloadCode.addEventListener('click', () => {
+      const codeElement = document.querySelector('#codeViewPane code');
+      if (!codeElement) return;
+
+      const activeOption = document.querySelector('#lang-dropdown-menu .lang-option-item.active');
+      const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
+      const codeText = codeElement.textContent;
+      const baseName = (selectedDsaName || 'algorithm').replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+
+      const blob = new Blob([codeText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${baseName}${ext}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    stateDesktopTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabType = tab.getAttribute('data-tab-type');
+        const tabText = tab.textContent.trim();
+        setActiveStateTab(tabType, tabText);
+      });
+    });
+
+    if (stateTabTriggerBtn) {
+      stateTabTriggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = stateTabMenu.classList.toggle('open');
+        stateTabTriggerBtn.setAttribute('aria-expanded', String(isOpen));
       });
     }
-    if (logCollapsedStrip) {
-      logCollapsedStrip.addEventListener('click', () => {
-        setGraphCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
+
+    stateTabOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const tabType = option.getAttribute('data-tab-type');
+        const tabText = option.querySelector('span').textContent.trim();
+        stateTabMenu.classList.remove('open');
+        stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
+        setActiveStateTab(tabType, tabText);
       });
-    }
-    if (codeCollapsedStrip) {
-      codeCollapsedStrip.addEventListener('click', () => {
-        setCodeCollapsed(false);
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      });
-    }
+    });
 
-    function syncResponsiveStructure() {
-      const isPhone = phoneMedia.matches;
-
-      leftColumn.style.width = '';
-      leftColumn.style.height = '';
-      graphCard.style.height = '';
-      rightTopRow.style.height = '';
-      logCard.style.width = '';
-      algoCard.style.height = '';
-      metadataCard.style.height = '';
-
-      if (isPhone) {
-        if (logCard.parentElement !== bottomSplitRow) {
-          bottomSplitRow.insertBefore(logCard, splitterBottomMobileV);
-        }
-        if (splitterLeftH.parentElement !== workspace) {
-          workspace.insertBefore(splitterLeftH, rightColumn);
-        }
-        setAlgoCollapsed(true);
-        setHistoryCollapsed(true);
-      } else {
-        if (splitterLeftH.parentElement !== leftMainStack) {
-          leftMainStack.insertBefore(splitterLeftH, desktopTraversalSlot);
-        }
-        if (logCard.parentElement !== desktopTraversalSlot) {
-          desktopTraversalSlot.appendChild(logCard);
-        }
-        setAlgoCollapsed(false);
-        setHistoryCollapsed(true); // Always starts collapsed
+    window.addEventListener('click', (e) => {
+      if (!langWrapper.contains(e.target)) {
+        langMenu.classList.remove('open');
+        langTriggerBtn.setAttribute('aria-expanded', 'false');
       }
+      if (tabWrapper && !tabWrapper.contains(e.target)) {
+        tabMenu.classList.remove('open');
+        if (tabTriggerBtn) tabTriggerBtn.setAttribute('aria-expanded', 'false');
+      }
+      if (stateTabWrapper && !stateTabWrapper.contains(e.target)) {
+        stateTabMenu.classList.remove('open');
+        if (stateTabTriggerBtn) stateTabTriggerBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+    /* ========== End of Right Column: Code / Notes Card & Bottom State / Explanation Card ========== */
+
+
+    /* ========== Profile Floating Modal Window ========== */
+    /* DOM Elements for Profile Header Button (#btnProfile), Modal Backdrop (#profile-modal-backdrop), Close Button (#close-profile-modal), and Sidebar Tabs (.profile-nav-tab) */
+    const btnProfile = document.getElementById('btnProfile');
+    const profileModalBackdrop = document.getElementById('profile-modal-backdrop');
+    const closeProfileModalBtn = document.getElementById('close-profile-modal');
+    const profileNavTabs = document.querySelectorAll('.profile-nav-tab');
+    const profilePaneAccount = document.getElementById('profile-pane-account');
+    const profilePaneShortcuts = document.getElementById('profile-pane-shortcuts');
+
+    function setProfileModalOpen(open) {
+      /* setProfileModalOpen shows or hides the Profile modal overlay (#profile-modal-backdrop) */
+      profileModalBackdrop.classList.toggle('open', open);
     }
 
-    phoneMedia.addEventListener('change', syncResponsiveStructure);
-    syncResponsiveStructure();
+    /* Event Listeners for Opening, Closing, and Switching Tabs inside the Profile Modal */
+    btnProfile.addEventListener('click', () => {
+      setProfileModalOpen(!profileModalBackdrop.classList.contains('open'));
+    });
 
-    function saveLayoutState() {
-      try {
-        const layout = {
-          leftColumnW: leftColumn.style.width,
-          graphCardH: graphCard.style.height,
-          rightTopRowH: rightTopRow.style.height,
-          algoColumnW: algoColumn.style.width,
-          algorithmsCardH: algoCard.style.height,
-          historyColumnW: historyColumn.style.width,
-          metadataCardH: metadataCard.style.height,
-          logCardW: logCard.style.width,
-          isAlgoCollapsed,
-          isHistoryCollapsed,
-          isGraphCollapsed,
-          isCodeCollapsed,
-          savedAlgoWidth,
-          savedHistoryWidth
-        };
-        localStorage.setItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY, JSON.stringify(layout));
-      } catch (e) { }
-    }
+    closeProfileModalBtn.addEventListener('click', () => setProfileModalOpen(false));
 
-    function loadLayoutState() {
-      try {
-        const stored = localStorage.getItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY);
-        if (stored) {
-          const layout = JSON.parse(stored);
-          if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
-          if (layout.graphCardH) graphCard.style.height = layout.graphCardH;
-          if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
-          if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
-          if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
-          if (layout.logCardW) logCard.style.width = layout.logCardW;
+    profileModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === profileModalBackdrop) setProfileModalOpen(false);
+    });
 
-          savedAlgoWidth = layout.savedAlgoWidth || (phoneMedia.matches ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
-          savedHistoryWidth = layout.savedHistoryWidth || (phoneMedia.matches ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && profileModalBackdrop.classList.contains('open')) {
+        setProfileModalOpen(false);
+      }
+    });
 
-          setAlgoCollapsed(layout.isAlgoCollapsed, layout.isAlgoCollapsed ? null : savedAlgoWidth);
-          setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
-          setGraphCollapsed(Boolean(layout.isGraphCollapsed));
-          setCodeCollapsed(Boolean(layout.isCodeCollapsed));
-        }
-      } catch (e) { }
-    }
+    profileNavTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-profile-tab');
+        profileNavTabs.forEach(t => t.classList.toggle('active', t === tab));
+        profilePaneAccount.classList.toggle('active', target === 'account');
+        profilePaneShortcuts.classList.toggle('active', target === 'shortcuts');
+      });
+    });
+    /* ========== End of Profile Floating Modal Window ========== */
 
-    loadLayoutState(); // Apply saved sizes right after setting initial structure
 
-    // =========================================================================
-    // UNIVERSAL TOUCH + MOUSE RESIZABLE SPLITTERS (DYNAMIC CSS VAR BOUNDS)
-    // =========================================================================
+    /* ========== Interactive Resizable Splitters (Mouse & Touch) ========== */
     function makeResizable({ splitter, getContainer, getTargetPane, getDirection, getMinUnits, getMaxReservedUnits }) {
+      /* makeResizable attaches mouse and touch drag handlers to standard horizontal and vertical splitters */
       let isDragging = false;
 
       const startDrag = (e) => {
@@ -5340,209 +5403,18 @@
         splitter.classList.remove('dragging');
         document.body.style.cursor = '';
         updateHorizontalCollapsedStates();
-        if (typeof saveLayoutState === 'function') saveLayoutState();
+        saveLayoutState();
       };
 
       splitter.addEventListener('mousedown', startDrag);
       splitter.addEventListener('touchstart', startDrag, { passive: false });
-
       window.addEventListener('mousemove', onDrag);
       window.addEventListener('touchmove', onDrag, { passive: false });
-
       window.addEventListener('mouseup', stopDrag);
       window.addEventListener('touchend', stopDrag);
     }
 
-    // 1. Desktop Main Vertical Splitter (Supports collapsing Graph or Code)
-    (function setupMainVerticalSplitter() {
-      const mainSplitter = document.getElementById('splitter-main-v');
-      let isDragging = false;
-
-      const startDrag = (e) => {
-        isDragging = true;
-        mainSplitter.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        e.preventDefault();
-      };
-
-      const onDrag = (e) => {
-        if (!isDragging) return;
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const rect = workspace.getBoundingClientRect();
-        if (rect.width <= 0) return;
-
-        const collapsedStripW = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
-        const collapseThresholdU = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
-        const splitterW = mainSplitter.getBoundingClientRect().width;
-
-        const desiredLeftW = clientX - rect.left;
-        const desiredRightW = rect.width - desiredLeftW - splitterW;
-
-        const histW = isHistoryCollapsed ? collapsedStripW : historyColumn.getBoundingClientRect().width;
-        const histSplitW = splitterHistoryGraph.getBoundingClientRect().width;
-
-        // Collapse Graph if left-main-stack is squeezed below threshold
-        const graphAvailableW = desiredLeftW - histW - histSplitW;
-        if (graphAvailableW < collapseThresholdU) {
-          if (!isGraphCollapsed) setGraphCollapsed(true);
-        } else if (isGraphCollapsed) {
-          setGraphCollapsed(false);
-        }
-
-        // Collapse Code if right column is squeezed so Code falls below threshold
-        const algoW = isAlgoCollapsed ? collapsedStripW : algoColumn.getBoundingClientRect().width;
-        const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
-        const codeAvailableW = desiredRightW - algoW - algoSplitW;
-        if (codeAvailableW < collapseThresholdU) {
-          if (!isCodeCollapsed) setCodeCollapsed(true);
-        } else if (isCodeCollapsed) {
-          setCodeCollapsed(false);
-        }
-
-        const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
-          (isGraphCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
-        const minRightW = (isAlgoCollapsed ? collapsedStripW : collapseThresholdU) +
-          (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
-
-        const clampedLeftW = Math.max(minLeftW, Math.min(rect.width - minRightW - splitterW, desiredLeftW));
-        leftColumn.style.width = `${((clampedLeftW / rect.width) * 100).toFixed(2)}%`;
-      };
-
-      const stopDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        mainSplitter.classList.remove('dragging');
-        document.body.style.cursor = '';
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      };
-
-      mainSplitter.addEventListener('mousedown', startDrag);
-      mainSplitter.addEventListener('touchstart', startDrag, { passive: false });
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('touchmove', onDrag, { passive: false });
-      window.addEventListener('mouseup', stopDrag);
-      window.addEventListener('touchend', stopDrag);
-    })();
-
-    // 2. Top Horizontal Splitter
-    makeResizable({
-      splitter: splitterLeftH,
-      getContainer: () => phoneMedia.matches ? workspace : leftMainStack,
-      getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
-      getDirection: () => 'vertical',
-      getMinUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
-      getMaxReservedUnits: () => {
-        if (phoneMedia.matches) {
-          const cardMin = getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6);
-          const topCollapsed = rightTopRow.classList.contains('is-row-h-collapsed');
-          const botCollapsed = bottomSplitRow.classList.contains('is-row-h-collapsed');
-          if (isZenMode && (topCollapsed || botCollapsed)) {
-            return cardMin;
-          }
-          const rightSplitterH = splitterRightH.getBoundingClientRect().height;
-          return (cardMin * 2) + rightSplitterH;
-        }
-        return getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75);
-      }
-    });
-
-    // 3. Middle Horizontal Pill Splitter
-    makeResizable({
-      splitter: splitterRightH,
-      getContainer: () => rightColumn,
-      getTargetPane: () => rightTopRow,
-      getDirection: () => 'vertical',
-      getMinUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.RIGHT_TOP_ROW_MIN_HEIGHT_VAR, 2.75),
-      getMaxReservedUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
-    });
-
-    // 4. Algorithms <-> Code Vertical Splitter (Supports collapsing either Algorithms OR Code)
-    (function setupAlgoSplitter() {
-      let isDragging = false;
-
-      const startDrag = (e) => {
-        isDragging = true;
-        splitterAlgoCode.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        e.preventDefault();
-      };
-
-      const onDrag = (e) => {
-        if (!isDragging) return;
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const rect = rightTopRow.getBoundingClientRect();
-        if (rect.width <= 0) return;
-
-        const collapseThresholdU = phoneMedia.matches
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
-        const collapsedStripW = phoneMedia.matches
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
-        const splitterW = splitterAlgoCode.getBoundingClientRect().width;
-        const desiredWidthU = clientX - rect.left;
-        const remainingCodeWidthU = rect.width - desiredWidthU - splitterW;
-
-        if (desiredWidthU < collapseThresholdU) {
-          if (isCodeCollapsed) setCodeCollapsed(false);
-          if (!isAlgoCollapsed) setAlgoCollapsed(true);
-        } else if (remainingCodeWidthU < collapseThresholdU) {
-          if (isAlgoCollapsed) setAlgoCollapsed(false);
-          if (!isCodeCollapsed) setCodeCollapsed(true);
-          const expandedAlgoW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
-          algoColumn.style.width = expandedAlgoW;
-        } else {
-          if (isCodeCollapsed) setCodeCollapsed(false);
-          const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
-          const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
-          const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
-          savedAlgoWidth = widthStr;
-
-          if (isAlgoCollapsed) {
-            setAlgoCollapsed(false, widthStr);
-          } else {
-            algoColumn.style.width = widthStr;
-          }
-        }
-      };
-
-      const stopDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        splitterAlgoCode.classList.remove('dragging');
-        document.body.style.cursor = '';
-        if (typeof saveLayoutState === 'function') saveLayoutState();
-      };
-
-      splitterAlgoCode.addEventListener('mousedown', startDrag);
-      splitterAlgoCode.addEventListener('touchstart', startDrag, { passive: false });
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('touchmove', onDrag, { passive: false });
-      window.addEventListener('mouseup', stopDrag);
-      window.addEventListener('touchend', stopDrag);
-    })();
-
-    // 5. Phone Bottom Vertical Pill Splitter
-    makeResizable({
-      splitter: splitterAlgoSettingsH,
-      getContainer: () => algoColumn,
-      getTargetPane: () => algoCard,
-      getDirection: () => 'vertical',
-      getMinUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
-      getMaxReservedUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
-    });
-
-    // 6. Metadata <-> History Horizontal Splitter (50/50 vertical split inside History Column)
+    /* 1. Metadata <-> History Horizontal Splitter (#splitter-metadata-history-h) */
     makeResizable({
       splitter: splitterMetadataHistoryH,
       getContainer: () => historyColumn,
@@ -5556,7 +5428,7 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 
-    // 7. History Column <-> Graph/Traversal Stack Vertical Splitter (Supports collapsing History OR Graph)
+    /* 2. History Column <-> Graph Stack Vertical Splitter (#splitter-history-graph-v) */
     (function setupHistorySplitter() {
       let isDragging = false;
 
@@ -5613,7 +5485,7 @@
         isDragging = false;
         splitterHistoryGraph.classList.remove('dragging');
         document.body.style.cursor = '';
-        if (typeof saveLayoutState === 'function') saveLayoutState();
+        saveLayoutState();
       };
 
       splitterHistoryGraph.addEventListener('mousedown', startDrag);
@@ -5624,7 +5496,194 @@
       window.addEventListener('touchend', stopDrag);
     })();
 
-    // 8. Mobile Bottom Vertical Splitter (Traversal <-> State Variables)
+    /* 3. Graph <-> Traversal Horizontal Splitter (#splitter-left-h) */
+    makeResizable({
+      splitter: splitterLeftH,
+      getContainer: () => phoneMedia.matches ? workspace : leftMainStack,
+      getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
+      getDirection: () => 'vertical',
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
+      getMaxReservedUnits: () => {
+        if (phoneMedia.matches) {
+          const cardMin = getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6);
+          const topCollapsed = rightTopRow.classList.contains('is-row-h-collapsed');
+          const botCollapsed = bottomSplitRow.classList.contains('is-row-h-collapsed');
+          if (isZenMode && (topCollapsed || botCollapsed)) {
+            return cardMin;
+          }
+          const rightSplitterH = splitterRightH.getBoundingClientRect().height;
+          return (cardMin * 2) + rightSplitterH;
+        }
+        return getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75);
+      }
+    });
+
+    /* 4. Desktop Main Left <-> Right Column Vertical Splitter (#splitter-main-v) */
+    (function setupMainVerticalSplitter() {
+      const mainSplitter = document.getElementById('splitter-main-v');
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        mainSplitter.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = workspace.getBoundingClientRect();
+        if (rect.width <= 0) return;
+
+        const collapsedStripW = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
+        const collapseThresholdU = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
+        const splitterW = mainSplitter.getBoundingClientRect().width;
+
+        const desiredLeftW = clientX - rect.left;
+        const desiredRightW = rect.width - desiredLeftW - splitterW;
+
+        const histW = isHistoryCollapsed ? collapsedStripW : historyColumn.getBoundingClientRect().width;
+        const histSplitW = splitterHistoryGraph.getBoundingClientRect().width;
+
+        const graphAvailableW = desiredLeftW - histW - histSplitW;
+        if (graphAvailableW < collapseThresholdU) {
+          if (!isGraphCollapsed) setGraphCollapsed(true);
+        } else if (isGraphCollapsed) {
+          setGraphCollapsed(false);
+        }
+
+        const algoW = isAlgoCollapsed ? collapsedStripW : algoColumn.getBoundingClientRect().width;
+        const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
+        const codeAvailableW = desiredRightW - algoW - algoSplitW;
+        if (codeAvailableW < collapseThresholdU) {
+          if (!isCodeCollapsed) setCodeCollapsed(true);
+        } else if (isCodeCollapsed) {
+          setCodeCollapsed(false);
+        }
+
+        const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
+          (isGraphCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
+        const minRightW = (isAlgoCollapsed ? collapsedStripW : collapseThresholdU) +
+          (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
+
+        const clampedLeftW = Math.max(minLeftW, Math.min(rect.width - minRightW - splitterW, desiredLeftW));
+        leftColumn.style.width = `${((clampedLeftW / rect.width) * 100).toFixed(2)}%`;
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        mainSplitter.classList.remove('dragging');
+        document.body.style.cursor = '';
+        saveLayoutState();
+      };
+
+      mainSplitter.addEventListener('mousedown', startDrag);
+      mainSplitter.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    })();
+
+    /* 5. Algorithms <-> Settings Horizontal Splitter (#splitter-algo-settings-h) */
+    makeResizable({
+      splitter: splitterAlgoSettingsH,
+      getContainer: () => algoColumn,
+      getTargetPane: () => algoCard,
+      getDirection: () => 'vertical',
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
+      getMaxReservedUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
+    });
+
+    /* 6. Algorithms Column <-> Code Card Vertical Splitter (#splitter-algo-code-v) */
+    (function setupAlgoSplitter() {
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        splitterAlgoCode.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      };
+
+      const onDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const rect = rightTopRow.getBoundingClientRect();
+        if (rect.width <= 0) return;
+
+        const collapseThresholdU = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
+        const collapsedStripW = phoneMedia.matches
+          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
+          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
+        const splitterW = splitterAlgoCode.getBoundingClientRect().width;
+        const desiredWidthU = clientX - rect.left;
+        const remainingCodeWidthU = rect.width - desiredWidthU - splitterW;
+
+        if (desiredWidthU < collapseThresholdU) {
+          if (isCodeCollapsed) setCodeCollapsed(false);
+          if (!isAlgoCollapsed) setAlgoCollapsed(true);
+        } else if (remainingCodeWidthU < collapseThresholdU) {
+          if (isAlgoCollapsed) setAlgoCollapsed(false);
+          if (!isCodeCollapsed) setCodeCollapsed(true);
+          const expandedAlgoW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
+          algoColumn.style.width = expandedAlgoW;
+        } else {
+          if (isCodeCollapsed) setCodeCollapsed(false);
+          const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
+          const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
+          const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
+          savedAlgoWidth = widthStr;
+
+          if (isAlgoCollapsed) {
+            setAlgoCollapsed(false, widthStr);
+          } else {
+            algoColumn.style.width = widthStr;
+          }
+        }
+      };
+
+      const stopDrag = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        splitterAlgoCode.classList.remove('dragging');
+        document.body.style.cursor = '';
+        saveLayoutState();
+      };
+
+      splitterAlgoCode.addEventListener('mousedown', startDrag);
+      splitterAlgoCode.addEventListener('touchstart', startDrag, { passive: false });
+      window.addEventListener('mousemove', onDrag);
+      window.addEventListener('touchmove', onDrag, { passive: false });
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchend', stopDrag);
+    })();
+
+    /* 7. Right Top Row <-> Bottom Split Row Horizontal Splitter (#splitter-right-h) */
+    makeResizable({
+      splitter: splitterRightH,
+      getContainer: () => rightColumn,
+      getTargetPane: () => rightTopRow,
+      getDirection: () => 'vertical',
+      getMinUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.RIGHT_TOP_ROW_MIN_HEIGHT_VAR, 2.75),
+      getMaxReservedUnits: () => phoneMedia.matches
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
+    });
+
+    /* 8. Mobile Bottom Traversal <-> State Variables Vertical Splitter (#splitter-bottom-mobile-v) */
     makeResizable({
       splitter: splitterBottomMobileV,
       getContainer: () => bottomSplitRow,
@@ -5633,73 +5692,11 @@
       getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5),
       getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5)
     });
-
-    function resetAllProportions() {
-      // 1. Disable Zen Mode first (removes body.zen-mode, updates button state & localStorage)
-      setZenMode(false);
-
-      // 2. Reset saved widths & vertical collapse states
-      savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
-      savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
-      setGraphCollapsed(false);
-      setCodeCollapsed(false);
-
-      // 3. Clear any horizontal collapse states
-      document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
-        el.classList.remove('is-h-collapsed', 'is-row-h-collapsed');
-      });
-
-      // 4. Clear stored layout state and restore initial responsive structure
-      try { localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY); } catch (e) { }
-      syncResponsiveStructure();
-    }
-
-    // =========================================================================
-    // VISUALIZATION CONTROLS SYNCHRONIZATION
-    // =========================================================================
-    const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
-    const speedLabels = document.querySelectorAll('.playback-speed-value');
-
-    // Sync Sliders
-    speedSliders.forEach(slider => {
-      slider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        speedSliders.forEach(s => s.value = val);
-        speedLabels.forEach(l => l.textContent = `${val}x`);
-      });
-    });
-
-    // Simply map clicks on the sync-* buttons to trigger your existing primary graph logic, e.g.:
-    document.querySelectorAll('.sync-run').forEach(btn => btn.addEventListener('click', () => { /* Call your run simulation fn */ }));
-    document.querySelectorAll('.sync-step-front').forEach(btn => btn.addEventListener('click', () => { /* Call step front fn */ }));
-    document.querySelectorAll('.sync-step-back').forEach(btn => btn.addEventListener('click', () => { /* Call step back fn */ }));
-    document.querySelectorAll('.sync-reset').forEach(btn => btn.addEventListener('click', () => { /* Call reset fn */ }));
-
-    document.getElementById('reset-layout-btn').addEventListener('click', resetAllProportions);
+    /* ========== End of Interactive Resizable Splitters (Mouse & Touch) ========== */
   </script>
 
-  <!--========== Welcome Tour Spotlight & Card DOM ==========-->
-  <div id="tour-spotlight" class="tour-spotlight" style="display: none;"></div>
-  <div id="tour-card" class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-card-title">
-    <div id="tour-arrow" class="tour-arrow"></div>
-    <div class="tour-card-header">
-      <span id="tour-card-title" class="tour-card-title"></span>
-      <span id="tour-step-counter" class="tour-step-counter"></span>
-    </div>
-    <p id="tour-card-desc" class="tour-card-desc"></p>
-    <div class="tour-card-footer">
-      <button type="button" id="tour-skip-btn" class="tour-btn tour-btn-skip">Skip tour</button>
-      <div style="display: flex; gap: 0.4rem;">
-        <button type="button" id="tour-prev-btn" class="tour-btn tour-btn-secondary">Back</button>
-        <button type="button" id="tour-next-btn" class="tour-btn tour-btn-primary">Next</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // =========================================================================
-    // MODULAR & CONFIGURABLE WELCOME TOUR (DESKTOP + MOBILE READY)
-    // =========================================================================
+    // ========== Modular welcome tour ========== //
     const TOUR_STORAGE_KEY = 'shard-spiral-welcome-tour-completed-v1';
 
     /**
@@ -5846,9 +5843,8 @@
       'profile'
     ];
 
-    // =========================================================================
-    // TOUR ENGINE (LOCATION-INSENSITIVE DYNAMIC POSITIONING)
-    // =========================================================================
+    // ========== TOUR ENGINE (LOCATION-INSENSITIVE DYNAMIC POSITIONING) ========== //
+
     (function initWelcomeTour() {
       const spotlightEl = document.getElementById('tour-spotlight');
       const cardEl = document.getElementById('tour-card');
