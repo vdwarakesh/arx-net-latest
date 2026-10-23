@@ -9,7 +9,35 @@
   <script src="js/tailwind.js"></script>
   <script src="js/prism.js"></script>
   <style>
+    /* Property ordering
+      1. position
+      2. inset (top / right / bottom / left)
+      3. z-index
+      4. display
+      5. flex (direction / wrap / grow / shrink / basis)
+      6. alignment (justify-content / align-items / align-self)
+      7. gap
+      8. width
+      9. height
+      10. min-width / min-height
+      11. max-width / max-height
+      12. margin
+      13. padding
+      14. background (color / image / position / size / repeat)
+      15. border (width / style / color / radius)
+      16. box-shadow
+      17. typography (font-family / size / weight / style / line-height / letter-spacing / text-align / text-transform / white-space)
+      18. color
+      19. overflow (overflow-x / overflow-y)
+      20. appearance (-webkit-appearance / appearance)
+      21. cursor
+      22. pointer-events
+      23. transitions / animations
+    */
+
     :root {
+      /* :root is used here to define global CSS custom properties (variables) for typography, sizing, panel proportions, buttons, splitters, and modal dimensions across desktop and mobile */
+
       /* ========== Typography & Base Scaling ========== */
       --base-root-font-size: 0.9rem;
       /* Base root font scaling across the entire app */
@@ -171,6 +199,7 @@
 
     :root,
     [data-theme="dark"] {
+      /* :root, [data-theme="dark"] is used here to define the dark theme color palette and Prism syntax highlighting variables */
       --bg-app: #181818;
       --bg-card: #1f1f1f;
       --bg-card-header: #252526;
@@ -214,9 +243,7 @@
       --prism-regex: #d16969;
 
       --prism-line-highlight-bg: #ffffff1a;
-      /* increased opacity from 0.04 to ~10% for visibility */
       --prism-line-highlight-grad: #ffffff1d;
-      /* increased opacity from 0.05 to ~15% */
       --prism-line-highlight-transparent: #ffffff00;
       --prism-line-highlight-label-bg: #3c3c3c;
       --prism-line-highlight-label-text: #cccccc;
@@ -226,10 +253,10 @@
 
       --prism-invisibles: #6e7681;
       --code-line-highlight: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 75%, transparent 100%);
-
     }
 
     [data-theme="light"] {
+      /* [data-theme="light"] is used here to define the light theme color palette and Prism syntax highlighting variables when light mode is active */
       --bg-app: #f8f8f8;
       --bg-card: #ffffff;
       --bg-card-header: #f3f3f3;
@@ -287,76 +314,97 @@
       --code-line-highlight: linear-gradient(90deg, rgba(0, 95, 184, 0.1) 0%, rgba(0, 95, 184, 0.03) 75%, transparent 100%);
     }
 
-    /* ========== Global styles ========== */
+    /* ========== Global & Base Styles ========== */
     * {
+      /* * is used here to enforce border-box sizing and inherited font sizing across all elements */
       box-sizing: border-box;
       font-size: inherit;
     }
 
     html {
+      /* html is used here to set the root font-size scaling for rem units */
       font-size: var(--base-root-font-size);
     }
 
     body {
+      /* body is used here to style the top-level viewport dimensions, theme colors, and base font family */
+      width: 100vw;
+      height: 100dvh;
       margin: 0;
       padding: 0;
       background-color: var(--bg-app);
-      color: var(--text-primary);
       font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      height: 100dvh;
-      width: 100vw;
+      color: var(--text-primary);
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
     }
 
-    /* ========== End of global styles ========== */
+    .app-shell {
+      /* .app-shell is used here on the body tag to structure the vertical flex shell of the application */
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* ========== End of Global & Base Styles ========== */
+
 
     /* ========== Scrollbars ========== */
     ::-webkit-scrollbar {
+      /* ::-webkit-scrollbar is used here to set the width of vertical scrollbars and height of horizontal scrollbars */
       width: 0.375rem;
       height: 0.375rem;
     }
 
     ::-webkit-scrollbar-track {
-      background: transparent;
+      /* ::-webkit-scrollbar-track is used here to keep the scrollbar track transparent with outer margin */
       margin: 0.5rem;
+      background: transparent;
     }
 
     ::-webkit-scrollbar-thumb {
+      /* ::-webkit-scrollbar-thumb is used here to style the draggable scrollbar thumb */
       background: var(--scrollbar-thumb);
       border-radius: 0.2rem;
     }
 
     ::-webkit-scrollbar-thumb:hover {
+      /* ::-webkit-scrollbar-thumb:hover is used here to highlight the scrollbar thumb when hovered */
       background: var(--scrollbar-thumb-hover);
     }
 
     ::-webkit-scrollbar-corner {
+      /* ::-webkit-scrollbar-corner is used here to keep the bottom corner where scrollbars meet transparent */
       background: transparent;
     }
 
-    /* ========== End of scrollbars ========== */
+    /* ========== End of Scrollbars ========== */
 
-    /* ========== Loading screen ========== */
+
+    /* ========== Loading Screen ========== */
     .loading-screen {
+      /* .loading-screen is used here for the full-window overlay displayed while application assets load */
       position: fixed;
       inset: 0;
-      background-color: var(--bg-app);
       z-index: 9999;
-      /* Highest Z-Index */
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: var(--bg-app);
       transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
     .loading-screen.fade-out {
+      /* .loading-screen.fade-out is used here to smoothly hide the loading overlay once loading completes */
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
 
     .loading-content {
+      /* .loading-content is used here to vertically stack the title, spinner, and subtitle inside .loading-screen */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -365,14 +413,16 @@
     }
 
     .loading-title {
+      /* .loading-title is used here to style the main "Shard Spiral" heading inside .loading-content */
+      margin: 0;
       font-size: 2.5rem;
       font-weight: 700;
-      color: var(--text-bright);
-      margin: 0;
       letter-spacing: 0.05em;
+      color: var(--text-bright);
     }
 
     .loading-spinner {
+      /* .loading-spinner is used here to render the rotating circular loader inside .loading-content */
       width: 3rem;
       height: 3rem;
       border: 0.25rem solid var(--border-color);
@@ -382,228 +432,43 @@
     }
 
     .loading-subtitle {
-      font-size: 1.1rem;
-      color: var(--text-muted);
+      /* .loading-subtitle is used here to style the tagline text below the spinner inside .loading-content */
       margin: 0;
+      font-size: 1.1rem;
       font-weight: 500;
       letter-spacing: 0.02em;
+      color: var(--text-muted);
     }
 
     @keyframes spin-anim {
+
+      /* @keyframes spin-anim is used here to rotate .loading-spinner 360 degrees continuously */
       to {
         transform: rotate(360deg);
       }
     }
 
-    /* ========== End of loading screen ========== */
+    /* ========== End of Loading Screen ========== */
 
-    /* ========== Welcome tour ========== */
-    .tour-spotlight {
-      position: fixed;
-      z-index: 9995;
-      pointer-events: none;
-      border-radius: 0.45rem;
-      border: 0.125rem solid var(--accent-primary);
-      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
-      transition: top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-        left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-        width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-        height 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
 
-    .tour-card {
-      position: fixed;
-      z-index: 9996;
-      width: 21rem;
-      max-width: calc(100vw - 1.5rem);
-      background-color: var(--bg-elevated);
-      border: 0.0625rem solid var(--accent-primary);
-      border-radius: 0.5rem;
-      padding: 0.9rem 1rem;
-      box-shadow: 0 0.75rem 2.25rem rgba(0, 0, 0, 0.55);
-      color: var(--text-primary);
-      display: none;
-      flex-direction: column;
-      gap: 0.55rem;
-      transition: top 0.22s ease, left 0.22s ease;
-    }
-
-    .tour-card.open {
+    /* ========== Top Title Bar ========== */
+    .top-titlebar {
+      /* .top-titlebar is used here for the top application header bar containing the brand logo, actions, and theme controls */
       display: flex;
-    }
-
-    .tour-arrow {
-      position: absolute;
-      width: 0.7rem;
-      height: 0.7rem;
-      background-color: var(--bg-elevated);
-      transform: rotate(45deg);
-      pointer-events: none;
-    }
-
-    .tour-card-header {
-      display: flex;
+      flex-shrink: 0;
       align-items: center;
       justify-content: space-between;
       gap: 0.5rem;
-    }
-
-    .tour-card-title {
-      font-weight: 700;
-      color: var(--text-bright);
-      font-size: 1.05em;
-    }
-
-    .tour-step-counter {
-      font-size: 0.8em;
-      color: var(--text-muted);
-      font-weight: 600;
-      background-color: var(--bg-card);
-      padding: 0.12rem 0.45rem;
-      border-radius: 0.25rem;
-      border: 0.0625rem solid var(--border-color);
-    }
-
-    .tour-card-desc {
-      margin: 0;
-      line-height: 1.45;
-      color: var(--text-primary);
-    }
-
-    .tour-card-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 0.25rem;
-      padding-top: 0.55rem;
-      border-top: 0.0625rem solid var(--border-color);
-    }
-
-    .tour-btn {
-      height: 1.85rem;
-      padding: 0 0.75rem;
-      border-radius: 0.3rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-    }
-
-    .tour-btn-skip {
-      background: transparent;
-      border: 0.0625rem solid transparent;
-      color: var(--text-muted);
-      padding-left: 0.35rem;
-      padding-right: 0.35rem;
-    }
-
-    .tour-btn-skip:hover {
-      color: var(--text-bright);
-      text-decoration: underline;
-    }
-
-    .tour-btn-secondary {
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      color: var(--text-primary);
-    }
-
-    .tour-btn-secondary:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .tour-btn-primary {
-      background-color: var(--accent-primary);
-      border: 0.0625rem solid var(--accent-primary);
-      color: #ffffff;
-    }
-
-    .tour-btn-primary:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* ========== End of welcome tour ========== */
-
-    /* ========== Code section ========== */
-    #codeViewPane {
-      overflow-x: hidden;
-      overflow-y: auto;
-      scrollbar-gutter: stable;
-      min-width: 0;
-    }
-
-    /* ========== Prism overrides ========== */
-    pre[class*=language-] {
-      margin: 0 !important;
-      border-radius: 0;
-      flex: 1 0 auto;
-      width: 100% !important;
-      max-width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
-      overflow: visible !important;
-      white-space: pre-wrap !important;
-      word-wrap: break-word !important;
-      overflow-wrap: break-word !important;
-      word-break: normal !important;
-      font-variant-ligatures: none !important;
-    }
-
-    code[class*=language-],
-    .line-numbers-sizer,
-    .line-numbers-sizer>span {
-      /* These tags are declared important because they override default prism values */
-      display: block !important;
-      width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
-      white-space: pre-wrap !important;
-      word-wrap: break-word !important;
-      overflow-wrap: break-word !important;
-      word-break: normal !important;
-      word-spacing: normal !important;
-      letter-spacing: normal !important;
-      font-variant-ligatures: none !important;
-    }
-
-    /* Keep line highlights aligned across wrapped lines */
-    .line-highlight {
-      background: var(--code-line-highlight) !important;
-      pointer-events: none;
-    }
-
-    /* ========== End of prism overrides ========== */
-    /* ========== Check css/Prism.css for prism color values ========== */
-
-    .app-shell {
-      /* Body class is app-shell */
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      width: 100vw;
-      overflow: hidden;
-    }
-
-    /* ========== Title Bar ========== */
-    .top-titlebar {
-      /* The titlebar that has logo, themes, zen mode, etc. */
       height: var(--header-height-desktop);
       min-height: var(--header-height-desktop);
       padding: 0 0.625rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 0.0625rem solid var(--border-color);
       background-color: var(--bg-app);
-      flex-shrink: 0;
-      gap: 0.5rem;
+      border-bottom: 0.0625rem solid var(--border-color);
     }
 
     .header-left-group,
     .header-right-group {
-      /* Sides of the titlebar */
+      /* .header-left-group and .header-right-group are used here to group the left and right controls inside .top-titlebar */
       display: flex;
       align-items: center;
       gap: 0.375rem;
@@ -611,840 +476,17 @@
     }
 
     .brand-title {
-      /* Logo and name */
+      /* .brand-title is used here to align the Shard Spiral logo image and text inside .header-left-group */
       display: flex;
       align-items: center;
       gap: 0.45rem;
       min-width: 0;
-    }
-
-    .brand-name-text {
-      /* Logo text */
-      font-weight: 600;
-      color: var(--text-bright);
-      white-space: nowrap;
-    }
-
-    .activity-btn {
-      /* Fullscreen, New, Zen, Reset layout, Profile buttons */
-      width: var(--header-action-btn-size);
-      height: var(--header-action-btn-size);
-      min-width: var(--header-action-btn-size);
-      min-height: var(--header-action-btn-size);
-      padding: 0;
-      border-radius: 0.5rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      cursor: pointer;
-      transition: background-color 0.12s ease, color 0.12s ease;
-      flex-shrink: 0;
-    }
-
-    .activity-btn:hover {
-      color: var(--text-primary);
-      background-color: var(--bg-hover);
-    }
-
-    #btnReload {
-      /* Reload button is only displayed on phone */
-      display: none;
-    }
-
-    /* ========== END OF TITLE BAR ========== */
-
-    .main-area {
-      display: flex;
-      flex: 1 1 0%;
-      min-height: 0;
-      min-width: 0;
-      overflow: hidden;
-    }
-
-    /* Workspace Container & Columns */
-    .workspace-container {
-      flex: 1 1 0%;
-      display: flex;
-      padding: 0.375rem;
-      min-width: 0;
-      min-height: 0;
-      background-color: var(--bg-app);
-      overflow: hidden;
-    }
-
-    .left-column {
-      /* Contains History, Metadata, Traversal, and Main card */
-      display: flex;
-      flex-direction: row;
-      width: var(--desktop-left-col-width);
-      min-width: calc((var(--card-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
-      max-width: calc(100% - var(--card-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
-      min-height: 0;
-      flex: 0 0 auto;
-    }
-
-    .right-column {
-      /* Contains Algorithms, Settings, State Variables/Explanation, and Code/Notes card */
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      min-height: 0;
-    }
-
-    .left-main-stack {
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-      min-width: var(--code-card-min-width);
-      min-height: 0;
-    }
-
-    .desktop-traversal-slot {
-      /* Traversal section is dynamically inserted here by JS */
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-      min-height: var(--card-min-height-desktop);
-      min-width: 0;
-    }
-
-
-    .right-top-row {
-      /* Top right styles - Algorithms and Code / Notes */
-      display: flex;
-      height: var(--desktop-right-top-height);
-      min-height: var(--right-top-row-min-height);
-      max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-desktop));
-      min-width: 0;
-      flex: 0 0 auto;
-    }
-
-    .bottom-split-row {
-      flex: 1 1 0%;
-      display: flex;
-      min-height: var(--bottom-row-min-height);
-      min-width: 0;
-    }
-
-    /* VS Code Card */
-    .vscode-card {
-      background-color: var(--bg-card);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.4375rem;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-width: 0;
-      min-height: var(--card-min-height-desktop);
-      position: relative;
-      transition: border-color 0.15s ease, background-color 0.15s ease;
-    }
-
-    .vscode-card-header {
-      height: var(--card-header-height-desktop);
-      min-height: var(--card-header-height-desktop);
-      padding: 0 0.625rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 0.0625rem solid var(--border-color);
-      background-color: var(--bg-card-header);
-      font-weight: 600;
-      color: var(--text-primary);
-      flex-shrink: 0;
-      gap: 0.375rem;
-    }
-
-    .code-card-header {
-      padding: 0 0.45rem;
-    }
-
-    .card-tabs-group {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      min-width: 0;
-      overflow-x: auto;
-    }
-
-    /* Specific Card Sizing & Constraints */
-    #graph-card {
-      height: var(--desktop-graph-height);
-      min-height: var(--card-min-height-desktop);
-      max-height: calc(100% - var(--card-min-height-desktop) - var(--splitter-thickness-desktop));
-      flex: 0 0 auto;
-    }
-
-    #algo-column {
-      display: flex;
-      flex-direction: column;
-      width: var(--algorithms-default-width-desktop);
-      min-width: var(--algorithms-min-width-desktop);
-      max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
-      flex: 0 0 auto;
-    }
-
-    #algo-column.is-collapsed {
-      width: var(--card-collapsed-width-desktop) !important;
-      min-width: var(--card-collapsed-width-desktop) !important;
-      max-width: var(--card-collapsed-width-desktop) !important;
-      gap: var(--splitter-thickness-desktop);
-    }
-
-    #algorithms-card {
-      height: var(--algo-top-height);
-      min-height: var(--card-min-height-desktop);
-      flex: 0 0 auto;
-    }
-
-    #algo-column.is-collapsed .vscode-card-header {
-      display: none;
-    }
-
-    #algo-column.is-collapsed .vscode-card {
-      background-color: var(--bg-card-header);
-    }
-
-    #algo-column.is-collapsed #algo-title,
-    #algo-column.is-collapsed #algo-body,
-    #algo-column.is-collapsed #algo-settings-title,
-    #algo-column.is-collapsed #algo-settings-body,
-    #algo-column.is-collapsed #splitter-algo-settings-h {
-      display: none;
-    }
-
-    #algo-column.is-collapsed #algo-collapsed-strip,
-    #algo-column.is-collapsed #algo-settings-collapsed-strip {
-      display: flex;
-    }
-
-    #algo-settings-card {
-      flex: 1 1 0%;
-      min-height: var(--card-min-height-desktop);
-    }
-
-    #history-column {
-      display: flex;
-      flex-direction: column;
-      width: var(--history-default-width-desktop);
-      min-width: var(--algorithms-min-width-desktop);
-      max-width: var(--history-max-width);
-      flex: 0 0 auto;
-    }
-
-    #history-column.is-collapsed {
-      width: var(--card-collapsed-width-desktop) !important;
-      min-width: var(--card-collapsed-width-desktop) !important;
-      max-width: var(--card-collapsed-width-desktop) !important;
-      gap: var(--splitter-thickness-desktop);
-    }
-
-    #metadata-card {
-      height: var(--history-top-height);
-      min-height: var(--card-min-height-desktop);
-      flex: 0 0 auto;
-    }
-
-    #history-card {
-      flex: 1 1 0%;
-      min-height: var(--card-min-height-desktop);
-    }
-
-    #history-column.is-collapsed .vscode-card-header {
-      display: none;
-    }
-
-    #history-column.is-collapsed .vscode-card {
-      background-color: var(--bg-card-header);
-    }
-
-    #history-column.is-collapsed #metadata-title,
-    #history-column.is-collapsed #metadata-body,
-    #history-column.is-collapsed #history-title,
-    #history-column.is-collapsed #history-body,
-    #history-column.is-collapsed #splitter-metadata-history-h {
-      display: none;
-    }
-
-    #metadata-collapsed-strip,
-    #history-collapsed-strip {
-      display: none;
-      flex: 1 1 0%;
-      min-height: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 0;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    #history-column.is-collapsed #metadata-collapsed-strip,
-    #history-column.is-collapsed #history-collapsed-strip {
-      display: flex;
-    }
-
-    #code-card {
-      flex: 1 1 0%;
-      min-width: var(--code-card-min-width);
-    }
-
-    #log-card {
-      width: 100%;
-      min-width: 0;
-      flex: 1 1 0%;
-    }
-
-    #state-card {
-      flex: 1 1 0%;
-      min-width: var(--bottom-cards-min-width);
-    }
-
-    #algo-fav-filter-btn .algo-filter-icon {
-      filter: none !important;
-    }
-
-    /* Card Internal Body Containers */
-    .graph-body-wrapper {
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .graph-canvas-area {
-      flex: 1 1 0%;
-      min-height: 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      overflow: hidden;
-    }
-
-    .card-scroll-body {
-      flex: 1 1 0%;
-      min-height: 0;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-inner-pad {
-      padding: 0.625rem 0.65rem;
-    }
-
-    .graph-inner-pad {
-      padding: 0.625rem 0.75rem;
-    }
-
-    .card-body-text {
-      color: var(--text-primary);
-      line-height: 1.35;
-      display: block;
-    }
-
-    .graph-placeholder-text {
-      color: var(--text-primary);
-      opacity: 0.9;
-    }
-
-    /* =========================================================================
-       ALGORITHMS SEARCH, FILTER & TREE VIEW STYLES
-       ========================================================================= */
-    #algo-title {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    #algo-body {
-      flex: 1 1 0%;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 0.45rem;
-      gap: 0.45rem;
-      min-height: 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .algo-search-row {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      flex-shrink: 0;
-    }
-
-    .algo-search-input-wrapper {
-      position: relative;
-      flex: 1 1 0%;
-      display: flex;
-      min-width: 0;
-    }
-
-    .algo-search-input {
-      width: 100%;
-      height: var(--control-btn-height-desktop);
-      min-height: var(--control-btn-height-desktop);
-      padding: 0 1.5rem 0 0.5rem;
-      /* Extra right padding for the X */
-      border-radius: 0.25rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      color: var(--text-primary);
-      outline: none;
-    }
-
-    .algo-search-input:focus {
-      border-color: var(--accent-primary);
-    }
-
-    .param-input-field {
-      width: 100%;
-      height: var(--control-btn-height-desktop);
-      min-height: var(--control-btn-height-desktop);
-      padding: 0 0.5rem;
-      border-radius: 0.25rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      color: var(--text-primary);
-      outline: none;
-      transition: border-color 0.12s ease;
-    }
-
-    .param-input-field:focus {
-      border-color: var(--accent-primary);
-    }
-
-    .algo-search-clear-btn {
-      position: absolute;
-      right: 0.25rem;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      line-height: 1;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 1.25rem;
-      height: 1.25rem;
-      padding: 0;
-      border-radius: 0.2rem;
-      transition: color 0.12s ease, background-color 0.12s ease;
-    }
-
-    .algo-search-clear-btn:hover {
-      color: var(--text-primary);
-      background-color: var(--bg-hover);
-    }
-
-    .algo-filter-btn {
-      width: var(--control-btn-height-desktop);
-      height: var(--control-btn-height-desktop);
-      min-width: var(--control-btn-height-desktop);
-      min-height: var(--control-btn-height-desktop);
-      padding: 0;
-      border-radius: 0.25rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background-color 0.12s ease, border-color 0.12s ease;
-    }
-
-    .algo-filter-btn:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .algo-filter-btn.has-active-filter {
-      border-color: var(--accent-primary);
-      background-color: var(--bg-active-item);
-    }
-
-    .algo-filter-icon {
-      width: 0.95rem;
-      height: 0.95rem;
-      object-fit: contain;
-      display: block;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    /* Filter Dropdown / Collapsible Panel */
-    .algo-filter-panel {
-      display: none;
-      flex-direction: column;
-      background-color: var(--bg-elevated);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.3125rem;
-      max-height: 75%;
-      min-height: 0;
-      overflow: hidden;
-      flex-shrink: 0;
-      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
-    }
-
-    .algo-filter-panel.open {
-      display: flex;
-    }
-
-    .algo-filter-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.3rem 0.5rem;
-      border-bottom: 0.0625rem solid var(--border-color);
-      font-size: 0.8em;
-      color: var(--text-muted);
-      flex-shrink: 0;
-    }
-
-    .algo-filter-clear-btn {
-      background: transparent;
-      border: none;
-      color: var(--accent-primary);
-      cursor: pointer;
-      padding: 0;
-      font-weight: 500;
-    }
-
-    .algo-filter-clear-btn:hover {
-      text-decoration: underline;
-    }
-
-    .algo-filter-tree-scroll {
-      overflow-y: auto;
-      padding: 0.25rem;
-      flex: 1 1 0%;
-      min-height: 0;
-    }
-
-    /* Main Tree Scroll Surface */
-    .algo-tree-container {
-      flex: 1 1 0%;
-      min-height: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 0.125rem;
-      padding-right: 0.125rem;
-    }
-
-    .tree-node {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 0.75rem;
-      /* Extra spacing between data structures */
-    }
-
-    .tree-row {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.22rem 0.35rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-      user-select: none;
-      color: var(--text-primary);
-      transition: background-color 0.1s ease, color 0.1s ease;
-      min-width: 0;
-    }
-
-    .tree-row:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .tree-row.selected .algo-dot {
-      background-color: var(--text-bright);
-      border-color: var(--text-bright);
-    }
-
-    .tree-row.selected .ds-leaf-dot::after {
-      background-color: var(--text-bright);
-    }
-
-    .tree-chevron {
-      width: 0.9rem;
-      height: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: var(--text-muted);
-      transition: transform 0.12s ease;
-    }
-
-    .tree-chevron.expanded {
-      transform: rotate(90deg);
-    }
-
-    .tree-chevron.empty {
-      visibility: hidden;
-    }
-
-    .tree-label {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      flex: 1 1 0%;
-    }
-
-    .ds-label {
-      font-weight: 700;
-    }
-
-    .algo-label {
-      font-weight: 300;
-      font-style: italic;
-    }
-
-    .tree-children {
-      display: none;
-      flex-direction: column;
-      padding-left: 0.75rem;
-      border-left: 0.125rem solid var(--scrollbar-thumb);
-      margin-left: 0.45rem;
-    }
-
-    .tree-children.expanded {
-      display: flex;
-    }
-
-    /* Algorithm Entry + Underneath Constraints & Tags */
-    .algo-item-wrapper {
-      display: flex;
-      flex-direction: column;
-      padding: 0.05rem 0;
-      margin-bottom: 0.15rem;
-    }
-
-    .algo-dot {
-      width: 0.35rem;
-      height: 0.35rem;
-      background-color: transparent;
-      border: 0.08rem solid var(--text-muted);
-      border-radius: 50%;
-      margin: 0 0.5rem 0 0.65rem;
-      flex-shrink: 0;
-      transition: background-color 0.12s ease, border-color 0.12s ease;
-    }
-
-    .ds-leaf-dot {
-      width: 0.9rem;
-      height: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .ds-leaf-dot::after {
-      content: '';
-      width: 0.3rem;
-      height: 0.6rem;
-      background-color: var(--text-muted);
-      transition: background-color 0.12s ease;
-    }
-
-    .algo-meta-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-      padding: 0.15rem 0.35rem 0.25rem 1.4rem;
-    }
-
-    .algo-meta-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.2rem;
-      padding: 0.08rem 0.32rem;
-      border-radius: 0.2rem;
-      background-color: var(--bg-elevated);
-      border: 0.0625rem solid var(--border-color);
-      font-size: 0.78em;
-      color: var(--text-muted);
-      line-height: 1.2;
-      max-width: 100%;
-    }
-
-    .algo-meta-badge.constraint-badge {
-      cursor: help;
-      color: var(--text-primary);
-    }
-
-    .algo-meta-icon {
-      width: 0.75rem;
-      height: 0.75rem;
-      object-fit: contain;
-      flex-shrink: 0;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    /* Custom Theme-Aware Checkbox */
-    .filter-checkbox {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 1.1rem;
-      height: 1.1rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.2rem;
-      margin: 0;
-      cursor: pointer;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: background-color 0.15s ease, border-color 0.15s ease;
-    }
-
-    /* Hover state */
-    .filter-checkbox:hover {
-      border-color: var(--accent-primary);
-      background-color: var(--bg-hover);
-    }
-
-    /* Checked state */
-    .filter-checkbox:checked {
-      background-color: var(--accent-primary);
-      border-color: var(--accent-primary);
-    }
-
-    /* The checkmark (drawn with CSS borders) */
-    .filter-checkbox:checked::after {
-      content: '';
-      position: absolute;
-      width: 0.25rem;
-      height: 0.5rem;
-      border: solid #ffffff;
-      /* Checkmark is always white to pop against the accent color */
-      border-width: 0 0.125rem 0.125rem 0;
-      transform: rotate(45deg);
-      margin-bottom: 0.1rem;
-      /* Optical centering */
-    }
-
-    /* Accessibility focus ring */
-    .filter-checkbox:focus-visible {
-      outline: 0.125rem solid var(--accent-primary);
-      outline-offset: 0.125rem;
-    }
-
-    .algo-empty-msg {
-      padding: 0.75rem 0.5rem;
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    #algo-collapsed-strip,
-    #algo-settings-collapsed-strip {
-      display: none;
-      flex: 1 1 0%;
-      min-height: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 0;
-      cursor: pointer;
-      overflow: hidden;
-    }
-
-    .algo-collapsed-label {
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      writing-mode: vertical-rl;
-      transform: rotate(180deg);
-    }
-
-    /* Tabs */
-    .vscode-tab {
-      height: var(--tab-height-desktop);
-      min-height: var(--tab-height-desktop);
-      padding: 0 0.5625rem;
-      border-radius: 0.3125rem;
-      display: inline-flex;
-      align-items: center;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: color 0.12s ease, background-color 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .vscode-tab:hover {
-      color: var(--text-primary);
-    }
-
-    .vscode-tab.active {
-      color: var(--text-bright);
-      background-color: var(--bg-pill-active);
-      font-weight: 600;
-    }
-
-    /* Icon Action Button in Card Headers */
-    .card-icon-btn {
-      width: var(--card-icon-btn-size);
-      height: var(--card-icon-btn-size);
-      min-width: var(--card-icon-btn-size);
-      min-height: var(--card-icon-btn-size);
-      padding: 0;
-      border-radius: 0.5rem;
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.12s ease, color 0.12s ease;
-      flex-shrink: 0;
-    }
-
-    .card-icon-btn:hover {
-      background-color: var(--bg-hover);
-      color: var(--text-bright);
-    }
-
-    /* Icon Images */
-    .sidebar-toggle-img {
-      width: var(--sidebar-toggle-icon-size-desktop);
-      height: var(--sidebar-toggle-icon-size-desktop);
-      min-width: var(--sidebar-toggle-icon-size-desktop);
-      min-height: var(--sidebar-toggle-icon-size-desktop);
-      max-width: none;
-      max-height: none;
-      padding: 0;
-      border-radius: 0.25rem;
-      object-fit: contain;
-      display: block;
-      flex-shrink: 0;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    .sidebar-toggle-img.has-error {
-      display: none;
-    }
-
-    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
-      display: inline-flex;
     }
 
     .brand-logo {
+      /* .brand-logo is used here to size the Shard Spiral logo image inside .brand-title */
+      display: block;
+      flex-shrink: 0;
       width: var(--brand-logo-size);
       height: var(--brand-logo-size);
       min-width: var(--brand-logo-size);
@@ -1454,11 +496,51 @@
       padding: 0;
       border-radius: 0.375rem;
       object-fit: contain;
-      display: block;
+    }
+
+    .brand-name-text {
+      /* .brand-name-text is used here to style the "Shard Spiral" title text next to .brand-logo */
+      font-weight: 600;
+      color: var(--text-bright);
+      white-space: nowrap;
+    }
+
+    .activity-btn {
+      /* .activity-btn gives the Fullscreen (#btnFullscreen), New (#btnNew), Reload (#btnReload), Zen Mode (#zen-mode-btn), Reset Layout (#reset-layout-btn), Help/Replay Tour (#btnHelp), and Profile (#btnProfile) buttons in the top titlebar their styles */
+      position: relative;
+      display: inline-flex;
       flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--header-action-btn-size);
+      height: var(--header-action-btn-size);
+      min-width: var(--header-action-btn-size);
+      min-height: var(--header-action-btn-size);
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .activity-btn:hover {
+      /* .activity-btn:hover gives the Fullscreen, New, Reload, Zen Mode, Reset Layout, Help, and Profile buttons their hover background and text color */
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .activity-btn.active {
+      /* .activity-btn.active gives toggled header buttons (such as the Zen Mode button #zen-mode-btn when active) their highlighted state */
+      background-color: var(--bg-active-item);
+      color: var(--text-bright);
     }
 
     .activity-icon-img {
+      /* .activity-icon-img is used here to size and theme-invert the PNG icons inside all .activity-btn buttons */
+      display: block;
+      flex-shrink: 0;
       width: var(--header-action-icon-size);
       height: var(--header-action-icon-size);
       min-width: var(--header-action-icon-size);
@@ -1466,452 +548,58 @@
       max-width: none;
       max-height: none;
       object-fit: contain;
-      display: block;
-      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
     }
 
-    /* Playback Controls Bar & Icon Buttons */
-    .playback-bar {
-      height: var(--playback-bar-height-desktop);
-      min-height: var(--playback-bar-height-desktop);
-      padding: 0 0.625rem;
-      border-top: 0.0625rem solid var(--border-color);
-      background-color: var(--bg-card);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.375rem;
-      overflow-x: auto;
-      flex-shrink: 0;
-    }
-
-    .playback-controls-left {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      flex-shrink: 0;
-    }
-
-    .visualization-options {
-      display: flex;
-      gap: 0.2rem;
-      margin: 0 0rem 0 0.25rem;
-      padding: 0 0.5rem;
-      border-left: 0.0375rem solid var(--splitter-pill);
-      align-items: center;
-    }
-
-    .playback-speed-group {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      margin-left: 0.25rem;
-    }
-
-    .playback-muted-label {
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
-
-    .playback-label-img {
-      width: var(--playback-icon-btn-size-desktop);
-      height: var(--playback-icon-btn-size-desktop);
-      object-fit: contain;
-      display: block;
-      flex-shrink: 0;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    .playback-speed-value {
-      color: var(--text-primary);
-      min-width: 1.4rem;
-    }
-
-    .playback-controls-right {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      flex-shrink: 0;
-    }
-
-    .playback-icon-btn {
-      width: var(--playback-icon-btn-size-desktop);
-      height: var(--playback-icon-btn-size-desktop);
-      min-width: var(--playback-icon-btn-size-desktop);
-      min-height: var(--playback-icon-btn-size-desktop);
-      padding: 0;
-      border-radius: 0.3125rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background-color 0.12s ease, border-color 0.12s ease;
-    }
-
-    .playback-icon-btn:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .playback-text-btn {
-      height: var(--playback-icon-btn-size-desktop);
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.3125rem;
-      padding: 0 0.5625rem;
-    }
-
-    .playback-text-btn:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .playback-icon-img {
-      width: var(--playback-icon-size-desktop);
-      height: var(--playback-icon-size-desktop);
-      min-width: var(--playback-icon-size-desktop);
-      min-height: var(--playback-icon-size-desktop);
-      max-width: none;
-      max-height: none;
-      object-fit: contain;
-      display: block;
-      flex-shrink: 0;
-      filter: var(--sidebar-icon-filter);
-    }
-
-    /* Profile Floating Modal Window */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
-      /* Second highest Z-Index */
-      padding: 1rem;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .profile-modal {
-      width: 100%;
-      max-width: var(--profile-modal-max-width);
-      height: var(--profile-modal-height-desktop);
-      max-height: 85dvh;
-      background-color: var(--bg-card);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
-    }
-
-    .profile-modal-header {
-      height: var(--profile-modal-header-height);
-      min-height: var(--profile-modal-header-height);
-      padding: 0 0.75rem;
-      background-color: var(--bg-card-header);
-      border-bottom: 0.0625rem solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-weight: 600;
-      color: var(--text-bright);
-    }
-
-    .profile-modal-body {
-      flex: 1 1 0%;
-      display: flex;
-      min-height: 0;
-      overflow: hidden;
-    }
-
-    .profile-modal-sidebar {
-      width: var(--profile-sidebar-width-desktop);
-      min-width: var(--profile-sidebar-width-desktop);
-      background-color: var(--bg-elevated);
-      border-right: 0.0625rem solid var(--border-color);
-      padding: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .profile-nav-tab {
-      width: 100%;
-      text-align: left;
-      padding: 0.4375rem 0.625rem;
-      border-radius: 0.3125rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-
-    .profile-nav-tab:hover {
-      background-color: var(--bg-hover);
-    }
-
-    .profile-nav-tab.active {
-      background-color: var(--bg-active-item);
-      color: var(--text-bright);
-      font-weight: 600;
-    }
-
-    .profile-modal-content {
-      flex: 1 1 0%;
-      padding: 0.875rem 1rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .profile-pane {
-      display: none;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .profile-pane.active {
-      display: flex;
-    }
-
-    .profile-user-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding-bottom: 0.625rem;
-      border-bottom: 0.0625rem solid var(--border-color);
-    }
-
-    .profile-user-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 0.125rem;
-    }
-
-    .profile-user-name {
-      font-weight: 600;
-      color: var(--text-bright);
-    }
-
-    .profile-info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-    }
-
-    .profile-info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.35rem 0;
-      border-bottom: 0.0625rem solid var(--border-subtle);
-    }
-
-    .profile-info-row.no-border {
-      border-bottom: none;
-    }
-
-    .profile-val-bright {
-      color: var(--text-bright);
-      font-weight: 500;
-    }
-
-    .profile-val-accent {
-      color: var(--accent-primary);
-      font-weight: 500;
-    }
-
-    .profile-signout-row {
-      margin-top: 0.25rem;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .profile-avatar-badge {
-      width: var(--profile-avatar-size);
-      height: var(--profile-avatar-size);
-      min-width: var(--profile-avatar-size);
-      min-height: var(--profile-avatar-size);
-      border-radius: 50%;
-      background-color: var(--accent-primary);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      flex-shrink: 0;
-      transition: background-color 0.12s ease;
-    }
-
-    .profile-avatar-badge:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .kbd-badge {
-      display: inline-block;
-      padding: 0.125rem 0.375rem;
-      min-width: 2rem;
-      text-align: center;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.25rem;
-      color: var(--text-bright);
-      font-family: 'Noto Sans Mono', monospace;
-    }
-
-    .sidebar-fallback-box {
-      width: 0.875rem;
-      height: 0.8125rem;
-      border: 0.08rem solid var(--text-muted);
-      border-radius: 0.125rem;
-      display: none;
-      align-items: center;
-      position: relative;
-      line-height: 1;
-      color: var(--text-primary);
-    }
-
-    .sidebar-fallback-box::before {
-      content: '';
-      width: 0.22rem;
-      height: 100%;
-      border-right: 0.08rem solid var(--text-muted);
-    }
-
-    /* Resizer / Splitter Bars */
-    .splitter-v {
-      width: var(--splitter-thickness-desktop);
-      min-width: var(--splitter-thickness-desktop);
-      cursor: col-resize;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-      flex-shrink: 0;
-      touch-action: none;
-    }
-
-    .splitter-v::after {
-      content: '';
-      width: var(--splitter-pill-thickness);
-      height: var(--splitter-v-pill-length);
-      border-radius: 0.25rem;
-      background-color: var(--splitter-pill);
-      opacity: 0.65;
-      transition: all 0.15s ease;
-    }
-
-    .splitter-v:hover::after,
-    .splitter-v.dragging::after {
-      height: var(--splitter-v-pill-hover-length);
-      opacity: 1;
-      background-color: var(--accent-primary);
-    }
-
-    .splitter-h {
-      height: var(--splitter-thickness-desktop);
-      min-height: var(--splitter-thickness-desktop);
-      cursor: row-resize;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 1;
-      flex-shrink: 0;
-      touch-action: none;
-    }
-
-    .splitter-h::after {
-      content: '';
-      height: var(--splitter-pill-thickness);
-      width: var(--splitter-h-pill-length);
-      border-radius: 0.25rem;
-      background-color: var(--splitter-pill);
-      opacity: 0.65;
-      transition: all 0.15s ease;
-    }
-
-    .splitter-h:hover::after,
-    .splitter-h.dragging::after {
-      width: var(--splitter-h-pill-hover-length);
-      opacity: 1;
-      background-color: var(--accent-primary);
-    }
-
-    #splitter-bottom-mobile-v {
+    #btnReload {
+      /* #btnReload is used here to hide the Reload Page button on desktop viewports (shown only on mobile) */
       display: none;
     }
 
-    /* Buttons */
-    .vscode-btn-secondary {
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      color: var(--text-primary);
-      height: var(--control-btn-height-desktop);
-      min-height: var(--control-btn-height-desktop);
-      padding: 1rem;
-      border-radius: 0.25rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.25rem;
-      cursor: pointer;
-      transition: background-color 0.12s ease, border-color 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .vscode-btn-secondary:hover {
-      background-color: var(--bg-hover);
-    }
-
-    /* Desktop Theme Segmented Switcher (Icon-Only PNGs) */
     .theme-switcher {
+      /* .theme-switcher is used here for the 3-way segmented theme toggle container inside .header-right-group on desktop */
       display: inline-flex;
       align-items: center;
+      gap: 0.125rem;
+      padding: 0.125rem;
       background-color: var(--bg-elevated);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.35rem;
-      padding: 0.125rem;
-      gap: 0.125rem;
     }
 
     .theme-option-btn {
+      /* .theme-option-btn gives the System Default Theme, VS Code Light Modern, and VS Code Dark Modern buttons inside .theme-switcher their styles */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: var(--theme-option-btn-size-desktop);
       height: var(--theme-option-btn-size-desktop);
       min-width: var(--theme-option-btn-size-desktop);
       min-height: var(--theme-option-btn-size-desktop);
       padding: 0;
-      border-radius: 0.25rem;
       background: transparent;
       border: none;
+      border-radius: 0.25rem;
       color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
       transition: all 0.12s ease;
     }
 
     .theme-option-btn:hover {
+      /* .theme-option-btn:hover gives the System, Light, and Dark theme switcher buttons their hover background */
       background-color: var(--bg-hover);
     }
 
     .theme-option-btn.active {
+      /* .theme-option-btn.active highlights the currently selected theme button (System, Light, or Dark) inside .theme-switcher */
       background-color: var(--bg-card);
       box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.25);
     }
 
     .theme-icon-img {
+      /* .theme-icon-img is used here to size the System, Light, and Dark PNG icons inside .theme-option-btn and .mobile-theme-cycle-btn */
+      display: block;
+      flex-shrink: 0;
       width: var(--theme-icon-size-desktop);
       height: var(--theme-icon-size-desktop);
       min-width: var(--theme-icon-size-desktop);
@@ -1919,98 +607,1101 @@
       max-width: none;
       max-height: none;
       object-fit: contain;
-      display: block;
-      flex-shrink: 0;
       filter: var(--sidebar-icon-filter);
     }
 
-    /* Mobile Single-Icon Cycling Theme Button (Hidden on Desktop) */
     .mobile-theme-cycle-btn {
+      /* .mobile-theme-cycle-btn gives the mobile single-icon cycling theme button (#mobile-theme-cycle-btn) its styles (hidden on desktop) */
       display: none;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
       width: var(--theme-cycle-btn-size-mobile);
       height: var(--theme-cycle-btn-size-mobile);
       min-width: var(--theme-cycle-btn-size-mobile);
       min-height: var(--theme-cycle-btn-size-mobile);
       padding: 0;
-      border-radius: 0.45rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
+      border-radius: 0.45rem;
       color: var(--text-bright);
-      align-items: center;
-      justify-content: center;
       cursor: pointer;
-      flex-shrink: 0;
       transition: background-color 0.12s ease, border-color 0.12s ease;
     }
 
     .mobile-theme-cycle-btn:hover {
+      /* .mobile-theme-cycle-btn:hover gives the mobile theme cycle button its hover background color */
       background-color: var(--bg-hover);
     }
 
     .mobile-theme-cycle-btn .theme-icon-img {
+      /* .mobile-theme-cycle-btn .theme-icon-img sizes the theme icon specifically inside the mobile theme cycle button */
       width: var(--theme-cycle-icon-size-mobile);
       height: var(--theme-cycle-icon-size-mobile);
       min-width: var(--theme-cycle-icon-size-mobile);
       min-height: var(--theme-cycle-icon-size-mobile);
     }
 
-    /* Custom Range Slider */
+    /* ========== End of Top Title Bar ========== */
+
+
+    /* ========== Main Workspace & Shared Card Scaffolding ========== */
+    .main-area {
+      /* .main-area is used here as the flex wrapper below .top-titlebar that holds the main workspace */
+      display: flex;
+      flex: 1 1 0%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .workspace-container {
+      /* .workspace-container is used here on #workspace to lay out the left and right columns and splitters */
+      display: flex;
+      flex: 1 1 0%;
+      min-width: 0;
+      min-height: 0;
+      padding: 0.375rem;
+      background-color: var(--bg-app);
+      overflow: hidden;
+    }
+
+    .vscode-card {
+      /* .vscode-card is used here as the shared card container for Metadata, History, Graph, Algorithms, Settings, Code, Traversal, and State Variables */
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: var(--card-min-height-desktop);
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.4375rem;
+      overflow: hidden;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .vscode-card-header {
+      /* .vscode-card-header is used here for the top title bar inside each .vscode-card */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.375rem;
+      height: var(--card-header-height-desktop);
+      min-height: var(--card-header-height-desktop);
+      padding: 0 0.625rem;
+      background-color: var(--bg-card-header);
+      border-bottom: 0.0625rem solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-scroll-body {
+      /* .card-scroll-body is used here for the scrollable content area inside cards */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .card-inner-pad {
+      /* .card-inner-pad is used here to provide consistent internal padding inside .card-scroll-body */
+      padding: 0.625rem 0.65rem;
+    }
+
+    .card-body-text {
+      /* .card-body-text is used here for standard body text spans and headings inside cards */
+      display: block;
+      line-height: 1.35;
+      color: var(--text-primary);
+    }
+
+    .algo-collapsed-label {
+      /* .algo-collapsed-label is used here to render vertical rotated text inside collapsed card strips (Metadata, History, Graph, Algorithms, Settings, Code) */
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+    }
+
+    .splitter-v {
+      /* .splitter-v is used here for vertical resizer bars that adjust horizontal widths between columns/cards */
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--splitter-thickness-desktop);
+      min-width: var(--splitter-thickness-desktop);
+      cursor: col-resize;
+      touch-action: none;
+    }
+
+    .splitter-v::after {
+      /* .splitter-v::after renders the visual pill indicator inside vertical splitters */
+      content: '';
+      width: var(--splitter-pill-thickness);
+      height: var(--splitter-v-pill-length);
+      background-color: var(--splitter-pill);
+      border-radius: 0.25rem;
+      opacity: 0.65;
+      transition: all 0.15s ease;
+    }
+
+    .splitter-v:hover::after,
+    .splitter-v.dragging::after {
+      /* .splitter-v:hover::after and .splitter-v.dragging::after expand and highlight the vertical splitter pill on hover or drag */
+      height: var(--splitter-v-pill-hover-length);
+      background-color: var(--accent-primary);
+      opacity: 1;
+    }
+
+    .splitter-h {
+      /* .splitter-h is used here for horizontal resizer bars that adjust vertical heights between stacked cards */
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      height: var(--splitter-thickness-desktop);
+      min-height: var(--splitter-thickness-desktop);
+      cursor: row-resize;
+      touch-action: none;
+    }
+
+    .splitter-h::after {
+      /* .splitter-h::after renders the visual pill indicator inside horizontal splitters */
+      content: '';
+      width: var(--splitter-h-pill-length);
+      height: var(--splitter-pill-thickness);
+      background-color: var(--splitter-pill);
+      border-radius: 0.25rem;
+      opacity: 0.65;
+      transition: all 0.15s ease;
+    }
+
+    .splitter-h:hover::after,
+    .splitter-h.dragging::after {
+      /* .splitter-h:hover::after and .splitter-h.dragging::after expand and highlight the horizontal splitter pill on hover or drag */
+      width: var(--splitter-h-pill-hover-length);
+      background-color: var(--accent-primary);
+      opacity: 1;
+    }
+
+    /* ========== End of Main Workspace & Shared Card Scaffolding ========== */
+
+
+    /* ========== Left Column (History, Metadata, Graph & Playback) ========== */
+    .left-column {
+      /* .left-column is used here on #left-column to hold the History/Metadata column and the Graph/Traversal stack */
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: row;
+      width: var(--desktop-left-col-width);
+      min-width: calc((var(--card-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
+      max-width: calc(100% - var(--card-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
+      min-height: 0;
+    }
+
+    #history-column {
+      /* #history-column is used here to stack the Metadata card (#metadata-card) and History card (#history-card) vertically */
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+      width: var(--history-default-width-desktop);
+      min-width: var(--algorithms-min-width-desktop);
+      max-width: var(--history-max-width);
+    }
+
+    #metadata-card {
+      /* #metadata-card is used here to set the default top height proportion for the Metadata section inside #history-column */
+      flex: 0 0 auto;
+      height: var(--history-top-height);
+      min-height: var(--card-min-height-desktop);
+    }
+
+    #history-card {
+      /* #history-card is used here to fill the remaining vertical space below #metadata-card inside #history-column */
+      flex: 1 1 0%;
+      min-height: var(--card-min-height-desktop);
+    }
+
+    #metadata-collapsed-strip,
+    #history-collapsed-strip {
+      /* #metadata-collapsed-strip and #history-collapsed-strip are used here for the clickable vertical bars shown when #history-column is collapsed */
+      display: none;
+      flex: 1 1 0%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 0.75rem 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .left-main-stack {
+      /* .left-main-stack is used here on #left-main-stack to stack the Graph card (#graph-card) and Desktop Traversal slot (#desktop-traversal-slot) */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      min-width: var(--code-card-min-width);
+      min-height: 0;
+    }
+
+    #graph-card {
+      /* #graph-card is used here for the primary Data Structure & Graph visualization card inside #left-main-stack */
+      flex: 0 0 auto;
+      height: var(--desktop-graph-height);
+      min-height: var(--card-min-height-desktop);
+      max-height: calc(100% - var(--card-min-height-desktop) - var(--splitter-thickness-desktop));
+    }
+
+    .graph-body-wrapper {
+      /* .graph-body-wrapper is used here inside #graph-card to hold the canvas area above the bottom playback bar */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .graph-canvas-area {
+      /* .graph-canvas-area is used here inside .graph-body-wrapper as the main interactive drawing surface */
+      display: flex;
+      flex: 1 1 0%;
+      align-items: flex-start;
+      justify-content: flex-start;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .graph-inner-pad {
+      /* .graph-inner-pad is used here for inner spacing inside .graph-canvas-area */
+      padding: 0.625rem 0.75rem;
+    }
+
+    .graph-placeholder-text {
+      /* .graph-placeholder-text is used here to style the placeholder text inside .graph-inner-pad */
+      color: var(--text-primary);
+      opacity: 0.9;
+    }
+
+    .playback-bar {
+      /* .playback-bar is used here at the bottom of .graph-body-wrapper to house simulation playback and speed controls */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.375rem;
+      height: var(--playback-bar-height-desktop);
+      min-height: var(--playback-bar-height-desktop);
+      padding: 0 0.625rem;
+      background-color: var(--bg-card);
+      border-top: 0.0625rem solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .playback-controls-left {
+      /* .playback-controls-left is used here to group the Run button, Step buttons, and Speed slider in .playback-bar and #algo-settings-body */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .playback-text-btn {
+      /* .playback-text-btn gives the "Run" text button inside .playback-controls-left its styles */
+      height: var(--playback-icon-btn-size-desktop);
+      padding: 0 0.5625rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+    }
+
+    .playback-text-btn:hover {
+      /* .playback-text-btn:hover gives the "Run" text button inside .playback-controls-left its hover background */
+      background-color: var(--bg-hover);
+    }
+
+    .visualization-options {
+      /* .visualization-options is used here to group the Step Backward, Visualize/Run, Step Forward, Reset buttons, and speed slider */
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      margin: 0 0rem 0 0.25rem;
+      padding: 0 0.5rem;
+      border-left: 0.0375rem solid var(--splitter-pill);
+    }
+
+    .playback-icon-btn {
+      /* .playback-icon-btn gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons in both the Graph playback bar and Settings card their styles */
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--playback-icon-btn-size-desktop);
+      height: var(--playback-icon-btn-size-desktop);
+      min-width: var(--playback-icon-btn-size-desktop);
+      min-height: var(--playback-icon-btn-size-desktop);
+      padding: 0;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .playback-icon-btn:hover {
+      /* .playback-icon-btn:hover gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons their hover state */
+      background-color: var(--bg-hover);
+    }
+
+    .playback-icon-img {
+      /* .playback-icon-img sizes and theme-filters the step-back.png, run.png, step-front.png, and reset.png icons inside .playback-icon-btn */
+      display: block;
+      flex-shrink: 0;
+      width: var(--playback-icon-size-desktop);
+      height: var(--playback-icon-size-desktop);
+      min-width: var(--playback-icon-size-desktop);
+      min-height: var(--playback-icon-size-desktop);
+      max-width: none;
+      max-height: none;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .playback-speed-group {
+      /* .playback-speed-group is used here to align the speed icon, range slider, and multiplier label inside .visualization-options */
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-left: 0.25rem;
+    }
+
+    .playback-label-img {
+      /* .playback-label-img sizes the speed.png icon inside .playback-speed-group */
+      display: block;
+      flex-shrink: 0;
+      width: var(--playback-icon-btn-size-desktop);
+      height: var(--playback-icon-btn-size-desktop);
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
     input[type="range"].vscode-slider {
-      -webkit-appearance: none;
-      appearance: none;
+      /* input[type="range"].vscode-slider styles the playback speed slider track inside .playback-speed-group */
       width: var(--speed-slider-width-desktop);
       height: 0.2rem;
       background: var(--border-color);
       border-radius: 0.125rem;
       outline: none;
+      -webkit-appearance: none;
+      appearance: none;
       cursor: pointer;
     }
 
     input[type="range"].vscode-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
+      /* input[type="range"].vscode-slider::-webkit-slider-thumb styles the draggable circular thumb on WebKit browsers */
       width: var(--speed-slider-thumb-size);
       height: var(--speed-slider-thumb-size);
-      border-radius: 50%;
       background: var(--accent-primary);
+      border-radius: 50%;
+      -webkit-appearance: none;
+      appearance: none;
       cursor: pointer;
       transition: background-color 0.12s ease;
     }
 
     input[type="range"].vscode-slider::-webkit-slider-thumb:hover {
+      /* input[type="range"].vscode-slider::-webkit-slider-thumb:hover highlights the WebKit slider thumb on hover */
       background: var(--accent-hover);
     }
 
     input[type="range"].vscode-slider::-moz-range-thumb {
+      /* input[type="range"].vscode-slider::-moz-range-thumb styles the draggable circular thumb on Firefox */
       width: var(--speed-slider-thumb-size);
       height: var(--speed-slider-thumb-size);
+      background: var(--accent-primary);
       border: none;
       border-radius: 50%;
-      background: var(--accent-primary);
       cursor: pointer;
       transition: background-color 0.12s ease;
     }
 
     input[type="range"].vscode-slider::-moz-range-thumb:hover {
+      /* input[type="range"].vscode-slider::-moz-range-thumb:hover highlights the Firefox slider thumb on hover */
       background: var(--accent-hover);
     }
 
-    /* Language Selector Dropdown */
+    .playback-speed-value {
+      /* .playback-speed-value styles the speed readout text (e.g. "1x") next to .vscode-slider */
+      min-width: 1.4rem;
+      color: var(--text-primary);
+    }
+
+    .playback-controls-right {
+      /* .playback-controls-right aligns the step counter readout ("0 / 0") on the right side of .playback-bar */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .playback-muted-label {
+      /* .playback-muted-label styles muted secondary labels such as the step counter ("0 / 0"), file extensions (".py"), and profile metadata */
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .desktop-traversal-slot {
+      /* .desktop-traversal-slot is used here on #desktop-traversal-slot to hold the Traversal card (#log-card) on desktop screens */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      min-width: 0;
+      min-height: var(--card-min-height-desktop);
+    }
+
+    /* ========== End of Left Column (History, Metadata, Graph & Playback) ========== */
+
+
+    /* ========== Right Column: Algorithms & Settings Column ========== */
+    .right-column {
+      /* .right-column is used here on #right-column to stack the top Algorithms/Code row and bottom Traversal/State row */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .right-top-row {
+      /* .right-top-row is used here on #right-top-row to place #algo-column and #code-card side by side */
+      display: flex;
+      flex: 0 0 auto;
+      min-width: 0;
+      height: var(--desktop-right-top-height);
+      min-height: var(--right-top-row-min-height);
+      max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-desktop));
+    }
+
+    #algo-column {
+      /* #algo-column is used here to stack the Algorithms card (#algorithms-card) and Settings card (#algo-settings-card) */
+      display: flex;
+      flex: 0 0 auto;
+      flex-direction: column;
+      width: var(--algorithms-default-width-desktop);
+      min-width: var(--algorithms-min-width-desktop);
+      max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
+    }
+
+    #algorithms-card {
+      /* #algorithms-card is used here to size the top Algorithms card inside #algo-column */
+      flex: 0 0 auto;
+      height: var(--algo-top-height);
+      min-height: var(--card-min-height-desktop);
+    }
+
+    #algo-title {
+      /* #algo-title is used here to truncate the "Algorithms" header title with an ellipsis if space is tight */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #algo-body {
+      /* #algo-body is used here as the flex container holding the search bar, filter panel, and collapsible algorithm tree */
+      position: relative;
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      gap: 0.45rem;
+      min-height: 0;
+      padding: 0.45rem;
+      overflow: hidden;
+    }
+
+    .algo-search-row {
+      /* .algo-search-row is used here to align the search input and filter buttons at the top of #algo-body */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .algo-search-input-wrapper {
+      /* .algo-search-input-wrapper is used here to position the clear ("X") button inside the search text input */
+      position: relative;
+      display: flex;
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+
+    .algo-search-input {
+      /* .algo-search-input is used here to style the "Search algorithms..." text field (#algo-search-input) */
+      width: 100%;
+      height: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 0 1.5rem 0 0.5rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .algo-search-input:focus {
+      /* .algo-search-input:focus highlights the border of #algo-search-input when focused */
+      border-color: var(--accent-primary);
+    }
+
+    .algo-search-clear-btn {
+      /* .algo-search-clear-btn gives the clear search ("X") button (#algo-search-clear-btn) inside .algo-search-input-wrapper its styles */
+      position: absolute;
+      top: 50%;
+      right: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0.2rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      color: var(--text-muted);
+      transform: translateY(-50%);
+      cursor: pointer;
+      transition: color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .algo-search-clear-btn:hover {
+      /* .algo-search-clear-btn:hover highlights the clear search ("X") button on hover */
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .algo-filter-btn {
+      /* .algo-filter-btn gives the Show Favourites Only (#algo-fav-filter-btn), Hide Algorithms (#algo-hide-btn), and Filter by Data Structure (#algo-filter-btn) buttons their styles */
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--control-btn-height-desktop);
+      height: var(--control-btn-height-desktop);
+      min-width: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 0;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .algo-filter-btn:hover {
+      /* .algo-filter-btn:hover gives the Show Favourites Only, Hide Algorithms, and Filter by Data Structure buttons their hover background */
+      background-color: var(--bg-hover);
+    }
+
+    .algo-filter-btn.has-active-filter {
+      /* .algo-filter-btn.has-active-filter highlights the Show Favourites Only, Hide Algorithms, or Filter by Data Structure button when its filter is active */
+      background-color: var(--bg-active-item);
+      border-color: var(--accent-primary);
+    }
+
+    .algo-filter-icon {
+      /* .algo-filter-icon sizes and theme-filters the icons inside the .algo-filter-btn buttons */
+      display: block;
+      width: 0.95rem;
+      height: 0.95rem;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    #algo-fav-filter-btn .algo-filter-icon {
+      /* #algo-fav-filter-btn .algo-filter-icon prevents the yellow star icon on the Show Favourites Only button from being color-inverted */
+      filter: none !important;
+    }
+
+    .algo-filter-panel {
+      /* .algo-filter-panel is used here for the collapsible Data Structure filter dropdown panel (#algo-filter-panel) */
+      display: none;
+      flex-shrink: 0;
+      flex-direction: column;
+      min-height: 0;
+      max-height: 75%;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+
+    .algo-filter-panel.open {
+      /* .algo-filter-panel.open displays #algo-filter-panel when the Filter by Data Structure button is clicked */
+      display: flex;
+    }
+
+    .algo-filter-panel-header {
+      /* .algo-filter-panel-header styles the top bar inside #algo-filter-panel containing the title and Clear button */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.3rem 0.5rem;
+      border-bottom: 0.0625rem solid var(--border-color);
+      font-size: 0.8em;
+      color: var(--text-muted);
+    }
+
+    .algo-filter-clear-btn {
+      /* .algo-filter-clear-btn gives the "Clear" button (#algo-filter-clear-btn) inside .algo-filter-panel-header its styles */
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-weight: 500;
+      color: var(--accent-primary);
+      cursor: pointer;
+    }
+
+    .algo-filter-clear-btn:hover {
+      /* .algo-filter-clear-btn:hover underlines the "Clear" filter button on hover */
+      text-decoration: underline;
+    }
+
+    .algo-filter-tree-scroll {
+      /* .algo-filter-tree-scroll provides the scrollable container (#algo-filter-tree) for the data structure checkboxes */
+      flex: 1 1 0%;
+      min-height: 0;
+      padding: 0.25rem;
+      overflow-y: auto;
+    }
+
+    .filter-checkbox {
+      /* .filter-checkbox styles the custom theme-aware checkboxes inside #algo-filter-tree */
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 1.1rem;
+      height: 1.1rem;
+      margin: 0;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.2rem;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .filter-checkbox:hover {
+      /* .filter-checkbox:hover highlights the border and background of .filter-checkbox on hover */
+      background-color: var(--bg-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .filter-checkbox:checked {
+      /* .filter-checkbox:checked fills the checkbox with the primary accent color when checked */
+      background-color: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    .filter-checkbox:checked::after {
+      /* .filter-checkbox:checked::after draws the white checkmark inside a checked .filter-checkbox */
+      content: '';
+      position: absolute;
+      width: 0.25rem;
+      height: 0.5rem;
+      margin-bottom: 0.1rem;
+      border: solid #ffffff;
+      border-width: 0 0.125rem 0.125rem 0;
+      transform: rotate(45deg);
+    }
+
+    .filter-checkbox:focus-visible {
+      /* .filter-checkbox:focus-visible adds a keyboard accessibility focus ring around .filter-checkbox */
+      outline: 0.125rem solid var(--accent-primary);
+      outline-offset: 0.125rem;
+    }
+
+    .algo-tree-container {
+      /* .algo-tree-container is used here on #algo-tree-container as the scrollable container for the main Data Structures & Algorithms tree */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      gap: 0.125rem;
+      min-height: 0;
+      padding-right: 0.125rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .tree-node {
+      /* .tree-node wraps each collapsible Data Structure folder and its nested children in #algo-tree-container and #algo-filter-tree */
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0.75rem;
+    }
+
+    .tree-row {
+      /* .tree-row styles each clickable row (Data Structure or Algorithm) inside .tree-node */
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 0;
+      padding: 0.22rem 0.35rem;
+      border-radius: 0.25rem;
+      color: var(--text-primary);
+      user-select: none;
+      cursor: pointer;
+      transition: background-color 0.1s ease, color 0.1s ease;
+    }
+
+    .tree-row:hover {
+      /* .tree-row:hover highlights a Data Structure or Algorithm row when hovered */
+      background-color: var(--bg-hover);
+    }
+
+    .tree-row.selected .algo-dot {
+      /* .tree-row.selected .algo-dot fills the bullet dot of a selected algorithm row with bright text color */
+      background-color: var(--text-bright);
+      border-color: var(--text-bright);
+    }
+
+    .tree-row.selected .ds-leaf-dot::after {
+      /* .tree-row.selected .ds-leaf-dot::after brightens the vertical bar indicator of a selected leaf data structure */
+      background-color: var(--text-bright);
+    }
+
+    .tree-chevron {
+      /* .tree-chevron holds the rotating arrow icon for expandable Data Structure folders inside .tree-row */
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 0.9rem;
+      height: 0.9rem;
+      color: var(--text-muted);
+      transition: transform 0.12s ease;
+    }
+
+    .tree-chevron.expanded {
+      /* .tree-chevron.expanded rotates the folder chevron 90 degrees when expanded */
+      transform: rotate(90deg);
+    }
+
+    .tree-chevron.empty {
+      /* .tree-chevron.empty hides the chevron when a node has no children */
+      visibility: hidden;
+    }
+
+    .ds-leaf-dot {
+      /* .ds-leaf-dot is used here for Data Structure nodes that have no child algorithms or sub-structures */
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+
+    .ds-leaf-dot::after {
+      /* .ds-leaf-dot::after renders the small vertical bar inside .ds-leaf-dot */
+      content: '';
+      width: 0.3rem;
+      height: 0.6rem;
+      background-color: var(--text-muted);
+      transition: background-color 0.12s ease;
+    }
+
+    .tree-label {
+      /* .tree-label styles the text label inside .tree-row with ellipsis truncation */
+      flex: 1 1 0%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ds-label {
+      /* .ds-label makes Data Structure names bold inside .tree-row */
+      font-weight: 700;
+    }
+
+    .algo-label {
+      /* .algo-label makes Algorithm names light and italic inside .tree-row */
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .fav-toggle-btn {
+      /* .fav-toggle-btn gives the star/favourite toggle button on each Data Structure and Algorithm row in #algo-tree-container its styles */
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-left: auto;
+      padding: 0;
+      background: transparent;
+      border: none;
+      opacity: 0.75;
+      cursor: pointer;
+      transition: opacity 0.12s ease, transform 0.12s ease;
+    }
+
+    .fav-toggle-btn:hover {
+      /* .fav-toggle-btn:hover scales up and brightens the favourite star button on hover */
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .fav-toggle-icon {
+      /* .fav-toggle-icon sizes the favourite-enabled.png and favourite-disabled.png star images inside .fav-toggle-btn */
+      display: block;
+      width: 0.9rem;
+      height: 0.9rem;
+      object-fit: contain;
+    }
+
+    .tree-children {
+      /* .tree-children holds the nested algorithms and child data structures inside an expanded .tree-node */
+      display: none;
+      flex-direction: column;
+      margin-left: 0.45rem;
+      padding-left: 0.75rem;
+      border-left: 0.125rem solid var(--scrollbar-thumb);
+    }
+
+    .tree-children.expanded {
+      /* .tree-children.expanded reveals the nested child list when a folder is open */
+      display: flex;
+    }
+
+    .algo-item-wrapper {
+      /* .algo-item-wrapper wraps each individual algorithm row inside .tree-children */
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 0.15rem;
+      padding: 0.05rem 0;
+    }
+
+    .algo-dot {
+      /* .algo-dot renders the circular bullet icon next to each algorithm name inside .algo-item-wrapper */
+      flex-shrink: 0;
+      width: 0.35rem;
+      height: 0.35rem;
+      margin: 0 0.5rem 0 0.65rem;
+      background-color: transparent;
+      border: 0.08rem solid var(--text-muted);
+      border-radius: 50%;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .algo-empty-msg {
+      /* .algo-empty-msg styles the message shown when no algorithms or data structures match the current search/filter */
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    #algo-settings-card {
+      /* #algo-settings-card is used here for the bottom Settings card inside #algo-column */
+      flex: 1 1 0%;
+      min-height: var(--card-min-height-desktop);
+    }
+
+    .algo-meta-container {
+      /* .algo-meta-container is used here to lay out constraint and tag badges inside #algo-settings-meta-section */
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding: 0.15rem 0.35rem 0.25rem 1.4rem;
+    }
+
+    .algo-meta-badge {
+      /* .algo-meta-badge styles each individual constraint or tag pill inside .algo-meta-container */
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      max-width: 100%;
+      padding: 0.08rem 0.32rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.2rem;
+      font-size: 0.78em;
+      line-height: 1.2;
+      color: var(--text-muted);
+    }
+
+    .algo-meta-badge.constraint-badge {
+      /* .algo-meta-badge.constraint-badge styles constraint badges with a help cursor and primary text color */
+      color: var(--text-primary);
+      cursor: help;
+    }
+
+    .algo-meta-icon {
+      /* .algo-meta-icon sizes the constraint.png and tag.png icons inside .algo-meta-badge */
+      flex-shrink: 0;
+      width: 0.75rem;
+      height: 0.75rem;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .param-input-field {
+      /* .param-input-field styles the required and optional parameter text inputs inside #algo-settings-body */
+      width: 100%;
+      height: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 0 0.5rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.12s ease;
+    }
+
+    .param-input-field:focus {
+      /* .param-input-field:focus highlights the parameter input border when focused */
+      border-color: var(--accent-primary);
+    }
+
+    .vscode-btn-secondary {
+      /* .vscode-btn-secondary gives the "Run" button inside the Settings card (#algo-settings-card) and the "Sign Out" button inside the Profile modal (#profile-pane-account) their styles */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      height: var(--control-btn-height-desktop);
+      min-height: var(--control-btn-height-desktop);
+      padding: 1rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .vscode-btn-secondary:hover {
+      /* .vscode-btn-secondary:hover gives the Settings "Run" button and Profile "Sign Out" button their hover background */
+      background-color: var(--bg-hover);
+    }
+
+    #algo-collapsed-strip,
+    #algo-settings-collapsed-strip {
+      /* #algo-collapsed-strip and #algo-settings-collapsed-strip are used here for the vertical strips shown when #algo-column is collapsed */
+      display: none;
+      flex: 1 1 0%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 0.75rem 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* ========== End of Right Column: Algorithms & Settings Column ========== */
+
+
+    /* ========== Right Column: Code & Notes Card ========== */
+    #code-card {
+      /* #code-card is used here for the Code and Notes card on the right side of #right-top-row */
+      flex: 1 1 0%;
+      min-width: var(--code-card-min-width);
+    }
+
+    .code-card-header {
+      /* .code-card-header adjusts horizontal padding on the card headers of #code-card and #state-card */
+      padding: 0 0.45rem;
+    }
+
+    .code-tabs-container {
+      /* .code-tabs-container wraps the desktop tab buttons and mobile tab dropdown inside .code-card-header */
+      display: flex;
+      align-items: center;
+    }
+
+    .card-tabs-group {
+      /* .card-tabs-group aligns the side-by-side tab buttons inside #code-card and #state-card on desktop */
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 0;
+      overflow-x: auto;
+    }
+
+    .vscode-tab {
+      /* .vscode-tab gives the Code (#tab-code), Notes (#tab-notes), State variables (#tab-state-variables), and Explanation (#tab-explanation) tab buttons their styles */
+      display: inline-flex;
+      align-items: center;
+      height: var(--tab-height-desktop);
+      min-height: var(--tab-height-desktop);
+      padding: 0 0.5625rem;
+      border-radius: 0.3125rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .vscode-tab:hover {
+      /* .vscode-tab:hover brightens the text of the Code, Notes, State variables, and Explanation tab buttons on hover */
+      color: var(--text-primary);
+    }
+
+    .vscode-tab.active {
+      /* .vscode-tab.active highlights the active tab button (Code, Notes, State variables, or Explanation) with a pill background */
+      background-color: var(--bg-pill-active);
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .tab-dropdown-wrapper {
+      /* .tab-dropdown-wrapper positions the mobile tab selector dropdowns (#tab-dropdown-wrapper and #state-tab-dropdown-wrapper) */
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .mobile-tabs {
+      /* .mobile-tabs hides the mobile tab dropdown wrappers on desktop viewports */
+      display: none;
+    }
+
     .lang-dropdown-wrapper {
+      /* .lang-dropdown-wrapper positions the programming language selector dropdown (#lang-dropdown-wrapper) in #code-card */
       position: relative;
       flex-shrink: 0;
     }
 
     .lang-trigger-btn {
+      /* .lang-trigger-btn gives the Language Selector dropdown button (#lang-trigger-btn), Mobile Code/Notes tab dropdown button (#tab-trigger-btn), and Mobile State/Explanation tab dropdown button (#state-tab-trigger-btn) their styles */
       display: inline-flex;
       align-items: center;
       gap: 0.3125rem;
+      height: var(--tab-height-desktop);
+      min-height: var(--tab-height-desktop);
+      padding: 0 0.4375rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.25rem;
-      padding: 0 0.4375rem;
-      height: var(--tab-height-desktop);
-      min-height: var(--tab-height-desktop);
       font-weight: 500;
       color: var(--text-primary);
       cursor: pointer;
@@ -2018,37 +1709,49 @@
     }
 
     .lang-trigger-btn:hover {
+      /* .lang-trigger-btn:hover gives the Language Selector and mobile tab trigger buttons their hover background */
       background-color: var(--bg-hover);
     }
 
     .lang-chevron-icon {
+      /* .lang-chevron-icon sizes the downward SVG arrow inside .lang-trigger-btn */
+      flex-shrink: 0;
       width: 0.65rem;
       height: 0.65rem;
       color: var(--text-muted);
-      flex-shrink: 0;
     }
 
     .lang-dropdown-menu {
+      /* .lang-dropdown-menu styles the floating dropdown list for language selection (#lang-dropdown-menu) and mobile tab selection (#tab-dropdown-menu, #state-tab-dropdown-menu) */
       position: absolute;
-      right: 0;
       top: calc(100% + 0.2rem);
-      width: var(--lang-dropdown-width);
-      background-color: var(--bg-elevated);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.3125rem;
-      padding: 0.2rem;
-      box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.35);
+      right: 0;
       z-index: 2;
       display: none;
       flex-direction: column;
       gap: 0.1rem;
+      width: var(--lang-dropdown-width);
+      padding: 0.2rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.35);
     }
 
     .lang-dropdown-menu.open {
+      /* .lang-dropdown-menu.open displays the dropdown menu when its trigger button is clicked */
       display: flex;
     }
 
+    #tab-dropdown-menu,
+    #state-tab-dropdown-menu {
+      /* #tab-dropdown-menu and #state-tab-dropdown-menu align the mobile tab dropdown menus to the left edge so they do not clip off-screen */
+      right: auto;
+      left: 0;
+    }
+
     .lang-option-item {
+      /* .lang-option-item styles each selectable row inside .lang-dropdown-menu */
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -2060,226 +1763,793 @@
     }
 
     .lang-option-item:hover {
+      /* .lang-option-item:hover highlights a dropdown option row on hover */
       background-color: var(--bg-hover);
     }
 
     .lang-option-item.active {
+      /* .lang-option-item.active highlights the currently active language or mobile tab option */
       background-color: var(--bg-active-item);
-      color: var(--text-bright);
       font-weight: 500;
+      color: var(--text-bright);
     }
 
     .lang-option-label {
+      /* .lang-option-label aligns the colored language dot and language name inside .lang-option-item */
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
     }
 
     .lang-badge-dot {
+      /* .lang-badge-dot renders the circular color indicator for Python, C++, or Java */
+      display: inline-block;
+      flex-shrink: 0;
       width: 0.4375rem;
       height: 0.4375rem;
       border-radius: 50%;
-      display: inline-block;
-      flex-shrink: 0;
     }
 
     .dot-python {
+      /* .dot-python sets the blue indicator color for Python */
       background-color: #3572A5;
     }
 
     .dot-cpp {
+      /* .dot-cpp sets the pink/red indicator color for C++ */
       background-color: #f34b7d;
     }
 
     .dot-java {
+      /* .dot-java sets the orange/brown indicator color for Java */
       background-color: #b07219;
     }
 
-    .code-tabs-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .tab-dropdown-wrapper {
-      position: relative;
+    .card-icon-btn {
+      /* .card-icon-btn gives the Copy Code (#btn-copy-code), Download Code (#btn-download-code), and Close Profile Modal (#close-profile-modal) buttons their styles */
+      display: inline-flex;
       flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--card-icon-btn-size);
+      height: var(--card-icon-btn-size);
+      min-width: var(--card-icon-btn-size);
+      min-height: var(--card-icon-btn-size);
+      padding: 0;
+      border-radius: 0.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
     }
 
-    .mobile-tabs {
+    .card-icon-btn:hover {
+      /* .card-icon-btn:hover gives the Copy Code, Download Code, and Close Profile Modal buttons their hover background and bright color */
+      background-color: var(--bg-hover);
+      color: var(--text-bright);
+    }
+
+    .sidebar-toggle-img {
+      /* .sidebar-toggle-img sizes and theme-filters the copy.png and download.png icons inside .card-icon-btn */
+      display: block;
+      flex-shrink: 0;
+      width: var(--sidebar-toggle-icon-size-desktop);
+      height: var(--sidebar-toggle-icon-size-desktop);
+      min-width: var(--sidebar-toggle-icon-size-desktop);
+      min-height: var(--sidebar-toggle-icon-size-desktop);
+      max-width: none;
+      max-height: none;
+      padding: 0;
+      border-radius: 0.25rem;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .sidebar-toggle-img.has-error {
+      /* .sidebar-toggle-img.has-error hides the icon image if it fails to load */
       display: none;
-      /* Hidden by default on desktop */
     }
 
-    /* Align the mobile tab dropdown to the left so it doesn't clip off-screen */
-    #tab-dropdown-menu,
-    #state-tab-dropdown-menu {
-      right: auto;
-      left: 0;
+    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
+      /* .sidebar-toggle-img.has-error + .sidebar-fallback-box reveals the CSS fallback icon box if the image fails to load */
+      display: inline-flex;
     }
 
-    /* =========================================================================
-       NOTES / HTML CONTENT TYPOGRAPHY
-       ========================================================================= */
-    .notes-content {
-      padding: 1rem;
+    .sidebar-fallback-box {
+      /* .sidebar-fallback-box renders a pure-CSS icon box fallback when .sidebar-toggle-img fails to load */
+      position: relative;
+      display: none;
+      align-items: center;
+      width: 0.875rem;
+      height: 0.8125rem;
+      border: 0.08rem solid var(--text-muted);
+      border-radius: 0.125rem;
+      line-height: 1;
       color: var(--text-primary);
+    }
+
+    .sidebar-fallback-box::before {
+      /* .sidebar-fallback-box::before draws the inner sidebar divider line inside .sidebar-fallback-box */
+      content: '';
+      width: 0.22rem;
+      height: 100%;
+      border-right: 0.08rem solid var(--text-muted);
+    }
+
+    #codeViewPane {
+      /* #codeViewPane is used here as the scrollable body container for syntax-highlighted code or HTML notes inside #code-card */
+      min-width: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+
+    .notes-content {
+      /* .notes-content styles the rendered HTML conceptual notes inside #codeViewPane when the Notes tab is active */
+      padding: 1rem;
       line-height: 1.6;
+      color: var(--text-primary);
     }
 
     .notes-content h1,
     .notes-content h2,
     .notes-content h3,
     .notes-content h4 {
-      color: var(--text-bright);
-      font-weight: 600;
+      /* .notes-content h1-h4 style the section headings inside the Notes view */
       margin-top: 1.5em;
       margin-bottom: 0.5em;
+      font-weight: 600;
       line-height: 1.3;
+      color: var(--text-bright);
     }
 
     .notes-content h1 {
-      font-size: 1.75em;
+      /* .notes-content h1 sizes top-level headings inside the Notes view */
       margin: 0 0 0.3em 0;
+      font-size: 1.75em;
     }
 
     .notes-content h2 {
-      font-size: 1.4em;
+      /* .notes-content h2 sizes second-level headings inside the Notes view */
       margin: 0 0 0.3em 0;
+      font-size: 1.4em;
     }
 
     .notes-content h3 {
+      /* .notes-content h3 sizes third-level headings inside the Notes view */
       font-size: 1.2em;
     }
 
     .notes-content p {
+      /* .notes-content p sets paragraph spacing inside the Notes view */
       margin-top: 0;
       margin-bottom: 1em;
     }
 
     .notes-content ul,
     .notes-content ol {
+      /* .notes-content ul and ol set list indentation and bottom margin inside the Notes view */
       margin-top: 0;
       margin-bottom: 1em;
       padding-left: 1.75em;
     }
 
     .notes-content li {
+      /* .notes-content li spaces individual list items inside the Notes view */
       margin-bottom: 0.35em;
     }
 
     .notes-content strong,
     .notes-content b {
+      /* .notes-content strong and b highlight bold text inside the Notes view */
       font-weight: 600;
       color: var(--text-bright);
     }
 
     .notes-content em,
     .notes-content i {
+      /* .notes-content em and i italicize emphasized text inside the Notes view */
       font-style: italic;
     }
 
     .notes-content a {
+      /* .notes-content a styles hyperlinks inside the Notes view */
       color: var(--accent-primary);
       text-decoration: none;
     }
 
     .notes-content a:hover {
+      /* .notes-content a:hover underlines hyperlinks on hover inside the Notes view */
       text-decoration: underline;
     }
 
-    /* =========================================================================
-       COLLAPSIBLE GRAPH & CODE STACKS, ZEN MODE, AND FAVOURITES
-       ========================================================================= */
-    #left-main-stack.is-collapsed {
+    #graph-collapsed-strip,
+    #log-collapsed-strip,
+    #code-collapsed-strip {
+      /* #graph-collapsed-strip, #log-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
+      display: none;
+      flex: 1 1 0%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 0.75rem 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* ========== End of Right Column: Code & Notes Card ========== */
+
+
+    /* ========== Right Column: Bottom Split Row (Traversal & State Variables) ========== */
+    .bottom-split-row {
+      /* .bottom-split-row is used here on #bottom-split-row to hold the State Variables card (and Traversal card on mobile) */
+      display: flex;
+      flex: 1 1 0%;
+      min-width: 0;
+      min-height: var(--bottom-row-min-height);
+    }
+
+    #log-card {
+      /* #log-card is used here to size the Traversal card inside #desktop-traversal-slot (desktop) or #bottom-split-row (mobile) */
+      flex: 1 1 0%;
+      width: 100%;
+      min-width: 0;
+    }
+
+    #splitter-bottom-mobile-v {
+      /* #splitter-bottom-mobile-v hides the vertical splitter between Traversal and State Variables on desktop (shown only on mobile) */
+      display: none;
+    }
+
+    #state-card {
+      /* #state-card is used here to size the State Variables / Explanation card inside #bottom-split-row */
+      flex: 1 1 0%;
+      min-width: var(--bottom-cards-min-width);
+    }
+
+    /* ========== End of Right Column: Bottom Split Row (Traversal & State Variables) ========== */
+
+
+    /* ========== Profile Floating Modal Window ========== */
+    .modal-backdrop {
+      /* .modal-backdrop is used here on #profile-modal-backdrop for the dimmed full-screen overlay behind the Profile modal */
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background-color: rgba(0, 0, 0, 0.55);
+    }
+
+    .modal-backdrop.open {
+      /* .modal-backdrop.open displays the Profile modal overlay when the Profile button (#btnProfile) is clicked */
+      display: flex;
+    }
+
+    .profile-modal {
+      /* .profile-modal styles the floating dialog box inside .modal-backdrop */
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: var(--profile-modal-max-width);
+      height: var(--profile-modal-height-desktop);
+      max-height: 85dvh;
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.5rem;
+      box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .profile-modal-header {
+      /* .profile-modal-header styles the top bar of .profile-modal containing the "Profile" title and close button */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--profile-modal-header-height);
+      min-height: var(--profile-modal-header-height);
+      padding: 0 0.75rem;
+      background-color: var(--bg-card-header);
+      border-bottom: 0.0625rem solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .profile-modal-body {
+      /* .profile-modal-body lays out the left navigation sidebar and right content pane inside .profile-modal */
+      display: flex;
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .profile-modal-sidebar {
+      /* .profile-modal-sidebar styles the left tab navigation column inside .profile-modal-body */
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      width: var(--profile-sidebar-width-desktop);
+      min-width: var(--profile-sidebar-width-desktop);
+      padding: 0.5rem;
+      background-color: var(--bg-elevated);
+      border-right: 0.0625rem solid var(--border-color);
+    }
+
+    .profile-nav-tab {
+      /* .profile-nav-tab gives the "Account" and "Keyboard shortcuts" sidebar buttons inside .profile-modal-sidebar their styles */
+      width: 100%;
+      padding: 0.4375rem 0.625rem;
+      border-radius: 0.3125rem;
+      font-weight: 500;
+      text-align: left;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .profile-nav-tab:hover {
+      /* .profile-nav-tab:hover gives the "Account" and "Keyboard shortcuts" buttons their hover background */
+      background-color: var(--bg-hover);
+    }
+
+    .profile-nav-tab.active {
+      /* .profile-nav-tab.active highlights the currently selected tab button ("Account" or "Keyboard shortcuts") inside .profile-modal-sidebar */
+      background-color: var(--bg-active-item);
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .profile-modal-content {
+      /* .profile-modal-content is the scrollable container on the right side of .profile-modal-body */
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      overflow-y: auto;
+    }
+
+    .profile-pane {
+      /* .profile-pane wraps each individual tab page (#profile-pane-account and #profile-pane-shortcuts) inside .profile-modal-content */
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .profile-pane.active {
+      /* .profile-pane.active displays the currently selected profile tab pane */
+      display: flex;
+    }
+
+    .profile-user-header {
+      /* .profile-user-header aligns the circular avatar badge and user name/email inside #profile-pane-account */
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 0.625rem;
+      border-bottom: 0.0625rem solid var(--border-color);
+    }
+
+    .profile-avatar-badge {
+      /* .profile-avatar-badge styles the circular "SS" user initials badge inside .profile-user-header */
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      width: var(--profile-avatar-size);
+      height: var(--profile-avatar-size);
+      min-width: var(--profile-avatar-size);
+      min-height: var(--profile-avatar-size);
+      background-color: var(--accent-primary);
+      border-radius: 50%;
+      font-weight: 600;
+      color: #ffffff;
+      transition: background-color 0.12s ease;
+    }
+
+    .profile-avatar-badge:hover {
+      /* .profile-avatar-badge:hover changes the avatar badge background on hover */
+      background-color: var(--accent-hover);
+    }
+
+    .profile-user-meta {
+      /* .profile-user-meta stacks the username and email address vertically inside .profile-user-header */
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .profile-user-name {
+      /* .profile-user-name styles the bold username text inside .profile-user-meta */
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .profile-info-list {
+      /* .profile-info-list stacks the account attribute rows inside #profile-pane-account */
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .profile-info-row {
+      /* .profile-info-row aligns label/value pairs in #profile-pane-account and shortcut/key pairs in #profile-pane-shortcuts */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.35rem 0;
+      border-bottom: 0.0625rem solid var(--border-subtle);
+    }
+
+    .profile-info-row.no-border {
+      /* .profile-info-row.no-border removes the bottom border from the last row in #profile-pane-shortcuts */
+      border-bottom: none;
+    }
+
+    .profile-val-bright {
+      /* .profile-val-bright highlights account values (such as Plan Tier and Default Language) in bright text */
+      font-weight: 500;
+      color: var(--text-bright);
+    }
+
+    .profile-val-accent {
+      /* .profile-val-accent highlights status values (such as Cloud Sync) in the primary accent color */
+      font-weight: 500;
+      color: var(--accent-primary);
+    }
+
+    .profile-signout-row {
+      /* .profile-signout-row right-aligns the Sign Out button at the bottom of #profile-pane-account */
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.25rem;
+    }
+
+    .kbd-badge {
+      /* .kbd-badge styles the monospace keyboard keycaps inside #profile-pane-shortcuts */
+      display: inline-block;
+      min-width: 2rem;
+      padding: 0.125rem 0.375rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      font-family: 'Noto Sans Mono', monospace;
+      text-align: center;
+      color: var(--text-bright);
+    }
+
+    /* ========== End of Profile Floating Modal Window ========== */
+
+
+    /* ========== Welcome Tour Spotlight & Card ========== */
+    .tour-spotlight {
+      /* .tour-spotlight is used here on #tour-spotlight to highlight the target element and dim the rest of the screen with a box-shadow cutout */
+      position: fixed;
+      z-index: 9995;
+      border: 0.125rem solid var(--accent-primary);
+      border-radius: 0.45rem;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
+      pointer-events: none;
+      transition: top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+        height 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .tour-card {
+      /* .tour-card is used here on #tour-card for the floating guided tour popover box */
+      position: fixed;
+      z-index: 9996;
+      display: none;
+      flex-direction: column;
+      gap: 0.55rem;
+      width: 21rem;
+      max-width: calc(100vw - 1.5rem);
+      padding: 0.9rem 1rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--accent-primary);
+      border-radius: 0.5rem;
+      box-shadow: 0 0.75rem 2.25rem rgba(0, 0, 0, 0.55);
+      color: var(--text-primary);
+      transition: top 0.22s ease, left 0.22s ease;
+    }
+
+    .tour-card.open {
+      /* .tour-card.open displays #tour-card while the welcome tour is running */
+      display: flex;
+    }
+
+    .tour-arrow {
+      /* .tour-arrow renders the rotated diamond pointer arrow on #tour-card pointing toward the highlighted element */
+      position: absolute;
+      width: 0.7rem;
+      height: 0.7rem;
+      background-color: var(--bg-elevated);
+      transform: rotate(45deg);
+      pointer-events: none;
+    }
+
+    .tour-card-header {
+      /* .tour-card-header aligns the step title and step counter badge at the top of .tour-card */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .tour-card-title {
+      /* .tour-card-title styles the bold heading of the current tour step */
+      font-size: 1.05em;
+      font-weight: 700;
+      color: var(--text-bright);
+    }
+
+    .tour-step-counter {
+      /* .tour-step-counter styles the "1 / 17" step progress badge inside .tour-card-header */
+      padding: 0.12rem 0.45rem;
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      font-size: 0.8em;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .tour-card-desc {
+      /* .tour-card-desc styles the explanatory paragraph text inside .tour-card */
+      margin: 0;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+
+    .tour-card-footer {
+      /* .tour-card-footer aligns the Skip, Back, and Next/Finish buttons at the bottom of .tour-card */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.25rem;
+      padding-top: 0.55rem;
+      border-top: 0.0625rem solid var(--border-color);
+    }
+
+    .tour-btn {
+      /* .tour-btn gives the Skip tour (#tour-skip-btn), Back (#tour-prev-btn), and Next/Finish (#tour-next-btn) buttons their base layout and sizing styles */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 1.85rem;
+      padding: 0 0.75rem;
+      border-radius: 0.3rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+
+    .tour-btn-skip {
+      /* .tour-btn-skip gives the "Skip tour" button (#tour-skip-btn) its transparent muted appearance */
+      padding-right: 0.35rem;
+      padding-left: 0.35rem;
+      background: transparent;
+      border: 0.0625rem solid transparent;
+      color: var(--text-muted);
+    }
+
+    .tour-btn-skip:hover {
+      /* .tour-btn-skip:hover brightens and underlines the "Skip tour" button on hover */
+      color: var(--text-bright);
+      text-decoration: underline;
+    }
+
+    .tour-btn-secondary {
+      /* .tour-btn-secondary gives the "Back" button (#tour-prev-btn) in the welcome tour its secondary button colors */
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      color: var(--text-primary);
+    }
+
+    .tour-btn-secondary:hover {
+      /* .tour-btn-secondary:hover gives the tour "Back" button its hover background */
+      background-color: var(--bg-hover);
+    }
+
+    .tour-btn-primary {
+      /* .tour-btn-primary gives the "Next" / "Finish" button (#tour-next-btn) in the welcome tour its primary accent button colors */
+      background-color: var(--accent-primary);
+      border: 0.0625rem solid var(--accent-primary);
+      color: #ffffff;
+    }
+
+    .tour-btn-primary:hover {
+      /* .tour-btn-primary:hover gives the tour "Next" / "Finish" button its hover background */
+      background-color: var(--accent-hover);
+    }
+
+    /* ========== End of Welcome Tour Spotlight & Card ========== */
+
+
+    /* ========== Prism Syntax Highlighter Overrides ========== */
+    pre[class*=language-] {
+      /* pre[class*=language-] overrides default Prism.js pre margins and enables line wrapping inside #codeViewPane */
+      flex: 1 0 auto;
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      border-radius: 0;
+      font-variant-ligatures: none !important;
+      white-space: pre-wrap !important;
+      word-break: normal !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      overflow: visible !important;
+      box-sizing: border-box !important;
+    }
+
+    code[class*=language-],
+    .line-numbers-sizer,
+    .line-numbers-sizer>span {
+      /* code[class*=language-] and .line-numbers-sizer override default Prism.js inline/nowrap styles so wrapped lines stay aligned with line numbers */
+      display: block !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      font-variant-ligatures: none !important;
+      letter-spacing: normal !important;
+      word-spacing: normal !important;
+      white-space: pre-wrap !important;
+      word-break: normal !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+      box-sizing: border-box !important;
+    }
+
+    .line-highlight {
+      /* .line-highlight overrides Prism's line-highlight plugin background to use the theme-aware gradient */
+      background: var(--code-line-highlight) !important;
+      pointer-events: none;
+    }
+
+    /* ========== End of Prism Syntax Highlighter Overrides ========== */
+
+
+    /* ========== Panel Collapse State Overrides ========== */
+    #history-column.is-collapsed {
+      /* #history-column.is-collapsed shrinks the History + Metadata column down to a narrow vertical strip when collapsed */
+      gap: var(--splitter-thickness-desktop);
       width: var(--card-collapsed-width-desktop) !important;
       min-width: var(--card-collapsed-width-desktop) !important;
       max-width: var(--card-collapsed-width-desktop) !important;
+    }
+
+    #history-column.is-collapsed .vscode-card {
+      /* #history-column.is-collapsed .vscode-card matches the card background to the header color when collapsed */
+      background-color: var(--bg-card-header);
+    }
+
+    #history-column.is-collapsed .vscode-card-header {
+      /* #history-column.is-collapsed .vscode-card-header hides the standard horizontal card headers when collapsed */
+      display: none;
+    }
+
+    #history-column.is-collapsed #metadata-title,
+    #history-column.is-collapsed #metadata-body,
+    #history-column.is-collapsed #history-title,
+    #history-column.is-collapsed #history-body,
+    #history-column.is-collapsed #splitter-metadata-history-h {
+      /* Hides the inner titles, bodies, and horizontal splitter of Metadata and History when #history-column is collapsed */
+      display: none;
+    }
+
+    #history-column.is-collapsed #metadata-collapsed-strip,
+    #history-column.is-collapsed #history-collapsed-strip {
+      /* Reveals the vertical rotated label strips for Metadata and History when #history-column is collapsed */
+      display: flex;
+    }
+
+    #left-main-stack.is-collapsed {
+      /* #left-main-stack.is-collapsed shrinks the Graph + Traversal stack down to a narrow vertical strip when collapsed */
       flex: 0 0 auto !important;
       gap: var(--splitter-thickness-desktop);
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
+    }
+
+    #left-main-stack.is-collapsed .vscode-card {
+      /* #left-main-stack.is-collapsed .vscode-card matches the Graph card background to the header color when collapsed */
+      background-color: var(--bg-card-header);
     }
 
     #left-main-stack.is-collapsed .vscode-card-header,
     #left-main-stack.is-collapsed .graph-body-wrapper,
     #left-main-stack.is-collapsed #log-card .card-scroll-body,
     #left-main-stack.is-collapsed #splitter-left-h {
+      /* Hides the Graph and Traversal headers, bodies, and splitter when #left-main-stack is collapsed */
       display: none !important;
-    }
-
-    #left-main-stack.is-collapsed .vscode-card {
-      background-color: var(--bg-card-header);
-    }
-
-    #graph-collapsed-strip,
-    #log-collapsed-strip,
-    #code-collapsed-strip {
-      display: none;
-      flex: 1 1 0%;
-      min-height: 0;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 0;
-      cursor: pointer;
-      overflow: hidden;
     }
 
     #left-main-stack.is-collapsed #graph-collapsed-strip,
     #left-main-stack.is-collapsed #log-collapsed-strip {
+      /* Reveals the vertical rotated Graph and Traversal strips when #left-main-stack is collapsed */
+      display: flex;
+    }
+
+    #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed) {
+      /* Expands #history-column to fill the left column when #left-main-stack is collapsed */
+      flex: 1 1 0% !important;
+      max-width: none !important;
+    }
+
+    #algo-column.is-collapsed {
+      /* #algo-column.is-collapsed shrinks the Algorithms + Settings column down to a narrow vertical strip when collapsed */
+      gap: var(--splitter-thickness-desktop);
+      width: var(--card-collapsed-width-desktop) !important;
+      min-width: var(--card-collapsed-width-desktop) !important;
+      max-width: var(--card-collapsed-width-desktop) !important;
+    }
+
+    #algo-column.is-collapsed .vscode-card {
+      /* #algo-column.is-collapsed .vscode-card matches the Algorithms and Settings card backgrounds to the header color when collapsed */
+      background-color: var(--bg-card-header);
+    }
+
+    #algo-column.is-collapsed .vscode-card-header {
+      /* #algo-column.is-collapsed .vscode-card-header hides the standard headers of Algorithms and Settings when collapsed */
+      display: none;
+    }
+
+    #algo-column.is-collapsed #algo-title,
+    #algo-column.is-collapsed #algo-body,
+    #algo-column.is-collapsed #algo-settings-title,
+    #algo-column.is-collapsed #algo-settings-body,
+    #algo-column.is-collapsed #splitter-algo-settings-h {
+      /* Hides the inner titles, bodies, and splitter of Algorithms and Settings when #algo-column is collapsed */
+      display: none;
+    }
+
+    #algo-column.is-collapsed #algo-collapsed-strip,
+    #algo-column.is-collapsed #algo-settings-collapsed-strip {
+      /* Reveals the vertical rotated Algorithms and Settings strips when #algo-column is collapsed */
       display: flex;
     }
 
     #code-card.is-collapsed {
+      /* #code-card.is-collapsed shrinks the Code / Notes card down to a narrow vertical strip when collapsed */
+      flex: 0 0 auto !important;
       width: var(--card-collapsed-width-desktop) !important;
       min-width: var(--card-collapsed-width-desktop) !important;
       max-width: var(--card-collapsed-width-desktop) !important;
-      flex: 0 0 auto !important;
       background-color: var(--bg-card-header);
-    }
-
-    /* Allow #algo-column to fill remaining space when #code-card is collapsed */
-    #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
-      flex: 1 1 0% !important;
-      max-width: none !important;
-    }
-
-    /* Allow #history-column to fill remaining space when #left-main-stack is collapsed */
-    #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed) {
-      flex: 1 1 0% !important;
-      max-width: none !important;
     }
 
     #code-card.is-collapsed .vscode-card-header,
     #code-card.is-collapsed #codeViewPane {
+      /* Hides the Code card header and code view pane when #code-card is collapsed */
       display: none !important;
     }
 
     #code-card.is-collapsed #code-collapsed-strip {
+      /* Reveals the vertical rotated Code strip when #code-card is collapsed */
       display: flex;
     }
 
-    /* --- Zen Mode (Hides all collapsed vertical/horizontal panes & their splitters) --- */
-    .activity-btn.active {
-      background-color: var(--bg-active-item);
-      color: var(--text-bright);
+    #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
+      /* Expands #algo-column to fill #right-top-row when #code-card is collapsed */
+      flex: 1 1 0% !important;
+      max-width: none !important;
     }
 
-    /* --- Keep favourite-selection.png exact same image in light & dark mode --- */
-    #algo-fav-filter-btn .algo-filter-icon {
-      filter: none !important;
-    }
-
-    /* --- Horizontal Card Collapse (Minimum Height) Support in Zen Mode --- */
     .vscode-card.is-h-collapsed .card-scroll-body,
     .vscode-card.is-h-collapsed .graph-body-wrapper,
     .vscode-card.is-h-collapsed #algo-body {
+      /* Hides the inner body of any card that has been vertically dragged down to its minimum header height (.is-h-collapsed) */
       display: none !important;
     }
 
-    /* =========================================================================
-       COMPLETE ZEN MODE STYLES (BOTH VERTICAL & HORIZONTAL COLLAPSED PANELS)
-       ========================================================================= */
+    /* ========== End of Panel Collapse State Overrides ========== */
 
-    /* --- Part A: Vertical Collapsed Panels (.is-collapsed) --- */
+
+    /* ========== Zen Mode Overrides ========== */
     body.zen-mode #history-column.is-collapsed,
     body.zen-mode #history-column.is-collapsed+#splitter-history-graph-v,
     body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #splitter-history-graph-v,
@@ -2288,94 +2558,92 @@
     body.zen-mode #algo-column.is-collapsed+#splitter-algo-code-v,
     body.zen-mode #right-top-row:has(#code-card.is-collapsed) #splitter-algo-code-v,
     body.zen-mode #code-card.is-collapsed {
+      /* Hides all vertically collapsed columns/cards and their adjacent vertical splitters when Zen Mode is active */
       display: none !important;
     }
 
-    /* Expand the remaining open sibling when the other vertical column is hidden in Zen Mode */
     body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed),
     body.zen-mode #left-column:has(#history-column.is-collapsed) #left-main-stack:not(.is-collapsed),
     body.zen-mode #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed),
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed) #code-card:not(.is-collapsed) {
+      /* Expands the remaining open vertical sibling to 100% width when its partner is hidden in Zen Mode */
       flex: 1 1 0% !important;
       width: 100% !important;
       max-width: none !important;
     }
 
-    /* If BOTH children in left-column or right-top-row are vertically collapsed, hide the parent & its splitter */
     body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed),
     body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)+#splitter-main-v,
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed),
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)+#splitter-right-h {
+      /* Hides the entire parent row/column and its splitter if both of its child columns are vertically collapsed in Zen Mode */
       display: none !important;
     }
 
-    /* If the entire right-column is collapsed, hide both desktop & mobile splitters and let left-column fill 100% */
     body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #splitter-main-v,
     body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed)>#splitter-left-h,
     body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #right-column {
+      /* Hides the entire right column and main splitters in Zen Mode when both right-hand rows are collapsed */
       display: none !important;
     }
 
     body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #left-column {
+      /* Expands #left-column to 100% of the workspace when #right-column is completely hidden in Zen Mode */
       flex: 1 1 0% !important;
       width: 100% !important;
-      height: 100% !important;
       max-width: none !important;
+      height: 100% !important;
       max-height: none !important;
     }
 
-    /* --- Part B: Horizontal Collapsed Cards (.is-h-collapsed & .is-row-h-collapsed) --- */
-    .vscode-card.is-h-collapsed .card-scroll-body,
-    .vscode-card.is-h-collapsed .graph-body-wrapper,
-    .vscode-card.is-h-collapsed #algo-body {
-      display: none !important;
-    }
-
     body.zen-mode .vscode-card.is-h-collapsed {
+      /* Completely hides any card that has been horizontally collapsed to its minimum height when Zen Mode is active */
       display: none !important;
     }
 
-    /* 1. Graph <-> Traversal (Desktop Left Stack) */
     body.zen-mode #graph-card.is-h-collapsed+#splitter-left-h,
     body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #splitter-left-h,
     body.zen-mode #desktop-traversal-slot:has(#log-card.is-h-collapsed) {
+      /* Hides the splitter and slot between Graph and Traversal in Zen Mode when either card is horizontally collapsed */
       display: none !important;
     }
 
     body.zen-mode #left-main-stack:has(#graph-card.is-h-collapsed) #desktop-traversal-slot,
     body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #graph-card {
+      /* Expands the remaining Graph or Traversal card to 100% height inside #left-main-stack in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    /* 2. Algorithms <-> Settings (Algo Column) */
     body.zen-mode #algorithms-card.is-h-collapsed+#splitter-algo-settings-h,
     body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #splitter-algo-settings-h {
+      /* Hides the horizontal splitter between Algorithms and Settings in Zen Mode when either card is horizontally collapsed */
       display: none !important;
     }
 
     body.zen-mode #algo-column:has(#algorithms-card.is-h-collapsed) #algo-settings-card,
     body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #algorithms-card {
+      /* Expands the remaining Algorithms or Settings card to 100% height inside #algo-column in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    /* 3. Metadata <-> History (History Column) */
     body.zen-mode #metadata-card.is-h-collapsed+#splitter-metadata-history-h,
     body.zen-mode #history-column:has(#history-card.is-h-collapsed) #splitter-metadata-history-h {
+      /* Hides the horizontal splitter between Metadata and History in Zen Mode when either card is horizontally collapsed */
       display: none !important;
     }
 
     body.zen-mode #history-column:has(#metadata-card.is-h-collapsed) #history-card,
     body.zen-mode #history-column:has(#history-card.is-h-collapsed) #metadata-card {
+      /* Expands the remaining Metadata or History card to 100% height inside #history-column in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    /* 4. Right Top Row (Algorithms/Settings + Code) <-> Bottom Split Row (State Variables / Mobile Traversal) */
     body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #splitter-right-h,
     body.zen-mode #bottom-split-row.is-row-h-collapsed,
     body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #splitter-right-h,
@@ -2384,6 +2652,7 @@
     body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed):has(> #state-card.is-h-collapsed),
     body.zen-mode #right-top-row.is-row-h-collapsed,
     body.zen-mode #right-top-row.is-row-h-collapsed+#splitter-right-h {
+      /* Hides collapsed rows and #splitter-right-h inside #right-column when either the top row or bottom row is horizontally collapsed in Zen Mode */
       display: none !important;
     }
 
@@ -2391,96 +2660,77 @@
     body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #right-top-row,
     body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #right-top-row,
     body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row {
+      /* Expands the remaining open row (#right-top-row or #bottom-split-row) to 100% height inside #right-column in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    /* On Mobile: if only State Card or only Traversal Card is collapsed at the bottom, hide the mobile splitter and expand the other */
     body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #splitter-bottom-mobile-v,
     body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #splitter-bottom-mobile-v {
+      /* Hides the mobile bottom vertical splitter in Zen Mode if either Traversal or State Variables is collapsed */
       display: none !important;
     }
 
     body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #log-card:not(.is-h-collapsed),
     body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #state-card:not(.is-h-collapsed) {
+      /* Expands the remaining open card in the mobile bottom row to 100% width in Zen Mode */
       flex: 1 1 0% !important;
       width: 100% !important;
       max-width: none !important;
     }
 
-    /* 5. Mobile Top Graph Row <-> Right Column */
     body.zen-mode #left-column.is-row-h-collapsed,
     body.zen-mode #left-column.is-row-h-collapsed+#splitter-left-h,
     body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #splitter-left-h,
     body.zen-mode #right-column.is-row-h-collapsed {
+      /* Hides the top Graph row or bottom Right column and their splitter on mobile when collapsed in Zen Mode */
       display: none !important;
     }
 
     body.zen-mode #workspace:has(#left-column.is-row-h-collapsed) #right-column,
     body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #left-column {
+      /* Expands the remaining open mobile row (#left-column or #right-column) to 100% height in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    /* --- Favourite Star Icon in Tree --- */
-    .fav-toggle-btn {
-      width: 1.15rem;
-      height: 1.15rem;
-      padding: 0;
-      margin-left: auto;
-      background: transparent;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      flex-shrink: 0;
-      opacity: 0.75;
-      transition: opacity 0.12s ease, transform 0.12s ease;
-    }
+    /* ========== End of Zen Mode Overrides ========== */
 
-    .fav-toggle-btn:hover {
-      opacity: 1;
-      transform: scale(1.1);
-    }
 
-    .fav-toggle-icon {
-      width: 0.9rem;
-      height: 0.9rem;
-      object-fit: contain;
-      display: block;
-    }
-
-    /* =========================================================================
-       PHONE / MOBILE LAYOUT (<= 56.25REM, BASE 0.8REM, SAME DOM ELEMENTS)
-       ========================================================================= */
+    /* ========== Mobile & Tablet Responsive Overrides (<= 56.25rem) ========== */
     @media (max-width: 56.25rem) {
       :root {
+        /* Updates minimum row height variables to match compact mobile card header heights */
         --right-top-row-min-height: var(--card-min-height-mobile);
         --bottom-row-min-height: var(--card-min-height-mobile);
       }
 
       body {
+        /* Applies compact mobile font size across the body on viewports <= 56.25rem */
         font-size: var(--mobile-body-font-size);
       }
 
       .desktop-only-el {
-        display: none !important;
-      }
-
-      .brand-name-text {
+        /* Hides desktop-only elements such as the main vertical splitter (#splitter-main-v) on mobile */
         display: none !important;
       }
 
       .top-titlebar {
+        /* Compacts the top titlebar height and horizontal padding on mobile */
         height: var(--header-height-mobile);
         min-height: var(--header-height-mobile);
         padding: 0 0.45rem;
       }
 
+      .brand-name-text {
+        /* Hides the "Shard Spiral" text next to the logo on mobile to save header space */
+        display: none !important;
+      }
+
       .activity-btn {
+        /* Shrinks the hitbox of the Fullscreen, New, Reload, Zen Mode, Reset Layout, Help, and Profile header buttons on mobile */
         width: var(--header-action-btn-size-mobile);
         height: var(--header-action-btn-size-mobile);
         min-width: var(--header-action-btn-size-mobile);
@@ -2488,6 +2738,7 @@
       }
 
       .activity-icon-img {
+        /* Shrinks the PNG icons inside the header .activity-btn buttons on mobile */
         width: var(--header-action-icon-size-mobile);
         height: var(--header-action-icon-size-mobile);
         min-width: var(--header-action-icon-size-mobile);
@@ -2495,194 +2746,113 @@
       }
 
       #btnReload {
+        /* Displays the Reload page button (#btnReload) in the top titlebar on mobile */
         display: flex;
       }
 
       .theme-switcher {
+        /* Hides the 3-button desktop theme switcher on mobile */
         display: none !important;
       }
 
       .mobile-theme-cycle-btn {
+        /* Reveals the single-icon cycling theme toggle button (#mobile-theme-cycle-btn) on mobile */
         display: inline-flex;
       }
 
       .main-area {
+        /* Stacks .main-area children vertically on mobile */
         flex-direction: column;
-      }
-
-      .card-icon-btn {
-        width: var(--card-icon-btn-size-mobile);
-        height: var(--card-icon-btn-size-mobile);
-        min-width: var(--card-icon-btn-size-mobile);
-        min-height: var(--card-icon-btn-size-mobile);
-      }
-
-      .sidebar-toggle-img {
-        width: var(--sidebar-toggle-icon-size-mobile);
-        height: var(--sidebar-toggle-icon-size-mobile);
-        min-width: var(--sidebar-toggle-icon-size-mobile);
-        min-height: var(--sidebar-toggle-icon-size-mobile);
       }
 
       .workspace-container {
+        /* Switches #workspace from a horizontal column layout to a vertical stacked layout on mobile */
         flex-direction: column;
-        padding: 0.25rem 0.35rem 0.35rem 0.35rem;
         gap: 0;
+        padding: 0.25rem 0.35rem 0.35rem 0.35rem;
         overflow: hidden;
       }
 
+      .vscode-card {
+        /* Compacts the minimum card height and border-radius on mobile */
+        min-height: var(--card-min-height-mobile);
+        border-radius: 0.45rem;
+      }
+
+      .vscode-card-header {
+        /* Compacts card header height and padding on mobile */
+        height: var(--card-header-height-mobile);
+        min-height: var(--card-header-height-mobile);
+        padding: 0 0.5rem;
+      }
+
+      .splitter-v {
+        /* Adjusts vertical splitter grab thickness on mobile */
+        width: var(--splitter-thickness-mobile);
+        min-width: var(--splitter-thickness-mobile);
+      }
+
+      .splitter-h {
+        /* Adjusts horizontal splitter grab thickness on mobile */
+        height: var(--splitter-thickness-mobile);
+        min-height: var(--splitter-thickness-mobile);
+      }
+
       .left-column {
+        /* Converts #left-column into the top full-width Graph/History row on mobile */
+        flex: 0 0 auto;
         width: 100%;
         min-width: 0;
         max-width: none;
         height: var(--mobile-graph-row-height);
         min-height: var(--card-min-height-mobile);
         max-height: calc(100% - (var(--card-min-height-mobile) * 2) - (var(--splitter-thickness-mobile) * 2));
-        flex: 0 0 auto;
-      }
-
-      .right-column {
-        width: 100%;
-        min-height: calc((var(--card-min-height-mobile) * 2) + var(--splitter-thickness-mobile));
-      }
-
-      body.zen-mode .right-column:has(#right-top-row.is-row-h-collapsed),
-      body.zen-mode .right-column:has(#bottom-split-row.is-row-h-collapsed) {
-        min-height: var(--card-min-height-mobile);
-      }
-
-      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#right-top-row.is-row-h-collapsed)),
-      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#bottom-split-row.is-row-h-collapsed)) {
-        max-height: calc(100% - var(--card-min-height-mobile) - var(--splitter-thickness-mobile));
-      }
-
-      .desktop-traversal-slot {
-        display: none;
-      }
-
-      #graph-card {
-        height: 100%;
-        min-height: var(--card-min-height-mobile);
-        max-height: none;
-        flex: 1 1 0%;
-      }
-
-      .right-top-row {
-        height: var(--mobile-code-row-height);
-        min-height: var(--right-top-row-min-height);
-        max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-mobile));
-      }
-
-      .bottom-split-row {
-        min-height: var(--bottom-row-min-height);
-      }
-
-      #algo-column {
-        width: var(--algorithms-default-width-mobile);
-        min-width: var(--algorithms-min-width-mobile);
-        max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-mobile));
-      }
-
-      #algo-column.is-collapsed {
-        width: var(--card-collapsed-width-mobile) !important;
-        min-width: var(--card-collapsed-width-mobile) !important;
-        max-width: var(--card-collapsed-width-mobile) !important;
-      }
-
-      #algorithms-card {
-        width: 100%;
-        max-width: none;
-        min-height: var(--card-min-height-mobile);
-      }
-
-      #algo-settings-card {
-        min-height: var(--card-min-height-mobile);
       }
 
       #history-column {
+        /* Adjusts default and minimum widths of #history-column on mobile */
         width: var(--history-default-width-mobile);
         min-width: var(--algorithms-min-width-mobile);
         max-width: var(--history-max-width);
       }
 
-      #history-column.is-collapsed {
-        width: var(--card-collapsed-width-mobile) !important;
-        min-width: var(--card-collapsed-width-mobile) !important;
-        max-width: var(--card-collapsed-width-mobile) !important;
-      }
-
       #metadata-card,
       #history-card {
+        /* Applies mobile minimum height to the Metadata and History cards */
         min-height: var(--card-min-height-mobile);
       }
 
-      #log-card {
-        width: var(--mobile-traversal-width);
-        min-width: var(--bottom-cards-min-width);
-        max-width: calc(100% - var(--bottom-cards-min-width) - var(--splitter-thickness-mobile));
-        flex: 0 0 auto;
-      }
-
-      #splitter-bottom-mobile-v {
-        display: flex;
-      }
-
-      .vscode-card {
-        border-radius: 0.45rem;
+      #graph-card {
+        /* Expands #graph-card to fill the full height of the top row on mobile */
+        flex: 1 1 0%;
+        height: 100%;
         min-height: var(--card-min-height-mobile);
+        max-height: none;
       }
 
-      .vscode-card-header {
-        height: var(--card-header-height-mobile);
-        min-height: var(--card-header-height-mobile);
-        padding: 0 0.5rem;
-      }
-
-      .vscode-tab {
-        height: var(--tab-height-mobile);
-        min-height: var(--tab-height-mobile);
+      .playback-bar {
+        /* Compacts the bottom playback controls bar inside #graph-card on mobile */
+        gap: 0.3rem;
+        height: var(--playback-bar-height-mobile);
+        min-height: var(--playback-bar-height-mobile);
         padding: 0 0.45rem;
-        border-radius: 0.28rem;
       }
 
-      .profile-modal {
-        height: var(--profile-modal-height-mobile);
-      }
-
-      .profile-modal-sidebar {
-        width: var(--profile-sidebar-width-mobile);
-        min-width: var(--profile-sidebar-width-mobile);
-        padding: 0.375rem;
-      }
-
-      .vscode-btn-secondary,
-      .algo-search-input,
-      .param-input-field {
-        height: var(--control-btn-height-mobile);
-        min-height: var(--control-btn-height-mobile);
-        padding: 0 0.4rem;
-        gap: 0.2rem;
-      }
-
-      .algo-filter-btn {
-        width: var(--control-btn-height-mobile);
-        height: var(--control-btn-height-mobile);
-        min-width: var(--control-btn-height-mobile);
-        min-height: var(--control-btn-height-mobile);
+      .playback-text-btn {
+        /* Compacts the "Run" text button height in the playback bar on mobile */
+        height: var(--playback-icon-btn-size-mobile);
       }
 
       .playback-icon-btn {
+        /* Compacts the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons on mobile */
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
         min-width: var(--playback-icon-btn-size-mobile);
         min-height: var(--playback-icon-btn-size-mobile);
       }
 
-      .playback-text-btn {
-        height: var(--playback-icon-btn-size-mobile);
-      }
-
       .playback-icon-img {
+        /* Compacts the PNG icons inside .playback-icon-btn on mobile */
         width: var(--playback-icon-size-mobile);
         height: var(--playback-icon-size-mobile);
         min-width: var(--playback-icon-size-mobile);
@@ -2690,61 +2860,189 @@
       }
 
       .playback-label-img {
+        /* Compacts the speed icon image on mobile */
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
       }
 
-      .lang-trigger-btn {
-        height: var(--tab-height-mobile);
-        min-height: var(--tab-height-mobile);
-        padding: 0 0.35rem;
-        gap: 0.25rem;
-      }
-
       input[type="range"].vscode-slider {
+        /* Shortens the speed range slider width on mobile */
         width: var(--speed-slider-width-mobile);
       }
 
-      .playback-bar {
-        height: var(--playback-bar-height-mobile);
-        min-height: var(--playback-bar-height-mobile);
+      .desktop-traversal-slot {
+        /* Hides #desktop-traversal-slot on mobile (since #log-card moves into #bottom-split-row) */
+        display: none;
+      }
+
+      .right-column {
+        /* Sets #right-column to full width below the top Graph row on mobile */
+        width: 100%;
+        min-height: calc((var(--card-min-height-mobile) * 2) + var(--splitter-thickness-mobile));
+      }
+
+      .right-top-row {
+        /* Sizes the middle Algorithms + Code row on mobile */
+        height: var(--mobile-code-row-height);
+        min-height: var(--right-top-row-min-height);
+        max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-mobile));
+      }
+
+      #algo-column {
+        /* Adjusts default and minimum widths of #algo-column on mobile */
+        width: var(--algorithms-default-width-mobile);
+        min-width: var(--algorithms-min-width-mobile);
+        max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-mobile));
+      }
+
+      #algorithms-card {
+        /* Adjusts #algorithms-card dimensions on mobile */
+        width: 100%;
+        max-width: none;
+        min-height: var(--card-min-height-mobile);
+      }
+
+      .algo-filter-btn {
+        /* Compacts the Show Favourites Only, Hide Algorithms, and Filter by Data Structure buttons on mobile */
+        width: var(--control-btn-height-mobile);
+        height: var(--control-btn-height-mobile);
+        min-width: var(--control-btn-height-mobile);
+        min-height: var(--control-btn-height-mobile);
+      }
+
+      #algo-settings-card {
+        /* Applies mobile minimum height to #algo-settings-card */
+        min-height: var(--card-min-height-mobile);
+      }
+
+      .vscode-btn-secondary,
+      .algo-search-input,
+      .param-input-field {
+        /* Compacts the height and padding of the Settings "Run" button, Profile "Sign Out" button, search input, and parameter inputs on mobile */
+        gap: 0.2rem;
+        height: var(--control-btn-height-mobile);
+        min-height: var(--control-btn-height-mobile);
+        padding: 0 0.4rem;
+      }
+
+      .desktop-tabs {
+        /* Hides the horizontal desktop tab strips in #code-card and #state-card on mobile */
+        display: none !important;
+      }
+
+      .mobile-tabs {
+        /* Displays the compact dropdown tab selectors in #code-card and #state-card on mobile */
+        display: flex !important;
+      }
+
+      .vscode-tab {
+        /* Compacts tab height and padding on mobile */
+        height: var(--tab-height-mobile);
+        min-height: var(--tab-height-mobile);
         padding: 0 0.45rem;
-        gap: 0.3rem;
+        border-radius: 0.28rem;
       }
 
-      .splitter-h {
-        height: var(--splitter-thickness-mobile);
-        min-height: var(--splitter-thickness-mobile);
+      .lang-trigger-btn {
+        /* Compacts the Language Selector, Mobile Code/Notes tab trigger, and Mobile State/Explanation tab trigger buttons on mobile */
+        gap: 0.25rem;
+        height: var(--tab-height-mobile);
+        min-height: var(--tab-height-mobile);
+        padding: 0 0.35rem;
       }
 
-      .splitter-v {
-        width: var(--splitter-thickness-mobile);
-        min-width: var(--splitter-thickness-mobile);
+      .card-icon-btn {
+        /* Compacts the Copy Code, Download Code, and Close Profile Modal buttons on mobile */
+        width: var(--card-icon-btn-size-mobile);
+        height: var(--card-icon-btn-size-mobile);
+        min-width: var(--card-icon-btn-size-mobile);
+        min-height: var(--card-icon-btn-size-mobile);
       }
 
-      #left-main-stack.is-collapsed,
-      #code-card.is-collapsed {
+      .sidebar-toggle-img {
+        /* Compacts the Copy and Download icon images on mobile */
+        width: var(--sidebar-toggle-icon-size-mobile);
+        height: var(--sidebar-toggle-icon-size-mobile);
+        min-width: var(--sidebar-toggle-icon-size-mobile);
+        min-height: var(--sidebar-toggle-icon-size-mobile);
+      }
+
+      .bottom-split-row {
+        /* Applies mobile minimum height to the bottom side-by-side Traversal + State Variables row */
+        min-height: var(--bottom-row-min-height);
+      }
+
+      #log-card {
+        /* Sizes the Traversal card on the left side of #bottom-split-row on mobile */
+        flex: 0 0 auto;
+        width: var(--mobile-traversal-width);
+        min-width: var(--bottom-cards-min-width);
+        max-width: calc(100% - var(--bottom-cards-min-width) - var(--splitter-thickness-mobile));
+      }
+
+      #splitter-bottom-mobile-v {
+        /* Displays the vertical resizer bar between Traversal and State Variables on mobile */
+        display: flex;
+      }
+
+      .profile-modal {
+        /* Compacts the Profile modal height on mobile */
+        height: var(--profile-modal-height-mobile);
+      }
+
+      .profile-modal-sidebar {
+        /* Adjusts the Profile modal sidebar padding and width on mobile */
+        width: var(--profile-sidebar-width-mobile);
+        min-width: var(--profile-sidebar-width-mobile);
+        padding: 0.375rem;
+      }
+
+      code[class*="language-"] {
+        /* Removes top padding on Prism code blocks on mobile */
+        padding-top: 0;
+      }
+
+      .line-highlight {
+        /* Aligns the Prism line highlight offset with mobile code padding */
+        margin-top: 0.765rem;
+      }
+
+      #history-column.is-collapsed {
+        /* Shrinks the collapsed History column strip to mobile width */
         width: var(--card-collapsed-width-mobile) !important;
         min-width: var(--card-collapsed-width-mobile) !important;
         max-width: var(--card-collapsed-width-mobile) !important;
       }
 
-      code[class*="language-"] {
-        padding-top: 0;
+      #algo-column.is-collapsed {
+        /* Shrinks the collapsed Algorithms column strip to mobile width */
+        width: var(--card-collapsed-width-mobile) !important;
+        min-width: var(--card-collapsed-width-mobile) !important;
+        max-width: var(--card-collapsed-width-mobile) !important;
       }
 
-      .line-highlight {
-        margin-top: 0.765rem;
+      #left-main-stack.is-collapsed,
+      #code-card.is-collapsed {
+        /* Shrinks the collapsed Graph stack and Code card strips to mobile width */
+        width: var(--card-collapsed-width-mobile) !important;
+        min-width: var(--card-collapsed-width-mobile) !important;
+        max-width: var(--card-collapsed-width-mobile) !important;
       }
 
-      .desktop-tabs {
-        display: none !important;
+      body.zen-mode .right-column:has(#right-top-row.is-row-h-collapsed),
+      body.zen-mode .right-column:has(#bottom-split-row.is-row-h-collapsed) {
+        /* Reduces #right-column minimum height on mobile when one of its two rows is hidden in Zen Mode */
+        min-height: var(--card-min-height-mobile);
       }
 
-      .mobile-tabs {
-        display: flex !important;
+      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#right-top-row.is-row-h-collapsed)),
+      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#bottom-split-row.is-row-h-collapsed)) {
+        /* Allows the top #left-column to expand further downward on mobile when one of the bottom rows is hidden in Zen Mode */
+        max-height: calc(100% - var(--card-min-height-mobile) - var(--splitter-thickness-mobile));
       }
     }
+
+    /* ========== End of Mobile & Tablet Responsive Overrides (<= 56.25rem) ========== */
   </style>
 </head>
 
