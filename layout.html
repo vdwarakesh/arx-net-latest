@@ -893,7 +893,7 @@
     }
 
     .playback-bar {
-      /* .playback-bar is used here at the bottom of .graph-body-wrapper to house simulation playback and speed controls */
+      /* .playback-bar is used here at the bottom of .graph-body-wrapper and #code-card to house simulation playback and speed controls */
       display: flex;
       flex-shrink: 0;
       align-items: center;
@@ -908,7 +908,7 @@
     }
 
     .playback-controls-left {
-      /* .playback-controls-left is used here to group the Run button, Step buttons, and Speed slider in .playback-bar and #algo-settings-body */
+      /* .playback-controls-left is used here to group the Run button, Step buttons, and Speed slider in .playback-bar */
       display: flex;
       flex-shrink: 0;
       align-items: center;
@@ -940,7 +940,7 @@
     }
 
     .playback-icon-btn {
-      /* .playback-icon-btn gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons in both the Graph playback bar and Settings card their styles */
+      /* .playback-icon-btn gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons in both the Graph and Code playback bars their styles */
       display: inline-flex;
       flex-shrink: 0;
       align-items: center;
@@ -1082,9 +1082,10 @@
     }
 
     .right-top-row {
-      /* .right-top-row is used here on #right-top-row to place #algo-column and #code-card side by side */
+      /* .right-top-row is used here on #right-top-row to place #code-card and #algo-column side by side (Code on the left, Algorithms on the right on desktop) */
       display: flex;
       flex: 0 0 auto;
+      flex-direction: row-reverse;
       min-width: 0;
       height: var(--desktop-right-top-height);
       min-height: var(--right-top-row-min-height);
@@ -2523,8 +2524,9 @@
     }
 
     #code-card.is-collapsed .vscode-card-header,
-    #code-card.is-collapsed #codeViewPane {
-      /* Hides the Code card header and code view pane when #code-card is collapsed */
+    #code-card.is-collapsed #codeViewPane,
+    #code-card.is-collapsed .playback-bar {
+      /* Hides the Code card header, code view pane, and playback bar when #code-card is collapsed */
       display: none !important;
     }
 
@@ -2541,8 +2543,9 @@
 
     .vscode-card.is-h-collapsed .card-scroll-body,
     .vscode-card.is-h-collapsed .graph-body-wrapper,
-    .vscode-card.is-h-collapsed #algo-body {
-      /* Hides the inner body of any card that has been vertically dragged down to its minimum header height (.is-h-collapsed) */
+    .vscode-card.is-h-collapsed #algo-body,
+    .vscode-card.is-h-collapsed .playback-bar {
+      /* Hides the inner body and playback bar of any card that has been vertically dragged down to its minimum header height (.is-h-collapsed) */
       display: none !important;
     }
 
@@ -2882,7 +2885,8 @@
       }
 
       .right-top-row {
-        /* Sizes the middle Algorithms + Code row on mobile */
+        /* Sizes the middle Algorithms + Code row and restores standard left-to-right order on mobile */
+        flex-direction: row;
         height: var(--mobile-code-row-height);
         min-height: var(--right-top-row-min-height);
         max-height: calc(100% - var(--bottom-row-min-height) - var(--splitter-thickness-mobile));
@@ -3304,7 +3308,7 @@
       <!--========== Right column contents ==========-->
       <div id="right-column" class="right-column">
 
-        <!--========== Top right row: desktop / Middle row: phone (Algorithms + Code card) ==========-->
+        <!--========== Top right row: desktop (Code + Algorithms card) / Middle row: phone (Algorithms + Code card) ==========-->
         <div id="right-top-row" class="right-top-row">
 
           <!--========== Contains Algorithms and Settings cards ==========-->
@@ -3412,37 +3416,7 @@
                   <!--==========-->
 
                   <button type="button" class="vscode-btn-secondary"
-                    style="width: 100%; margin-bottom: 1rem;">Run</button>
-
-                  <!--========== Visualize Controls - These are the same as in DS-card ==========-->
-                  <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.5rem;">Steps</h4>
-                  <div class="playback-controls-left" style="flex-wrap: wrap; gap: 0.5rem;">
-                    <div class="visualization-options" style="margin: 0; padding: 0; border: none;">
-                      <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
-                        <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
-                      </button>
-                      <button type="button" class="playback-icon-btn sync-run" title="Visualize">
-                        <img src="images/run.png" alt="Run" class="playback-icon-img" />
-                      </button>
-                      <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
-                        <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
-                      </button>
-                      <button type="button" class="playback-icon-btn sync-reset" title="Reset">
-                        <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
-                      </button>
-
-                      <div class="playback-speed-group" style="margin: 0;">
-                        <img src="images/speed.png" class="playback-label-img" />
-                        <input type="range" min="0.25" max="4" step="0.25" value="1"
-                          class="vscode-slider sync-speed-slider" />
-                        <span class="playback-speed-value sync-speed-label">1x</span>
-                      </div>
-                    </div>
-                    <div class="playback-controls-right" style="margin-left: auto;">
-                      <span class="playback-muted-label sync-steps-label">0 / 0</span>
-                    </div>
-                  </div>
-                  <!--========== End of visualization in Settings card ==========-->
+                    style="width: 100%; margin-bottom: 0rem;">Run</button>
                 </div> <!-- This div only exists to give some padding -->
               </div>
               <!--========== End of settings card content ==========-->
@@ -3606,6 +3580,42 @@
             </div>
             <!--========== End of Code / Notes content ==========-->
 
+            <!--========== Playback bar - Speed and step controls - Right side shows step x/y ==========-->
+            <div class="playback-bar">
+              <div class="playback-controls-left">
+                <button type="button" class="playback-text-btn" title="Run">
+                  Run
+                </button>
+                <div class="visualization-options">
+                  Steps&nbsp;
+                  <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
+                    <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn sync-run" title="Visualize">
+                    <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
+                    <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
+                  </button>
+                  <button type="button" class="playback-icon-btn sync-reset" title="Reset">
+                    <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
+                  </button>
+
+                  <div class="playback-speed-group">
+                    <img src="images/speed.png" class="playback-label-img" />
+                    <input type="range" min="0.25" max="4" step="0.25" value="1"
+                      class="vscode-slider sync-speed-slider" />
+                    <span class="playback-speed-value sync-speed-label">1x</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="playback-controls-right">
+                <span class="playback-muted-label sync-steps-label">0 / 0</span>
+              </div>
+            </div>
+            <!--========== End of playback bar ==========-->
+
             <!--========== Collapsed code strip - Visible only on collapse ==========-->
             <div id="code-collapsed-strip" title="Click to expand Code">
               <span class="algo-collapsed-label">Code</span>
@@ -3616,7 +3626,7 @@
           <!--========== End of Code / Notes Card ==========-->
 
         </div>
-        <!--========== End of Top right row: desktop / Middle row: phone (Algorithms + Code card) ==========-->
+        <!--========== End of Top right row: desktop (Code + Algorithms card) / Middle row: phone (Algorithms + Code card) ==========-->
 
         <!--===== Horizontal splitter to adjust size of Top Row (Algorithms & Code) / Bottom Row (State Variables) =====-->
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
@@ -4334,7 +4344,7 @@
 
 
     /* ========== Left Column: Playback Controls & Speed Slider Sync ========== */
-    /* DOM Elements for the Graph playback speed slider (#speed-slider) and synchronized playback controls across Graph and Settings cards */
+    /* DOM Elements for the Graph playback speed slider (#speed-slider) and synchronized playback controls across Graph and Code cards */
     const speedSlider = document.getElementById('speed-slider');
     const speedLabel = document.getElementById('speed-label');
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
@@ -5522,13 +5532,25 @@
 
     /* 4. Desktop Main Left <-> Right Column Vertical Splitter (#splitter-main-v) */
     (function setupMainVerticalSplitter() {
+      /* setupMainVerticalSplitter resizes #left-column while keeping #algo-column at a fixed pixel width so only #code-card grows or shrinks on the right */
       const mainSplitter = document.getElementById('splitter-main-v');
       let isDragging = false;
+      let lockedAlgoWidthPx = null;
 
       const startDrag = (e) => {
         isDragging = true;
         mainSplitter.classList.add('dragging');
         document.body.style.cursor = 'col-resize';
+
+        /* Lock #algo-column to its current pixel width so dragging #splitter-main-v only resizes #code-card */
+        if (!isAlgoCollapsed && !isCodeCollapsed) {
+          lockedAlgoWidthPx = algoColumn.getBoundingClientRect().width;
+          algoColumn.style.width = `${lockedAlgoWidthPx.toFixed(2)}px`;
+          savedAlgoWidth = algoColumn.style.width;
+        } else {
+          lockedAlgoWidthPx = null;
+        }
+
         e.preventDefault();
       };
 
@@ -5555,18 +5577,24 @@
           setGraphCollapsed(false);
         }
 
-        const algoW = isAlgoCollapsed ? collapsedStripW : algoColumn.getBoundingClientRect().width;
+        const algoW = isAlgoCollapsed
+          ? collapsedStripW
+          : (lockedAlgoWidthPx !== null ? lockedAlgoWidthPx : algoColumn.getBoundingClientRect().width);
         const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
         const codeAvailableW = desiredRightW - algoW - algoSplitW;
+
         if (codeAvailableW < collapseThresholdU) {
           if (!isCodeCollapsed) setCodeCollapsed(true);
         } else if (isCodeCollapsed) {
           setCodeCollapsed(false);
+          if (!isAlgoCollapsed && lockedAlgoWidthPx !== null) {
+            algoColumn.style.width = `${lockedAlgoWidthPx.toFixed(2)}px`;
+          }
         }
 
         const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
           (isGraphCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
-        const minRightW = (isAlgoCollapsed ? collapsedStripW : collapseThresholdU) +
+        const minRightW = (isAlgoCollapsed ? collapsedStripW : algoW) +
           (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
 
         const clampedLeftW = Math.max(minLeftW, Math.min(rect.width - minRightW - splitterW, desiredLeftW));
@@ -5576,6 +5604,7 @@
       const stopDrag = () => {
         if (!isDragging) return;
         isDragging = false;
+        lockedAlgoWidthPx = null;
         mainSplitter.classList.remove('dragging');
         document.body.style.cursor = '';
         saveLayoutState();
@@ -5605,6 +5634,7 @@
 
     /* 6. Algorithms Column <-> Code Card Vertical Splitter (#splitter-algo-code-v) */
     (function setupAlgoSplitter() {
+      /* setupAlgoSplitter handles resizing and auto-collapsing between #code-card and #algo-column (Code | Algorithms on desktop, Algorithms | Code on mobile) */
       let isDragging = false;
 
       const startDrag = (e) => {
@@ -5620,14 +5650,17 @@
         const rect = rightTopRow.getBoundingClientRect();
         if (rect.width <= 0) return;
 
-        const collapseThresholdU = phoneMedia.matches
+        const isPhone = phoneMedia.matches;
+        const collapseThresholdU = isPhone
           ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
           : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
-        const collapsedStripW = phoneMedia.matches
+        const collapsedStripW = isPhone
           ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
           : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
         const splitterW = splitterAlgoCode.getBoundingClientRect().width;
-        const desiredWidthU = clientX - rect.left;
+
+        /* On desktop, #algo-column is on the right (rect.right - clientX); on mobile, #algo-column is on the left (clientX - rect.left) */
+        const desiredWidthU = isPhone ? (clientX - rect.left) : (rect.right - clientX);
         const remainingCodeWidthU = rect.width - desiredWidthU - splitterW;
 
         if (desiredWidthU < collapseThresholdU) {
@@ -5642,7 +5675,10 @@
           if (isCodeCollapsed) setCodeCollapsed(false);
           const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
           const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
-          const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
+          /* Store pixel width on desktop so resizing the main splitter only affects #code-card; keep percentage on mobile */
+          const widthStr = isPhone
+            ? `${((clampedU / rect.width) * 100).toFixed(2)}%`
+            : `${clampedU.toFixed(2)}px`;
           savedAlgoWidth = widthStr;
 
           if (isAlgoCollapsed) {
