@@ -831,6 +831,40 @@
       min-height: var(--card-min-height-desktop);
     }
 
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 0.25rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .history-item:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .history-item.active {
+      background-color: var(--bg-active-item);
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .history-item-type {
+      font-size: 0.78em;
+      color: var(--text-muted);
+    }
+
     #metadata-collapsed-strip,
     #history-collapsed-strip {
       /* #metadata-collapsed-strip and #history-collapsed-strip are used here for the clickable vertical bars shown when #history-column is collapsed */
@@ -890,6 +924,50 @@
       /* .ds-placeholder-text is used here to style the placeholder text inside .ds-inner-pad */
       color: var(--text-primary);
       opacity: 0.9;
+    }
+
+    /* ========== DS Containers, Splash Screen & History List ========== */
+    .ds-splash-screen {
+      display: flex;
+      flex: 1 1 0%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      height: 100%;
+      padding: 1.5rem;
+      text-align: center;
+      user-select: none;
+    }
+
+    .ds-splash-title {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-bright);
+    }
+
+    .ds-splash-slogan {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .ds-container-instance {
+      display: none;
+      flex: 1 1 0%;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      padding: 0.625rem 0.75rem;
+      overflow: auto;
+    }
+
+    .ds-container-instance.active {
+      display: flex;
     }
 
     .playback-bar {
@@ -3234,15 +3312,15 @@
           <!--========== DS card - Contains the data structure diagram and visualization controls ==========-->
           <section id="ds-card" class="vscode-card">
             <div class="vscode-card-header">
-              <span>Graph</span>
+              <span id="ds-card-title">Shard Spiral</span>
             </div>
 
             <div class="ds-body-wrapper">
-              <div class="ds-canvas-area">
-                <div class="ds-inner-pad">
-                  <span class="ds-placeholder-text">
-                    Main content area.
-                  </span>
+              <div id="ds-canvas-area" class="ds-canvas-area">
+                <!-- Initial Splash Screen Container -->
+                <div id="ds-splash-container" class="ds-splash-screen">
+                  <h2 class="ds-splash-title">Shard Spiral</h2>
+                  <p class="ds-splash-slogan">Visualization done differently</p>
                 </div>
               </div>
 
@@ -3285,7 +3363,7 @@
 
             <!--===== Collapsed DS strip - Visible only on collapse =====-->
             <div id="ds-collapsed-strip" title="Click to expand DS">
-              <span class="algo-collapsed-label">Graph</span>
+              <span id="ds-collapsed-label" class="algo-collapsed-label">Shard Spiral</span>
             </div>
             <!--==========-->
 
@@ -3406,14 +3484,14 @@
                   <!--==========-->
 
                   <!--===== Parameters =====-->
-                  <div style="margin-bottom: 0.75rem;">
+                  <div id="algo-params-section" style="margin-bottom: 0.75rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Parameters</h4>
                     <span class="card-body-text" id="algo-params-container" style="color: var(--text-muted);"></span>
                   </div>
                   <!--==========-->
 
                   <!--===== Optional Parameters =====-->
-                  <div style="margin-bottom: 1rem;">
+                  <div id="algo-optional-params-section" style="margin-bottom: 1rem;">
                     <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Optional Parameters
                     </h4>
                     <span class="card-body-text" id="algo-optional-params-container"
@@ -3421,8 +3499,8 @@
                   </div>
                   <!--==========-->
 
-                  <button type="button" class="vscode-btn-secondary"
-                    style="width: 100%; margin-bottom: 0rem;">Run</button>
+                  <button type="button" id="algo-settings-submit-btn" class="vscode-btn-secondary"
+                    style="width: 100%; margin-bottom: 0rem;">Create</button>
                 </div> <!-- This div only exists to give some padding -->
               </div>
               <!--========== End of settings card content ==========-->
@@ -4402,18 +4480,147 @@
     const algoFilterTreeEl = document.getElementById('algo-filter-tree');
     const algoTreeContainer = document.getElementById('algo-tree-container');
 
-    /* State for Loaded JSON Metadata, Tree Folder Expansion, Active Filters, and Favourites */
+    /* State for Loaded JSON Metadata, Tree Folder Expansion, Active Filters, Favourites & Containers */
     let dataStructuresJson = {};
     let algorithmsJson = {};
     let constraintsJson = {};
     let dsDirectAlgorithmsMap = {};
     let selectedDsaName = null;
+    let selectedDsaType = null; // 'ds' | 'algo'
     let isFavFilterActive = false;
     let isAlgosHidden = false;
     let favouritesSet = new Set();
     const expandedMainFolders = new Set();
     const expandedFilterFolders = new Set();
     const activeDsFilterSet = new Set();
+
+    /* State for Data Structure Containers & History */
+    const dsContainers = []; // Stores { name, dsType, userInput, element }
+    let activeContainerName = null; // null means splash screen is shown
+
+    const dsCardTitleEl = document.getElementById('ds-card-title');
+    const dsCollapsedLabelEl = document.getElementById('ds-collapsed-label');
+    const dsCanvasAreaEl = document.getElementById('ds-canvas-area');
+    const dsSplashContainerEl = document.getElementById('ds-splash-container');
+    const historyBodyEl = document.getElementById('history-body');
+    const algoSettingsSubmitBtn = document.getElementById('algo-settings-submit-btn');
+
+    function renderHistoryList() {
+      /* Renders all created containers inside the History card (#history-body) */
+      if (!historyBodyEl) return;
+
+      if (dsContainers.length === 0) {
+        historyBodyEl.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: var(--text-muted);">
+              No containers created yet.
+            </span>
+          </div>
+        `;
+        return;
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'card-inner-pad history-list';
+
+      dsContainers.forEach(item => {
+        const row = document.createElement('div');
+        row.className = `history-item${item.name === activeContainerName ? ' active' : ''}`;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = item.name;
+        nameSpan.style.overflow = 'hidden';
+        nameSpan.style.textOverflow = 'ellipsis';
+        nameSpan.style.whiteSpace = 'nowrap';
+
+        const typeSpan = document.createElement('span');
+        typeSpan.className = 'history-item-type';
+        typeSpan.textContent = item.dsType;
+
+        row.appendChild(nameSpan);
+        row.appendChild(typeSpan);
+
+        row.addEventListener('click', () => {
+          selectContainer(item.name);
+        });
+
+        wrapper.appendChild(row);
+      });
+
+      historyBodyEl.innerHTML = '';
+      historyBodyEl.appendChild(wrapper);
+    }
+
+    function getUniqueContainerName(rawInputName, defaultDsName) {
+      /* Uses user input if non-empty, otherwise defaults to the Data Structure name.
+         If the name already exists, appends _1, _2, etc. (e.g. Tree -> Tree_1 -> Tree_2, or Tree_1 -> Tree_1_1) */
+      const baseName = (rawInputName && rawInputName.trim()) ? rawInputName.trim() : defaultDsName;
+      const existingNames = new Set(dsContainers.map(c => c.name));
+
+      if (!existingNames.has(baseName)) {
+        return baseName;
+      }
+
+      let counter = 1;
+      while (existingNames.has(`${baseName}_${counter}`)) {
+        counter++;
+      }
+      return `${baseName}_${counter}`;
+    }
+
+    function selectContainer(containerName) {
+      /* Switches which container is currently displayed on screen and updates the DS card header */
+      activeContainerName = containerName;
+
+      if (dsSplashContainerEl) {
+        dsSplashContainerEl.style.display = containerName === null ? 'flex' : 'none';
+      }
+
+      dsContainers.forEach(item => {
+        item.element.classList.toggle('active', item.name === containerName);
+      });
+
+      const headerTitle = containerName === null ? 'Shard Spiral' : containerName;
+      if (dsCardTitleEl) dsCardTitleEl.textContent = headerTitle;
+      if (dsCollapsedLabelEl) dsCollapsedLabelEl.textContent = headerTitle;
+
+      renderHistoryList();
+    }
+
+    function createDataStructureContainer(dsType, rawNameInput, contentInput) {
+      /* Creates a new container DOM element with userInput attribute, appends it to the DS canvas, adds it to History, and selects it */
+      const uniqueName = getUniqueContainerName(rawNameInput, dsType);
+
+      const containerEl = document.createElement('div');
+      containerEl.className = 'ds-container-instance';
+      containerEl.dataset.containerName = uniqueName;
+      containerEl.dataset.dsType = dsType;
+
+      /* Keep content as an attribute/property on the container and name as the header value */
+      containerEl.setAttribute('userInput', contentInput);
+      containerEl.userInput = contentInput;
+      containerEl.containerName = uniqueName;
+
+      const placeholderText = document.createElement('span');
+      placeholderText.className = 'ds-placeholder-text';
+      placeholderText.textContent = contentInput
+        ? `${uniqueName} (${dsType}): ${contentInput}`
+        : `${uniqueName} (${dsType})`;
+      containerEl.appendChild(placeholderText);
+
+      if (dsCanvasAreaEl) {
+        dsCanvasAreaEl.appendChild(containerEl);
+      }
+
+      dsContainers.push({
+        name: uniqueName,
+        dsType,
+        userInput: contentInput,
+        element: containerEl
+      });
+
+      selectContainer(uniqueName);
+    }
 
     function loadFavourites() {
       /* loadFavourites loads the user's starred algorithms and data structures from localStorage */
@@ -4573,13 +4780,40 @@
       return span;
     }
 
-    function updateAlgorithmSettings(name, parentDsName = null) {
-      /* updateAlgorithmSettings populates the Constraints & Tags badges and required/optional parameter inputs inside #algo-settings-card */
+    function updateAlgorithmSettings(name, parentDsName = null, itemType = 'algo') {
+      /* Populates the Settings card (#algo-settings-card) for either a Data Structure ('ds') or an Algorithm ('algo') */
       const paramsContainer = document.getElementById('algo-params-container');
+      const optParamsSection = document.getElementById('algo-optional-params-section');
       const optParamsContainer = document.getElementById('algo-optional-params-container');
       const metaSection = document.getElementById('algo-settings-meta-section');
       const metaContainer = document.getElementById('algo-settings-meta-container');
       if (!paramsContainer || !optParamsContainer) return;
+
+      /* Case 1: A Data Structure was clicked */
+      if (itemType === 'ds' && name) {
+        if (metaSection && metaContainer) {
+          metaContainer.innerHTML = '';
+          metaSection.style.display = 'none';
+        }
+        if (optParamsSection) {
+          optParamsSection.style.display = 'none';
+        }
+        optParamsContainer.innerHTML = '';
+
+        paramsContainer.style.color = 'inherit';
+        paramsContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <input type="text" id="ds-input-name" class="param-input-field" placeholder="name (default: ${name})" data-param-name="name" />
+            <input type="text" id="ds-input-content" class="param-input-field" placeholder="content" data-param-name="content" />
+          </div>
+        `;
+        return;
+      }
+
+      /* Case 2: An Algorithm was clicked (or nothing selected) */
+      if (optParamsSection) {
+        optParamsSection.style.display = 'block';
+      }
 
       const algoData = algorithmsJson[name];
       if (!name || !algoData) {
@@ -4675,14 +4909,15 @@
       optParamsContainer.style.color = optParams && optParams.length ? 'inherit' : 'var(--text-muted)';
     }
 
-    function selectDsaItem(name, parentDsName = null) {
-      /* selectDsaItem highlights the clicked Data Structure or Algorithm row in #algo-tree-container and updates the Code/Notes pane and Settings card */
+    function selectDsaItem(name, parentDsName = null, itemType = 'algo') {
+      /* Highlights the clicked Data Structure or Algorithm row in #algo-tree-container and updates the Code/Notes pane and Settings card */
       selectedDsaName = name;
+      selectedDsaType = itemType;
       algoTreeContainer.querySelectorAll('.tree-row[data-dsa-name]').forEach(row => {
         row.classList.toggle('selected', row.getAttribute('data-dsa-name') === name);
       });
       updateCodeViewPane();
-      updateAlgorithmSettings(name, parentDsName);
+      updateAlgorithmSettings(name, parentDsName, itemType);
     }
 
     function renderMainAlgoTree() {
@@ -4799,7 +5034,7 @@
 
             algoRow.addEventListener('click', (e) => {
               e.stopPropagation();
-              selectDsaItem(algo.name, dsName);
+              selectDsaItem(algo.name, dsName, 'algo');
             });
 
             algoWrapper.appendChild(algoRow);
@@ -4812,7 +5047,7 @@
 
         dsRow.addEventListener('click', (e) => {
           e.stopPropagation();
-          selectDsaItem(dsName);
+          selectDsaItem(dsName, null, 'ds');
           if (hasAnyChildren) {
             const nowExpanded = !childrenContainer.classList.contains('expanded');
             childrenContainer.classList.toggle('expanded', nowExpanded);
@@ -4962,15 +5197,13 @@
       renderMainAlgoTree();
     });
 
-    if (algoFavFilterBtn) {
-      algoFavFilterBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isFavFilterActive = !isFavFilterActive;
-        algoFavFilterBtn.classList.toggle('has-active-filter', isFavFilterActive);
-        algoFavFilterBtn.setAttribute('aria-pressed', String(isFavFilterActive));
-        renderMainAlgoTree();
-      });
-    }
+    algoFavFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isFavFilterActive = !isFavFilterActive;
+      algoFavFilterBtn.classList.toggle('has-active-filter', isFavFilterActive);
+      algoFavFilterBtn.setAttribute('aria-pressed', String(isFavFilterActive));
+      renderMainAlgoTree();
+    });
 
     algoHideBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -4992,6 +5225,21 @@
       renderMainAlgoTree();
     });
 
+    algoSettingsSubmitBtn.addEventListener('click', () => {
+      if (selectedDsaType === 'ds' && selectedDsaName) {
+        const nameInputEl = document.getElementById('ds-input-name');
+        const contentInputEl = document.getElementById('ds-input-content');
+        const rawName = nameInputEl ? nameInputEl.value : '';
+        const rawContent = contentInputEl ? contentInputEl.value : '';
+
+        createDataStructureContainer(selectedDsaName, rawName, rawContent);
+
+        if (nameInputEl) nameInputEl.value = '';
+        if (contentInputEl) contentInputEl.value = '';
+      }
+    });
+
+    renderHistoryList();
     loadDsaMetadata();
     /* ========== End of Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
 
@@ -5588,7 +5836,7 @@
       const onDrag = (e) => {
         if (!isDragging) return;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        
+
         /* Measure inner columns exactly to bypass #workspace padding calculation errors */
         const leftRect = leftColumn.getBoundingClientRect();
         const rightRect = rightColumn.getBoundingClientRect();
