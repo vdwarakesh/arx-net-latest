@@ -129,13 +129,11 @@
       /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
       --history-default-width-desktop: 20%;
       /* Default width of history section on desktop */
-      --history-default-width-mobile: 38%;
+      --history-default-width-mobile: 40%;
       /* Default width of history section on mobile */
-      --history-max-width: 40%;
-      /* Maxmimum width of history and metadata sections on desktop and mobile */
       --history-top-height: 30%;
       /* Ratio of history to metadata */
-      --code-card-min-width: 8rem;
+      --code-card-min-width: 0;
       /* Minimum width of the Code / Notes card so tabs and dropdown remain usable */
       --right-top-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the top-right row containing Algorithms and Code */
@@ -815,7 +813,7 @@
       flex-direction: column;
       width: var(--history-default-width-desktop);
       min-width: var(--algorithms-min-width-desktop);
-      max-width: var(--history-max-width);
+      max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
     }
 
     #metadata-card {
@@ -2535,8 +2533,8 @@
       display: flex;
     }
 
-    #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
-      /* Expands #algo-column to fill #right-top-row when #code-card is collapsed */
+    #right-top-row.algo-fills-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
+      /* Expands #algo-column to fill #right-top-row only when collapsed via #splitter-algo-code-v */
       flex: 1 1 0% !important;
       max-width: none !important;
     }
@@ -2816,7 +2814,7 @@
         /* Adjusts default and minimum widths of #history-column on mobile */
         width: var(--history-default-width-mobile);
         min-width: var(--algorithms-min-width-mobile);
-        max-width: var(--history-max-width);
+        max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-mobile));
       }
 
       #metadata-card,
@@ -4072,10 +4070,11 @@
       }
     }
 
-    function setCodeCollapsed(collapse) {
+    function setCodeCollapsed(collapse, algoFillsRow = false) {
       /* setCodeCollapsed collapses or expands #code-card (Code / Notes card) */
       isCodeCollapsed = Boolean(collapse);
       codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
+      rightTopRow.classList.toggle('algo-fills-row', isCodeCollapsed && algoFillsRow);
     }
 
     function updateHorizontalCollapsedStates() {
@@ -5475,9 +5474,7 @@
           historyColumn.style.width = expandedHistW;
         } else {
           if (isDsCollapsed) setDsCollapsed(false);
-          const maxByPercentU = rect.width * 0.40;
-          const maxByReserveU = rect.width - collapseThresholdU - splitterW;
-          const maxU = Math.max(collapseThresholdU, Math.min(maxByPercentU, maxByReserveU));
+          const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
           const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
           const widthStr = `${((clampedU / rect.width) * 100).toFixed(2)}%`;
           savedHistoryWidth = widthStr;
@@ -5536,19 +5533,29 @@
       const mainSplitter = document.getElementById('splitter-main-v');
       let isDragging = false;
       let lockedAlgoWidthPx = null;
+      let lockedHistWidthPx = null;
 
       const startDrag = (e) => {
         isDragging = true;
         mainSplitter.classList.add('dragging');
         document.body.style.cursor = 'col-resize';
 
-        /* Lock #algo-column to its current pixel width so dragging #splitter-main-v only resizes #code-card */
-        if (!isAlgoCollapsed && !isCodeCollapsed) {
+        /* Lock #algo-column to its current pixel width so dragging #splitter-main-v only resizes #code-card and #ds-card */
+        if (!isAlgoCollapsed) {
           lockedAlgoWidthPx = algoColumn.getBoundingClientRect().width;
           algoColumn.style.width = `${lockedAlgoWidthPx.toFixed(2)}px`;
           savedAlgoWidth = algoColumn.style.width;
         } else {
           lockedAlgoWidthPx = null;
+        }
+
+        /* Lock #history-column to its current pixel width if open so it doesn't shift while dragging #splitter-main-v */
+        if (!isHistoryCollapsed) {
+          lockedHistWidthPx = historyColumn.getBoundingClientRect().width;
+          historyColumn.style.width = `${lockedHistWidthPx.toFixed(2)}px`;
+          savedHistoryWidth = historyColumn.style.width;
+        } else {
+          lockedHistWidthPx = null;
         }
 
         e.preventDefault();
@@ -5557,54 +5564,83 @@
       const onDrag = (e) => {
         if (!isDragging) return;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const rect = workspace.getBoundingClientRect();
-        if (rect.width <= 0) return;
+        
+        /* Measure inner columns exactly to bypass #workspace padding calculation errors */
+        const leftRect = leftColumn.getBoundingClientRect();
+        const rightRect = rightColumn.getBoundingClientRect();
+        const splitterW = mainSplitter.getBoundingClientRect().width;
+        const containerW = leftRect.width + splitterW + rightRect.width;
+
+        if (containerW <= 0) return;
 
         const collapsedStripW = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
         const collapseThresholdU = getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
-        const splitterW = mainSplitter.getBoundingClientRect().width;
 
-        const desiredLeftW = clientX - rect.left;
-        const desiredRightW = rect.width - desiredLeftW - splitterW;
+        const desiredLeftW = clientX - leftRect.left;
+        const desiredRightW = containerW - desiredLeftW - splitterW;
 
-        const histW = isHistoryCollapsed ? collapsedStripW : historyColumn.getBoundingClientRect().width;
+        const histW = isHistoryCollapsed
+          ? collapsedStripW
+          : (lockedHistWidthPx !== null ? lockedHistWidthPx : historyColumn.getBoundingClientRect().width);
         const histSplitW = splitterHistoryDs.getBoundingClientRect().width;
-
-        const dsAvailableW = desiredLeftW - histW - histSplitW;
-        if (dsAvailableW < collapseThresholdU) {
-          if (!isDsCollapsed) setDsCollapsed(true);
-        } else if (isDsCollapsed) {
-          setDsCollapsed(false);
-        }
 
         const algoW = isAlgoCollapsed
           ? collapsedStripW
           : (lockedAlgoWidthPx !== null ? lockedAlgoWidthPx : algoColumn.getBoundingClientRect().width);
         const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
+
+        const dsAvailableW = desiredLeftW - histW - histSplitW;
         const codeAvailableW = desiredRightW - algoW - algoSplitW;
 
+        /* Case 1: DS collapses from min-width -> snap leftColumn to collapsed width so Code occupies all remaining space; stop further left drag */
+        if (dsAvailableW < collapseThresholdU) {
+          if (!isDsCollapsed) setDsCollapsed(true);
+          if (isCodeCollapsed) setCodeCollapsed(false, false);
+
+          const snappedLeftW = histW + histSplitW + collapsedStripW;
+          leftColumn.style.width = `${((snappedLeftW / containerW) * 100).toFixed(2)}%`;
+          return;
+        }
+
+        if (isDsCollapsed) {
+          setDsCollapsed(false);
+        }
+
+        /* Case 2: Code collapses from min-width -> keep Algorithms at lockedAlgoWidthPx, snap leftColumn (DS) to occupy remaining space, and stop further right drag */
         if (codeAvailableW < collapseThresholdU) {
-          if (!isCodeCollapsed) setCodeCollapsed(true);
-        } else if (isCodeCollapsed) {
-          setCodeCollapsed(false);
+          if (!isCodeCollapsed) setCodeCollapsed(true, false);
+          if (!isAlgoCollapsed && lockedAlgoWidthPx !== null) {
+            algoColumn.style.width = `${lockedAlgoWidthPx.toFixed(2)}px`;
+          }
+
+          const collapsedRightW = algoW + algoSplitW + collapsedStripW;
+          const snappedLeftW = Math.max(
+            histW + histSplitW + collapseThresholdU,
+            containerW - collapsedRightW - splitterW
+          );
+          leftColumn.style.width = `${((snappedLeftW / containerW) * 100).toFixed(2)}%`;
+          return;
+        }
+
+        if (isCodeCollapsed) {
+          setCodeCollapsed(false, false);
           if (!isAlgoCollapsed && lockedAlgoWidthPx !== null) {
             algoColumn.style.width = `${lockedAlgoWidthPx.toFixed(2)}px`;
           }
         }
 
-        const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
-          (isDsCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
-        const minRightW = (isAlgoCollapsed ? collapsedStripW : algoW) +
-          (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
-
-        const clampedLeftW = Math.max(minLeftW, Math.min(rect.width - minRightW - splitterW, desiredLeftW));
-        leftColumn.style.width = `${((clampedLeftW / rect.width) * 100).toFixed(2)}%`;
+        /* Case 3: Both DS and Code are above min-width */
+        const minLeftW = histW + histSplitW + collapseThresholdU;
+        const minRightW = algoW + algoSplitW + collapseThresholdU;
+        const clampedLeftW = Math.max(minLeftW, Math.min(containerW - minRightW - splitterW, desiredLeftW));
+        leftColumn.style.width = `${((clampedLeftW / containerW) * 100).toFixed(2)}%`;
       };
 
       const stopDrag = () => {
         if (!isDragging) return;
         isDragging = false;
         lockedAlgoWidthPx = null;
+        lockedHistWidthPx = null;
         mainSplitter.classList.remove('dragging');
         document.body.style.cursor = '';
         saveLayoutState();
@@ -5668,7 +5704,7 @@
           if (!isAlgoCollapsed) setAlgoCollapsed(true);
         } else if (remainingCodeWidthU < collapseThresholdU) {
           if (isAlgoCollapsed) setAlgoCollapsed(false);
-          if (!isCodeCollapsed) setCodeCollapsed(true);
+          if (!isCodeCollapsed) setCodeCollapsed(true, true);
           const expandedAlgoW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
           algoColumn.style.width = expandedAlgoW;
         } else {
