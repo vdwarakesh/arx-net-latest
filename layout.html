@@ -50,7 +50,7 @@
       --header-height-mobile: 2.625rem;
       /* Height of the top application header bar on mobile */
       --card-header-height-desktop: 2.15rem;
-      /* Height of section card headers (Graph, Code, etc.) on desktop */
+      /* Height of section card headers (DS, Code, etc.) on desktop */
       --card-header-height-mobile: 1.6rem;
       /* Height of section card headers on mobile */
       --card-min-height-desktop: 2.15rem;
@@ -58,23 +58,23 @@
       --card-min-height-mobile: 1.6rem;
       /* Minimum height of each card on mobile (matches card header height) */
       --playback-bar-height-desktop: 2.5rem;
-      /* Height of the bottom playback controls bar inside the Graph card on desktop */
+      /* Height of the bottom playback controls bar inside the DS card on desktop */
       --playback-bar-height-mobile: 2rem;
       /* Height of the bottom playback controls bar on mobile */
 
       /* ========== Default Panel Proportions ========== */
       --desktop-left-col-width: 45%;
-      /* Default width of the left column (Graph + Traversal) on desktop */
-      --desktop-graph-height: 100%;
-      /* Default height of the Graph card inside the left column on desktop */
+      /* Default width of the left column (DS + Traversal) on desktop */
+      --desktop-ds-height: 100%;
+      /* Default height of the DS card inside the left column on desktop */
       --desktop-right-top-height: 100%;
       /* Default height of the Algorithms + Code row inside the right column on desktop */
       --algorithms-default-width-desktop: 40%;
       /* Default expanded width of the Algorithms card on desktop */
       --algorithms-default-width-mobile: 40%;
       /* Default expanded width of the Algorithms card when opened on mobile */
-      --mobile-graph-row-height: 50%;
-      /* Default height of the top Graph row on mobile */
+      --mobile-ds-row-height: 50%;
+      /* Default height of the top DS row on mobile */
       --mobile-code-row-height: 100%;
       /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
       --mobile-traversal-width: 60%;
@@ -667,7 +667,7 @@
     }
 
     .vscode-card {
-      /* .vscode-card is used here as the shared card container for Metadata, History, Graph, Algorithms, Settings, Code, Traversal, and State Variables */
+      /* .vscode-card is used here as the shared card container for Metadata, History, DS, Algorithms, Settings, Code, Traversal, and State Variables */
       position: relative;
       display: flex;
       flex-direction: column;
@@ -718,7 +718,7 @@
     }
 
     .algo-collapsed-label {
-      /* .algo-collapsed-label is used here to render vertical rotated text inside collapsed card strips (Metadata, History, Graph, Algorithms, Settings, Code) */
+      /* .algo-collapsed-label is used here to render vertical rotated text inside collapsed card strips (Metadata, History, DS, Algorithms, Settings, Code) */
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -796,15 +796,15 @@
     /* ========== End of Main Workspace & Shared Card Scaffolding ========== */
 
 
-    /* ========== Left Column (History, Metadata, Graph & Playback) ========== */
+    /* ========== Left Column (History, Metadata, DS & Playback) ========== */
     .left-column {
-      /* .left-column is used here on #left-column to hold the History/Metadata column and the Graph/Traversal stack */
+      /* .left-column is used here on #left-column to hold the History/Metadata column and the DS/Traversal stack */
       display: flex;
       flex: 0 0 auto;
       flex-direction: row;
       width: var(--desktop-left-col-width);
       min-width: calc((var(--card-collapsed-width-desktop) * 2) + var(--splitter-thickness-desktop));
-      max-width: calc(100% - var(--card-collapsed-width-desktop) - var(-- splitter-thickness-desktop));
+      max-width: calc(100% - var(--card-collapsed-width-desktop) - var(--splitter-thickness-desktop));
       min-height: 0;
     }
 
@@ -846,7 +846,7 @@
     }
 
     .left-main-stack {
-      /* .left-main-stack is used here on #left-main-stack to stack the Graph card (#graph-card) and Desktop Traversal slot (#desktop-traversal-slot) */
+      /* .left-main-stack is used here on #left-main-stack to stack the DS card (#ds-card) and Desktop Traversal slot (#desktop-traversal-slot) */
       display: flex;
       flex: 1 1 0%;
       flex-direction: column;
@@ -854,16 +854,16 @@
       min-height: 0;
     }
 
-    #graph-card {
-      /* #graph-card is used here for the primary Data Structure & Graph visualization card inside #left-main-stack */
+    #ds-card {
+      /* #ds-card is used here for the primary Data Structure visualization card inside #left-main-stack */
       flex: 0 0 auto;
-      height: var(--desktop-graph-height);
+      height: var(--desktop-ds-height);
       min-height: var(--card-min-height-desktop);
       max-height: calc(100% - var(--card-min-height-desktop) - var(--splitter-thickness-desktop));
     }
 
-    .graph-body-wrapper {
-      /* .graph-body-wrapper is used here inside #graph-card to hold the canvas area above the bottom playback bar */
+    .ds-body-wrapper {
+      /* .ds-body-wrapper is used here inside #ds-card to hold the canvas area above the bottom playback bar */
       display: flex;
       flex: 1 1 0%;
       flex-direction: column;
@@ -871,8 +871,8 @@
       overflow: hidden;
     }
 
-    .graph-canvas-area {
-      /* .graph-canvas-area is used here inside .graph-body-wrapper as the main interactive drawing surface */
+    .ds-canvas-area {
+      /* .ds-canvas-area is used here inside .ds-body-wrapper as the main interactive drawing surface */
       display: flex;
       flex: 1 1 0%;
       align-items: flex-start;
@@ -881,19 +881,19 @@
       overflow: hidden;
     }
 
-    .graph-inner-pad {
-      /* .graph-inner-pad is used here for inner spacing inside .graph-canvas-area */
+    .ds-inner-pad {
+      /* .ds-inner-pad is used here for inner spacing inside .ds-canvas-area */
       padding: 0.625rem 0.75rem;
     }
 
-    .graph-placeholder-text {
-      /* .graph-placeholder-text is used here to style the placeholder text inside .graph-inner-pad */
+    .ds-placeholder-text {
+      /* .ds-placeholder-text is used here to style the placeholder text inside .ds-inner-pad */
       color: var(--text-primary);
       opacity: 0.9;
     }
 
     .playback-bar {
-      /* .playback-bar is used here at the bottom of .graph-body-wrapper and #code-card to house simulation playback and speed controls */
+      /* .playback-bar is used here at the bottom of .ds-body-wrapper and #code-card to house simulation playback and speed controls */
       display: flex;
       flex-shrink: 0;
       align-items: center;
@@ -940,7 +940,7 @@
     }
 
     .playback-icon-btn {
-      /* .playback-icon-btn gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons in both the Graph and Code playback bars their styles */
+      /* .playback-icon-btn gives the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons in both the DS and Code playback bars their styles */
       display: inline-flex;
       flex-shrink: 0;
       align-items: center;
@@ -1068,7 +1068,7 @@
       min-height: var(--card-min-height-desktop);
     }
 
-    /* ========== End of Left Column (History, Metadata, Graph & Playback) ========== */
+    /* ========== End of Left Column (History, Metadata, DS & Playback) ========== */
 
 
     /* ========== Right Column: Algorithms & Settings Column ========== */
@@ -1963,10 +1963,10 @@
       text-decoration: underline;
     }
 
-    #graph-collapsed-strip,
+    #ds-collapsed-strip,
     #log-collapsed-strip,
     #code-collapsed-strip {
-      /* #graph-collapsed-strip, #log-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
+      /* #ds-collapsed-strip, #log-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
       display: none;
       flex: 1 1 0%;
       flex-direction: column;
@@ -2448,7 +2448,7 @@
     }
 
     #left-main-stack.is-collapsed {
-      /* #left-main-stack.is-collapsed shrinks the Graph + Traversal stack down to a narrow vertical strip when collapsed */
+      /* #left-main-stack.is-collapsed shrinks the DS + Traversal stack down to a narrow vertical strip when collapsed */
       flex: 0 0 auto !important;
       gap: var(--splitter-thickness-desktop);
       width: var(--card-collapsed-width-desktop) !important;
@@ -2457,21 +2457,21 @@
     }
 
     #left-main-stack.is-collapsed .vscode-card {
-      /* #left-main-stack.is-collapsed .vscode-card matches the Graph card background to the header color when collapsed */
+      /* #left-main-stack.is-collapsed .vscode-card matches the DS card background to the header color when collapsed */
       background-color: var(--bg-card-header);
     }
 
     #left-main-stack.is-collapsed .vscode-card-header,
-    #left-main-stack.is-collapsed .graph-body-wrapper,
+    #left-main-stack.is-collapsed .ds-body-wrapper,
     #left-main-stack.is-collapsed #log-card .card-scroll-body,
     #left-main-stack.is-collapsed #splitter-left-h {
-      /* Hides the Graph and Traversal headers, bodies, and splitter when #left-main-stack is collapsed */
+      /* Hides the DS and Traversal headers, bodies, and splitter when #left-main-stack is collapsed */
       display: none !important;
     }
 
-    #left-main-stack.is-collapsed #graph-collapsed-strip,
+    #left-main-stack.is-collapsed #ds-collapsed-strip,
     #left-main-stack.is-collapsed #log-collapsed-strip {
-      /* Reveals the vertical rotated Graph and Traversal strips when #left-main-stack is collapsed */
+      /* Reveals the vertical rotated DS and Traversal strips when #left-main-stack is collapsed */
       display: flex;
     }
 
@@ -2542,7 +2542,7 @@
     }
 
     .vscode-card.is-h-collapsed .card-scroll-body,
-    .vscode-card.is-h-collapsed .graph-body-wrapper,
+    .vscode-card.is-h-collapsed .ds-body-wrapper,
     .vscode-card.is-h-collapsed #algo-body,
     .vscode-card.is-h-collapsed .playback-bar {
       /* Hides the inner body and playback bar of any card that has been vertically dragged down to its minimum header height (.is-h-collapsed) */
@@ -2554,8 +2554,8 @@
 
     /* ========== Zen Mode Overrides ========== */
     body.zen-mode #history-column.is-collapsed,
-    body.zen-mode #history-column.is-collapsed+#splitter-history-graph-v,
-    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #splitter-history-graph-v,
+    body.zen-mode #history-column.is-collapsed+#splitter-history-ds-v,
+    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #splitter-history-ds-v,
     body.zen-mode #left-main-stack.is-collapsed,
     body.zen-mode #algo-column.is-collapsed,
     body.zen-mode #algo-column.is-collapsed+#splitter-algo-code-v,
@@ -2604,16 +2604,16 @@
       display: none !important;
     }
 
-    body.zen-mode #graph-card.is-h-collapsed+#splitter-left-h,
+    body.zen-mode #ds-card.is-h-collapsed+#splitter-left-h,
     body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #splitter-left-h,
     body.zen-mode #desktop-traversal-slot:has(#log-card.is-h-collapsed) {
-      /* Hides the splitter and slot between Graph and Traversal in Zen Mode when either card is horizontally collapsed */
+      /* Hides the splitter and slot between DS and Traversal in Zen Mode when either card is horizontally collapsed */
       display: none !important;
     }
 
-    body.zen-mode #left-main-stack:has(#graph-card.is-h-collapsed) #desktop-traversal-slot,
-    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #graph-card {
-      /* Expands the remaining Graph or Traversal card to 100% height inside #left-main-stack in Zen Mode */
+    body.zen-mode #left-main-stack:has(#ds-card.is-h-collapsed) #desktop-traversal-slot,
+    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #ds-card {
+      /* Expands the remaining DS or Traversal card to 100% height inside #left-main-stack in Zen Mode */
       flex: 1 1 0% !important;
       height: 100% !important;
       max-height: none !important;
@@ -2687,7 +2687,7 @@
     body.zen-mode #left-column.is-row-h-collapsed+#splitter-left-h,
     body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #splitter-left-h,
     body.zen-mode #right-column.is-row-h-collapsed {
-      /* Hides the top Graph row or bottom Right column and their splitter on mobile when collapsed in Zen Mode */
+      /* Hides the top DS row or bottom Right column and their splitter on mobile when collapsed in Zen Mode */
       display: none !important;
     }
 
@@ -2802,12 +2802,12 @@
       }
 
       .left-column {
-        /* Converts #left-column into the top full-width Graph/History row on mobile */
+        /* Converts #left-column into the top full-width DS/History row on mobile */
         flex: 0 0 auto;
         width: 100%;
         min-width: 0;
         max-width: none;
-        height: var(--mobile-graph-row-height);
+        height: var(--mobile-ds-row-height);
         min-height: var(--card-min-height-mobile);
         max-height: calc(100% - (var(--card-min-height-mobile) * 2) - (var(--splitter-thickness-mobile) * 2));
       }
@@ -2825,8 +2825,8 @@
         min-height: var(--card-min-height-mobile);
       }
 
-      #graph-card {
-        /* Expands #graph-card to fill the full height of the top row on mobile */
+      #ds-card {
+        /* Expands #ds-card to fill the full height of the top row on mobile */
         flex: 1 1 0%;
         height: 100%;
         min-height: var(--card-min-height-mobile);
@@ -2834,7 +2834,7 @@
       }
 
       .playback-bar {
-        /* Compacts the bottom playback controls bar inside #graph-card on mobile */
+        /* Compacts the bottom playback controls bar inside #ds-card and #code-card on mobile */
         gap: 0.3rem;
         height: var(--playback-bar-height-mobile);
         min-height: var(--playback-bar-height-mobile);
@@ -2879,7 +2879,7 @@
       }
 
       .right-column {
-        /* Sets #right-column to full width below the top Graph row on mobile */
+        /* Sets #right-column to full width below the top DS row on mobile */
         width: 100%;
         min-height: calc((var(--card-min-height-mobile) * 2) + var(--splitter-thickness-mobile));
       }
@@ -3027,7 +3027,7 @@
 
       #left-main-stack.is-collapsed,
       #code-card.is-collapsed {
-        /* Shrinks the collapsed Graph stack and Code card strips to mobile width */
+        /* Shrinks the collapsed DS stack and Code card strips to mobile width */
         width: var(--card-collapsed-width-mobile) !important;
         min-width: var(--card-collapsed-width-mobile) !important;
         max-width: var(--card-collapsed-width-mobile) !important;
@@ -3219,22 +3219,22 @@
         <!--========== End of collapsible History + Metadata column ==========-->
 
         <!--===== Vertical splitter to adjust size of History + Metadata / DS cards =====-->
-        <div id="splitter-history-graph-v" class="splitter-v" title="Drag to resize"></div>
+        <div id="splitter-history-ds-v" class="splitter-v" title="Drag to resize"></div>
         <!--==========-->
 
         <!--========== DS card and desktop Traversal slot stack ==========-->
         <div id="left-main-stack" class="left-main-stack">
 
           <!--========== DS card - Contains the data structure diagram and visualization controls ==========-->
-          <section id="graph-card" class="vscode-card">
+          <section id="ds-card" class="vscode-card">
             <div class="vscode-card-header">
               <span>Graph</span>
             </div>
 
-            <div class="graph-body-wrapper">
-              <div class="graph-canvas-area">
-                <div class="graph-inner-pad">
-                  <span class="graph-placeholder-text">
+            <div class="ds-body-wrapper">
+              <div class="ds-canvas-area">
+                <div class="ds-inner-pad">
+                  <span class="ds-placeholder-text">
                     Main content area.
                   </span>
                 </div>
@@ -3278,7 +3278,7 @@
             </div>
 
             <!--===== Collapsed DS strip - Visible only on collapse =====-->
-            <div id="graph-collapsed-strip" title="Click to expand Graph">
+            <div id="ds-collapsed-strip" title="Click to expand DS">
               <span class="algo-collapsed-label">Graph</span>
             </div>
             <!--==========-->
@@ -3286,7 +3286,7 @@
           </section>
           <!--========== End of data structures and visualization controls card ==========-->
 
-          <!--===== Horizontal splitter to adjust size of Graph / Traversal cards (Moves below Graph Row on Mobile) =====-->
+          <!--===== Horizontal splitter to adjust size of DS / Traversal cards (Moves below DS Row on Mobile) =====-->
           <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
           <!--==========-->
 
@@ -3825,13 +3825,13 @@
 
       /* Default Panel Proportions (CSS Variables) */
       DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
-      DESKTOP_GRAPH_HEIGHT: 'var(--desktop-graph-height)',
+      DESKTOP_DS_HEIGHT: 'var(--desktop-ds-height)',
       DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
       ALGO_DEFAULT_WIDTH_DESKTOP: 'var(--algorithms-default-width-desktop)',
       ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
       HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
       HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
-      MOBILE_GRAPH_ROW_HEIGHT: 'var(--mobile-graph-row-height)',
+      MOBILE_DS_ROW_HEIGHT: 'var(--mobile-ds-row-height)',
       MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
       MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
 
@@ -3985,7 +3985,7 @@
     const phoneMedia = window.matchMedia(LAYOUT_CONFIG.MOBILE_BREAKPOINT_QUERY);
     const workspace = document.getElementById('workspace');
 
-    /* Left Column DOM Elements (History, Metadata, Graph, and Desktop Traversal Slot) */
+    /* Left Column DOM Elements (History, Metadata, DS, and Desktop Traversal Slot) */
     const leftColumn = document.getElementById('left-column');
     const historyColumn = document.getElementById('history-column');
     const metadataCard = document.getElementById('metadata-card');
@@ -3993,10 +3993,10 @@
     const splitterMetadataHistoryH = document.getElementById('splitter-metadata-history-h');
     const historyCard = document.getElementById('history-card');
     const historyCollapsedStrip = document.getElementById('history-collapsed-strip');
-    const splitterHistoryGraph = document.getElementById('splitter-history-graph-v');
+    const splitterHistoryDs = document.getElementById('splitter-history-ds-v');
     const leftMainStack = document.getElementById('left-main-stack');
-    const graphCard = document.getElementById('graph-card');
-    const graphCollapsedStrip = document.getElementById('graph-collapsed-strip');
+    const dsCard = document.getElementById('ds-card');
+    const dsCollapsedStrip = document.getElementById('ds-collapsed-strip');
     const splitterLeftH = document.getElementById('splitter-left-h');
     const desktopTraversalSlot = document.getElementById('desktop-traversal-slot');
 
@@ -4026,7 +4026,7 @@
     /* Panel Collapse & Saved Dimension State Variables */
     let isHistoryCollapsed = true;
     let savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
-    let isGraphCollapsed = false;
+    let isDsCollapsed = false;
     let isAlgoCollapsed = false;
     let savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
     let isCodeCollapsed = false;
@@ -4049,10 +4049,10 @@
       }
     }
 
-    function setGraphCollapsed(collapse) {
-      /* setGraphCollapsed collapses or expands #left-main-stack (Graph + Desktop Traversal stack) */
-      isGraphCollapsed = Boolean(collapse);
-      leftMainStack.classList.toggle('is-collapsed', isGraphCollapsed);
+    function setDsCollapsed(collapse) {
+      /* setDsCollapsed collapses or expands #left-main-stack (DS + Desktop Traversal stack) */
+      isDsCollapsed = Boolean(collapse);
+      leftMainStack.classList.toggle('is-collapsed', isDsCollapsed);
     }
 
     function setAlgoCollapsed(collapse, customExpandedWidth) {
@@ -4102,8 +4102,8 @@
       };
 
       /* 1. Check individual cards */
-      checkCardMinHeight(graphCard, isGraphCollapsed);
-      const logCollapsed = checkCardMinHeight(logCard, isGraphCollapsed);
+      checkCardMinHeight(dsCard, isDsCollapsed);
+      const logCollapsed = checkCardMinHeight(logCard, isDsCollapsed);
       const stateCollapsed = checkCardMinHeight(stateCard, false);
       const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
       const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
@@ -4131,7 +4131,7 @@
         }
       }
 
-      /* 4. On Mobile, check if #right-column or top #left-column (Graph row) is collapsed */
+      /* 4. On Mobile, check if #right-column or top #left-column (DS row) is collapsed */
       if (rightColumn) {
         const isRightColCollapsed = rightTopRow.classList.contains('is-row-h-collapsed') &&
           bottomSplitRow.classList.contains('is-row-h-collapsed');
@@ -4141,7 +4141,7 @@
       if (leftColumn) {
         if (isPhone) {
           const lcRect = leftColumn.getBoundingClientRect();
-          const allLeftColChildrenCollapsed = isHistoryCollapsed && isGraphCollapsed;
+          const allLeftColChildrenCollapsed = isHistoryCollapsed && isDsCollapsed;
           if (lcRect.height > 0) {
             leftColumn.classList.toggle('is-row-h-collapsed', lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed);
           } else if (allLeftColChildrenCollapsed) {
@@ -4178,7 +4178,7 @@
 
       leftColumn.style.width = '';
       leftColumn.style.height = '';
-      graphCard.style.height = '';
+      dsCard.style.height = '';
       rightTopRow.style.height = '';
       logCard.style.width = '';
       algoCard.style.height = '';
@@ -4210,7 +4210,7 @@
       try {
         const layout = {
           leftColumnW: leftColumn.style.width,
-          graphCardH: graphCard.style.height,
+          dsCardH: dsCard.style.height,
           rightTopRowH: rightTopRow.style.height,
           algoColumnW: algoColumn.style.width,
           algorithmsCardH: algoCard.style.height,
@@ -4219,7 +4219,7 @@
           logCardW: logCard.style.width,
           isAlgoCollapsed,
           isHistoryCollapsed,
-          isGraphCollapsed,
+          isDsCollapsed,
           isCodeCollapsed,
           savedAlgoWidth,
           savedHistoryWidth
@@ -4235,7 +4235,7 @@
         if (stored) {
           const layout = JSON.parse(stored);
           if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
-          if (layout.graphCardH) graphCard.style.height = layout.graphCardH;
+          if (layout.dsCardH) dsCard.style.height = layout.dsCardH;
           if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
           if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
           if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
@@ -4246,7 +4246,7 @@
 
           setAlgoCollapsed(layout.isAlgoCollapsed, layout.isAlgoCollapsed ? null : savedAlgoWidth);
           setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
-          setGraphCollapsed(Boolean(layout.isGraphCollapsed));
+          setDsCollapsed(Boolean(layout.isDsCollapsed));
           setCodeCollapsed(Boolean(layout.isCodeCollapsed));
         }
       } catch (e) { }
@@ -4258,7 +4258,7 @@
 
       savedAlgoWidth = LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP;
       savedHistoryWidth = LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP;
-      setGraphCollapsed(false);
+      setDsCollapsed(false);
       setCodeCollapsed(false);
 
       document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
@@ -4286,16 +4286,16 @@
       });
     }
 
-    if (graphCollapsedStrip) {
-      graphCollapsedStrip.addEventListener('click', () => {
-        setGraphCollapsed(false);
+    if (dsCollapsedStrip) {
+      dsCollapsedStrip.addEventListener('click', () => {
+        setDsCollapsed(false);
         saveLayoutState();
       });
     }
 
     if (logCollapsedStrip) {
       logCollapsedStrip.addEventListener('click', () => {
-        setGraphCollapsed(false);
+        setDsCollapsed(false);
         saveLayoutState();
       });
     }
@@ -4344,7 +4344,7 @@
 
 
     /* ========== Left Column: Playback Controls & Speed Slider Sync ========== */
-    /* DOM Elements for the Graph playback speed slider (#speed-slider) and synchronized playback controls across Graph and Code cards */
+    /* DOM Elements for the DS playback speed slider (#speed-slider) and synchronized playback controls across DS and Code cards */
     const speedSlider = document.getElementById('speed-slider');
     const speedLabel = document.getElementById('speed-label');
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
@@ -5438,13 +5438,13 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
     });
 
-    /* 2. History Column <-> Graph Stack Vertical Splitter (#splitter-history-graph-v) */
+    /* 2. History Column <-> DS Stack Vertical Splitter (#splitter-history-ds-v) */
     (function setupHistorySplitter() {
       let isDragging = false;
 
       const startDrag = (e) => {
         isDragging = true;
-        splitterHistoryGraph.classList.add('dragging');
+        splitterHistoryDs.classList.add('dragging');
         document.body.style.cursor = 'col-resize';
         e.preventDefault();
       };
@@ -5461,20 +5461,20 @@
         const collapsedStripW = phoneMedia.matches
           ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
           : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
-        const splitterW = splitterHistoryGraph.getBoundingClientRect().width;
+        const splitterW = splitterHistoryDs.getBoundingClientRect().width;
         const desiredWidthU = clientX - rect.left;
-        const remainingGraphWidthU = rect.width - desiredWidthU - splitterW;
+        const remainingDsWidthU = rect.width - desiredWidthU - splitterW;
 
         if (desiredWidthU < collapseThresholdU) {
-          if (isGraphCollapsed) setGraphCollapsed(false);
+          if (isDsCollapsed) setDsCollapsed(false);
           if (!isHistoryCollapsed) setHistoryCollapsed(true);
-        } else if (remainingGraphWidthU < collapseThresholdU) {
+        } else if (remainingDsWidthU < collapseThresholdU) {
           if (isHistoryCollapsed) setHistoryCollapsed(false);
-          if (!isGraphCollapsed) setGraphCollapsed(true);
+          if (!isDsCollapsed) setDsCollapsed(true);
           const expandedHistW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
           historyColumn.style.width = expandedHistW;
         } else {
-          if (isGraphCollapsed) setGraphCollapsed(false);
+          if (isDsCollapsed) setDsCollapsed(false);
           const maxByPercentU = rect.width * 0.40;
           const maxByReserveU = rect.width - collapseThresholdU - splitterW;
           const maxU = Math.max(collapseThresholdU, Math.min(maxByPercentU, maxByReserveU));
@@ -5493,24 +5493,24 @@
       const stopDrag = () => {
         if (!isDragging) return;
         isDragging = false;
-        splitterHistoryGraph.classList.remove('dragging');
+        splitterHistoryDs.classList.remove('dragging');
         document.body.style.cursor = '';
         saveLayoutState();
       };
 
-      splitterHistoryGraph.addEventListener('mousedown', startDrag);
-      splitterHistoryGraph.addEventListener('touchstart', startDrag, { passive: false });
+      splitterHistoryDs.addEventListener('mousedown', startDrag);
+      splitterHistoryDs.addEventListener('touchstart', startDrag, { passive: false });
       window.addEventListener('mousemove', onDrag);
       window.addEventListener('touchmove', onDrag, { passive: false });
       window.addEventListener('mouseup', stopDrag);
       window.addEventListener('touchend', stopDrag);
     })();
 
-    /* 3. Graph <-> Traversal Horizontal Splitter (#splitter-left-h) */
+    /* 3. DS <-> Traversal Horizontal Splitter (#splitter-left-h) */
     makeResizable({
       splitter: splitterLeftH,
       getContainer: () => phoneMedia.matches ? workspace : leftMainStack,
-      getTargetPane: () => phoneMedia.matches ? leftColumn : graphCard,
+      getTargetPane: () => phoneMedia.matches ? leftColumn : dsCard,
       getDirection: () => 'vertical',
       getMinUnits: () => phoneMedia.matches
         ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
@@ -5568,13 +5568,13 @@
         const desiredRightW = rect.width - desiredLeftW - splitterW;
 
         const histW = isHistoryCollapsed ? collapsedStripW : historyColumn.getBoundingClientRect().width;
-        const histSplitW = splitterHistoryGraph.getBoundingClientRect().width;
+        const histSplitW = splitterHistoryDs.getBoundingClientRect().width;
 
-        const graphAvailableW = desiredLeftW - histW - histSplitW;
-        if (graphAvailableW < collapseThresholdU) {
-          if (!isGraphCollapsed) setGraphCollapsed(true);
-        } else if (isGraphCollapsed) {
-          setGraphCollapsed(false);
+        const dsAvailableW = desiredLeftW - histW - histSplitW;
+        if (dsAvailableW < collapseThresholdU) {
+          if (!isDsCollapsed) setDsCollapsed(true);
+        } else if (isDsCollapsed) {
+          setDsCollapsed(false);
         }
 
         const algoW = isAlgoCollapsed
@@ -5593,7 +5593,7 @@
         }
 
         const minLeftW = (isHistoryCollapsed ? collapsedStripW : collapseThresholdU) +
-          (isGraphCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
+          (isDsCollapsed ? collapsedStripW : collapseThresholdU) + histSplitW;
         const minRightW = (isAlgoCollapsed ? collapsedStripW : algoW) +
           (isCodeCollapsed ? collapsedStripW : collapseThresholdU) + algoSplitW;
 
@@ -5744,8 +5744,8 @@
      */
     const TOUR_STEPS_REGISTRY = {
       dataStructures: {
-        id: 'graph-card',
-        fallbackIds: ['graph-collapsed-strip', 'left-main-stack'],
+        id: 'ds-card',
+        fallbackIds: ['ds-collapsed-strip', 'left-main-stack'],
         title: 'Data Structures & Canvas',
         description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
       },
@@ -5812,7 +5812,7 @@
         title: 'Traversal',
         description: 'Displays the active traversal sequence in real time, showing the order in which nodes and elements in the data structure are being visited, processed, or read.',
         onEnter: () => {
-          if (typeof setGraphCollapsed === 'function') setGraphCollapsed(false);
+          if (typeof setDsCollapsed === 'function') setDsCollapsed(false);
         }
       },
       metadata: {
