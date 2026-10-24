@@ -46,7 +46,7 @@
 
       /* ========== Header, Card Bar & Card Minimum Heights ========== */
       --header-height-desktop: 2.75rem;
-      /* Height of the application header bar (Shows shard spiral name, themes, zem mode etc. on desktop */
+      /* Height of the application header bar (Shows shard spiral name, themes, zen mode etc.) on desktop */
       --header-height-mobile: 2.625rem;
       /* Height of the top application header bar on mobile */
       --card-header-height-desktop: 2.15rem;
@@ -814,6 +814,8 @@
       width: var(--history-default-width-desktop);
       min-width: var(--algorithms-min-width-desktop);
       max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
+      min-height: 0;
+      overflow: hidden;
     }
 
     #metadata-card {
@@ -1098,6 +1100,8 @@
       width: var(--algorithms-default-width-desktop);
       min-width: var(--algorithms-min-width-desktop);
       max-width: calc(100% - var(--code-card-min-width) - var(--splitter-thickness-desktop));
+      min-height: 0;
+      overflow: hidden;
     }
 
     #algorithms-card {
@@ -2422,6 +2426,7 @@
 
     #history-column.is-collapsed .vscode-card {
       /* #history-column.is-collapsed .vscode-card matches the card background to the header color when collapsed */
+      min-height: 0;
       background-color: var(--bg-card-header);
     }
 
@@ -2489,6 +2494,7 @@
 
     #algo-column.is-collapsed .vscode-card {
       /* #algo-column.is-collapsed .vscode-card matches the Algorithms and Settings card backgrounds to the header color when collapsed */
+      min-height: 0;
       background-color: var(--bg-card-header);
     }
 
@@ -2575,6 +2581,7 @@
 
     body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed),
     body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)+#splitter-main-v,
+    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)~#splitter-left-h,
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed),
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)+#splitter-right-h {
       /* Hides the entire parent row/column and its splitter if both of its child columns are vertically collapsed in Zen Mode */
@@ -2682,14 +2689,15 @@
     }
 
     body.zen-mode #left-column.is-row-h-collapsed,
-    body.zen-mode #left-column.is-row-h-collapsed+#splitter-left-h,
-    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #splitter-left-h,
+    body.zen-mode #left-column.is-row-h-collapsed~#splitter-left-h,
+    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed)>#splitter-left-h,
     body.zen-mode #right-column.is-row-h-collapsed {
       /* Hides the top DS row or bottom Right column and their splitter on mobile when collapsed in Zen Mode */
       display: none !important;
     }
 
     body.zen-mode #workspace:has(#left-column.is-row-h-collapsed) #right-column,
+    body.zen-mode #workspace:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed) #right-column,
     body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #left-column {
       /* Expands the remaining open mobile row (#left-column or #right-column) to 100% height in Zen Mode */
       flex: 1 1 0% !important;
@@ -3037,8 +3045,8 @@
         min-height: var(--card-min-height-mobile);
       }
 
-      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#right-top-row.is-row-h-collapsed)),
-      body.zen-mode .left-column:has(+ #splitter-left-h + #right-column:has(#bottom-split-row.is-row-h-collapsed)) {
+      body.zen-mode .left-column:has(~ #right-column #right-top-row.is-row-h-collapsed),
+      body.zen-mode .left-column:has(~ #right-column #bottom-split-row.is-row-h-collapsed) {
         /* Allows the top #left-column to expand further downward on mobile when one of the bottom rows is hidden in Zen Mode */
         max-height: calc(100% - var(--card-min-height-mobile) - var(--splitter-thickness-mobile));
       }
@@ -4118,13 +4126,16 @@
         bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
       }
 
-      /* 3. Check #right-top-row (when dragged all the way up to minimum height) */
+      /* 3. Check #right-top-row (when dragged all the way up or down to minimum height) */
       if (rightTopRow) {
         const rtRect = rightTopRow.getBoundingClientRect();
         const allRightTopChildrenCollapsed = (isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) && (isCodeCollapsed || codeHCollapsed);
         if (rtRect.height > 0) {
           const isRightTopMin = rtRect.height <= (minCardH + tolerance) || allRightTopChildrenCollapsed;
           rightTopRow.classList.toggle('is-row-h-collapsed', isRightTopMin);
+          if (isRightTopMin && !isCodeCollapsed) {
+            codeCard.classList.add('is-h-collapsed');
+          }
         } else if (allRightTopChildrenCollapsed) {
           rightTopRow.classList.add('is-row-h-collapsed');
         }
@@ -4142,7 +4153,11 @@
           const lcRect = leftColumn.getBoundingClientRect();
           const allLeftColChildrenCollapsed = isHistoryCollapsed && isDsCollapsed;
           if (lcRect.height > 0) {
-            leftColumn.classList.toggle('is-row-h-collapsed', lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed);
+            const isLeftColMin = lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed;
+            leftColumn.classList.toggle('is-row-h-collapsed', isLeftColMin);
+            if (isLeftColMin && !isDsCollapsed) {
+              dsCard.classList.add('is-h-collapsed');
+            }
           } else if (allLeftColChildrenCollapsed) {
             leftColumn.classList.add('is-row-h-collapsed');
           }
@@ -4209,6 +4224,7 @@
       try {
         const layout = {
           leftColumnW: leftColumn.style.width,
+          leftColumnH: leftColumn.style.height,
           dsCardH: dsCard.style.height,
           rightTopRowH: rightTopRow.style.height,
           algoColumnW: algoColumn.style.width,
@@ -4234,6 +4250,7 @@
         if (stored) {
           const layout = JSON.parse(stored);
           if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
+          if (layout.leftColumnH) leftColumn.style.height = layout.leftColumnH;
           if (layout.dsCardH) dsCard.style.height = layout.dsCardH;
           if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
           if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
@@ -4247,6 +4264,8 @@
           setHistoryCollapsed(layout.isHistoryCollapsed, layout.isHistoryCollapsed ? null : savedHistoryWidth);
           setDsCollapsed(Boolean(layout.isDsCollapsed));
           setCodeCollapsed(Boolean(layout.isCodeCollapsed));
+
+          requestAnimationFrame(updateHorizontalCollapsedStates);
         }
       } catch (e) { }
     }
@@ -5382,24 +5401,29 @@
         const targetPane = getTargetPane();
         const dir = getDirection();
         const rect = container.getBoundingClientRect();
+        const containerStyle = window.getComputedStyle(container);
+        const padLeft = parseFloat(containerStyle.paddingLeft) || 0;
+        const padRight = parseFloat(containerStyle.paddingRight) || 0;
+        const padTop = parseFloat(containerStyle.paddingTop) || 0;
+        const padBottom = parseFloat(containerStyle.paddingBottom) || 0;
         const splitterRect = splitter.getBoundingClientRect();
 
         if (dir === 'horizontal') {
-          const totalWidth = rect.width;
+          const totalWidth = rect.width - padLeft - padRight;
           if (totalWidth <= 0) return;
           const minU = getMinUnits ? getMinUnits() : 0;
           const maxReservedU = getMaxReservedUnits ? getMaxReservedUnits() : 0;
           const maxU = Math.max(minU, totalWidth - maxReservedU - splitterRect.width);
-          const clampedU = Math.max(minU, Math.min(maxU, clientX - rect.left));
+          const clampedU = Math.max(minU, Math.min(maxU, clientX - (rect.left + padLeft)));
           const newPercent = (clampedU / totalWidth) * 100;
           targetPane.style.width = `${newPercent.toFixed(2)}%`;
         } else {
-          const totalHeight = rect.height;
+          const totalHeight = rect.height - padTop - padBottom;
           if (totalHeight <= 0) return;
           const minU = getMinUnits ? getMinUnits() : 0;
           const maxReservedU = getMaxReservedUnits ? getMaxReservedUnits() : 0;
           const maxU = Math.max(minU, totalHeight - maxReservedU - splitterRect.height);
-          const clampedU = Math.max(minU, Math.min(maxU, clientY - rect.top));
+          const clampedU = Math.max(minU, Math.min(maxU, clientY - (rect.top + padTop)));
           const newPercent = (clampedU / totalHeight) * 100;
           targetPane.style.height = `${newPercent.toFixed(2)}%`;
           updateHorizontalCollapsedStates();
