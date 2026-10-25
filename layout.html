@@ -2612,9 +2612,9 @@
       display: flex;
     }
 
-    #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed) {
+    #left-column.ds-is-collapsed #history-column:not(.is-collapsed) {
       /* Expands #history-column to fill the left column when #left-main-stack is collapsed */
-      flex: 1 !important;
+      flex: 1 1 0px !important;
       max-width: none !important;
     }
 
@@ -2673,9 +2673,9 @@
       display: flex;
     }
 
-    #right-top-row.algo-fills-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
+    #right-top-row.algo-fills-row.code-is-collapsed #algo-column:not(.is-collapsed) {
       /* Expands #algo-column to fill #right-top-row only when collapsed via #splitter-algo-code-v */
-      flex: 1 !important;
+      flex: 1 1 0px !important;
       max-width: none !important;
     }
 
@@ -2690,151 +2690,138 @@
     /* ========== End of Panel Collapse State Overrides ========== */
 
 
-    /* ========== Zen Mode Overrides ========== */
+    /* ========== Zen Mode Overrides (WebView & Legacy Chromium Compatible) ========== */
+
+    /* 1. Hide vertically collapsed columns/cards and their splitters */
     body.zen-mode #history-column.is-collapsed,
     body.zen-mode #history-column.is-collapsed+#splitter-history-ds-v,
-    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #splitter-history-ds-v,
+    body.zen-mode #left-column.ds-is-collapsed #splitter-history-ds-v,
     body.zen-mode #left-main-stack.is-collapsed,
     body.zen-mode #algo-column.is-collapsed,
     body.zen-mode #algo-column.is-collapsed+#splitter-algo-code-v,
-    body.zen-mode #right-top-row:has(#code-card.is-collapsed) #splitter-algo-code-v,
+    body.zen-mode #right-top-row.code-is-collapsed #splitter-algo-code-v,
     body.zen-mode #code-card.is-collapsed {
-      /* Hides all vertically collapsed columns/cards and their adjacent vertical splitters when Zen Mode is active */
       display: none !important;
     }
 
-    body.zen-mode #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed),
-    body.zen-mode #left-column:has(#history-column.is-collapsed) #left-main-stack:not(.is-collapsed),
-    body.zen-mode #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed),
-    body.zen-mode #right-top-row:has(#algo-column.is-collapsed) #code-card:not(.is-collapsed) {
-      /* Expands the remaining open vertical sibling to 100% width when its partner is hidden in Zen Mode */
-      flex: 1 !important;
+    /* 2. Expand the remaining open vertical sibling to 100% width */
+    body.zen-mode #left-column.ds-is-collapsed #history-column:not(.is-collapsed),
+    body.zen-mode #left-column.history-is-collapsed #left-main-stack:not(.is-collapsed),
+    body.zen-mode #right-top-row.code-is-collapsed #algo-column:not(.is-collapsed),
+    body.zen-mode #right-top-row.algo-is-collapsed #code-card:not(.is-collapsed) {
+      flex: 1 1 0px !important;
       width: 100% !important;
       max-width: none !important;
     }
 
-    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed),
-    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)+#splitter-main-v,
-    body.zen-mode #left-column:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed)~#splitter-left-h,
-    body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed),
-    body.zen-mode #right-top-row:has(#algo-column.is-collapsed):has(#code-card.is-collapsed)+#splitter-right-h {
-      /* Hides the entire parent row/column and its splitter if both of its child columns are vertically collapsed in Zen Mode */
+    /* 3. Hide entire parent row/column if both of its child columns are collapsed */
+    body.zen-mode #left-column.both-v-collapsed,
+    body.zen-mode #left-column.both-v-collapsed+#splitter-main-v,
+    body.zen-mode #left-column.both-v-collapsed~#splitter-left-h,
+    body.zen-mode #right-top-row.both-v-collapsed,
+    body.zen-mode #right-top-row.both-v-collapsed+#splitter-right-h {
       display: none !important;
     }
 
-    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #splitter-main-v,
-    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed)>#splitter-left-h,
-    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #right-column {
-      /* Hides the entire right column and main splitters in Zen Mode when both right-hand rows are collapsed */
+    /* 4. Hide entire right column when both right-hand rows are collapsed */
+    body.zen-mode #workspace.right-col-all-collapsed #splitter-main-v,
+    body.zen-mode #workspace.right-col-all-collapsed>#splitter-left-h,
+    body.zen-mode #workspace.right-col-all-collapsed #right-column {
       display: none !important;
     }
 
-    body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #left-column {
-      /* Expands #left-column to 100% of the workspace when #right-column is completely hidden in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #workspace.right-col-all-collapsed #left-column {
+      flex: 1 1 0px !important;
       width: 100% !important;
       max-width: none !important;
       height: 100% !important;
       max-height: none !important;
     }
 
+    /* 5. Hide any card horizontally collapsed to header height */
     body.zen-mode .vscode-card.is-h-collapsed {
-      /* Completely hides any card that has been horizontally collapsed to its minimum height when Zen Mode is active */
       display: none !important;
     }
 
+    /* 6. Left stack (DS + Desktop Traversal) horizontal collapse handling */
     body.zen-mode #ds-card.is-h-collapsed+#splitter-left-h,
-    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #splitter-left-h,
-    body.zen-mode #desktop-traversal-slot:has(#log-card.is-h-collapsed) {
-      /* Hides the splitter and slot between DS and Traversal in Zen Mode when either card is horizontally collapsed */
+    body.zen-mode #left-main-stack.log-h-collapsed #splitter-left-h,
+    body.zen-mode #desktop-traversal-slot.log-h-collapsed {
       display: none !important;
     }
 
-    body.zen-mode #left-main-stack:has(#ds-card.is-h-collapsed) #desktop-traversal-slot,
-    body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #ds-card {
-      /* Expands the remaining DS or Traversal card to 100% height inside #left-main-stack in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #left-main-stack.ds-h-collapsed #desktop-traversal-slot,
+    body.zen-mode #left-main-stack.log-h-collapsed #ds-card {
+      flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
     }
 
+    /* 7. Algo + Settings horizontal collapse handling */
     body.zen-mode #algorithms-card.is-h-collapsed+#splitter-algo-settings-h,
-    body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #splitter-algo-settings-h {
-      /* Hides the horizontal splitter between Algorithms and Settings in Zen Mode when either card is horizontally collapsed */
+    body.zen-mode #algo-column.settings-h-collapsed #splitter-algo-settings-h {
       display: none !important;
     }
 
-    body.zen-mode #algo-column:has(#algorithms-card.is-h-collapsed) #algo-settings-card,
-    body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #algorithms-card {
-      /* Expands the remaining Algorithms or Settings card to 100% height inside #algo-column in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #algo-column.algo-h-collapsed #algo-settings-card,
+    body.zen-mode #algo-column.settings-h-collapsed #algorithms-card {
+      flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
     }
 
+    /* 8. Metadata + History horizontal collapse handling */
     body.zen-mode #metadata-card.is-h-collapsed+#splitter-metadata-history-h,
-    body.zen-mode #history-column:has(#history-card.is-h-collapsed) #splitter-metadata-history-h {
-      /* Hides the horizontal splitter between Metadata and History in Zen Mode when either card is horizontally collapsed */
+    body.zen-mode #history-column.history-h-collapsed #splitter-metadata-history-h {
       display: none !important;
     }
 
-    body.zen-mode #history-column:has(#metadata-card.is-h-collapsed) #history-card,
-    body.zen-mode #history-column:has(#history-card.is-h-collapsed) #metadata-card {
-      /* Expands the remaining Metadata or History card to 100% height inside #history-column in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #history-column.metadata-h-collapsed #history-card,
+    body.zen-mode #history-column.history-h-collapsed #metadata-card {
+      flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #splitter-right-h,
+    /* 9. Right column top/bottom row collapse handling */
+    body.zen-mode #right-column.bottom-row-collapsed #splitter-right-h,
     body.zen-mode #bottom-split-row.is-row-h-collapsed,
-    body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #splitter-right-h,
-    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed:first-child),
-    body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #splitter-right-h,
-    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed):has(> #state-card.is-h-collapsed),
     body.zen-mode #right-top-row.is-row-h-collapsed,
     body.zen-mode #right-top-row.is-row-h-collapsed+#splitter-right-h {
-      /* Hides collapsed rows and #splitter-right-h inside #right-column when either the top row or bottom row is horizontally collapsed in Zen Mode */
       display: none !important;
     }
 
-    body.zen-mode #right-column:has(#bottom-split-row.is-row-h-collapsed) #right-top-row,
-    body.zen-mode #right-column:has(#bottom-split-row > #state-card.is-h-collapsed:first-child) #right-top-row,
-    body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #right-top-row,
-    body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row {
-      /* Expands the remaining open row (#right-top-row or #bottom-split-row) to 100% height inside #right-column in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #right-column.bottom-row-collapsed #right-top-row,
+    body.zen-mode #right-column.top-row-collapsed #bottom-split-row {
+      flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
     }
 
-    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #splitter-bottom-mobile-v,
-    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #splitter-bottom-mobile-v {
-      /* Hides the mobile bottom vertical splitter in Zen Mode if either Traversal or State Variables is collapsed */
+    /* 10. Mobile bottom split row (Traversal | State) */
+    body.zen-mode #bottom-split-row.state-h-collapsed #splitter-bottom-mobile-v,
+    body.zen-mode #bottom-split-row.log-h-collapsed #splitter-bottom-mobile-v {
       display: none !important;
     }
 
-    body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #log-card:not(.is-h-collapsed),
-    body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #state-card:not(.is-h-collapsed) {
-      /* Expands the remaining open card in the mobile bottom row to 100% width in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #bottom-split-row.state-h-collapsed #log-card:not(.is-h-collapsed),
+    body.zen-mode #bottom-split-row.log-h-collapsed #state-card:not(.is-h-collapsed) {
+      flex: 1 1 0px !important;
       width: 100% !important;
       max-width: none !important;
     }
 
+    /* 11. Mobile top row (Left Column) vs bottom row (Right Column) */
     body.zen-mode #left-column.is-row-h-collapsed,
     body.zen-mode #left-column.is-row-h-collapsed~#splitter-left-h,
-    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed)>#splitter-left-h,
+    body.zen-mode #workspace.right-col-all-collapsed>#splitter-left-h,
     body.zen-mode #right-column.is-row-h-collapsed {
-      /* Hides the top DS row or bottom Right column and their splitter on mobile when collapsed in Zen Mode */
       display: none !important;
     }
 
-    body.zen-mode #workspace:has(#left-column.is-row-h-collapsed) #right-column,
-    body.zen-mode #workspace:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed) #right-column,
-    body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #left-column {
-      /* Expands the remaining open mobile row (#left-column or #right-column) to 100% height in Zen Mode */
-      flex: 1 !important;
+    body.zen-mode #workspace.left-col-all-collapsed #right-column,
+    body.zen-mode #workspace.right-col-all-collapsed #left-column {
+      flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -3179,14 +3166,13 @@
         max-width: var(--card-collapsed-width-mobile) !important;
       }
 
-      body.zen-mode .right-column:has(#right-top-row.is-row-h-collapsed),
-      body.zen-mode .right-column:has(#bottom-split-row.is-row-h-collapsed) {
+      body.zen-mode .right-column.top-row-collapsed,
+      body.zen-mode .right-column.bottom-row-collapsed {
         /* Reduces #right-column minimum height on mobile when one of its two rows is hidden in Zen Mode */
         min-height: var(--card-min-height-mobile);
       }
 
-      body.zen-mode .left-column:has(~ #right-column #right-top-row.is-row-h-collapsed),
-      body.zen-mode .left-column:has(~ #right-column #bottom-split-row.is-row-h-collapsed) {
+      body.zen-mode #workspace.one-right-row-collapsed .left-column {
         /* Allows the top #left-column to expand further downward on mobile when one of the bottom rows is hidden in Zen Mode */
         max-height: calc(100% - var(--card-min-height-mobile) - var(--splitter-thickness-mobile));
       }
@@ -4210,12 +4196,14 @@
         historyColumn.classList.remove('is-collapsed');
         historyColumn.style.width = customExpandedWidth || savedHistoryWidth || (isPhone ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
       }
+      updateHorizontalCollapsedStates();
     }
 
     function setDsCollapsed(collapse) {
       /* setDsCollapsed collapses or expands #left-main-stack (DS + Desktop Traversal stack) */
       isDsCollapsed = Boolean(collapse);
       leftMainStack.classList.toggle('is-collapsed', isDsCollapsed);
+      updateHorizontalCollapsedStates();
     }
 
     function setAlgoCollapsed(collapse, customExpandedWidth) {
@@ -4233,6 +4221,7 @@
         algoColumn.classList.remove('is-collapsed');
         algoColumn.style.width = customExpandedWidth || savedAlgoWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
       }
+      updateHorizontalCollapsedStates();
     }
 
     function setCodeCollapsed(collapse, algoFillsRow = false) {
@@ -4240,15 +4229,31 @@
       isCodeCollapsed = Boolean(collapse);
       codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
       rightTopRow.classList.toggle('algo-fills-row', isCodeCollapsed && algoFillsRow);
+      updateHorizontalCollapsedStates();
+    }
+
+    function syncParentCollapseClasses() {
+      /* Syncs parent helper classes so browsers without CSS :has() support work identically */
+      if (leftColumn) {
+        leftColumn.classList.toggle('history-is-collapsed', isHistoryCollapsed);
+        leftColumn.classList.toggle('ds-is-collapsed', isDsCollapsed);
+        leftColumn.classList.toggle('both-v-collapsed', isHistoryCollapsed && isDsCollapsed);
+      }
+      if (rightTopRow) {
+        rightTopRow.classList.toggle('algo-is-collapsed', isAlgoCollapsed);
+        rightTopRow.classList.toggle('code-is-collapsed', isCodeCollapsed);
+        rightTopRow.classList.toggle('both-v-collapsed', isAlgoCollapsed && isCodeCollapsed);
+      }
     }
 
     function updateHorizontalCollapsedStates() {
-      /* updateHorizontalCollapsedStates checks if any card or row has been vertically dragged to its minimum header height and toggles .is-h-collapsed / .is-row-h-collapsed */
+      syncParentCollapseClasses();
+
       const isPhone = phoneMedia.matches;
       const minCardH = isPhone
         ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
         : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.15);
-      const tolerance = 4;
+      const tolerance = 6; // Increased tolerance for tablet sub-pixel & border rounding
 
       const checkCardMinHeight = (cardEl, parentCollapsed = false) => {
         if (!cardEl) return false;
@@ -4266,61 +4271,96 @@
       };
 
       /* 1. Check individual cards */
-      checkCardMinHeight(dsCard, isDsCollapsed);
+      const dsHCollapsed = checkCardMinHeight(dsCard, isDsCollapsed);
       const logCollapsed = checkCardMinHeight(logCard, isDsCollapsed);
       const stateCollapsed = checkCardMinHeight(stateCard, false);
       const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
       const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
-      checkCardMinHeight(metadataCard, isHistoryCollapsed);
-      checkCardMinHeight(historyCard, isHistoryCollapsed);
+      const metaHCollapsed = checkCardMinHeight(metadataCard, isHistoryCollapsed);
+      const histHCollapsed = checkCardMinHeight(historyCard, isHistoryCollapsed);
       const codeHCollapsed = checkCardMinHeight(codeCard, isCodeCollapsed);
 
-      /* 2. Check #bottom-split-row (State variables on Desktop; Traversal + State variables on Mobile) */
-      if (bottomSplitRow) {
-        const isBottomRowMin = isPhone
-          ? (logCollapsed && stateCollapsed)
-          : stateCollapsed;
-        bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
+      /* Sync parent helper classes for individual card horizontal collapses */
+      if (leftMainStack) {
+        leftMainStack.classList.toggle('ds-h-collapsed', dsHCollapsed);
+        leftMainStack.classList.toggle('log-h-collapsed', !isPhone && logCollapsed);
+      }
+      if (desktopTraversalSlot) {
+        desktopTraversalSlot.classList.toggle('log-h-collapsed', !isPhone && logCollapsed);
+      }
+      if (algoColumn) {
+        algoColumn.classList.toggle('algo-h-collapsed', algoTopCollapsed);
+        algoColumn.classList.toggle('settings-h-collapsed', algoBotCollapsed);
+      }
+      if (historyColumn) {
+        historyColumn.classList.toggle('metadata-h-collapsed', metaHCollapsed);
+        historyColumn.classList.toggle('history-h-collapsed', histHCollapsed);
       }
 
-      /* 3. Check #right-top-row (when dragged all the way up or down to minimum height) */
+      /* 2. Check #bottom-split-row */
+      let isBottomRowMin = false;
+      if (bottomSplitRow) {
+        isBottomRowMin = isPhone ? (logCollapsed && stateCollapsed) : stateCollapsed;
+        bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
+        bottomSplitRow.classList.toggle('log-h-collapsed', isPhone && logCollapsed);
+        bottomSplitRow.classList.toggle('state-h-collapsed', stateCollapsed);
+      }
+
+      /* 3. Check #right-top-row */
+      let isRightTopMin = false;
       if (rightTopRow) {
         const rtRect = rightTopRow.getBoundingClientRect();
-        const allRightTopChildrenCollapsed = (isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) && (isCodeCollapsed || codeHCollapsed);
+        const allRightTopChildrenCollapsed =
+          (isAlgoCollapsed || (algoTopCollapsed && algoBotCollapsed)) &&
+          (isCodeCollapsed || codeHCollapsed);
+
         if (rtRect.height > 0) {
-          const isRightTopMin = rtRect.height <= (minCardH + tolerance) || allRightTopChildrenCollapsed;
+          isRightTopMin = rtRect.height <= (minCardH + tolerance) || allRightTopChildrenCollapsed;
           rightTopRow.classList.toggle('is-row-h-collapsed', isRightTopMin);
           if (isRightTopMin && !isCodeCollapsed) {
             codeCard.classList.add('is-h-collapsed');
           }
         } else if (allRightTopChildrenCollapsed) {
+          isRightTopMin = true;
           rightTopRow.classList.add('is-row-h-collapsed');
+        } else {
+          isRightTopMin = rightTopRow.classList.contains('is-row-h-collapsed');
         }
       }
 
-      /* 4. On Mobile, check if #right-column or top #left-column (DS row) is collapsed */
+      /* 4. Check #right-column and #left-column */
+      const isRightColCollapsed = isRightTopMin && isBottomRowMin;
       if (rightColumn) {
-        const isRightColCollapsed = rightTopRow.classList.contains('is-row-h-collapsed') &&
-          bottomSplitRow.classList.contains('is-row-h-collapsed');
+        rightColumn.classList.toggle('top-row-collapsed', isRightTopMin);
+        rightColumn.classList.toggle('bottom-row-collapsed', isBottomRowMin);
         rightColumn.classList.toggle('is-row-h-collapsed', isRightColCollapsed);
       }
 
+      let isLeftColMin = false;
       if (leftColumn) {
         if (isPhone) {
           const lcRect = leftColumn.getBoundingClientRect();
           const allLeftColChildrenCollapsed = isHistoryCollapsed && isDsCollapsed;
           if (lcRect.height > 0) {
-            const isLeftColMin = lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed;
+            isLeftColMin = lcRect.height <= (minCardH + tolerance) || allLeftColChildrenCollapsed;
             leftColumn.classList.toggle('is-row-h-collapsed', isLeftColMin);
             if (isLeftColMin && !isDsCollapsed) {
               dsCard.classList.add('is-h-collapsed');
             }
           } else if (allLeftColChildrenCollapsed) {
+            isLeftColMin = true;
             leftColumn.classList.add('is-row-h-collapsed');
           }
         } else {
           leftColumn.classList.remove('is-row-h-collapsed');
+          isLeftColMin = isHistoryCollapsed && isDsCollapsed;
         }
+      }
+
+      if (workspace) {
+        workspace.classList.toggle('right-col-all-collapsed', isRightColCollapsed);
+        workspace.classList.toggle('left-col-all-collapsed', isLeftColMin);
+        workspace.classList.toggle('one-right-row-collapsed', isRightTopMin || isBottomRowMin);
       }
     }
 
@@ -4439,6 +4479,7 @@
       document.querySelectorAll('.is-h-collapsed, .is-row-h-collapsed').forEach(el => {
         el.classList.remove('is-h-collapsed', 'is-row-h-collapsed');
       });
+      updateHorizontalCollapsedStates();
 
       try {
         localStorage.removeItem(LAYOUT_CONFIG.LAYOUT_STORAGE_KEY);
