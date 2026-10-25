@@ -42,7 +42,7 @@
       --base-root-font-size: 0.9rem;
       /* Base root font scaling across the entire app */
       --mobile-body-font-size: 0.8rem;
-      /* Compact font size on mobile/phone viewports (<= 56.25rem) */
+      /* Compact font size on mobile/phone viewports (<= 900px) */
 
       /* ========== Header, Card Bar & Card Minimum Heights ========== */
       --header-height-desktop: 2.75rem;
@@ -324,11 +324,17 @@
     html {
       /* html is used here to set the root font-size scaling for rem units */
       font-size: var(--base-root-font-size);
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     body {
       /* body is used here to style the top-level viewport dimensions, theme colors, and base font family */
-      width: 100vw;
+      width: 100%;
+      height: 100%;
+      height: 100vh;
+      /* Fallback for older LineageOS WebView */
       height: 100dvh;
       margin: 0;
       padding: 0;
@@ -343,7 +349,10 @@
       /* .app-shell is used here on the body tag to structure the vertical flex shell of the application */
       display: flex;
       flex-direction: column;
-      width: 100vw;
+      width: 100%;
+      height: 100%;
+      height: 100vh;
+      /* Fallback for older LineageOS WebView */
       height: 100dvh;
       overflow: hidden;
     }
@@ -649,7 +658,7 @@
     .main-area {
       /* .main-area is used here as the flex wrapper below .top-titlebar that holds the main workspace */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       min-width: 0;
       min-height: 0;
       overflow: hidden;
@@ -658,7 +667,7 @@
     .workspace-container {
       /* .workspace-container is used here on #workspace to lay out the left and right columns and splitters */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       min-width: 0;
       min-height: 0;
       padding: 0.375rem;
@@ -699,7 +708,7 @@
     .card-scroll-body {
       /* .card-scroll-body is used here for the scrollable content area inside cards */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       min-height: 0;
       overflow: auto;
@@ -829,7 +838,7 @@
 
     #history-card {
       /* #history-card is used here to fill the remaining vertical space below #metadata-card inside #history-column */
-      flex: 1 1 0%;
+      flex: 1;
       min-height: var(--card-min-height-desktop);
     }
 
@@ -892,7 +901,7 @@
     #history-collapsed-strip {
       /* #metadata-collapsed-strip and #history-collapsed-strip are used here for the clickable vertical bars shown when #history-column is collapsed */
       display: none;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -905,8 +914,9 @@
     .left-main-stack {
       /* .left-main-stack is used here on #left-main-stack to stack the DS card (#ds-card) and Desktop Traversal slot (#desktop-traversal-slot) */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
+      height: 100%;
       min-width: var(--code-card-min-width);
       min-height: 0;
     }
@@ -922,7 +932,7 @@
     .ds-body-wrapper {
       /* .ds-body-wrapper is used here inside #ds-card to hold the canvas area above the bottom playback bar */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
@@ -931,7 +941,7 @@
     .ds-canvas-area {
       /* .ds-canvas-area is used here inside .ds-body-wrapper as the main interactive drawing surface */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       align-items: flex-start;
       justify-content: flex-start;
       min-height: 0;
@@ -952,7 +962,7 @@
     /* ========== DS Containers, Splash Screen & History List ========== */
     .ds-splash-screen {
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -981,7 +991,7 @@
 
     .ds-container-instance {
       display: none;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       width: 100%;
       height: 100%;
@@ -1185,7 +1195,7 @@
     .desktop-traversal-slot {
       /* .desktop-traversal-slot is used here on #desktop-traversal-slot to hold the Traversal card (#log-card) on desktop screens */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       min-width: 0;
       min-height: var(--card-min-height-desktop);
@@ -1198,8 +1208,9 @@
     .right-column {
       /* .right-column is used here on #right-column to stack the top Algorithms/Code row and bottom Traversal/State row */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
+      height: 100%;
       min-width: 0;
       min-height: 0;
     }
@@ -1245,7 +1256,7 @@
       /* #algo-body is used here as the flex container holding the search bar, filter panel, and collapsible algorithm tree */
       position: relative;
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       gap: 0.45rem;
       min-height: 0;
@@ -1265,7 +1276,7 @@
       /* .algo-search-input-wrapper is used here to position the clear ("X") button inside the search text input */
       position: relative;
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       min-width: 0;
     }
 
@@ -1406,7 +1417,7 @@
 
     .algo-filter-tree-scroll {
       /* .algo-filter-tree-scroll provides the scrollable container (#algo-filter-tree) for the data structure checkboxes */
-      flex: 1 1 0%;
+      flex: 1;
       min-height: 0;
       padding: 0.25rem;
       overflow-y: auto;
@@ -1464,7 +1475,7 @@
     .algo-tree-container {
       /* .algo-tree-container is used here on #algo-tree-container as the scrollable container for the main Data Structures & Algorithms tree */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       gap: 0.125rem;
       min-height: 0;
@@ -1553,7 +1564,7 @@
 
     .tree-label {
       /* .tree-label styles the text label inside .tree-row with ellipsis truncation */
-      flex: 1 1 0%;
+      flex: 1;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1644,7 +1655,7 @@
 
     #algo-settings-card {
       /* #algo-settings-card is used here for the bottom Settings card inside #algo-column */
-      flex: 1 1 0%;
+      flex: 1;
       min-height: var(--card-min-height-desktop);
     }
 
@@ -1733,7 +1744,7 @@
     #algo-settings-collapsed-strip {
       /* #algo-collapsed-strip and #algo-settings-collapsed-strip are used here for the vertical strips shown when #algo-column is collapsed */
       display: none;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -1749,7 +1760,7 @@
     /* ========== Right Column: Code & Notes Card ========== */
     #code-card {
       /* #code-card is used here for the Code and Notes card on the right side of #right-top-row */
-      flex: 1 1 0%;
+      flex: 1;
       min-width: var(--code-card-min-width);
     }
 
@@ -2093,7 +2104,7 @@
     #code-collapsed-strip {
       /* #ds-collapsed-strip, #log-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
       display: none;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -2110,14 +2121,14 @@
     .bottom-split-row {
       /* .bottom-split-row is used here on #bottom-split-row to hold the State Variables card (and Traversal card on mobile) */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       min-width: 0;
       min-height: var(--bottom-row-min-height);
     }
 
     #log-card {
       /* #log-card is used here to size the Traversal card inside #desktop-traversal-slot (desktop) or #bottom-split-row (mobile) */
-      flex: 1 1 0%;
+      flex: 1;
       width: 100%;
       min-width: 0;
     }
@@ -2129,7 +2140,7 @@
 
     #state-card {
       /* #state-card is used here to size the State Variables / Explanation card inside #bottom-split-row */
-      flex: 1 1 0%;
+      flex: 1;
       min-width: var(--bottom-cards-min-width);
     }
 
@@ -2186,7 +2197,7 @@
     .profile-modal-body {
       /* .profile-modal-body lays out the left navigation sidebar and right content pane inside .profile-modal */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       min-height: 0;
       overflow: hidden;
     }
@@ -2229,7 +2240,7 @@
     .profile-modal-content {
       /* .profile-modal-content is the scrollable container on the right side of .profile-modal-body */
       display: flex;
-      flex: 1 1 0%;
+      flex: 1;
       flex-direction: column;
       gap: 0.75rem;
       padding: 0.875rem 1rem;
@@ -2603,7 +2614,7 @@
 
     #left-column:has(#left-main-stack.is-collapsed) #history-column:not(.is-collapsed) {
       /* Expands #history-column to fill the left column when #left-main-stack is collapsed */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       max-width: none !important;
     }
 
@@ -2664,7 +2675,7 @@
 
     #right-top-row.algo-fills-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed) {
       /* Expands #algo-column to fill #right-top-row only when collapsed via #splitter-algo-code-v */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       max-width: none !important;
     }
 
@@ -2697,7 +2708,7 @@
     body.zen-mode #right-top-row:has(#code-card.is-collapsed) #algo-column:not(.is-collapsed),
     body.zen-mode #right-top-row:has(#algo-column.is-collapsed) #code-card:not(.is-collapsed) {
       /* Expands the remaining open vertical sibling to 100% width when its partner is hidden in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       width: 100% !important;
       max-width: none !important;
     }
@@ -2720,7 +2731,7 @@
 
     body.zen-mode #workspace:has(#right-top-row.is-row-h-collapsed):has(#bottom-split-row.is-row-h-collapsed) #left-column {
       /* Expands #left-column to 100% of the workspace when #right-column is completely hidden in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       width: 100% !important;
       max-width: none !important;
       height: 100% !important;
@@ -2742,7 +2753,7 @@
     body.zen-mode #left-main-stack:has(#ds-card.is-h-collapsed) #desktop-traversal-slot,
     body.zen-mode #left-main-stack:has(#desktop-traversal-slot > #log-card.is-h-collapsed) #ds-card {
       /* Expands the remaining DS or Traversal card to 100% height inside #left-main-stack in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -2756,7 +2767,7 @@
     body.zen-mode #algo-column:has(#algorithms-card.is-h-collapsed) #algo-settings-card,
     body.zen-mode #algo-column:has(#algo-settings-card.is-h-collapsed) #algorithms-card {
       /* Expands the remaining Algorithms or Settings card to 100% height inside #algo-column in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -2770,7 +2781,7 @@
     body.zen-mode #history-column:has(#metadata-card.is-h-collapsed) #history-card,
     body.zen-mode #history-column:has(#history-card.is-h-collapsed) #metadata-card {
       /* Expands the remaining Metadata or History card to 100% height inside #history-column in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -2792,7 +2803,7 @@
     body.zen-mode #right-column:has(#bottom-split-row > #log-card.is-h-collapsed):has(#bottom-split-row > #state-card.is-h-collapsed) #right-top-row,
     body.zen-mode #right-column:has(#right-top-row.is-row-h-collapsed) #bottom-split-row {
       /* Expands the remaining open row (#right-top-row or #bottom-split-row) to 100% height inside #right-column in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -2806,7 +2817,7 @@
     body.zen-mode #bottom-split-row:has(> #state-card.is-h-collapsed) #log-card:not(.is-h-collapsed),
     body.zen-mode #bottom-split-row:has(> #log-card.is-h-collapsed) #state-card:not(.is-h-collapsed) {
       /* Expands the remaining open card in the mobile bottom row to 100% width in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       width: 100% !important;
       max-width: none !important;
     }
@@ -2823,7 +2834,7 @@
     body.zen-mode #workspace:has(#history-column.is-collapsed):has(#left-main-stack.is-collapsed) #right-column,
     body.zen-mode #workspace:has(#right-column.is-row-h-collapsed) #left-column {
       /* Expands the remaining open mobile row (#left-column or #right-column) to 100% height in Zen Mode */
-      flex: 1 1 0% !important;
+      flex: 1 !important;
       height: 100% !important;
       max-height: none !important;
     }
@@ -2831,8 +2842,8 @@
     /* ========== End of Zen Mode Overrides ========== */
 
 
-    /* ========== Mobile & Tablet Responsive Overrides (<= 56.25rem) ========== */
-    @media (max-width: 56.25rem) {
+    /* ========== Mobile & Tablet Responsive Overrides (<= 900px) ========== */
+    @media (max-width: 900px) {
       :root {
         /* Updates minimum row height variables to match compact mobile card header heights */
         --right-top-row-min-height: var(--card-min-height-mobile);
@@ -2840,7 +2851,7 @@
       }
 
       body {
-        /* Applies compact mobile font size across the body on viewports <= 56.25rem */
+        /* Applies compact mobile font size across the body on viewports <= 900px */
         font-size: var(--mobile-body-font-size);
       }
 
@@ -2956,7 +2967,7 @@
 
       #ds-card {
         /* Expands #ds-card to fill the full height of the top row on mobile */
-        flex: 1 1 0%;
+        flex: 1;
         height: 100%;
         min-height: var(--card-min-height-mobile);
         max-height: none;
@@ -3181,7 +3192,7 @@
       }
     }
 
-    /* ========== End of Mobile & Tablet Responsive Overrides (<= 56.25rem) ========== */
+    /* ========== End of Mobile & Tablet Responsive Overrides (<= 900px) ========== */
   </style>
 </head>
 
@@ -3958,7 +3969,7 @@
       /* LAYOUT_CONFIG is used here to centralize breakpoint queries, localStorage keys, and CSS custom property references across the app */
 
       /* Responsive Breakpoints */
-      MOBILE_BREAKPOINT_QUERY: '(max-width: 56.25rem)',
+      MOBILE_BREAKPOINT_QUERY: '(max-width: 900px)',
 
       /* LocalStorage Persistence Keys */
       THEME_STORAGE_KEY: 'shard-spiral-theme-preference',
@@ -4333,7 +4344,7 @@
     }
 
     function syncResponsiveStructure() {
-      /* syncResponsiveStructure moves #log-card (Traversal) and #splitter-left-h between their desktop slots and mobile slots when crossing the 56.25rem breakpoint */
+      /* syncResponsiveStructure moves #log-card (Traversal) and #splitter-left-h between their desktop slots and mobile slots when crossing the 900px breakpoint */
       const isPhone = phoneMedia.matches;
 
       leftColumn.style.width = '';
@@ -4733,7 +4744,7 @@
       if (!algoData || !algoData.inputs) return false;
 
       const lineage = getDsLineage(activeDsType) || [activeDsType];
-      
+
       // If the algorithm explicitly lists any DS from the lineage path as an input, it is compatible
       return lineage.some(ds => Object.prototype.hasOwnProperty.call(algoData.inputs, ds));
     }
@@ -6224,7 +6235,7 @@
         title: 'Code & Notes',
         description: 'View the syntax-highlighted code implementation with real-time execution highlights, or switch tabs to read detailed conceptual notes, intuition, and complexity breakdowns.',
         onEnter: () => {
-          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 56.25rem)').matches)) {
+          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 900px)').matches)) {
             if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
           }
           if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
