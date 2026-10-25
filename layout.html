@@ -357,6 +357,28 @@
       overflow: hidden;
     }
 
+    button,
+    img,
+    svg,
+    .lang-option-item,
+    .algo-collapsed-label,
+    #metadata-collapsed-strip,
+    #history-collapsed-strip,
+    #ds-collapsed-strip,
+    #log-collapsed-strip,
+    #algo-collapsed-strip,
+    #algo-settings-collapsed-strip,
+    #code-collapsed-strip {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    img,
+    svg {
+      -webkit-user-drag: none;
+      /* Prevents ghost-dragging PNG icons on touch/mouse */
+    }
+
     /* ========== End of Global & Base Styles ========== */
 
 
