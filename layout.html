@@ -3459,7 +3459,7 @@
             <!--========== Algorithms card ==========-->
             <section id="algorithms-card" class="vscode-card">
               <div class="vscode-card-header" id="algo-card-header">
-                <span id="algo-title">Algorithms</span>
+                <span id="algo-title">Data structures and algorithms</span>
               </div>
 
               <!--========== Algorithms card content ==========-->
@@ -4715,26 +4715,27 @@
       return activeObj ? activeObj.dsType : null;
     }
 
-    function isAlgoCompatibleWithDs(algoName, dsType) {
-      /* Checks if algoName lists dsType under its inputs in algorithms.json */
-      if (!algoName || !dsType) return false;
-      const algoData = algorithmsJson[algoName];
-      if (!algoData || !algoData.inputs) return false;
-      return Object.prototype.hasOwnProperty.call(algoData.inputs, dsType);
+    function getDsLineage(targetDs, currentNodes = dataStructuresJson, path = []) {
+      /* Recursively finds the lineage path from the root to the target Data Structure (e.g., ["Graph", "Tree", "Binary Tree"]) */
+      for (const [name, obj] of Object.entries(currentNodes)) {
+        const newPath = [...path, name];
+        if (name === targetDs) return newPath;
+        const childResult = getDsLineage(targetDs, obj.children || {}, newPath);
+        if (childResult) return childResult;
+      }
+      return null;
     }
 
-    function dsSubtreeHasCompatibleAlgo(dsName, dsObj, targetDsType) {
-      /* Checks if a DS node or any of its descendants is the active DS type and has compatible algorithms */
-      if (!targetDsType) return false;
-      if (dsName === targetDsType) {
-        const algos = dsDirectAlgorithmsMap[dsName] || [];
-        if (algos.length > 0) return true;
-      }
-      const children = (dsObj && dsObj.children) || {};
-      for (const [childName, childObj] of Object.entries(children)) {
-        if (dsSubtreeHasCompatibleAlgo(childName, childObj, targetDsType)) return true;
-      }
-      return false;
+    function isAlgoCompatibleWithDs(algoName, activeDsType) {
+      /* Checks if the algorithm is compatible with the active DS or any of its parent/ancestor structures */
+      if (!algoName || !activeDsType) return false;
+      const algoData = algorithmsJson[algoName];
+      if (!algoData || !algoData.inputs) return false;
+
+      const lineage = getDsLineage(activeDsType) || [activeDsType];
+      
+      // If the algorithm explicitly lists any DS from the lineage path as an input, it is compatible
+      return lineage.some(ds => Object.prototype.hasOwnProperty.call(algoData.inputs, ds));
     }
 
     function updatePlaybackCompatibilityUI() {
@@ -4769,24 +4770,25 @@
 
       algoTreeContainer.innerHTML = '';
 
+      const currentDsType = getActiveContainerDsType();
+      // Calculate the lineage path for the active DS once before building the tree
+      const activeDsLineage = currentDsType ? (getDsLineage(currentDsType) || [currentDsType]) : [];
+
       function buildDsSubtree(dsName, dsObj, ancestorMatchedSearch = false) {
         if (!isNodeInFilterScope(dsName, dsObj)) return null;
         if (isFavFilterActive && !dsSubtreeHasFavourite(dsName, dsObj)) return null;
 
-        const currentDsType = getActiveContainerDsType();
+        // If compatibility filter is active, only render nodes that are in the lineage of the active DS
         if (isCompatibleFilterActive) {
-          if (!currentDsType || !dsSubtreeHasCompatibleAlgo(dsName, dsObj, currentDsType)) {
-            return null;
+          if (!currentDsType || !activeDsLineage.includes(dsName)) {
+            return null; // Prunes siblings and children not in the direct ancestral path
           }
         }
 
         const directAllowed = isDirectDsAllowedByFilter(dsName);
         let allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
 
-        if (isCompatibleFilterActive) {
-          allDirectAlgos = dsName === currentDsType ? allDirectAlgos : [];
-        }
-
+        // Apply Favourite filter if active
         if (isFavFilterActive && !favouritesSet.has(dsName)) {
           allDirectAlgos = allDirectAlgos.filter(algo => favouritesSet.has(algo.name));
         }
@@ -6231,7 +6233,7 @@
       algorithms: {
         id: 'algorithms-card',
         fallbackIds: ['algo-collapsed-strip', 'algo-column'],
-        title: 'Algorithms',
+        title: 'Data structures and algorithms',
         description: 'Browse, search, and select from available algorithms and data structures to visualize.'
       },
       algorithmSettings: {
