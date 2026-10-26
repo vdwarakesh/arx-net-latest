@@ -2586,8 +2586,9 @@
       background-color: var(--bg-card-header);
     }
 
-    #history-column.is-collapsed .vscode-card-header {
-      /* #history-column.is-collapsed .vscode-card-header hides the standard horizontal card headers when collapsed */
+    #history-column.is-collapsed #history-card .vscode-card-header,
+    #algo-column.is-collapsed #algo-settings-card .vscode-card-header {
+      /* Hide only the bottom card headers when collapsed; keep the top header for the expand button */
       display: none;
     }
 
@@ -2654,9 +2655,11 @@
       background-color: var(--bg-card-header);
     }
 
-    #algo-column.is-collapsed .vscode-card-header {
-      /* #algo-column.is-collapsed .vscode-card-header hides the standard headers of Algorithms and Settings when collapsed */
-      display: none;
+    #history-column.is-collapsed #metadata-card .vscode-card-header,
+    #algo-column.is-collapsed #algorithms-card .vscode-card-header {
+      /* Center the expand button inside the narrow vertical strip */
+      justify-content: center;
+      padding: 0;
     }
 
     #algo-column.is-collapsed #algo-title,
@@ -3319,6 +3322,10 @@
           <section id="metadata-card" class="vscode-card">
             <div class="vscode-card-header">
               <span id="metadata-title">Metadata</span>
+              <button type="button" id="btn-toggle-history" class="card-icon-btn" title="Expand Metadata & History"
+                aria-label="Toggle Metadata and History">
+                <img id="img-toggle-history" src="images/expand.png" alt="Expand" class="sidebar-toggle-img" />
+              </button>
             </div>
 
             <div id="metadata-body" class="card-scroll-body">
@@ -3479,6 +3486,10 @@
             <section id="algorithms-card" class="vscode-card">
               <div class="vscode-card-header" id="algo-card-header">
                 <span id="algo-title">Data structures and algorithms</span>
+                <button type="button" id="btn-toggle-algo" class="card-icon-btn" title="Collapse Algorithms & Settings"
+                  aria-label="Toggle Algorithms and Settings">
+                  <img id="img-toggle-algo" src="images/collapse.png" alt="Collapse" class="sidebar-toggle-img" />
+                </button>
               </div>
 
               <!--========== Algorithms card content ==========-->
@@ -4203,6 +4214,14 @@
     let isCodeCollapsed = false;
     let isZenMode = false;
 
+    const btnToggleHistory = document.getElementById('btn-toggle-history');
+    const imgToggleHistory = document.getElementById('img-toggle-history');
+    const btnToggleAlgo = document.getElementById('btn-toggle-algo');
+    const imgToggleAlgo = document.getElementById('img-toggle-algo');
+
+    let savedMetadataHeight = '';
+    let savedAlgoCardHeight = '';
+
     function setHistoryCollapsed(collapse, customExpandedWidth) {
       /* setHistoryCollapsed collapses or expands #history-column (Metadata + History cards) and restores its saved width */
       isHistoryCollapsed = collapse;
@@ -4212,12 +4231,25 @@
         if (!customExpandedWidth && historyColumn.style.width) {
           savedHistoryWidth = historyColumn.style.width;
         }
+        if (metadataCard.style.height) {
+          savedMetadataHeight = metadataCard.style.height;
+        }
         historyColumn.classList.add('is-collapsed');
         historyColumn.style.width = '';
       } else {
         historyColumn.classList.remove('is-collapsed');
         historyColumn.style.width = customExpandedWidth || savedHistoryWidth || (isPhone ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
+        if (savedMetadataHeight) {
+          metadataCard.style.height = savedMetadataHeight;
+        }
       }
+
+      if (imgToggleHistory && btnToggleHistory) {
+        imgToggleHistory.src = isHistoryCollapsed ? 'images/expand.png' : 'images/collapse.png';
+        imgToggleHistory.alt = isHistoryCollapsed ? 'Expand' : 'Collapse';
+        btnToggleHistory.title = isHistoryCollapsed ? 'Expand Metadata & History' : 'Collapse Metadata & History';
+      }
+
       updateHorizontalCollapsedStates();
     }
 
@@ -4237,12 +4269,25 @@
         if (!customExpandedWidth && algoColumn.style.width) {
           savedAlgoWidth = algoColumn.style.width;
         }
+        if (algoCard.style.height) {
+          savedAlgoCardHeight = algoCard.style.height;
+        }
         algoColumn.classList.add('is-collapsed');
         algoColumn.style.width = '';
       } else {
         algoColumn.classList.remove('is-collapsed');
         algoColumn.style.width = customExpandedWidth || savedAlgoWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
+        if (savedAlgoCardHeight) {
+          algoCard.style.height = savedAlgoCardHeight;
+        }
       }
+
+      if (imgToggleAlgo && btnToggleAlgo) {
+        imgToggleAlgo.src = isAlgoCollapsed ? 'images/expand.png' : 'images/collapse.png';
+        imgToggleAlgo.alt = isAlgoCollapsed ? 'Expand' : 'Collapse';
+        btnToggleAlgo.title = isAlgoCollapsed ? 'Expand Algorithms & Settings' : 'Collapse Algorithms & Settings';
+      }
+
       updateHorizontalCollapsedStates();
     }
 
@@ -4510,26 +4555,34 @@
     }
 
     /* Event Listeners for Collapsed Strips, Zen Mode Button (#zen-mode-btn), Reset Layout Button (#reset-layout-btn), and Responsive Media Query */
-    if (metadataCollapsedStrip) {
-      metadataCollapsedStrip.addEventListener('click', () => {
-        setHistoryCollapsed(false);
-        saveLayoutState();
-      });
-    }
+    metadataCollapsedStrip.addEventListener('click', () => {
+      setHistoryCollapsed(false);
+      saveLayoutState();
+    });
 
-    if (historyCollapsedStrip) {
-      historyCollapsedStrip.addEventListener('click', () => {
-        setHistoryCollapsed(false);
-        saveLayoutState();
-      });
-    }
+    historyCollapsedStrip.addEventListener('click', () => {
+      setHistoryCollapsed(false);
+      saveLayoutState();
+    });
 
-    if (dsCollapsedStrip) {
-      dsCollapsedStrip.addEventListener('click', () => {
-        setDsCollapsed(false);
-        saveLayoutState();
-      });
-    }
+    dsCollapsedStrip.addEventListener('click', () => {
+      setDsCollapsed(false);
+      saveLayoutState();
+    });
+
+    btnToggleHistory.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setHistoryCollapsed(!isHistoryCollapsed);
+      saveLayoutState();
+    });
+
+    btnToggleAlgo.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setAlgoCollapsed(!isAlgoCollapsed);
+      saveLayoutState();
+    });
+
+
 
     if (logCollapsedStrip) {
       logCollapsedStrip.addEventListener('click', () => {
