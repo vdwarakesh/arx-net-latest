@@ -320,6 +320,7 @@
       /* * is used here to enforce border-box sizing and inherited font sizing across all elements */
       box-sizing: border-box;
       font-size: inherit;
+      font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     html {
@@ -340,7 +341,6 @@
       margin: 0;
       padding: 0;
       background-color: var(--bg-app);
-      font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text-primary);
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
@@ -379,6 +379,90 @@
       -webkit-user-drag: none;
       /* Prevents ghost-dragging PNG icons on touch/mouse */
     }
+
+    /* ========== Full-Screen Quickdraw Annotation Overlay ========== */
+    #annotation-overlay {
+      position: fixed;
+      top: var(--header-height-desktop);
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 9000;
+      background: transparent !important;
+      pointer-events: none;
+      /* App UI is interactive by default */
+    }
+
+    #annotation-overlay.drawing-active {
+      pointer-events: auto;
+      /* Captures all inputs for drawing when selected */
+    }
+
+    #annotation-overlay.annotations-hidden {
+      visibility: hidden;
+      /* Hides drawings without breaking ResizeObserver layout */
+      pointer-events: none !important;
+    }
+
+    /* ========== Annotation Split-Button & Dropdown ========== */
+    .annotation-dropdown-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 0.5rem;
+    }
+
+    .annotation-dropdown-wrapper.active {
+      background-color: var(--bg-active-item);
+    }
+
+    /* Remove inner border-radius where the tool button meets the arrow */
+    #btnAnnotations {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    .annotation-dropdown-trigger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.15rem;
+      height: var(--header-action-btn-size);
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-top-right-radius: 0.5rem;
+      border-bottom-right-radius: 0.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .annotation-dropdown-trigger:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .annotation-tools-menu {
+      position: absolute;
+      top: calc(100% + 0.25rem);
+      left: 0;
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding: 0.25rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.4rem;
+      box-shadow: 0 0.375rem 1rem rgba(0, 0, 0, 0.35);
+    }
+
+    .annotation-tools-menu.open {
+      display: flex;
+    }
+
+    /* ========== End of Full-Screen Quickdraw Annotation Overlay ========== */
 
     /* ========== End of Global & Base Styles ========== */
 
@@ -2875,6 +2959,14 @@
         font-size: var(--mobile-body-font-size);
       }
 
+      #annotation-overlay {
+        top: var(--header-height-mobile);
+      }
+
+      .annotation-dropdown-trigger {
+        height: var(--header-action-btn-size-mobile);
+      }
+
       .desktop-only-el {
         /* Hides desktop-only elements such as the main vertical splitter (#splitter-main-v) on mobile */
         display: none !important;
@@ -3245,6 +3337,10 @@
   </div>
   <!--====================-->
 
+  <!--========== Full-Screen Quickdraw Annotation Overlay ==========-->
+  <div id="annotation-overlay"></div>
+  <!--====================-->
+
   <!--========== The titlebar that has logo, themes, zen mode, etc. ==========-->
   <header class="top-titlebar">
     <!--========== Left side of header ==========-->
@@ -3261,6 +3357,65 @@
       <button type="button" id="btnNew" class="activity-btn" title="New">
         <img src="images/new.png" alt="New" class="activity-icon-img" />
       </button>
+
+      <!--===== Annotation Controls =====-->
+      <div class="annotation-dropdown-wrapper" id="annotation-dropdown-wrapper">
+        <!-- Main Toggle Button (Shows active tool icon, defaults to Laser Pointer) -->
+        <button type="button" id="btnAnnotations" class="activity-btn" title="Toggle Annotation Drawing"
+          aria-pressed="false">
+          <img id="imgActiveAnnotationTool" src="images/laser-pointer.png" alt="Laser Pointer"
+            class="activity-icon-img" />
+        </button>
+
+        <!-- Dropdown Arrow Trigger -->
+        <button type="button" id="btnAnnotationMenuTrigger" class="annotation-dropdown-trigger"
+          title="Select Annotation Tool" aria-haspopup="true" aria-expanded="false">
+          <svg class="lang-chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="annotation-tools-menu" class="annotation-tools-menu" role="menu">
+          <button type="button" class="activity-btn active" data-qd-tool="laser" data-icon="images/laser-pointer.png"
+            title="Laser Pointer">
+            <img src="images/laser-pointer.png" alt="Laser Pointer" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="draw" data-icon="images/pen-draw.png"
+            title="Pen Draw">
+            <img src="images/pen-draw.png" alt="Pen Draw" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="geo" data-qd-geo="rectangle"
+            data-icon="images/draw-rectangle.png" title="Draw Rectangle">
+            <img src="images/draw-rectangle.png" alt="Draw Rectangle" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="geo" data-qd-geo="ellipse"
+            data-icon="images/draw-circle.png" title="Draw Circle">
+            <img src="images/draw-circle.png" alt="Draw Circle" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="text" data-icon="images/text.png" title="Text">
+            <img src="images/text.png" alt="Text" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="eraser" data-icon="images/eraser.png" title="Eraser">
+            <img src="images/eraser.png" alt="Eraser" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-tool="select" data-icon="images/select.png"
+            title="Select (Click or Box Drag)">
+            <img src="images/select.png" alt="Select" class="activity-icon-img" />
+          </button>
+          <button type="button" class="activity-btn" data-qd-action="clear" title="Clear Board">
+            <img src="images/clear-board.png" alt="Clear Board" class="activity-icon-img" />
+          </button>
+        </div>
+      </div>
+
+      <!-- Hide / Show Annotations Button -->
+      <button type="button" id="btnToggleAnnotationsVis" class="activity-btn" title="Hide Annotations"
+        aria-pressed="false">
+        <img id="imgToggleAnnotationsVis" src="images/hide-annotations.png" alt="Hide Annotations"
+          class="activity-icon-img" />
+      </button>
+      <!--==========-->
 
       <!--===== Reload page button - This button is invisible on desktop =====-->
       <button type="button" id="btnReload" class="activity-btn" title="Reload page">
@@ -3554,7 +3709,7 @@
               <!--========== Collapsed algorithms strip - Visible only on collapse ==========-->
               <div id="algo-collapsed-strip" title="Click to expand Algorithms">
                 <span class="algo-collapsed-label">
-                  Algorithms
+                  DSA
                 </span>
               </div>
               <!--==========-->
@@ -4074,7 +4229,153 @@
     /* ========== End of Loading Screen Handler ========== */
 
 
-    /* ========== Top Title Bar: Left Group (Fullscreen & Reload Buttons) ========== */
+    /* ========== Top Title Bar: Left Group (Fullscreen, Reload, Drawing Buttons) ========== */
+
+    /* ========== Full-Screen Quickdraw Annotations ========== */
+    const annotationOverlay = document.getElementById('annotation-overlay');
+    const annotationDropdownWrapper = document.getElementById('annotation-dropdown-wrapper');
+    const btnAnnotations = document.getElementById('btnAnnotations');
+    const imgActiveAnnotationTool = document.getElementById('imgActiveAnnotationTool');
+    const btnAnnotationMenuTrigger = document.getElementById('btnAnnotationMenuTrigger');
+    const annotationToolsMenu = document.getElementById('annotation-tools-menu');
+    const annotationToolBtns = annotationToolsMenu.querySelectorAll('button[data-qd-tool]');
+    const btnClearBoard = annotationToolsMenu.querySelector('button[data-qd-action="clear"]');
+    const btnToggleAnnotationsVis = document.getElementById('btnToggleAnnotationsVis');
+    const imgToggleAnnotationsVis = document.getElementById('imgToggleAnnotationsVis');
+
+    // Initialize Quickdraw with default UI hidden
+    const { editor: annotationEditor } = createQuickdraw({
+      container: annotationOverlay,
+      grid: 'none',
+      hideUi: true,
+      watermark: false,
+      theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
+    });
+
+    // Track current active tool (Default: laser pointer)
+    let currentAnnotationTool = 'laser';
+    let currentAnnotationGeo = null;
+    annotationEditor.setTool('laser');
+
+    let isDrawingMode = false;
+    let areAnnotationsHidden = false;
+
+    function applyCurrentToolToEditor() {
+      if (currentAnnotationGeo) {
+        annotationEditor.setGeoKind(currentAnnotationGeo);
+      }
+      annotationEditor.setTool(currentAnnotationTool);
+    }
+
+    function setDrawingMode(active) {
+      isDrawingMode = Boolean(active);
+      annotationOverlay.classList.toggle('drawing-active', isDrawingMode);
+      btnAnnotations.classList.toggle('active', isDrawingMode);
+      annotationDropdownWrapper.classList.toggle('active', isDrawingMode);
+      btnAnnotations.setAttribute('aria-pressed', String(isDrawingMode));
+
+      if (isDrawingMode) {
+        applyCurrentToolToEditor();
+      } else {
+        annotationEditor._commitText();
+        annotationEditor.setSelection([]);
+      }
+    }
+
+    function setAnnotationsHidden(hidden) {
+      areAnnotationsHidden = Boolean(hidden);
+      annotationOverlay.classList.toggle('annotations-hidden', areAnnotationsHidden);
+      btnToggleAnnotationsVis.classList.toggle('active', areAnnotationsHidden);
+      btnToggleAnnotationsVis.setAttribute('aria-pressed', String(areAnnotationsHidden));
+
+      imgToggleAnnotationsVis.src = areAnnotationsHidden
+        ? 'images/show-annotations.png'
+        : 'images/hide-annotations.png';
+      imgToggleAnnotationsVis.alt = areAnnotationsHidden
+        ? 'Show Annotations'
+        : 'Hide Annotations';
+      btnToggleAnnotationsVis.title = areAnnotationsHidden
+        ? 'Show Annotations'
+        : 'Hide Annotations';
+
+      // Return control to the app UI
+      setDrawingMode(false);
+    }
+
+    // Keep the custom button state synced if Quickdraw switches tools internally
+    // (e.g., after placing a text box, Quickdraw automatically switches to 'select')
+    annotationEditor.on('tool', () => {
+      if (annotationEditor.tool === 'select' && currentAnnotationTool !== 'select') {
+        currentAnnotationTool = 'select';
+        currentAnnotationGeo = null;
+        imgActiveAnnotationTool.src = 'images/select.png';
+        annotationToolBtns.forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-qd-tool') === 'select');
+        });
+      }
+    });
+
+    // 1. Clicking the main tool icon toggles drawing mode on/off
+    btnAnnotations.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!isDrawingMode && areAnnotationsHidden) {
+        setAnnotationsHidden(false);
+      }
+      setDrawingMode(!isDrawingMode);
+    });
+
+    // 2. Clicking the chevron arrow opens/closes the tool dropdown
+    btnAnnotationMenuTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = annotationToolsMenu.classList.toggle('open');
+      btnAnnotationMenuTrigger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // 3. Selecting a tool from the dropdown switches the tool and activates drawing mode
+    annotationToolBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentAnnotationTool = btn.getAttribute('data-qd-tool');
+        currentAnnotationGeo = btn.getAttribute('data-qd-geo') || null;
+        const iconPath = btn.getAttribute('data-icon');
+
+        // Update main button icon & active state in menu
+        imgActiveAnnotationTool.src = iconPath;
+        imgActiveAnnotationTool.alt = btn.title;
+        annotationToolBtns.forEach(b => b.classList.toggle('active', b === btn));
+
+        // Close menu, unhide annotations if hidden, and enable drawing mode
+        annotationToolsMenu.classList.remove('open');
+        btnAnnotationMenuTrigger.setAttribute('aria-expanded', 'false');
+        if (areAnnotationsHidden) {
+          setAnnotationsHidden(false);
+        }
+        setDrawingMode(true);
+      });
+    });
+
+    // 4. Clicking Clear Board wipes all drawings and closes the menu
+    btnClearBoard.addEventListener('click', (e) => {
+      e.stopPropagation();
+      annotationEditor.clearBoard();
+      annotationToolsMenu.classList.remove('open');
+      btnAnnotationMenuTrigger.setAttribute('aria-expanded', 'false');
+    });
+
+    // 5. Hide / Show annotations button
+    btnToggleAnnotationsVis.addEventListener('click', () => {
+      setAnnotationsHidden(!areAnnotationsHidden);
+    });
+
+    // 6. Close the tool dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      if (!annotationDropdownWrapper.contains(e.target)) {
+        annotationToolsMenu.classList.remove('open');
+        btnAnnotationMenuTrigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    /* ========== End of Full-Screen Quickdraw Annotations ========== */
+
     /* DOM Elements for Fullscreen (#btnFullscreen, #imgFullscreen) and Mobile Reload (#btnReload) buttons */
     const btnFullscreen = document.getElementById('btnFullscreen');
     const imgFullscreen = document.getElementById('imgFullscreen');
@@ -4824,16 +5125,12 @@
       containerEl.userInput = contentInput;
       containerEl.containerName = uniqueName;
 
-      // const placeholderText = document.createElement('span');
-      // placeholderText.className = 'ds-placeholder-text';
-      // placeholderText.textContent = contentInput
-      //   ? `${uniqueName} (${dsType}): ${contentInput}`
-      //   : `${uniqueName} (${dsType})`;
-      // containerEl.appendChild(placeholderText);
-
-      const containerContent = document.createElement('div');
-      containerContent.className = 'ds-container-content';
-      containerEl.appendChild(containerContent);
+      const placeholderText = document.createElement('span');
+      placeholderText.className = 'ds-placeholder-text';
+      placeholderText.textContent = contentInput
+        ? `${uniqueName} (${dsType}): ${contentInput}`
+        : `${uniqueName} (${dsType})`;
+      containerEl.appendChild(placeholderText);
 
       if (dsCanvasAreaEl) {
         dsCanvasAreaEl.appendChild(containerEl);
@@ -4844,15 +5141,6 @@
         dsType,
         userInput: contentInput,
         element: containerEl
-      });
-
-      // 1. Activate the container first so it has real width & height in the DOM
-      selectContainer(uniqueName);
-
-      // 2. Initialize Quickdraw now that containerContent is visible and sized
-      const { editor } = createQuickdraw({
-        container: containerContent,
-        hideUi: true
       });
 
       selectContainer(uniqueName);

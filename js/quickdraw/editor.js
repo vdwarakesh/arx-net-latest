@@ -9,7 +9,7 @@ import {
   localBounds, pageBounds, toLocal, drawShape, hitShape, marqueeHits,
   scaleShape, textLayout, noteLayout, NOTE_W, sampleLinePts, resetTextLayouts,
 } from './shapes.js'
-import { boundsUnion, boundsExpand, boundsContain, clamp, rotWith } from './geometry.js'
+import { boundsUnion, boundsExpand, boundsContain, clamp, rotWith, traceSmooth } from './geometry.js'
 
 const ZOOM_MIN = 0.05
 const ZOOM_MAX = 8
@@ -487,7 +487,7 @@ export class Editor {
     this._onDown = (e) => this._pointerDown(e)
     this._onMove = (e) => this._pointerMove(e)
     this._onUp = (e) => this._pointerUp(e)
-    this._onWheel = (e) => this._wheel(e)
+    // this._onWheel = (e) => this._wheel(e)
     this._onKeyDown = (e) => this._keyDown(e)
     this._onKeyUp = (e) => this._keyUp(e)
     this._onDblClick = (e) => this._dblClick(e)
@@ -1366,11 +1366,11 @@ export class Editor {
     if (this.readonly || this.editing) return
     const meta = e.metaKey || e.ctrlKey
     const k = e.key.toLowerCase()
-    if (k === ' ') {
-      if (!this.spaceHeld) { this.spaceHeld = true; this._syncCursor() }
-      e.preventDefault()
-      return
-    }
+    // if (k === ' ') {
+    //   if (!this.spaceHeld) { this.spaceHeld = true; this._syncCursor() }
+    //   e.preventDefault()
+    //   return
+    // }
     if (meta && k === 'z') { e.preventDefault(); e.shiftKey ? this.store.redo() : this.store.undo(); return }
     if (meta && k === 'a') { e.preventDefault(); this.selectAll(); return }
     if (meta && k === 'd') { e.preventDefault(); this.duplicateSelection(); return }
@@ -1442,16 +1442,16 @@ export class Editor {
     this.zoomAt(w / 2, h / 2, mult, { animate: 140 })
   }
 
-  _wheel(e) {
-    if (this.readonly) return
-    e.preventDefault()
-    const s = this._evPoint(e)
-    if (e.ctrlKey || e.metaKey) {
-      this.zoomAt(s.x, s.y, Math.exp(-e.deltaY * 0.012))
-    } else {
-      this.pan(-e.deltaX, -e.deltaY)
-    }
-  }
+  // _wheel(e) {
+  //   if (this.readonly) return
+  //   e.preventDefault()
+  //   const s = this._evPoint(e)
+  //   if (e.ctrlKey || e.metaKey) {
+  //     this.zoomAt(s.x, s.y, Math.exp(-e.deltaY * 0.012))
+  //   } else {
+  //     this.pan(-e.deltaX, -e.deltaY)
+  //   }
+  // }
 
   _syncCursor(force) {
     const cur = force
@@ -1822,7 +1822,7 @@ export class Editor {
       }
     }
     const ctx = this.canvas.getContext('2d')
-    this.renderScene(ctx, this.camera, w, h, { dpr, hideEditing: true })
+    this.renderScene(ctx, this.camera, w, h, { dpr, background: false, hideEditing: true })
     this._renderOverlay(w, h, dpr)
     this._renderCapture()
     if (this.editing) this._layoutTextEditor()
@@ -1940,10 +1940,12 @@ export class Editor {
       const pts = sc.points || []
       if (pts.length < 2) continue
       ctx.beginPath()
+      const flat = []
       for (let i = 0; i < pts.length; i++) {
         const sp = this.pageToScreen(pts[i].x, pts[i].y)
-        i === 0 ? ctx.moveTo(sp.x, sp.y) : ctx.lineTo(sp.x, sp.y)
+        flat.push(sp.x, sp.y)
       }
+      traceSmooth(ctx, flat)
       ctx.strokeStyle = t.scribble
       ctx.lineWidth = 3.5
       ctx.lineCap = 'round'
@@ -1993,11 +1995,11 @@ export class Editor {
         const pts = sc.points || []
         if (pts.length < 2) continue
         ctx.beginPath()
+        const flat = []
         for (let i = 0; i < pts.length; i++) {
-          const x = (pts[i].x + cam2.x) * cam2.z
-          const y = (pts[i].y + cam2.y) * cam2.z
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+          flat.push((pts[i].x + cam2.x) * cam2.z, (pts[i].y + cam2.y) * cam2.z)
         }
+        traceSmooth(ctx, flat)
         ctx.strokeStyle = this.theme.scribble
         ctx.lineWidth = 3.5 * (z2 / cam.z)
         ctx.lineCap = 'round'
