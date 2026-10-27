@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shard Spiral</title>
   <link rel="stylesheet" href="css/prism.css" />
+  <link rel="stylesheet" href="js/quickdraw/quickdraw.css" />
   <script src="js/tailwind.js"></script>
   <script src="js/prism.js"></script>
   <style>
@@ -1017,12 +1018,19 @@
       flex-direction: column;
       width: 100%;
       height: 100%;
-      padding: 0.625rem 0.75rem;
-      overflow: auto;
+      padding: 0;
+      overflow: hidden;
     }
 
     .ds-container-instance.active {
       display: flex;
+    }
+
+    .ds-container-content {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
     }
 
     .playback-bar {
@@ -3982,7 +3990,9 @@
   </div>
   <!--========== End of sample profile window ==========-->
 
-  <script>
+  <script type="module">
+    import { createQuickdraw } from './js/quickdraw/index.js'
+
     /* ========== Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
       /* LAYOUT_CONFIG is used here to centralize breakpoint queries, localStorage keys, and CSS custom property references across the app */
@@ -4814,12 +4824,16 @@
       containerEl.userInput = contentInput;
       containerEl.containerName = uniqueName;
 
-      const placeholderText = document.createElement('span');
-      placeholderText.className = 'ds-placeholder-text';
-      placeholderText.textContent = contentInput
-        ? `${uniqueName} (${dsType}): ${contentInput}`
-        : `${uniqueName} (${dsType})`;
-      containerEl.appendChild(placeholderText);
+      // const placeholderText = document.createElement('span');
+      // placeholderText.className = 'ds-placeholder-text';
+      // placeholderText.textContent = contentInput
+      //   ? `${uniqueName} (${dsType}): ${contentInput}`
+      //   : `${uniqueName} (${dsType})`;
+      // containerEl.appendChild(placeholderText);
+
+      const containerContent = document.createElement('div');
+      containerContent.className = 'ds-container-content';
+      containerEl.appendChild(containerContent);
 
       if (dsCanvasAreaEl) {
         dsCanvasAreaEl.appendChild(containerEl);
@@ -4830,6 +4844,15 @@
         dsType,
         userInput: contentInput,
         element: containerEl
+      });
+
+      // 1. Activate the container first so it has real width & height in the DOM
+      selectContainer(uniqueName);
+
+      // 2. Initialize Quickdraw now that containerContent is visible and sized
+      const { editor } = createQuickdraw({
+        container: containerContent,
+        hideUi: true
       });
 
       selectContainer(uniqueName);
