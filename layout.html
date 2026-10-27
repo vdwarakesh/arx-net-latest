@@ -320,7 +320,6 @@
       /* * is used here to enforce border-box sizing and inherited font sizing across all elements */
       box-sizing: border-box;
       font-size: inherit;
-      font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     html {
@@ -341,6 +340,7 @@
       margin: 0;
       padding: 0;
       background-color: var(--bg-app);
+      font-family: 'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       color: var(--text-primary);
       overflow: hidden;
       transition: background-color 0.15s ease, color 0.15s ease;
@@ -1104,7 +1104,7 @@
       flex-direction: column;
       width: 100%;
       height: 100%;
-      padding: 0;
+      padding: 1rem;
       /* Edge-to-edge canvas */
       overflow: hidden;
     }
@@ -4300,7 +4300,8 @@
 
     function drawStandaloneGrid(canvas, gridType, cam = { x: 0, y: 0, z: 1 }) {
       if (!canvas) return;
-      const rect = canvas.parentElement ? canvas.parentElement.getBoundingClientRect() : canvas.getBoundingClientRect();
+      // Measure the canvas itself (excludes parent's 0.75rem padding, header, and playback bar)
+      const rect = canvas.getBoundingClientRect();
       const w = rect.width;
       const h = rect.height;
       if (w <= 0 || h <= 0) return;
@@ -4407,6 +4408,25 @@
       }
 
       ctx.restore();
+    }
+
+    function centerGridForMaxPoints(canvas, camera) {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const z = camera.z;
+      const stepScreen = STANDALONE_GRID_STEP * z;
+
+      // Maximum number of grid tracks that can fit horizontally and vertically
+      const maxCols = Math.floor(rect.width / stepScreen) + 1;
+      const maxRows = Math.floor(rect.height / stepScreen) + 1;
+
+      // Odd count -> grid point at center; Even count -> half-step offset socenter sits between two points
+      const offsetX = (maxCols % 2 === 0) ? (STANDALONE_GRID_STEP / 2) : 0;
+      const offsetY = (maxRows % 2 === 0) ? (STANDALONE_GRID_STEP / 2) : 0;
+
+      camera.x = (rect.width / (2 * z)) + offsetX;
+      camera.y = (rect.height / (2 * z)) + offsetY;
     }
 
     function redrawAllDsCanvases() {
@@ -5557,27 +5577,8 @@
       /* Activate the container first so it has real width and height */
       selectContainer(uniqueName);
 
-      /* Center the camera symmetrically relative to the entire outer card */
-      const initRect = containerEl.getBoundingClientRect();
-      if (initRect.width > 0 && initRect.height > 0) {
-        const isPhone = phoneMedia.matches;
-
-        // 1. Get exact pixel heights of the header and bottom bar from your CSS variables
-        const headerPx = getRootCssVarUnits(
-          isPhone ? '--card-header-height-mobile' : '--card-header-height-desktop',
-          isPhone ? 1.6 : 2.15
-        );
-        const playbackPx = getRootCssVarUnits(
-          isPhone ? '--playback-bar-height-mobile' : '--playback-bar-height-desktop',
-          isPhone ? 2 : 2.5
-        );
-
-        // The coordinates are (0,0) where the canvas starts
-        const localCenterY = (initRect.height - playbackPx - headerPx) / 2;
-
-        containerObj.camera.x = initRect.width / (2 * containerObj.camera.z);
-        containerObj.camera.y = localCenterY / containerObj.camera.z;
-      }
+      /* Center the grid wrt the canvas and shift by half-step if needed to maximize points */
+      centerGridForMaxPoints(canvasEl, containerObj.camera);
 
       /* Attach independent zoom & pan camera controls to this canvas */
       attachStandaloneCameraControls(containerObj);
