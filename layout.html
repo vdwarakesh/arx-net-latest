@@ -4443,11 +4443,6 @@
     }
 
     function redrawAllDsCanvases() {
-      dsContainers.forEach(item => {
-        if (item.canvas) {
-          drawStandaloneGrid(item.canvas, currentDsGridType, item.camera);
-        }
-      });
       dsContainers.forEach(item => renderDsContainer(item));
     }
 
@@ -4463,7 +4458,7 @@
       };
 
       const render = () => {
-        drawStandaloneGrid(canvas, currentDsGridType, camera);
+        renderDsContainer(containerObj);
       };
 
       const panBy = (dxScreen, dyScreen) => {
