@@ -4277,7 +4277,7 @@
     /* ========== Standalone Data Structure Grid Engine, Camera & Dropdown ========== */
     const STANDALONE_GRID_STEP = 80;
     const STANDALONE_GRID_BAND = 40;
-    const DS_ZOOM_MIN = 1;
+    const DS_ZOOM_MIN = 0.5;
     const DS_ZOOM_MAX = 5;
 
     const STANDALONE_GRID_THEMES = {
@@ -4438,23 +4438,24 @@
         render();
       };
 
-      const zoomAt = (sx, sy, mult) => {
+      const zoomCenter = (mult) => {
+        const r = canvas.getBoundingClientRect();
+        const cx = r.width / 2;
+        const cy = r.height / 2;
         const nextZ = clampVal(camera.z * mult, DS_ZOOM_MIN, DS_ZOOM_MAX);
-        const px = sx / camera.z - camera.x;
-        const py = sy / camera.z - camera.y;
+        const px = cx / camera.z - camera.x;
+        const py = cy / camera.z - camera.y;
         camera.z = nextZ;
-        camera.x = sx / nextZ - px;
-        camera.y = sy / nextZ - py;
+        camera.x = cx / nextZ - px;
+        camera.y = cy / nextZ - py;
         render();
       };
 
-      // 1. Wheel: Touchpad 2-finger pinch (ctrlKey) or Mouse scroll wheel -> Zoom
-      //           Touchpad 2-finger move -> Pan
+      // 1. Wheel: Touchpad 2-finger pinch (ctrlKey) or Mouse scroll wheel -> Zoom from Center
+      // Touchpad 2-finger move -> Pan
       canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const pt = getLocalPt(e);
 
-        // Trackpad pinch sets ctrlKey; physical mouse wheels emit line mode or larger discrete steps with 0 deltaX
         const isTouchpadPinch = e.ctrlKey || e.metaKey;
         const isDiscreteMouseWheel =
           !isTouchpadPinch &&
@@ -4463,7 +4464,7 @@
 
         if (isTouchpadPinch || isDiscreteMouseWheel) {
           const factor = isTouchpadPinch ? -e.deltaY * 0.015 : -e.deltaY * 0.0025;
-          zoomAt(pt.x, pt.y, Math.exp(factor));
+          zoomCenter(Math.exp(factor));
         } else {
           // Two-finger touchpad move pans the canvas
           panBy(-e.deltaX, -e.deltaY);
@@ -4529,13 +4530,17 @@
           const [a, b] = [...pointers.values()];
           const dist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
           const center = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+          const r = canvas.getBoundingClientRect();
+          const cx = r.width / 2;
+          const cy = r.height / 2;
+
           const nextZ = clampVal(session.cam.z * (dist / session.dist), DS_ZOOM_MIN, DS_ZOOM_MAX);
-          const p0x = session.center.x / session.cam.z - session.cam.x;
-          const p0y = session.center.y / session.cam.z - session.cam.y;
+          const pCenterX = cx / session.cam.z - session.cam.x;
+          const pCenterY = cy / session.cam.z - session.cam.y;
 
           camera.z = nextZ;
-          camera.x = center.x / nextZ - p0x;
-          camera.y = center.y / nextZ - p0y;
+          camera.x = cx / nextZ - pCenterX + (center.x - session.center.x) / nextZ;
+          camera.y = cy / nextZ - pCenterY + (center.y - session.center.y) / nextZ;
           render();
         } else if (session.type === 'pan') {
           panBy(pt.x - session.last.x, pt.y - session.last.y);
