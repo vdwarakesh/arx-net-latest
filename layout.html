@@ -4225,6 +4225,7 @@
 
   <script type="module">
     import { createQuickdraw } from './js/quickdraw/index.js'
+    import { drawArray } from './dsa/Array.js';
 
     /* ========== Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
@@ -4410,6 +4411,18 @@
       ctx.restore();
     }
 
+    function renderDsContainer(containerObj) {
+      if (!containerObj || !containerObj.canvas) return;
+      // 1. Draw the infinite background grid
+      drawStandaloneGrid(containerObj.canvas, currentDsGridType, containerObj.camera);
+
+      // 2. If it's an Array, draw the array bars on the canvas
+      if (containerObj.dsType === 'Array') {
+        containerObj.element._camera = containerObj.camera;
+        drawArray(containerObj.element, containerObj.camera);
+      }
+    }
+
     function centerGridForMaxPoints(canvas, camera) {
       const rect = canvas.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return;
@@ -4435,6 +4448,7 @@
           drawStandaloneGrid(item.canvas, currentDsGridType, item.camera);
         }
       });
+      dsContainers.forEach(item => renderDsContainer(item));
     }
 
     function attachStandaloneCameraControls(containerObj) {
@@ -5586,12 +5600,11 @@
       /* Automatically redraw the grid whenever the panel is resized */
       const ro = new ResizeObserver(() => {
         if (containerEl.classList.contains('active')) {
-          drawStandaloneGrid(canvasEl, currentDsGridType, containerObj.camera);
+          renderDsContainer(containerObj);
         }
       });
       ro.observe(containerEl);
-
-      drawStandaloneGrid(canvasEl, currentDsGridType, containerObj.camera);
+      renderDsContainer(containerObj);
     }
 
     function getActiveContainerDsType() {
