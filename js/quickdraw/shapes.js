@@ -106,7 +106,7 @@ const measurer = () => {
 }
 
 // The editing textarea positions glyphs by CSS line-box math (half-leading
-// around ascent+descent), while canvas 'middle' centers on the em square —
+// around ascent+descent), while canvas 'middle' centers on the em square -
 // they disagree by a few px, so committed text would shift. Draw with
 // 'alphabetic' at the CSS baseline instead so canvas matches the textarea.
 const baselineCache = new Map()
@@ -229,7 +229,7 @@ function strokeStyled(ctx, dash, w) {
 
 // The outline a 'draw'-dash geo is stroked along, in local space: `smooth`
 // outlines (ellipse, cloud) are traced with midpoint quadratics, the rest
-// joined straight. The wobble is deliberately quiet — a calm hand, not a
+// joined straight. The wobble is deliberately quiet - a calm hand, not a
 // shaky one. Exported so animation code can trace exactly what's drawn.
 export function geoOutline(shape) {
   const p = shape.props
@@ -383,7 +383,7 @@ export function drawShape(ctx, shape, opts) {
     }
     case 'highlight': {
       ctx.globalAlpha = alpha * HIGHLIGHT_ALPHA
-      // multiply soaks into light paper; on dark paper it would blacken —
+      // multiply soaks into light paper; on dark paper it would blacken -
       // lighten glows instead, like a marker on a chalkboard
       ctx.globalCompositeOperation = theme.id === 'dark' ? 'lighten' : 'multiply'
       ctx.strokeStyle = col.stroke
@@ -576,7 +576,7 @@ export function marqueeHits(shape, rect) {
   // solid-bodied shapes select on bounds overlap
   if (['text', 'note', 'image'].includes(shape.type)) return true
   if (shape.type === 'geo' && shape.props.fill !== 'none') return true
-  // stroke shapes want a real graze — cheap test on their (unrotated) points
+  // stroke shapes want a real graze - cheap test on their (unrotated) points
   if (shape.rot) return true
   const p = shape.props
   const local = { x: rect.x - shape.x, y: rect.y - shape.y, w: rect.w, h: rect.h }

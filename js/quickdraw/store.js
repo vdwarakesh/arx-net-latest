@@ -1,5 +1,5 @@
 // The Quickdraw document: a flat map of records (shapes and image assets)
-// that emits diffs — { added, removed, updated: {id: [from, to]} } — after
+// that emits diffs - { added, removed, updated: {id: [from, to]} } - after
 // every transaction. The diff IS the wire format: sync relays, op logs and
 // undo history all speak it. Records are treated as immutable; an update
 // replaces the object, so [from, to] pairs stay true.
@@ -49,7 +49,7 @@ export const composeDiff = (a, b) => {
 
 // ---- the wire: diffs for a live peer ------------------------------------------
 // A stroke grows one diff per pointer move, and each diff carries the whole
-// record before and after — on a slow link that's the stroke sent again and
+// record before and after - on a slow link that's the stroke sent again and
 // again, the peer replaying a growing backlog. On the wire an update carries
 // only the record it becomes, and a stroke whose points only changed at the
 // end carries only that end ({ grow: how many numbers the peer has, at: how
@@ -91,7 +91,7 @@ export function unpackDiff(wire, store) {
       updated[id] = [rec || u[0], u[1]]
       continue
     }
-    // out of step (changed here meanwhile): skip it — a stroke's whole
+    // out of step (changed here meanwhile): skip it - a stroke's whole
     // record follows when the pen lifts, and puts it right
     const pts = rec?.props?.pts
     if (!Array.isArray(pts) || pts.length !== u.grow || !Array.isArray(u.pts)) continue
@@ -105,7 +105,7 @@ export function unpackDiff(wire, store) {
 // they gather, and go at most every `interval` ms, and only once the link
 // has sent what came before (busy() false): a slow link skips straight to
 // where the stroke is now instead of falling behind. Edits outside a gesture
-// go at once. send(packed, open) — open: a gesture is still going.
+// go at once. send(packed, open) - open: a gesture is still going.
 // flush() sends what's gathered now (call it when a gesture ends).
 export function streamDiffs(store, { send, busy = () => false, source = 'user', interval = 16 }) {
   let pending = null
@@ -167,7 +167,7 @@ export class Store {
     }
   }
 
-  // fires whenever canUndo/canRedo may have changed — including at the END of
+  // fires whenever canUndo/canRedo may have changed - including at the END of
   // a gesture batch, which emits no document diff of its own. Toolbars listen
   // here, not on document changes, or they go stale.
   listenHistory(fn) {
@@ -269,8 +269,8 @@ export class Store {
   get canUndo() { return this.undos.length > 0 }
   get canRedo() { return this.redos.length > 0 }
 
-  // Undo applies the inverse as a 'user' diff — peers and the op log see it
-  // like any other edit — without re-entering the history stacks.
+  // Undo applies the inverse as a 'user' diff - peers and the op log see it
+  // like any other edit - without re-entering the history stacks.
   // The stacks move BEFORE the apply emits, so listeners reading canUndo /
   // canRedo during the emission (a toolbar refresh) see the settled state.
   undo() {

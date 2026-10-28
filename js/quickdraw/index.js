@@ -1,5 +1,5 @@
 // Public face of the Quickdraw engine. The React and React Native SDKs build
-// boards through here — same editor, same UI, same feel — and so can any
+// boards through here - same editor, same UI, same feel - and so can any
 // plain web page: every module is dependency-free ESM.
 
 export { Editor, TOOLS } from './editor.js'
@@ -16,8 +16,8 @@ import { Editor } from './editor.js'
 import { buildUI } from './ui.js'
 
 // The "made with Quickdraw" mark in the board's corner. It stays up when the
-// toolbar is hidden — hosts building their own chrome still credit the
-// engine — and hosts that need it gone pass watermark: false.
+// toolbar is hidden - hosts building their own chrome still credit the
+// engine - and hosts that need it gone pass watermark: false.
 export function buildWatermark(editor) {
   const a = document.createElement('a')
   a.className = 'qd-watermark'

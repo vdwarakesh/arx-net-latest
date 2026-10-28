@@ -1,5 +1,5 @@
 // The Quickdraw editor: camera, tools, selection, input and rendering over a
-// Store. Framework-free — the React and React Native SDKs wrap it, plain
+// Store. Framework-free - the React and React Native SDKs wrap it, plain
 // pages use it bare, and every host gets the identical feel.
 // Dependency-free ESM: runs in any modern browser as-is, no build step.
 
@@ -26,7 +26,7 @@ const hundredth = (v) => Math.round(v * 100) / 100
 export const TOOLS = ['select', 'hand', 'draw', 'highlight', 'eraser', 'laser', 'arrow', 'line', 'geo', 'text', 'note']
 
 // local position of the bend handle: the curve's midpoint (chord midpoint
-// when straight — sampleLinePts collapses to the two endpoints at bend 0)
+// when straight - sampleLinePts collapses to the two endpoints at bend 0)
 const bendMidpoint = (pr) => {
   if (!pr.bend) return { x: pr.dx / 2, y: pr.dy / 2 }
   const mid = sampleLinePts(pr, pr.bend)
@@ -53,7 +53,7 @@ export class Editor {
     this.remoteScribblesAt = 0
     this.spaceHeld = false
     this.captureCanvas = null
-    // pen mode: once a stylus is seen, fingers stop drawing — a resting palm
+    // pen mode: once a stylus is seen, fingers stop drawing - a resting palm
     // is ignored, two fingers still steer the camera. setPenMode(false) opts
     // back out; auto-arm happens only once so that choice sticks.
     this.penMode = false
@@ -169,9 +169,9 @@ export class Editor {
     for (const s of this.store.shapes()) b = boundsUnion(b, pageBounds(s))
     return b
   }
-  // Re-fit the camera to the drawn content with a margin — the transition
+  // Re-fit the camera to the drawn content with a margin - the transition
   // companion. Zoom capped at 1:1 so a lone small mark doesn't blow up.
-  // `ease` (ms): one rAF loop owns the camera for the whole beat — the fit
+  // `ease` (ms): one rAF loop owns the camera for the whole beat - the fit
   // target re-reads the live-resizing frame every frame, the camera's
   // starting offset from it decays once, and the render happens in the same
   // frame as the camera write. Resize ticks that arrive while the ease is
@@ -197,7 +197,7 @@ export class Editor {
     }
     this._easeToFit(fitNow, ease)
   }
-  // Fit an explicit page rect into the view — e.g. a remote peer's viewport,
+  // Fit an explicit page rect into the view - e.g. a remote peer's viewport,
   // mirrored live. Cover-fit: the rect's center stays centered and the
   // frame fills edge to edge, so differing aspect ratios crop rather than
   // letterbox. `ease` tracks a live frame resize exactly like fitContent's.
@@ -283,7 +283,7 @@ export class Editor {
     }
     return kind
   }
-  // re-kind the selected geo shapes in place (a box becomes an ellipse) — the
+  // re-kind the selected geo shapes in place (a box becomes an ellipse) - the
   // shape picker's answer to a selection, which therefore stays selected
   setSelectedGeoKind(kind) {
     if (!GEO_IDS.includes(kind)) return
@@ -330,7 +330,7 @@ export class Editor {
       // a stubbed 2D context (tests, exotic embeds) just skips the fade
     }
   }
-  // 'none' | 'lines' | 'dots' — the backdrop behind the drawing
+  // 'none' | 'lines' | 'dots' - the backdrop behind the drawing
   setGrid(id) {
     if (!GRID_IDS.includes(id) || id === this.grid) return
     this.grid = id
@@ -349,7 +349,7 @@ export class Editor {
     this.emit('penmode')
   }
   // pointers eligible for the two-finger pinch: in pen mode the pen itself
-  // never counts — only fingers steer the camera
+  // never counts - only fingers steer the camera
   _pinchPoints() {
     const pts = []
     for (const [id, p] of this._pointers) {
@@ -463,7 +463,7 @@ export class Editor {
   }
 
   shapesSorted() {
-    // highlighter lives under the ink, like on paper — highlights render
+    // highlighter lives under the ink, like on paper - highlights render
     // first (in their own z order), everything else above
     return this.store.shapes().sort(
       (a, b) =>
@@ -495,7 +495,7 @@ export class Editor {
     this._onDragOver = (e) => { e.preventDefault(); e.stopPropagation() }
     this._onPaste = (e) => this._paste(e)
     // iOS Safari reads a finger or Apple Pencil drag on the board as a text
-    // selection and paints the whole canvas blue — the board surface opts
+    // selection and paints the whole canvas blue - the board surface opts
     // out of touch defaults and selection (the text editor keeps both)
     this._onTouchStart = (e) => { if (this._isSurface(e.target)) e.preventDefault() }
     this._onSelectStart = (e) => { if (!isTextField(e.target)) e.preventDefault() }
@@ -546,11 +546,11 @@ export class Editor {
 
     if (e.pointerType === 'pen') {
       this._penDown = true
-      // first stylus contact arms pen mode, once — turning it off is a choice
+      // first stylus contact arms pen mode, once - turning it off is a choice
       if (!this._penSeen) { this._penSeen = true; this.setPenMode(true) }
     }
 
-    // second finger: the gesture becomes a pinch — a just-started stroke is
+    // second finger: the gesture becomes a pinch - a just-started stroke is
     // taken back, it was the start of a zoom, not a mark. While the pen is
     // down in pen mode, landing fingers are a resting palm, never a pinch.
     if (!this.penMode || e.pointerType !== 'pen') {
@@ -610,7 +610,7 @@ export class Editor {
       this._hoverCursor(e)
       return
     }
-    // in pen mode a finger only ever steers the camera — a palm dragging
+    // in pen mode a finger only ever steers the camera - a palm dragging
     // across the glass must not extend the pen's stroke
     if (this.penMode && e.pointerType === 'touch' && ss.type !== 'pinch' && ss.type !== 'panning') return
     const s = this._evPoint(e)
@@ -655,7 +655,7 @@ export class Editor {
       case 'handle': return this._dragHandle(p, e)
       case 'pressing': {
         if (Math.hypot(s.x - ss.start.x, s.y - ss.start.y) > 4) {
-          // the press became a drag — start translating (alt = drag a copy)
+          // the press became a drag - start translating (alt = drag a copy)
           this.session = null
           this._beginTranslate(ss.page, e)
           if (this.session) this._dragTranslate(p, e)
@@ -672,7 +672,7 @@ export class Editor {
   }
 
   // A quick, still press-and-lift. Touch and pen taps feed the double-tap
-  // check below — iPad Safari never sends dblclick for them; the mouse keeps
+  // check below - iPad Safari never sends dblclick for them; the mouse keeps
   // the native dblclick.
   _tapOf(e) {
     const st = this._tapStart
@@ -739,14 +739,14 @@ export class Editor {
         return
       case 'pressing': {
         // tapping text that was already the lone selection opens it for
-        // editing — the one-tap path that works with a finger or a pencil
+        // editing - the one-tap path that works with a finger or a pencil
         if (ss.hit && ss.wasOnly && !ss.additive && (ss.hit.type === 'text' || ss.hit.type === 'note') && this.store.has(ss.hit.id)) {
           this.session = null
           this._startTextEdit(ss.hit.id, 'text')
           return
         }
         // a clean click: selection settles to the pressed shape (or clears);
-        // an additive click toggles — unless the down-stroke just added it
+        // an additive click toggles - unless the down-stroke just added it
         if (ss.hit) this.setSelection(ss.additive ? (ss.added ? [...this.selection] : this._toggled(ss.hit.id)) : [ss.hit.id])
         else if (!ss.additive) this.setSelection([])
         this.session = null
@@ -810,7 +810,7 @@ export class Editor {
     // merge into its last point instead of adding one
     const pen = !!shape.props.isPen
     const zoom = ss.zoom ?? (ss.zoom = this.camera.z)
-    // coalesced points ride along — extra fidelity is free
+    // coalesced points ride along - extra fidelity is free
     const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e]
     const pts = shape.props.pts.slice()
     for (const ce of evs.length ? evs : [e]) {
@@ -864,7 +864,7 @@ export class Editor {
   _endErase() {
     const hits = [...this.session.hits]
     this.session = null
-    if (hits.length) this.store.remove(hits) // one transaction — one undo
+    if (hits.length) this.store.remove(hits) // one transaction - one undo
     this.requestRender()
   }
 
@@ -908,7 +908,7 @@ export class Editor {
     }
     this._laserRaf = requestAnimationFrame(tick)
   }
-  // remote laser (a collaborator's) — drawn like ours, kept fresh by the caller
+  // remote laser (a collaborator's) - drawn like ours, kept fresh by the caller
   setRemoteScribbles(list) {
     this.remoteScribbles = list || []
     this.remoteScribblesAt = performance.now()
@@ -1072,7 +1072,7 @@ export class Editor {
       lay = noteLayout(shape)
       const s = shape.props.scale || 1
       // anchor the textarea where the canvas draws the (vertically centered)
-      // text block, so committing doesn't jump the text — 20 = NOTE_PAD
+      // text block, so committing doesn't jump the text - 20 = NOTE_PAD
       const yStart = Math.max(20, lay.boxH / 2 - lay.textH / 2)
       pos = this.pageToScreen(shape.x + 20 * s, shape.y + yStart * s)
       w = (NOTE_W - 40) * s
@@ -1132,7 +1132,7 @@ export class Editor {
   // ---- select tool ---------------------------------------------------------
   _beginSelect(e, s, p) {
     const additive = e.shiftKey
-    // handles first — they extend beyond the shapes
+    // handles first - they extend beyond the shapes
     const h = this._hitHandle(s.x, s.y)
     if (h) {
       this.store.beginBatch()
@@ -1204,7 +1204,7 @@ export class Editor {
     const { handle, init } = ss
     const ax = handle.includes('l') ? init.x + init.w : init.x // anchor
     const ay = handle.includes('t') ? init.y + init.h : init.y
-    // scales clamp positive — dragging past the anchor pins at tiny, no flips
+    // scales clamp positive - dragging past the anchor pins at tiny, no flips
     let sx = handle.includes('l') || handle.includes('r')
       ? (p.x - ax) / ((handle.includes('l') ? init.x : init.x + init.w) - ax)
       : 1
@@ -1387,7 +1387,7 @@ export class Editor {
     }
     // the UI layer listens for this and toggles the shortcuts overlay
     if (k === '?') { e.preventDefault(); this.emit('help'); return }
-    // wipe the board — two modifiers deep, and undoable like any other edit
+    // wipe the board - two modifiers deep, and undoable like any other edit
     if (meta && e.shiftKey && (k === 'delete' || k === 'backspace')) {
       e.preventDefault()
       this.clearBoard()
@@ -1577,7 +1577,7 @@ export class Editor {
   }
 
   // ---- export --------------------------------------------------------------
-  // Renders the drawing into a PNG at crisp resolution — with the paper
+  // Renders the drawing into a PNG at crisp resolution - with the paper
   // behind it, or on transparency. Everything by default; pass ids (a Set)
   // to export just those shapes.
   async exportImage({ background = true, scale = 2, margin = 48, ids = null } = {}) {
@@ -1655,7 +1655,7 @@ export class Editor {
       drawShape(ctx, s, {
         theme: this.theme, store: this.store, zoom: cam.z,
         ghost: this.session?.type === 'erasing' && this.session.hits.has(s.id),
-        // the floating textarea is the visible text while editing — but only on
+        // the floating textarea is the visible text while editing - but only on
         // screen; capture/export have no DOM, so they keep the canvas text
         hideText: hideEditing && this.editing?.id === s.id ? this.editing.field : null,
         onAssetLoad: () => this.requestRender(),
@@ -1933,7 +1933,7 @@ export class Editor {
       ctx.stroke()
     }
 
-    // laser scribbles — local and remote, same glow
+    // laser scribbles - local and remote, same glow
     const remoteAlive = this.remoteScribbles.length && performance.now() - this.remoteScribblesAt < 2500
     const all = [...this.scribbles, ...(remoteAlive ? this.remoteScribbles : [])]
     for (const sc of all) {
@@ -1960,12 +1960,12 @@ export class Editor {
   }
 
   // clean pixels for recordings: the current view, contain-fitted into the
-  // capture canvas (bands are paper — the compositor's cover crop trims them)
+  // capture canvas (bands are paper - the compositor's cover crop trims them)
   setCaptureCanvas(canvas) {
     this.captureCanvas = canvas
     if (canvas) this.requestRender()
   }
-  // heartbeat repaint for captureStream consumers — repaints ONLY the capture
+  // heartbeat repaint for captureStream consumers - repaints ONLY the capture
   // canvas so idle recordings keep receiving frames
   renderCaptureTick() {
     this._renderCapture()
@@ -1973,7 +1973,7 @@ export class Editor {
   _renderCapture() {
     const c = this.captureCanvas
     if (!c) return
-    // nobody is recording/streaming this board — skip the extra pass
+    // nobody is recording/streaming this board - skip the extra pass
     if (this.captureGate && !this.captureGate()) return
     const { w, h } = this.viewSize()
     if (!w || !h) return

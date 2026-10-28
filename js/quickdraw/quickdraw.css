@@ -6,7 +6,7 @@
   outline: none;
   background: #fbf9f4;
   touch-action: none;
-  /* no iOS text selection, callout or tap flash on the board — a pencil drag
+  /* no iOS text selection, callout or tap flash on the board - a pencil drag
      would otherwise select the whole canvas (the text editor opts back in) */
   -webkit-user-select: none;
   user-select: none;
@@ -209,7 +209,7 @@
   .qd-popover { animation: none; }
 }
 
-/* every popover tool icon needs the explicit size — an unsized svg falls back
+/* every popover tool icon needs the explicit size - an unsized svg falls back
    to its intrinsic 300×150 and overflows the 32px button (invisible on iOS) */
 .qd-popover .qd-tool svg { width: 19px; height: 19px; display: block; }
 
@@ -454,7 +454,7 @@
   color: rgba(244, 242, 234, 0.85);
   background: rgba(244, 242, 234, 0.08);
 }
-/* on narrow boards the centered dock reaches the corners — step above it */
+/* on narrow boards the centered dock reaches the corners - step above it */
 @container (max-width: 560px) {
   .qd-watermark { bottom: 58px; }
 }

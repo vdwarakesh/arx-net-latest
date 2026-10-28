@@ -23,7 +23,7 @@ export const boundsIntersect = (a, b) =>
   a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 
 // bounds of a flat [x,y,x,y,...] point list (draw shapes store [x,y,p,...]
-// triplets — pass stride 3)
+// triplets - pass stride 3)
 export const ptsBounds = (pts, stride = 2) => {
   if (!pts || pts.length < 2) return { x: 0, y: 0, w: 0, h: 0 }
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
@@ -106,7 +106,7 @@ export const segIntersectsBounds = (ax, ay, bx, by, r) => {
 
 // ---- seeded wobble ----------------------------------------------------------
 
-// mulberry32 seeded from a string — each shape wobbles its own way, and the
+// mulberry32 seeded from a string - each shape wobbles its own way, and the
 // same way on every redraw, every peer, every export
 export const seededRand = (str) => {
   let h = 1779033703 ^ str.length
@@ -125,7 +125,7 @@ export const seededRand = (str) => {
 }
 
 // resample a closed/open polygon into ~`step`-spaced points, each nudged by
-// smooth noise — the hand-drawn look for 'draw'-dash geometry
+// smooth noise - the hand-drawn look for 'draw'-dash geometry
 export const wobblePolyline = (pts, seed, { step = 24, amp = 1.6, closed = true } = {}) => {
   const rand = seededRand(seed)
   const out = []
@@ -154,7 +154,7 @@ export const wobblePolyline = (pts, seed, { step = 24, amp = 1.6, closed = true 
 }
 
 // a hand-drawn polygon: each edge is one gentle bow and every corner sits a
-// hair off true — it reads as drawn by hand, not traced by a shaky pen. The
+// hair off true - it reads as drawn by hand, not traced by a shaky pen. The
 // bow scales with the edge but never past `maxBow`, so a big box stays calm.
 // Output is a dense closed polyline (no repeated start point).
 export const bowPolygon = (pts, seed, { bow = 0.006, maxBow = 1.3, jitter = 0.45, step = 10 } = {}) => {
@@ -222,10 +222,10 @@ export const ellipsePolygon = (w, h, n = 32) => {
 // The cloud outline, as cubic Bézier segments in unit space (fractions of
 // w/h). One source of truth: cloudPolygon() samples these for hit-testing and
 // for the wobbled 'draw' path, while shapes.js strokes them directly for the
-// crisp dash styles — move the curve here and both follow.
+// crisp dash styles - move the curve here and both follow.
 export const CLOUD_START = [0.15, 0.62]
 export const CLOUD_CURVES = [
-  // [c1x, c1y, c2x, c2y, endX, endY] — each picks up where the last ended
+  // [c1x, c1y, c2x, c2y, endX, endY] - each picks up where the last ended
   [0.02, 0.60, 0.02, 0.38, 0.16, 0.35],
   [0.16, 0.15, 0.36, 0.10, 0.46, 0.20],
   [0.54, 0.10, 0.74, 0.10, 0.82, 0.32],
@@ -256,13 +256,13 @@ export const cloudPolygon = (w, h, steps = 12) => {
     px = x3
     py = y3
   }
-  // the last curve lands back on the start point — drop it so the closed
+  // the last curve lands back on the start point - drop it so the closed
   // polygon has no zero-length edge
   pts.length -= 2
   return pts
 }
 
-// path through flat [x,y,...] points with midpoint quadratics — the smooth
+// path through flat [x,y,...] points with midpoint quadratics - the smooth
 // line everything hand-drawn is traced with
 export const traceSmooth = (ctx, pts, closed = false) => {
   const n = pts.length / 2

@@ -1,5 +1,5 @@
 // The board's chrome: a floating dock of tools, a styles popover, and the
-// board menu — plain DOM, one implementation for every host framework.
+// board menu - plain DOM, one implementation for every host framework.
 // The dock is responsive: tools overflow into a "more" flyout as the frame
 // narrows, and a very small frame folds the whole kit into one button.
 // Icons follow the Lucide geometry (24px grid, 2px stroke) so they read as
@@ -17,7 +17,7 @@ const ICONS = {
   draw: SVG('<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>'),
   highlight: SVG('<path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4l8 8Z"/>'),
   eraser: SVG('<path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>'),
-  // a pointer wand with sparks at the tip — the sun-burst read as brightness
+  // a pointer wand with sparks at the tip - the sun-burst read as brightness
   laser: SVG('<path d="m3 21 9-9"/><path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h-2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="M12.2 6.2 11 5"/>'),
   line: SVG('<path d="M19 5 5 19"/>'),
   arrow: SVG('<path d="M7 7h10v10"/><path d="M7 17 17 7"/>'),
@@ -27,7 +27,7 @@ const ICONS = {
   undo: SVG('<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>'),
   redo: SVG('<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13"/>'),
   menu: SVG('<circle cx="12" cy="5" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.6" fill="currentColor" stroke="none"/>'),
-  // double chevron up (the flyout opens above the dock) — dots would read as
+  // double chevron up (the flyout opens above the dock) - dots would read as
   // a second dot-menu next to the board menu's vertical dots
   more: SVG('<path d="m7 12.5 5-5 5 5"/><path d="m7 18.5 5-5 5 5"/>'),
   // geo kinds
@@ -83,11 +83,11 @@ const FILL_ICONS = {
 }
 
 const TIPS = {
-  select: 'Select — V', hand: 'Hand — H', draw: 'Draw — D', highlight: 'Highlight — I',
-  eraser: 'Eraser — E', laser: 'Laser — K', line: 'Line — L', arrow: 'Arrow — A',
-  geo: 'Shape — G', text: 'Text — T', note: 'Sticky note — N', image: 'Insert image',
-  undo: 'Undo — ⌘Z', redo: 'Redo — ⇧⌘Z', menu: 'Board menu', more: 'More tools',
-  tools: 'Tools', duplicate: 'Duplicate — ⌘D', delete: 'Delete — ⌫',
+  select: 'Select - V', hand: 'Hand - H', draw: 'Draw - D', highlight: 'Highlight - I',
+  eraser: 'Eraser - E', laser: 'Laser - K', line: 'Line - L', arrow: 'Arrow - A',
+  geo: 'Shape - G', text: 'Text - T', note: 'Sticky note - N', image: 'Insert image',
+  undo: 'Undo - ⌘Z', redo: 'Redo - ⇧⌘Z', menu: 'Board menu', more: 'More tools',
+  tools: 'Tools', duplicate: 'Duplicate - ⌘D', delete: 'Delete - ⌫',
 }
 
 // dock buttons in visual order (styles/more/menu ride at the end, always)
@@ -97,7 +97,7 @@ const DROP_ORDER = ['hand', 'laser', 'line', 'note', 'image', 'highlight', 'text
 
 export function buildUI(editor, { hidden = false, onSave, themeToggle = true, gridControl = true } = {}) {
   const root = editor.container
-  // menu switches the host can drop — an app that owns its own theme chrome
+  // menu switches the host can drop - an app that owns its own theme chrome
   // doesn't want a second control for it on the canvas
   const opts = { themeToggle: themeToggle !== false, gridControl: gridControl !== false }
   const ui = el('div', 'qd-ui')
@@ -361,7 +361,7 @@ export function buildUI(editor, { hidden = false, onSave, themeToggle = true, gr
 
     const hasSel = editor.selection.size > 0
     item('download', 'Export as PNG', null, () => saveImage(true, null))
-    item('transparent', 'Export — transparent', null, () => saveImage(false, null))
+    item('transparent', 'Export - transparent', null, () => saveImage(false, null))
     if (hasSel) item('image', 'Export selection', null, () => saveImage(true, new Set(editor.selection)))
     item('copy', hasSel ? 'Copy selection as image' : 'Copy as image', null, async () => {
       const blob = await editor.exportImage({ background: true, ids: hasSel ? new Set(editor.selection) : null })
@@ -374,7 +374,7 @@ export function buildUI(editor, { hidden = false, onSave, themeToggle = true, gr
 
     if (opts.gridControl || opts.themeToggle) p.appendChild(el('i', 'qd-menu-div'))
     if (opts.gridControl) {
-      // a standard nested dropdown: the row grows a flyout beside the menu —
+      // a standard nested dropdown: the row grows a flyout beside the menu -
       // six buttons inline read as clutter
       // a div, not a button: the flyout nests inside, and buttons can't nest
       const row = el('div', 'qd-menu-item qd-has-sub')
@@ -452,26 +452,36 @@ export function buildUI(editor, { hidden = false, onSave, themeToggle = true, gr
   }
   // ---- keyboard help overlay (press ?) -----------------------------------
   const SHORTCUTS = [
-    { label: 'Tools', rows: [
-      ['Select', 'V / 1'], ['Hand (hold Space)', 'H'], ['Draw', 'D / P / B'],
-      ['Highlight', 'I'], ['Eraser', 'E'], ['Laser', 'K'],
-      ['Arrow', 'A'], ['Line', 'L'], ['Shape', 'G'],
-      ['Rectangle', 'R'], ['Ellipse', 'O'], ['Text', 'T'], ['Sticky note', 'N'],
-    ]},
-    { label: 'Edit', rows: [
-      ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Select all', '⌘A'],
-      ['Copy', '⌘C'], ['Cut', '⌘X'], ['Paste', '⌘V'], ['Duplicate', '⌘D'],
-    ]},
-    { label: 'Arrange', rows: [
-      ['Bring to front', ']'], ['Send to back', '['], ['Nudge', 'Arrows (Shift = 8px)'],
-    ]},
-    { label: 'View', rows: [
-      ['Zoom to fit', '⇧1'], ['Reset zoom', '⇧0'], ['Zoom in / out', '⌘+ / ⌘−'],
-    ]},
-    { label: 'Board', rows: [
-      ['Delete selection', '⌫'], ['Clear board', '⇧⌘⌫'],
-      ['Edit / finish text', 'Enter'], ['Cancel / deselect', 'Esc'],
-    ]},
+    {
+      label: 'Tools', rows: [
+        ['Select', 'V / 1'], ['Hand (hold Space)', 'H'], ['Draw', 'D / P / B'],
+        ['Highlight', 'I'], ['Eraser', 'E'], ['Laser', 'K'],
+        ['Arrow', 'A'], ['Line', 'L'], ['Shape', 'G'],
+        ['Rectangle', 'R'], ['Ellipse', 'O'], ['Text', 'T'], ['Sticky note', 'N'],
+      ]
+    },
+    {
+      label: 'Edit', rows: [
+        ['Undo', '⌘Z'], ['Redo', '⇧⌘Z'], ['Select all', '⌘A'],
+        ['Copy', '⌘C'], ['Cut', '⌘X'], ['Paste', '⌘V'], ['Duplicate', '⌘D'],
+      ]
+    },
+    {
+      label: 'Arrange', rows: [
+        ['Bring to front', ']'], ['Send to back', '['], ['Nudge', 'Arrows (Shift = 8px)'],
+      ]
+    },
+    {
+      label: 'View', rows: [
+        ['Zoom to fit', '⇧1'], ['Reset zoom', '⇧0'], ['Zoom in / out', '⌘+ / ⌘−'],
+      ]
+    },
+    {
+      label: 'Board', rows: [
+        ['Delete selection', '⌫'], ['Clear board', '⇧⌘⌫'],
+        ['Edit / finish text', 'Enter'], ['Cancel / deselect', 'Esc'],
+      ]
+    },
     { label: 'Help', rows: [['Keyboard shortcuts', '?']] },
   ]
   const buildHelp = () => {

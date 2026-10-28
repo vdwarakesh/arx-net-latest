@@ -1,4 +1,4 @@
-// Quickdraw's visual constants — colors, stroke sizes, dash styles, fonts.
+// Quickdraw's visual constants - colors, stroke sizes, dash styles, fonts.
 // Dependency-free ESM: this file (like the whole engine) can be bundled or
 // served raw, so it must run in any modern browser as-is.
 
@@ -11,35 +11,35 @@ export const COLOR_IDS = [
 ]
 
 const LIGHT = {
-  'black':        { stroke: '#1d1d1d', fill: '#e8e8e8', note: '#fdf0a8' },
-  'grey':         { stroke: '#9fa8b2', fill: '#eceef0', note: '#eff0f2' },
+  'black': { stroke: '#1d1d1d', fill: '#e8e8e8', note: '#fdf0a8' },
+  'grey': { stroke: '#9fa8b2', fill: '#eceef0', note: '#eff0f2' },
   'light-violet': { stroke: '#e085f4', fill: '#f9ebfc', note: '#f5d9fb' },
-  'violet':       { stroke: '#ae3ec9', fill: '#f0dcf5', note: '#e5b9ef' },
-  'blue':         { stroke: '#4263eb', fill: '#dfe5fb', note: '#c0cdf8' },
-  'light-blue':   { stroke: '#4dabf7', fill: '#e0f0fe', note: '#c6e5fd' },
-  'yellow':       { stroke: '#f1ac4b', fill: '#fcefdc', note: '#fbe5c0' },
-  'orange':       { stroke: '#e16919', fill: '#fae5d5', note: '#f8cfae' },
-  'green':        { stroke: '#099268', fill: '#d3ebe3', note: '#b5e0d1' },
-  'light-green':  { stroke: '#4cb05e', fill: '#dff0e2', note: '#c5e7cc' },
-  'light-red':    { stroke: '#f87777', fill: '#fde4e4', note: '#fbcece' },
-  'red':          { stroke: '#e03131', fill: '#f9dcdc', note: '#f4b8b8' },
+  'violet': { stroke: '#ae3ec9', fill: '#f0dcf5', note: '#e5b9ef' },
+  'blue': { stroke: '#4263eb', fill: '#dfe5fb', note: '#c0cdf8' },
+  'light-blue': { stroke: '#4dabf7', fill: '#e0f0fe', note: '#c6e5fd' },
+  'yellow': { stroke: '#f1ac4b', fill: '#fcefdc', note: '#fbe5c0' },
+  'orange': { stroke: '#e16919', fill: '#fae5d5', note: '#f8cfae' },
+  'green': { stroke: '#099268', fill: '#d3ebe3', note: '#b5e0d1' },
+  'light-green': { stroke: '#4cb05e', fill: '#dff0e2', note: '#c5e7cc' },
+  'light-red': { stroke: '#f87777', fill: '#fde4e4', note: '#fbcece' },
+  'red': { stroke: '#e03131', fill: '#f9dcdc', note: '#f4b8b8' },
 }
 
-// note papers stay bright in the dark theme too — the sticky is a lit object
+// note papers stay bright in the dark theme too - the sticky is a lit object
 // on the dark canvas, and noteText ink is dark in both themes
 const DARK = {
-  'black':        { stroke: '#e1e1e1', fill: '#2c2c2c', note: '#fcf089' },
-  'grey':         { stroke: '#93a1ad', fill: '#26292c', note: '#e2e5e8' },
+  'black': { stroke: '#e1e1e1', fill: '#2c2c2c', note: '#fcf089' },
+  'grey': { stroke: '#93a1ad', fill: '#26292c', note: '#e2e5e8' },
   'light-violet': { stroke: '#e085f4', fill: '#3b2a40', note: '#f2cbfa' },
-  'violet':       { stroke: '#bd63d3', fill: '#352138', note: '#e3aeef' },
-  'blue':         { stroke: '#6285f5', fill: '#20263e', note: '#b4c4f8' },
-  'light-blue':   { stroke: '#4dabf7', fill: '#1c2c3a', note: '#b9defc' },
-  'yellow':       { stroke: '#f1ac4b', fill: '#382e1e', note: '#fbdda9' },
-  'orange':       { stroke: '#e8833a', fill: '#392619', note: '#f8c69c' },
-  'green':        { stroke: '#12a67c', fill: '#172e27', note: '#a6dcc9' },
-  'light-green':  { stroke: '#5cbd6e', fill: '#1d3120', note: '#bde4c5' },
-  'light-red':    { stroke: '#f87777', fill: '#3b2222', note: '#fac1c1' },
-  'red':          { stroke: '#e55959', fill: '#382020', note: '#f3aaaa' },
+  'violet': { stroke: '#bd63d3', fill: '#352138', note: '#e3aeef' },
+  'blue': { stroke: '#6285f5', fill: '#20263e', note: '#b4c4f8' },
+  'light-blue': { stroke: '#4dabf7', fill: '#1c2c3a', note: '#b9defc' },
+  'yellow': { stroke: '#f1ac4b', fill: '#382e1e', note: '#fbdda9' },
+  'orange': { stroke: '#e8833a', fill: '#392619', note: '#f8c69c' },
+  'green': { stroke: '#12a67c', fill: '#172e27', note: '#a6dcc9' },
+  'light-green': { stroke: '#5cbd6e', fill: '#1d3120', note: '#bde4c5' },
+  'light-red': { stroke: '#f87777', fill: '#3b2222', note: '#fac1c1' },
+  'red': { stroke: '#e55959', fill: '#382020', note: '#f3aaaa' },
 }
 
 // Everything theme-dependent that isn't a shape color.

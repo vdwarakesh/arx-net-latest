@@ -4,7 +4,7 @@
 // below under its MIT license; inkOptions holds Quickdraw's own settings.
 // Dependency-free ESM (see palette.js).
 //
-// perfect-freehand 1.2.3 — https://github.com/steveruizok/perfect-freehand
+// perfect-freehand 1.2.3 - https://github.com/steveruizok/perfect-freehand
 // MIT License
 //
 // Copyright (c) 2021 Stephen Ruiz Ltd

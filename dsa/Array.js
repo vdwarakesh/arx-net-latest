@@ -1,19 +1,47 @@
+// dsa/Array.js
+// Parses user input from containerEl.userInput, draws an Array on the container's canvas using D3.js,
+// and provides right-click dynamic add/delete and drag-to-reorder interactions.
+
 import * as d3Module from './d3.js';
 const d3 = window.d3 || d3Module;
 
 // ========== Hyperparameters ==========
 export const ARRAY_HYPERPARAMETERS = {
   MIN_BAR_HEIGHT_RATIO: 0.10, // Least element is 10% of the canvas height
-  MAX_BAR_HEIGHT_RATIO: 0.30, // Max element is 30% of the canvas height (spans from 60% up to 30% of screen)
+  MAX_BAR_HEIGHT_RATIO: 0.30, // Max element is 30% of the canvas height (reaches 30% limit from 60% baseline)
   TOP_LIMIT_RATIO: 0.30,      // Top of the tallest bar sits at 30% from the top of the canvas
   BOTTOM_BASELINE_RATIO: 0.60,// Baseline of all bars sits at 60% from the top of the canvas
   HORIZONTAL_SPAN_RATIO: 0.70,// Array spans up to 70% of the canvas width
-  MAX_BAR_WIDTH: 64,          // Maximum width of a single bar in world px
-  MIN_BAR_WIDTH: 18,          // Minimum width of a single bar in world px
-  BAR_PADDING: 0.25,          // Padding ratio between bars (for d3.scaleBand)
-  CORNER_RADIUS: 4,           // Rounded top corners of each bar
+  MAX_BAR_WIDTH: 68,          // Maximum width of a single bar in world px
+  MIN_BAR_WIDTH: 24,          // Minimum width of a single bar in world px
+  BAR_PADDING: 0.22,          // Padding ratio between bars (for d3.scaleBand)
   FONT_FAMILY: "'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif",
 };
+
+function recomputeNumericMagnitudes(items) {
+  const allNumbers = items.length > 0 && items.every((d) => d.isNumber);
+  items.forEach((d, idx) => {
+    if (allNumbers || d.isNumber) {
+      d.numericValue = Number(d.value);
+    } else {
+      const strVal = String(d.value);
+      d.numericValue = strVal.length + (strVal.charCodeAt(0) || 0) / 255;
+    }
+    d.index = idx;
+  });
+  return items;
+}
+
+export function parseSingleToken(rawVal) {
+  const trimmed = String(rawVal ?? '').trim();
+  const num = Number(trimmed);
+  const isNumber = trimmed !== '' && !Number.isNaN(num) && Number.isFinite(num);
+  return {
+    raw: trimmed,
+    value: isNumber ? num : trimmed,
+    isNumber,
+  };
+}
 
 /**
  * Parses flexible array input formats:
@@ -27,11 +55,9 @@ export function parseArrayInput(rawInput) {
   let str = String(rawInput).trim();
   if (!str) return [];
 
-  // Strip leading and trailing brackets: [, ], (, ), {, }
   str = str.replace(/^[\[\(\{\s]+|[\]\)\}\s]+$/g, '').trim();
   if (!str) return [];
 
-  // Match quoted strings OR tokens separated by commas, whitespace, or stray brackets
   const tokenRegex = /"([^"]*)"|'([^']*)'|([^,\s\[\]\(\)\{\}]+)/g;
   const items = [];
   let match;
@@ -42,55 +68,36 @@ export function parseArrayInput(rawInput) {
     const rawToken = quoted !== undefined ? quoted : unquoted;
 
     if (quoted !== undefined) {
-      // Explicitly quoted value is always kept as a string
-      items.push({
-        raw: rawToken,
-        value: rawToken,
-        isNumber: false,
-      });
+      items.push({ raw: rawToken, value: rawToken, isNumber: false });
     } else {
-      const num = Number(rawToken);
-      if (rawToken !== '' && !Number.isNaN(num) && Number.isFinite(num)) {
-        items.push({
-          raw: rawToken,
-          value: num,
-          isNumber: true,
-        });
-      } else {
-        items.push({
-          raw: rawToken,
-          value: rawToken,
-          isNumber: false,
-        });
-      }
+      items.push(parseSingleToken(rawToken));
     }
   }
 
-  // Compute numeric magnitudes so both numbers and strings can be scaled with D3
-  const allNumbers = items.length > 0 && items.every((d) => d.isNumber);
-  items.forEach((d, idx) => {
-    if (allNumbers) {
-      d.numericValue = d.value;
-    } else if (d.isNumber) {
-      d.numericValue = d.value;
-    } else {
-      // For strings, use string length or character code sum for relative bar height
-      const strVal = String(d.value);
-      d.numericValue = strVal.length + (strVal.charCodeAt(0) || 0) / 255;
-    }
-    d.index = idx;
-  });
+  return recomputeNumericMagnitudes(items);
+}
 
-  return items;
+function syncArrayDataToContainer(containerEl, items) {
+  recomputeNumericMagnitudes(items);
+  containerEl._arrayData = items;
+  const serialized = items.map((d) => d.raw).join(', ');
+  containerEl.userInput = serialized;
+  containerEl.setAttribute('userInput', serialized);
+  if (typeof window.updateDsHeaderWarningState === 'function') {
+    window.updateDsHeaderWarningState();
+  }
+}
+
+export function getContainerArrayData(containerEl) {
+  if (!containerEl._arrayData) {
+    const rawInput = containerEl.userInput ?? containerEl.getAttribute('userInput') ?? '';
+    containerEl._arrayData = parseArrayInput(rawInput);
+  }
+  return containerEl._arrayData;
 }
 
 /**
- * Draws the parsed array onto the canvas inside `containerEl` using D3 scales.
- * Works seamlessly with the standalone infinite grid camera (if present on containerObj).
- *
- * @param {HTMLElement} containerEl - The .ds-container-instance element
- * @param {Object} [camera] - Optional camera { x, y, z } for world-space pan/zoom rendering
- * @param {Object} [customHyperparams] - Optional overrides for ARRAY_HYPERPARAMETERS
+ * Draws the array onto the canvas inside `containerEl` using D3 scales.
  */
 export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   if (!containerEl) return;
@@ -99,8 +106,8 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const canvas = containerEl.querySelector('canvas.ds-grid-canvas') || containerEl.querySelector('canvas');
   if (!canvas) return;
 
-  const rawInput = containerEl.userInput ?? containerEl.getAttribute('userInput') ?? '';
-  const data = parseArrayInput(rawInput);
+  const data = getContainerArrayData(containerEl);
+  containerEl._barHitBoxes = [];
   if (data.length === 0) return;
 
   const rect = canvas.getBoundingClientRect();
@@ -111,24 +118,17 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   const ctx = canvas.getContext('2d');
 
-  // Read theme colors from document CSS variables
   const rootStyle = getComputedStyle(document.documentElement);
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   const barFill = rootStyle.getPropertyValue('--accent-primary').trim() || (isLight ? '#005fb8' : '#0078d4');
   const barBorder = rootStyle.getPropertyValue('--accent-hover').trim() || (isLight ? '#0258a8' : '#1084df');
   const textBright = rootStyle.getPropertyValue('--text-bright').trim() || (isLight ? '#1e1e1e' : '#ffffff');
-  const textMuted = rootStyle.getPropertyValue('--text-muted').trim() || (isLight ? '#616161' : '#858585');
 
-  // Determine the coordinate space:
-  // When a camera is provided (with initial camera.x = w/2, camera.y = h/2),
-  // world origin (0, 0) is at the initial center of the canvas.
-  // So the initial screen rect in world coordinates spans [-w/2, w/2] and [-h/2, h/2].
   const cam = camera || containerEl._camera || { x: 0, y: 0, z: 1 };
   const useWorldOrigin = Boolean(camera || containerEl._camera);
 
   if (!containerEl._baseViewport || containerEl._baseViewport.w === 0) {
     containerEl._baseViewport = { w, h };
-    // Capture the world coordinate currently at the center of the screen
     containerEl._worldOrigin = {
       x: (w / (2 * cam.z)) - cam.x,
       y: (h / (2 * cam.z)) - cam.y,
@@ -164,10 +164,12 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     .paddingOuter(hp.BAR_PADDING / 2);
 
   const barWidth = xScale.bandwidth();
+  const stepX = xScale.step();
+
+  containerEl._arrayLayoutMeta = { startX, stepX, barWidth, baselineY };
 
   ctx.save();
   if (useWorldOrigin) {
-    // Apply camera transform so the array pans and zooms with the infinite grid
     ctx.setTransform(
       cam.z * dpr,
       0,
@@ -180,47 +182,247 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  // Draw each bar, value label, and index label
-  data.forEach((d, i) => {
-    const barH = minVal === maxVal ? maxBarH : heightScale(d.numericValue);
-    const x = xScale(i);
-    const y = baselineY - barH;
-    const r = Math.min(hp.CORNER_RADIUS, barWidth / 2, barH / 2);
+  const dragState = containerEl._dragState;
 
-    // 1. Bar Fill & Stroke
+  data.forEach((d, i) => {
+    const isDraggingThis = dragState && dragState.index === i;
+    const barH = minVal === maxVal ? maxBarH : heightScale(d.numericValue);
+    const x = isDraggingThis ? (dragState.worldX - barWidth / 2) : xScale(i);
+    const y = baselineY - barH;
+
+    // Save world-space hitbox for right-click and drag hit-testing
+    containerEl._barHitBoxes.push({
+      index: i,
+      x: xScale(i),
+      y,
+      w: barWidth,
+      h: barH,
+    });
+
+    // 1. Sharp Rectangular Bar (no border-radius)
     ctx.beginPath();
-    if (ctx.roundRect) {
-      ctx.roundRect(x, y, barWidth, barH, [r, r, 2, 2]);
-    } else {
-      ctx.rect(x, y, barWidth, barH);
-    }
+    ctx.rect(x, y, barWidth, barH);
     ctx.fillStyle = barFill;
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = isDraggingThis ? 0.98 : 0.86;
     ctx.fill();
 
     ctx.globalAlpha = 1;
-    ctx.lineWidth = 1.5;
-    ctx.strokeStyle = barBorder;
+    ctx.lineWidth = isDraggingThis ? 2.2 : 1.5;
+    ctx.strokeStyle = isDraggingThis ? '#ffffff' : barBorder;
     ctx.stroke();
 
-    // 2. Value Label (above the bar)
-    const fontSize = Math.max(10, Math.min(14, barWidth * 0.42));
-    ctx.font = `600 ${fontSize}px ${hp.FONT_FAMILY}`;
-    ctx.fillStyle = textBright;
+    // 2. Value Label (placed near the bottom inside the bar, right above the baseline)
+    const valFontSize = Math.max(12, Math.min(16, barWidth * 0.45));
+    ctx.font = `700 ${valFontSize}px ${hp.FONT_FAMILY}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(String(d.value), x + barWidth / 2, y - 6);
+    const valX = x + barWidth / 2;
+    const valY = baselineY - 6;
 
-    // 3. Index Label (below the 60% baseline)
-    const idxFontSize = Math.max(9, Math.min(12, barWidth * 0.36));
-    ctx.font = `500 ${idxFontSize}px ${hp.FONT_FAMILY}`;
-    ctx.fillStyle = textMuted;
+    // High-contrast halo so the number is clearly visible against any bar fill
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
+    ctx.strokeText(String(d.value), valX, valY);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(String(d.value), valX, valY);
+
+    // 3. Index Label (placed directly below the baseline, right below the value)
+    const idxFontSize = Math.max(11, Math.min(15, barWidth * 0.40));
+    ctx.font = `700 ${idxFontSize}px ${hp.FONT_FAMILY}`;
+    ctx.fillStyle = textBright;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText(String(i), x + barWidth / 2, baselineY + 8);
+    ctx.fillText(String(i), valX, baselineY + 6);
   });
 
   ctx.restore();
+}
+
+/**
+ * Attaches right-click context menu (via FloatingWindow) and drag-to-reorder to an Array container.
+ */
+export function setupArrayInteractions(containerEl, requestRender) {
+  const canvas = containerEl.querySelector('canvas');
+  if (!canvas || containerEl._arrayInteractionsBound) return;
+  containerEl._arrayInteractionsBound = true;
+
+  let modal = null;
+  const getModal = (title) => {
+    if (!modal && window.FloatingWindow) {
+      modal = new window.FloatingWindow(title);
+    }
+    if (modal) {
+      const titleSpan = modal.overlay.querySelector('.modal-header span');
+      if (titleSpan) titleSpan.textContent = title;
+    }
+    return modal;
+  };
+
+  const screenToWorld = (clientX, clientY) => {
+    const r = canvas.getBoundingClientRect();
+    const sx = clientX - r.left;
+    const sy = clientY - r.top;
+    const cam = containerEl._camera || { x: 0, y: 0, z: 1 };
+    return {
+      x: sx / cam.z - cam.x,
+      y: sy / cam.z - cam.y,
+    };
+  };
+
+  const hitTestBar = (wx, wy) => {
+    const boxes = containerEl._barHitBoxes || [];
+    for (let i = boxes.length - 1; i >= 0; i--) {
+      const b = boxes[i];
+      // Include the index label area just below the bar for easy clicking
+      if (wx >= b.x && wx <= b.x + b.w && wy >= b.y && wy <= b.y + b.h + 26) {
+        return b.index;
+      }
+    }
+    return -1;
+  };
+
+  // 1. Right-Click Context Menu (Empty Space vs. Existing Bar)
+  canvas.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const worldPt = screenToWorld(e.clientX, e.clientY);
+    const hitIdx = hitTestBar(worldPt.x, worldPt.y);
+    const data = getContainerArrayData(containerEl);
+
+    if (hitIdx === -1) {
+      // Empty space -> Add element to the far right
+      const win = getModal('Array - Add Element');
+      if (!win) return;
+      win.setContent(`
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <input type="text" id="arr-fw-val" class="param-input-field" placeholder="Enter value (or space/comma separated values)" />
+          <button type="button" id="arr-fw-append" class="vscode-btn-secondary" style="width: 100%;">Add element</button>
+        </div>
+      `);
+      win.open();
+
+      const inputEl = win.body.querySelector('#arr-fw-val');
+      const submitAppend = () => {
+        const raw = inputEl.value.trim();
+        if (!raw) return;
+        const newTokens = parseArrayInput(raw);
+        data.push(...newTokens);
+        syncArrayDataToContainer(containerEl, data);
+        win.close();
+        requestRender();
+      };
+
+      win.body.querySelector('#arr-fw-append').onclick = submitAppend;
+      inputEl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') submitAppend();
+      });
+      setTimeout(() => inputEl.focus(), 20);
+    } else {
+      // Existing element -> Add to left, Add to right, or Delete element
+      const targetItem = data[hitIdx];
+      const win = getModal(`Element [${hitIdx}] (${targetItem.value}) - Options`);
+      if (!win) return;
+      win.setContent(`
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <input type="text" id="arr-fw-val" class="param-input-field" placeholder="Value for new element" />
+          <div style="display: flex; gap: 0.4rem;">
+            <button type="button" id="arr-fw-left" class="vscode-btn-secondary" style="flex: 1;">Add to left</button>
+            <button type="button" id="arr-fw-right" class="vscode-btn-secondary" style="flex: 1;">Add to right</button>
+          </div>
+          <button type="button" id="arr-fw-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete element</button>
+        </div>
+      `);
+      win.open();
+
+      const inputEl = win.body.querySelector('#arr-fw-val');
+      const insertAt = (offset) => {
+        const raw = inputEl.value.trim();
+        if (!raw) return;
+        const newTokens = parseArrayInput(raw);
+        data.splice(hitIdx + offset, 0, ...newTokens);
+        syncArrayDataToContainer(containerEl, data);
+        win.close();
+        requestRender();
+      };
+
+      win.body.querySelector('#arr-fw-left').onclick = () => insertAt(0);
+      win.body.querySelector('#arr-fw-right').onclick = () => insertAt(1);
+      win.body.querySelector('#arr-fw-del').onclick = () => {
+        data.splice(hitIdx, 1);
+        syncArrayDataToContainer(containerEl, data);
+        win.close();
+        requestRender();
+      };
+      setTimeout(() => inputEl.focus(), 20);
+    }
+  });
+
+  // 2. Left-Click Drag on an Element -> Reorder Array
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || e.shiftKey) return;
+    const worldPt = screenToWorld(e.clientX, e.clientY);
+    const hitIdx = hitTestBar(worldPt.x, worldPt.y);
+    if (hitIdx === -1) return;
+
+    // Stop camera double-click pan from hijacking bar dragging
+    e.stopImmediatePropagation();
+    try { canvas.setPointerCapture(e.pointerId); } catch { }
+
+    containerEl._dragState = {
+      pointerId: e.pointerId,
+      index: hitIdx,
+      worldX: worldPt.x,
+    };
+    canvas.style.cursor = 'grabbing';
+    requestRender();
+  }, { capture: true });
+
+  canvas.addEventListener('pointermove', (e) => {
+    const drag = containerEl._dragState;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    e.stopImmediatePropagation();
+
+    const worldPt = screenToWorld(e.clientX, e.clientY);
+    drag.worldX = worldPt.x;
+
+    const data = getContainerArrayData(containerEl);
+    const boxes = containerEl._barHitBoxes || [];
+    if (boxes.length > 1) {
+      // Find closest slot center to swap into
+      let targetIdx = drag.index;
+      for (let i = 0; i < boxes.length; i++) {
+        const center = boxes[i].x + boxes[i].w / 2;
+        if (i < drag.index && worldPt.x < center) {
+          targetIdx = i;
+          break;
+        }
+        if (i > drag.index && worldPt.x > center) {
+          targetIdx = i;
+        }
+      }
+
+      if (targetIdx !== drag.index) {
+        const [moved] = data.splice(drag.index, 1);
+        data.splice(targetIdx, 0, moved);
+        drag.index = targetIdx;
+        syncArrayDataToContainer(containerEl, data);
+      }
+    }
+
+    requestRender();
+  }, { capture: true });
+
+  const endDrag = (e) => {
+    const drag = containerEl._dragState;
+    if (!drag || drag.pointerId !== e.pointerId) return;
+    containerEl._dragState = null;
+    canvas.style.cursor = '';
+    requestRender();
+  };
+
+  canvas.addEventListener('pointerup', endDrag, { capture: true });
+  canvas.addEventListener('pointercancel', endDrag, { capture: true });
 }
 
 export default drawArray;
