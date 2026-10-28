@@ -212,6 +212,7 @@
       --border-subtle: #252526;
       --text-primary: #cccccc;
       --text-bright: #ffffff;
+      --text-dark: #1e1e1e;
       --text-muted: #858585;
       --accent-primary: #0078d4;
       --accent-hover: #1084df;
@@ -255,7 +256,7 @@
       --code-line-highlight: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 75%, transparent 100%);
 
       /* Data structures */
-      --ds-primary: #6a9955;
+      --ds-primary: #eeb700;
     }
 
     [data-theme="light"] {
@@ -273,6 +274,7 @@
       --border-subtle: #eaeaea;
       --text-primary: #3b3b3b;
       --text-bright: #1e1e1e;
+      --text-dark: #ffffff;
       --text-muted: #616161;
       --accent-primary: #005fb8;
       --accent-hover: #0258a8;
@@ -318,7 +320,7 @@
       --code-line-highlight: linear-gradient(90deg, rgba(0, 95, 184, 0.1) 0%, rgba(0, 95, 184, 0.03) 75%, transparent 100%);
 
       /* Data structures */
-      --ds-primary: #008000;
+      --ds-primary: #005fb8;
     }
 
     /* ========== Global & Base Styles ========== */
@@ -677,6 +679,7 @@
       width: 1.15rem;
       height: 1.15rem;
       object-fit: contain;
+      filter: var(--sidebar-icon-filter);
     }
 
     /* ========== End of Floating Window & Header Warning Styles ========== */
@@ -5089,6 +5092,10 @@
           localStorage.setItem(LAYOUT_CONFIG.THEME_STORAGE_KEY, pref);
         } catch (err) { }
       }
+
+      try {
+        redrawAllDsCanvases();
+      } catch (err) { }
     }
 
     /* Initial Theme Application & Event Listeners for Desktop and Mobile Theme Buttons */

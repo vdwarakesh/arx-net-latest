@@ -121,6 +121,7 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const rootStyle = getComputedStyle(document.documentElement);
   const barFill = rootStyle.getPropertyValue('--ds-primary').trim();
   const textBright = rootStyle.getPropertyValue('--text-bright').trim();
+  const textDark = rootStyle.getPropertyValue('--text-dark').trim();
 
   const cam = camera || containerEl._camera || { x: 0, y: 0, z: 1 };
   const useWorldOrigin = Boolean(camera || containerEl._camera);
@@ -201,7 +202,7 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     ctx.beginPath();
     ctx.rect(x, y, barWidth, barH);
     ctx.fillStyle = barFill;
-    ctx.globalAlpha = isDraggingThis ? 1 : 0.8;
+    ctx.globalAlpha = 1
     ctx.fill();
 
     ctx.globalAlpha = 1;
@@ -216,7 +217,7 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     const valX = x + barWidth / 2;
     const valY = baselineY - 20;
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = textDark;
     ctx.fillText(String(d.value), valX, valY);
 
     // 3. Index Label (placed directly below the baseline, right below the value)
