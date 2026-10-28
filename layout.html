@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="js/quickdraw/quickdraw.css" />
   <script src="js/tailwind.js"></script>
   <script src="js/prism.js"></script>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
   <style>
     /* Property ordering
       1. position
@@ -5592,10 +5593,19 @@
     } catch (e) { }
     /* ========== End of Main Workspace DOM References & Panel Collapse State ========== */
 
-    const speedSlider = document.getElementById('speed-slider');
-    const speedLabel = document.getElementById('speed-label');
+    /* ========== Left Column: Playback Controls & Speed Slider Sync ========== */
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
     const speedLabels = document.querySelectorAll('.playback-speed-value');
+
+    // Keep this so the "1x" text updates and syncs across desktop/mobile when you drag the slider
+    speedSliders.forEach(slider => {
+      slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        speedSliders.forEach(s => s.value = val);
+        speedLabels.forEach(l => l.textContent = `${val}x`);
+      });
+    });
+    /* ========== End of Left Column: Playback Controls & Speed Slider Sync ========== */
 
     /* ========== Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
     /* DOM Elements for Search Input (#algo-search-input), Clear Button (#algo-search-clear-btn), Filter Buttons (#algo-fav-filter-btn, #algo-hide-btn, #algo-filter-btn), Filter Panel (#algo-filter-panel), and Tree Containers */
@@ -6962,7 +6972,10 @@
 
     function scheduleNextStep() {
       if (!isSimPlaying) return;
-      const speedVal = parseFloat(speedSlider?.value || '1') || 1;
+
+      // Fetch the slider directly from the DOM
+      const speedInput = document.querySelector('.sync-speed-slider');
+      const speedVal = parseFloat(speedInput?.value || '1') || 1;
       const delayMs = 800 / speedVal; // 1x = 800ms, 2x = 400ms, 4x = 200ms, 0.25x = 3200ms
 
       simTimer = setTimeout(() => {
@@ -6976,7 +6989,7 @@
       }, delayMs);
     }
 
-    function buildSimulationIfNeeded() {
+    async function buildSimulationIfNeeded() {
       const activeObj = dsContainers.find(c => c.name === activeContainerName);
       if (!activeObj) return false;
 
@@ -6987,13 +7000,18 @@
 
       if (!isLinearSearch || activeObj.dsType !== 'Array') return false;
 
-      // Read target parameter from Settings card input
       const targetInput = document.querySelector('#algo-params-container input[data-param-name="target"]')
         || document.querySelector('#algo-params-container input');
       const rawTarget = targetInput ? targetInput.value.trim() : '';
 
       const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
-      const result = generateLinearSearchSteps(activeObj.element, rawTarget, currentLang);
+
+      // Show a quick loading status in State Variables on first Pyodide boot
+      if (stateViewPane) {
+        stateViewPane.innerHTML = `<div class="card-inner-pad"><span class="card-body-text">Running Python in WebAssembly...</span></div>`;
+      }
+
+      const result = await generateLinearSearchSteps(activeObj.element, rawTarget, currentLang);
 
       simSteps = result.steps;
       simFullExplanation = result.fullExplanationLines;
@@ -7022,9 +7040,9 @@
 
     // "Run" text button -> Builds trace and jumps straight to the final result
     document.querySelectorAll('.sync-start-sim').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         stopAutoPlay();
-        if (buildSimulationIfNeeded()) {
+        if (await buildSimulationIfNeeded()) {
           applySimulationStep(simSteps.length - 1);
         }
       });
@@ -7032,13 +7050,10 @@
 
     // "Visualize" (Play/Pause) icon button -> Animates step-by-step using the speed slider
     document.querySelectorAll('.sync-run').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (isSimPlaying) {
-          stopAutoPlay();
-          return;
-        }
+      btn.addEventListener('click', async () => {
+        if (isSimPlaying) { stopAutoPlay(); return; }
         if (simSteps.length === 0 || simCurrentStepIdx >= simSteps.length - 1) {
-          if (!buildSimulationIfNeeded()) return;
+          if (!(await buildSimulationIfNeeded())) return;
           applySimulationStep(0);
         }
         setPlayButtonIcons(true);
@@ -7048,10 +7063,10 @@
 
     // "Step Forward" icon button
     document.querySelectorAll('.sync-step-front').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         stopAutoPlay();
         if (simSteps.length === 0) {
-          if (!buildSimulationIfNeeded()) return;
+          if (!(await buildSimulationIfNeeded())) return;
           applySimulationStep(0);
         } else if (simCurrentStepIdx < simSteps.length - 1) {
           applySimulationStep(simCurrentStepIdx + 1);
