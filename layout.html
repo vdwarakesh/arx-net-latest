@@ -1115,8 +1115,10 @@
 
     .ds-grid-canvas {
       display: block;
+      flex: 1;
       width: 100%;
       height: 100%;
+      min-height: 0;
       touch-action: none;
       -webkit-user-select: none;
       user-select: none;
@@ -4500,11 +4502,27 @@
         }
       }, { passive: false });
 
-      // 2. Pointer Down: Middle-Click, Space + Drag, Shift + Left Click, Double-Click/Tap Drag, or 2-Finger Pinch
+      const centerDataStructureToCurrentView = () => {
+        const r = canvas.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) return;
+
+        // Reset camera pan to symmetric center of current view while preserving current zoom (camera.z)
+        centerGridForMaxPoints(canvas, camera);
+
+        // Re-anchor the data structure to the current view dimensions and centered world origin
+        containerObj.element._baseViewport = { w: r.width, h: r.height };
+        containerObj.element._worldOrigin = {
+          x: (r.width / (2 * camera.z)) - camera.x,
+          y: (r.height / (2 * camera.z)) - camera.y,
+        };
+
+        render();
+      };
+
+      // 2. Pointer Down
       canvas.addEventListener('pointerdown', (e) => {
-        // Allow left-click (0) and middle-click (1) for mouse; ignore right-click (2)
         if (e.pointerType === 'mouse' && e.button !== 0 && e.button !== 1) return;
-        if (e.button === 1) e.preventDefault(); // Prevent browser auto-scroll icon on middle click
+        if (e.button === 1) e.preventDefault();
 
         const pt = getLocalPt(e);
         const now = performance.now();
@@ -4537,12 +4555,14 @@
             : { t: now, x: pt.x, y: pt.y, type: e.pointerType };
 
           const isMiddleClick = e.pointerType === 'mouse' && e.button === 1;
-          const isShiftOrSpaceLeft = e.pointerType === 'mouse' && e.button === 0 && (e.shiftKey || isDsSpaceHeld);
+          const isShiftLeft = e.pointerType === 'mouse' && e.button === 0 && e.shiftKey;
 
-          // Middle-Click OR Space + Left Drag OR Shift + Left Drag OR Double-Click/Tap Drag -> Pan
-          if (isMiddleClick || isShiftOrSpaceLeft || isDoublePress) {
+          if (isMiddleClick || isShiftLeft) {
             session = { type: 'pan', last: pt };
             canvas.style.cursor = 'grabbing';
+          } else if (isDoublePress) {
+            // Wait to see if the user drags (pan) or releases immediately (center)
+            session = { type: 'double-press', start: pt, last: pt };
           }
         }
       });
@@ -4571,6 +4591,14 @@
           camera.x = cx / nextZ - pCenterX + (center.x - session.center.x) / nextZ;
           camera.y = cy / nextZ - pCenterY + (center.y - session.center.y) / nextZ;
           render();
+        } else if (session.type === 'double-press') {
+          // If moved past 5px threshold, promote double-click into a double-click drag pan
+          if (Math.hypot(pt.x - session.start.x, pt.y - session.start.y) > 5) {
+            session.type = 'pan';
+            canvas.style.cursor = 'grabbing';
+            panBy(pt.x - session.last.x, pt.y - session.last.y);
+            session.last = pt;
+          }
         } else if (session.type === 'pan') {
           panBy(pt.x - session.last.x, pt.y - session.last.y);
           session.last = pt;
@@ -4583,6 +4611,13 @@
         if (session?.type === 'pinch' && pointers.size < 2) {
           session = null;
           canvas.style.cursor = '';
+        } else if (session?.type === 'double-press' && pointers.size === 0) {
+          // Clean double-click / double-tap without dragging -> Center the data structure
+          session = null;
+          canvas.style.cursor = '';
+          if (e.type !== 'pointercancel') {
+            centerDataStructureToCurrentView();
+          }
         } else if (session?.type === 'pan' && pointers.size === 0) {
           session = null;
           canvas.style.cursor = '';
@@ -5583,18 +5618,26 @@
 
       dsContainers.push(containerObj);
 
-      /* Activate the container first so it has real width and height */
+      /* Activate the container first */
       selectContainer(uniqueName);
-
-      /* Center the grid wrt the canvas and shift by half-step if needed to maximize points */
-      centerGridForMaxPoints(canvasEl, containerObj.camera);
 
       /* Attach independent zoom & pan camera controls to this canvas */
       attachStandaloneCameraControls(containerObj);
 
-      /* Automatically redraw the grid whenever the panel is resized */
+      /* Center on first real layout pass, and redraw whenever the panel is resized */
+      let isInitialCentered = false;
       const ro = new ResizeObserver(() => {
         if (containerEl.classList.contains('active')) {
+          const r = canvasEl.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0 && !isInitialCentered) {
+            isInitialCentered = true;
+            centerGridForMaxPoints(canvasEl, containerObj.camera);
+            containerEl._baseViewport = { w: r.width, h: r.height };
+            containerEl._worldOrigin = {
+              x: (r.width / (2 * containerObj.camera.z)) - containerObj.camera.x,
+              y: (r.height / (2 * containerObj.camera.z)) - containerObj.camera.y,
+            };
+          }
           renderDsContainer(containerObj);
         }
       });

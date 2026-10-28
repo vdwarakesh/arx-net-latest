@@ -126,34 +126,35 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const cam = camera || containerEl._camera || { x: 0, y: 0, z: 1 };
   const useWorldOrigin = Boolean(camera || containerEl._camera);
 
-  // Store initial viewport dimensions on containerEl so zooming doesn't distort world proportions
   if (!containerEl._baseViewport || containerEl._baseViewport.w === 0) {
     containerEl._baseViewport = { w, h };
+    // Capture the world coordinate currently at the center of the screen
+    containerEl._worldOrigin = {
+      x: (w / (2 * cam.z)) - cam.x,
+      y: (h / (2 * cam.z)) - cam.y,
+    };
   }
   const baseW = useWorldOrigin ? containerEl._baseViewport.w : w;
   const baseH = useWorldOrigin ? containerEl._baseViewport.h : h;
+  const originX = useWorldOrigin && containerEl._worldOrigin ? containerEl._worldOrigin.x : 0;
+  const originY = useWorldOrigin && containerEl._worldOrigin ? containerEl._worldOrigin.y : 0;
 
-  // Vertical layout in the 30% - 60% band of the screen:
-  // Baseline sits at 60% of screen height; tallest bar (30% height) reaches 30% of screen height;
-  // smallest bar is 10% of screen height (reaches 50% of screen height).
   const minBarH = baseH * hp.MIN_BAR_HEIGHT_RATIO;
   const maxBarH = baseH * hp.MAX_BAR_HEIGHT_RATIO;
   const baselineY = useWorldOrigin
-    ? (-baseH / 2) + (baseH * hp.BOTTOM_BASELINE_RATIO)
+    ? originY - (baseH / 2) + (baseH * hp.BOTTOM_BASELINE_RATIO)
     : (baseH * hp.BOTTOM_BASELINE_RATIO);
 
-  // D3 Linear Scale for bar heights (maps [minVal, maxVal] -> [10% height, 30% height])
   const [minVal, maxVal] = d3.extent(data, (d) => d.numericValue);
   const heightScale = d3.scaleLinear()
     .domain(minVal === maxVal ? [minVal - 1, maxVal + 1] : [minVal, maxVal])
     .range([minBarH, maxBarH]);
 
-  // Horizontal layout centered on the canvas using D3 Band Scale
   const maxSpanW = baseW * hp.HORIZONTAL_SPAN_RATIO;
   const idealTotalW = Math.min(maxSpanW, data.length * (hp.MAX_BAR_WIDTH / (1 - hp.BAR_PADDING)));
   const totalW = Math.max(idealTotalW, data.length * hp.MIN_BAR_WIDTH);
 
-  const startX = useWorldOrigin ? (-totalW / 2) : ((baseW - totalW) / 2);
+  const startX = useWorldOrigin ? (originX - totalW / 2) : ((baseW - totalW) / 2);
   const endX = startX + totalW;
 
   const xScale = d3.scaleBand()
