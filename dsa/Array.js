@@ -119,10 +119,8 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const ctx = canvas.getContext('2d');
 
   const rootStyle = getComputedStyle(document.documentElement);
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  const barFill = rootStyle.getPropertyValue('--accent-primary').trim() || (isLight ? '#005fb8' : '#0078d4');
-  const barBorder = rootStyle.getPropertyValue('--accent-hover').trim() || (isLight ? '#0258a8' : '#1084df');
-  const textBright = rootStyle.getPropertyValue('--text-bright').trim() || (isLight ? '#1e1e1e' : '#ffffff');
+  const barFill = rootStyle.getPropertyValue('--ds-primary').trim();
+  const textBright = rootStyle.getPropertyValue('--text-bright').trim();
 
   const cam = camera || containerEl._camera || { x: 0, y: 0, z: 1 };
   const useWorldOrigin = Boolean(camera || containerEl._camera);
@@ -203,12 +201,11 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     ctx.beginPath();
     ctx.rect(x, y, barWidth, barH);
     ctx.fillStyle = barFill;
-    ctx.globalAlpha = isDraggingThis ? 0.98 : 0.86;
+    ctx.globalAlpha = isDraggingThis ? 1 : 0.8;
     ctx.fill();
 
     ctx.globalAlpha = 1;
-    ctx.lineWidth = isDraggingThis ? 2.2 : 1.5;
-    ctx.strokeStyle = isDraggingThis ? '#ffffff' : barBorder;
+    ctx.strokeStyle = '#00000000';
     ctx.stroke();
 
     // 2. Value Label (placed near the bottom inside the bar, right above the baseline)
