@@ -212,27 +212,23 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     ctx.stroke();
 
     // 2. Value Label (placed near the bottom inside the bar, right above the baseline)
-    const valFontSize = Math.max(12, Math.min(16, barWidth * 0.45));
+    const valFontSize = 20;
     ctx.font = `700 ${valFontSize}px ${hp.FONT_FAMILY}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     const valX = x + barWidth / 2;
-    const valY = baselineY - 6;
+    const valY = baselineY - 20;
 
-    // High-contrast halo so the number is clearly visible against any bar fill
-    ctx.lineWidth = 3.5;
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
-    ctx.strokeText(String(d.value), valX, valY);
     ctx.fillStyle = '#ffffff';
     ctx.fillText(String(d.value), valX, valY);
 
     // 3. Index Label (placed directly below the baseline, right below the value)
-    const idxFontSize = Math.max(11, Math.min(15, barWidth * 0.40));
+    const idxFontSize = 20;
     ctx.font = `700 ${idxFontSize}px ${hp.FONT_FAMILY}`;
     ctx.fillStyle = textBright;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText(String(i), valX, baselineY + 6);
+    ctx.fillText(String(i), valX, baselineY + 20);
   });
 
   ctx.restore();
@@ -281,7 +277,123 @@ export function setupArrayInteractions(containerEl, requestRender) {
     return -1;
   };
 
-  // 1. Right-Click Context Menu (Empty Space vs. Existing Bar)
+  // Helper to open the second floating window for inputting values (with a Back button)
+  const openValueInputModal = (title, placeholder, buttonText, onSubmit, onBack) => {
+    const win = getModal(title);
+    if (!win) return;
+
+    win.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <input type="text" id="arr-fw-val" class="param-input-field" placeholder="${placeholder}" />
+        <div style="display: flex; gap: 0.4rem;">
+          <button type="button" id="arr-fw-back" class="vscode-btn-secondary" style="flex: 1;">Back</button>
+          <button type="button" id="arr-fw-submit" class="vscode-btn-secondary" style="flex: 2;">${buttonText}</button>
+        </div>
+      </div>
+    `);
+    win.open();
+
+    const inputEl = win.body.querySelector('#arr-fw-val');
+    const handleConfirm = () => {
+      const raw = inputEl.value.trim();
+      if (!raw) return;
+      onSubmit(raw);
+      win.close();
+      requestRender();
+    };
+
+    win.body.querySelector('#arr-fw-submit').onclick = handleConfirm;
+    win.body.querySelector('#arr-fw-back').onclick = () => {
+      if (onBack) onBack();
+    };
+    inputEl.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') handleConfirm();
+    });
+    setTimeout(() => inputEl.focus(), 20);
+  };
+
+  // Step 1A: Options menu when right-clicking empty canvas space
+  const openCanvasOptionsMenu = (data) => {
+    const win = getModal('Array - Options');
+    if (!win) return;
+
+    win.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <button type="button" id="arr-opt-add" class="vscode-btn-secondary" style="width: 100%;">Add element</button>
+      </div>
+    `);
+    win.open();
+
+    win.body.querySelector('#arr-opt-add').onclick = () => {
+      // Step 2: Settings window for "Add element"
+      openValueInputModal(
+        'Array - Add Element',
+        'Enter value (or space/comma separated values)',
+        'Add',
+        (raw) => {
+          const newTokens = parseArrayInput(raw);
+          data.push(...newTokens);
+          syncArrayDataToContainer(containerEl, data);
+        },
+        () => openCanvasOptionsMenu(data)
+      );
+    };
+  };
+
+  // Step 1B: Options menu when right-clicking an existing array element
+  const openElementOptionsMenu = (data, hitIdx) => {
+    const targetItem = data[hitIdx];
+    const win = getModal(`Element [${hitIdx}] (${targetItem.value}) - Options`);
+    if (!win) return;
+
+    win.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <button type="button" id="arr-opt-left" class="vscode-btn-secondary" style="width: 100%;">Add to left</button>
+        <button type="button" id="arr-opt-right" class="vscode-btn-secondary" style="width: 100%;">Add to right</button>
+        <button type="button" id="arr-opt-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete element</button>
+      </div>
+    `);
+    win.open();
+
+    win.body.querySelector('#arr-opt-left').onclick = () => {
+      // Step 2: Settings window for "Add to left"
+      openValueInputModal(
+        `Element [${hitIdx}] - Add to Left`,
+        'Enter value (or space/comma separated values)',
+        'Add to left',
+        (raw) => {
+          const newTokens = parseArrayInput(raw);
+          data.splice(hitIdx, 0, ...newTokens);
+          syncArrayDataToContainer(containerEl, data);
+        },
+        () => openElementOptionsMenu(data, hitIdx)
+      );
+    };
+
+    win.body.querySelector('#arr-opt-right').onclick = () => {
+      // Step 2: Settings window for "Add to right"
+      openValueInputModal(
+        `Element [${hitIdx}] - Add to Right`,
+        'Enter value (or space/comma separated values)',
+        'Add to right',
+        (raw) => {
+          const newTokens = parseArrayInput(raw);
+          data.splice(hitIdx + 1, 0, ...newTokens);
+          syncArrayDataToContainer(containerEl, data);
+        },
+        () => openElementOptionsMenu(data, hitIdx)
+      );
+    };
+
+    win.body.querySelector('#arr-opt-del').onclick = () => {
+      data.splice(hitIdx, 1);
+      syncArrayDataToContainer(containerEl, data);
+      win.close();
+      requestRender();
+    };
+  };
+
+  // 1. Right-Click Context Menu Listener
   canvas.addEventListener('contextmenu', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -291,70 +403,9 @@ export function setupArrayInteractions(containerEl, requestRender) {
     const data = getContainerArrayData(containerEl);
 
     if (hitIdx === -1) {
-      // Empty space -> Add element to the far right
-      const win = getModal('Array - Add Element');
-      if (!win) return;
-      win.setContent(`
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <input type="text" id="arr-fw-val" class="param-input-field" placeholder="Enter value (or space/comma separated values)" />
-          <button type="button" id="arr-fw-append" class="vscode-btn-secondary" style="width: 100%;">Add element</button>
-        </div>
-      `);
-      win.open();
-
-      const inputEl = win.body.querySelector('#arr-fw-val');
-      const submitAppend = () => {
-        const raw = inputEl.value.trim();
-        if (!raw) return;
-        const newTokens = parseArrayInput(raw);
-        data.push(...newTokens);
-        syncArrayDataToContainer(containerEl, data);
-        win.close();
-        requestRender();
-      };
-
-      win.body.querySelector('#arr-fw-append').onclick = submitAppend;
-      inputEl.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter') submitAppend();
-      });
-      setTimeout(() => inputEl.focus(), 20);
+      openCanvasOptionsMenu(data);
     } else {
-      // Existing element -> Add to left, Add to right, or Delete element
-      const targetItem = data[hitIdx];
-      const win = getModal(`Element [${hitIdx}] (${targetItem.value}) - Options`);
-      if (!win) return;
-      win.setContent(`
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <input type="text" id="arr-fw-val" class="param-input-field" placeholder="Value for new element" />
-          <div style="display: flex; gap: 0.4rem;">
-            <button type="button" id="arr-fw-left" class="vscode-btn-secondary" style="flex: 1;">Add to left</button>
-            <button type="button" id="arr-fw-right" class="vscode-btn-secondary" style="flex: 1;">Add to right</button>
-          </div>
-          <button type="button" id="arr-fw-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete element</button>
-        </div>
-      `);
-      win.open();
-
-      const inputEl = win.body.querySelector('#arr-fw-val');
-      const insertAt = (offset) => {
-        const raw = inputEl.value.trim();
-        if (!raw) return;
-        const newTokens = parseArrayInput(raw);
-        data.splice(hitIdx + offset, 0, ...newTokens);
-        syncArrayDataToContainer(containerEl, data);
-        win.close();
-        requestRender();
-      };
-
-      win.body.querySelector('#arr-fw-left').onclick = () => insertAt(0);
-      win.body.querySelector('#arr-fw-right').onclick = () => insertAt(1);
-      win.body.querySelector('#arr-fw-del').onclick = () => {
-        data.splice(hitIdx, 1);
-        syncArrayDataToContainer(containerEl, data);
-        win.close();
-        requestRender();
-      };
-      setTimeout(() => inputEl.focus(), 20);
+      openElementOptionsMenu(data, hitIdx);
     }
   });
 
