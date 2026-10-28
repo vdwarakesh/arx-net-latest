@@ -198,15 +198,38 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
       h: barH,
     });
 
+    // Check if an algorithm simulation is currently highlighting this bar
+    const simState = containerEl._simState;
+    const isCurrentBar = simState && simState.activeIndex === i;
+    const isFoundBar = simState && simState.foundIndex === i;
+    const isCheckedBar = simState && Array.isArray(simState.checkedIndices) && simState.checkedIndices.includes(i);
+
+    let currentFill = barFill;
+    let currentBorder = '#00000000';
+    let currentAlpha = isDraggingThis ? 0.98 : 0.86;
+
+    if (isFoundBar) {
+      currentFill = '#12a67c'; // Green when target is found
+      currentBorder = '#5cbd6e';
+      currentAlpha = 1;
+    } else if (isCurrentBar) {
+      currentFill = '#f1ac4b'; // Amber/Gold when currently inspecting i
+      currentBorder = '#ffffff';
+      currentAlpha = 1;
+    } else if (isCheckedBar) {
+      currentAlpha = 0.42; // Dimmed after being checked and not matching
+    }
+
     // 1. Sharp Rectangular Bar (no border-radius)
     ctx.beginPath();
     ctx.rect(x, y, barWidth, barH);
-    ctx.fillStyle = barFill;
-    ctx.globalAlpha = 1
+    ctx.fillStyle = currentFill;
+    ctx.globalAlpha = currentAlpha;
     ctx.fill();
 
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#00000000';
+    ctx.lineWidth = (isDraggingThis || isCurrentBar || isFoundBar) ? 2.4 : 1.5;
+    ctx.strokeStyle = currentBorder;
     ctx.stroke();
 
     // 2. Value Label (placed near the bottom inside the bar, right above the baseline)
@@ -393,6 +416,11 @@ export function setupArrayInteractions(containerEl, requestRender) {
 
   // 1. Right-Click Context Menu Listener
   canvas.addEventListener('contextmenu', (e) => {
+    if (window.isSimulating) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
 
@@ -409,6 +437,7 @@ export function setupArrayInteractions(containerEl, requestRender) {
 
   // 2. Left-Click Drag on an Element -> Reorder Array
   canvas.addEventListener('pointerdown', (e) => {
+    if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
     const worldPt = screenToWorld(e.clientX, e.clientY);
     const hitIdx = hitTestBar(worldPt.x, worldPt.y);

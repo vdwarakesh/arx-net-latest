@@ -3772,35 +3772,33 @@
               <!--========== Playback bar - Speed and step controls - Right side shows step x/y ==========-->
               <div class="playback-bar">
                 <div class="playback-controls-left">
-                  <button type="button" class="playback-text-btn" title="Run">
+                  <button type="button" class="playback-text-btn sync-start-sim" title="Run">
                     Run
                   </button>
                   <div class="visualization-options">
                     Steps&nbsp;
-                    <button type="button" class="playback-icon-btn" title="Step Backward">
+                    <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
                       <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
                     </button>
-                    <button type="button" class="playback-icon-btn" title="Visualize">
+                    <button type="button" class="playback-icon-btn sync-run" title="Visualize">
                       <img src="images/run.png" alt="Run" class="playback-icon-img" />
                     </button>
-                    <button type="button" class="playback-icon-btn" title="Step Forward">
+                    <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
                       <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
                     </button>
-                    <button type="button" class="playback-icon-btn" title="Reset">
+                    <button type="button" class="playback-icon-btn sync-reset" title="Reset">
                       <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
                     </button>
-
                     <div class="playback-speed-group">
                       <img src="images/speed.png" class="playback-label-img" />
                       <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
-                        class="vscode-slider" />
-                      <span id="speed-label" class="playback-speed-value">1x</span>
+                        class="vscode-slider sync-speed-slider" />
+                      <span id="speed-label" class="playback-speed-value sync-speed-label">1x</span>
                     </div>
                   </div>
                 </div>
-
                 <div class="playback-controls-right">
-                  <span class="playback-muted-label">0 / 0</span>
+                  <span class="playback-muted-label sync-steps-label">0 / 0</span>
                 </div>
               </div>
               <!--========== End of playback bar ==========-->
@@ -4401,6 +4399,7 @@
   <script type="module">
     import { createQuickdraw } from './js/quickdraw/index.js'
     import { drawArray, setupArrayInteractions } from './dsa/Array.js';
+    import { generateLinearSearchSteps } from './dsa/Linear-Search.js';
 
     /* ========== Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
@@ -5593,35 +5592,10 @@
     } catch (e) { }
     /* ========== End of Main Workspace DOM References & Panel Collapse State ========== */
 
-
-    /* ========== Left Column: Playback Controls & Speed Slider Sync ========== */
-    /* DOM Elements for the DS playback speed slider (#speed-slider) and synchronized playback controls across DS and Code cards */
     const speedSlider = document.getElementById('speed-slider');
     const speedLabel = document.getElementById('speed-label');
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
     const speedLabels = document.querySelectorAll('.playback-speed-value');
-
-    /* Event Listeners for Speed Sliders and Synchronized Playback Buttons (.sync-run, .sync-step-front, .sync-step-back, .sync-reset) */
-    if (speedSlider && speedLabel) {
-      speedSlider.addEventListener('input', (e) => {
-        speedLabel.textContent = `${e.target.value}x`;
-      });
-    }
-
-    speedSliders.forEach(slider => {
-      slider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        speedSliders.forEach(s => s.value = val);
-        speedLabels.forEach(l => l.textContent = `${val}x`);
-      });
-    });
-
-    document.querySelectorAll('.sync-run').forEach(btn => btn.addEventListener('click', () => { /* Call run simulation fn */ }));
-    document.querySelectorAll('.sync-step-front').forEach(btn => btn.addEventListener('click', () => { /* Call step front fn */ }));
-    document.querySelectorAll('.sync-step-back').forEach(btn => btn.addEventListener('click', () => { /* Call step back fn */ }));
-    document.querySelectorAll('.sync-reset').forEach(btn => btn.addEventListener('click', () => { /* Call reset fn */ }));
-    /* ========== End of Left Column: Playback Controls & Speed Slider Sync ========== */
-
 
     /* ========== Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
     /* DOM Elements for Search Input (#algo-search-input), Clear Button (#algo-search-clear-btn), Filter Buttons (#algo-fav-filter-btn, #algo-hide-btn, #algo-filter-btn), Filter Panel (#algo-filter-panel), and Tree Containers */
@@ -6777,7 +6751,10 @@
           }
           const pre = document.createElement('pre');
           pre.className = 'line-numbers';
-          pre.setAttribute('data-line', '1,3,7,10');
+          const activeLine = getActiveSimulationLine();
+          if (activeLine) {
+            pre.setAttribute('data-line', activeLine);
+          }
 
           const code = document.createElement('code');
           code.className = `language-${currentPrismLang}`;
@@ -6820,23 +6797,282 @@
       updateCodeViewPane();
     }
 
-    function updateStateViewPane() {
-      /* updateStateViewPane updates #stateViewPane depending on whether the "State variables" or "Explanation" tab is active */
-      if (!stateViewPane) return;
-      if (activeStateBottomTab === 'explanation') {
-        stateViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">Explanations not implemented yet</span>
-          </div>
-        `;
+    /* ========== Algorithm Simulation & Playback Engine ========== */
+    let simSteps = [];
+    let simFullExplanation = [];
+    let simCurrentStepIdx = -1;
+    let simTimer = null;
+    let isSimPlaying = false;
+    window.isSimulating = false; // Locks array editing while active
+
+    const logCardBody = document.querySelector('#log-card .card-scroll-body');
+    const stepCounterLabels = document.querySelectorAll('.sync-steps-label');
+    const playPauseImgs = document.querySelectorAll('.sync-run img');
+
+    function getActiveSimulationLine() {
+      if (simCurrentStepIdx < 0 || simCurrentStepIdx >= simSteps.length) return '';
+      const step = simSteps[simCurrentStepIdx];
+      const langName = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
+      return step.lines?.[langName] ? step.lines[langName][step.activeLineKey] : '';
+    }
+
+    function highlightActiveCodeLine() {
+      const pre = codeViewPane.querySelector('pre.line-numbers');
+      if (!pre) return;
+      const lineStr = getActiveSimulationLine();
+      if (lineStr) {
+        pre.setAttribute('data-line', String(lineStr));
       } else {
+        pre.removeAttribute('data-line');
+      }
+      syncPrismLayout(pre);
+    }
+
+    function updateTraversalCard(step) {
+      if (!logCardBody) return;
+      if (!step || !step.traversal || step.traversal.length === 0) {
+        logCardBody.innerHTML = `
+      <div class="card-inner-pad">
+        <span class="card-body-text" style="color: var(--text-muted);">
+          No elements traversed yet.
+        </span>
+      </div>
+    `;
+        return;
+      }
+
+      const pillsHtml = step.traversal.map((item, idx) => {
+        const isLast = idx === step.traversal.length - 1;
+        const isFound = step.foundIndex === item.index;
+        const borderCol = isFound ? '#12a67c' : (isLast ? '#f1ac4b' : 'var(--border-color)');
+        return `
+      <span style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.18rem 0.45rem; background: var(--bg-elevated); border: 1px solid ${borderCol}; border-radius: 0.25rem; font-weight: ${isLast ? '600' : '400'};">
+        <span style="color: var(--text-muted);">[${item.index}]</span>
+        <span style="color: var(--text-bright);">${item.value}</span>
+      </span>
+    `;
+      }).join('<span style="color: var(--text-muted); margin: 0 0.2rem;">&rarr;</span>');
+
+      logCardBody.innerHTML = `
+    <div class="card-inner-pad" style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem;">
+      ${pillsHtml}
+    </div>
+  `;
+    }
+
+    function updateStateViewPane() {
+      if (!stateViewPane) return;
+      const currentStep = (simCurrentStepIdx >= 0 && simCurrentStepIdx < simSteps.length)
+        ? simSteps[simCurrentStepIdx]
+        : null;
+
+      if (activeStateBottomTab === 'explanation') {
+        if (simFullExplanation.length === 0) {
+          stateViewPane.innerHTML = `
+        <div class="card-inner-pad">
+          <span class="card-body-text" style="color: var(--text-muted);">
+            Click "Run" or "Visualize" to generate the full execution explanation.
+          </span>
+        </div>
+      `;
+          return;
+        }
+
+        const linesHtml = simFullExplanation.map((line, i) => `
+      <div style="padding: 0.25rem 0; border-bottom: 1px solid var(--border-subtle); font-family: monospace;">
+        <span style="color: var(--text-muted); margin-right: 0.4rem;">${i + 1}.</span>${line}
+      </div>
+    `).join('');
+
+        stateViewPane.innerHTML = `<div class="card-inner-pad">${linesHtml}</div>`;
+      } else {
+        // State variables tab
+        if (!currentStep) {
+          stateViewPane.innerHTML = `
+        <div class="card-inner-pad">
+          <span class="card-body-text" style="color: var(--text-muted);">
+            Run or step through an algorithm to inspect live state variables.
+          </span>
+        </div>
+      `;
+          return;
+        }
+
+        const rowsHtml = Object.entries(currentStep.stateVars || {}).map(([k, v]) => `
+      <div class="profile-info-row" style="padding: 0.28rem 0;">
+        <span style="font-family: monospace; color: var(--text-muted);">${k}</span>
+        <span style="font-family: monospace; font-weight: 600; color: var(--text-bright);">${v}</span>
+      </div>
+    `).join('');
+
         stateViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text">State variables content goes here.</span>
-          </div>
-        `;
+      <div class="card-inner-pad">
+        <div style="margin-bottom: 0.45rem; color: var(--accent-primary); font-weight: 600;">
+          ${currentStep.stepDescription || ''}
+        </div>
+        ${rowsHtml}
+      </div>
+    `;
       }
     }
+
+    function applySimulationStep(index) {
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      if (!activeObj || simSteps.length === 0) return;
+
+      simCurrentStepIdx = Math.max(0, Math.min(index, simSteps.length - 1));
+      const step = simSteps[simCurrentStepIdx];
+
+      // 1. Update bar visual state on the active container and redraw
+      activeObj.element._simState = {
+        activeIndex: step.activeIndex,
+        foundIndex: step.foundIndex,
+        checkedIndices: step.checkedIndices,
+      };
+      renderDsContainer(activeObj);
+
+      // 2. Highlight active line in Python / C++ / Java
+      highlightActiveCodeLine();
+
+      // 3. Update step counter ("x / y")
+      stepCounterLabels.forEach(lbl => {
+        lbl.textContent = `${simCurrentStepIdx + 1} / ${simSteps.length}`;
+      });
+
+      // 4. Update Traversal and State Variables / Explanation cards
+      updateTraversalCard(step);
+      updateStateViewPane();
+    }
+
+    function setPlayButtonIcons(playing) {
+      isSimPlaying = playing;
+      playPauseImgs.forEach(img => {
+        img.src = playing ? 'images/pause.png' : 'images/run.png';
+        img.alt = playing ? 'Pause' : 'Run';
+      });
+    }
+
+    function stopAutoPlay() {
+      if (simTimer) {
+        clearTimeout(simTimer);
+        simTimer = null;
+      }
+      setPlayButtonIcons(false);
+    }
+
+    function scheduleNextStep() {
+      if (!isSimPlaying) return;
+      const speedVal = parseFloat(speedSlider?.value || '1') || 1;
+      const delayMs = 800 / speedVal; // 1x = 800ms, 2x = 400ms, 4x = 200ms, 0.25x = 3200ms
+
+      simTimer = setTimeout(() => {
+        if (!isSimPlaying) return;
+        if (simCurrentStepIdx < simSteps.length - 1) {
+          applySimulationStep(simCurrentStepIdx + 1);
+          scheduleNextStep();
+        } else {
+          stopAutoPlay();
+        }
+      }, delayMs);
+    }
+
+    function buildSimulationIfNeeded() {
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      if (!activeObj) return false;
+
+      const isLinearSearch =
+        selectedDsaType === 'algo' &&
+        selectedDsaName &&
+        selectedDsaName.toLowerCase().replace(/[-_\s]+/g, ' ') === 'linear search';
+
+      if (!isLinearSearch || activeObj.dsType !== 'Array') return false;
+
+      // Read target parameter from Settings card input
+      const targetInput = document.querySelector('#algo-params-container input[data-param-name="target"]')
+        || document.querySelector('#algo-params-container input');
+      const rawTarget = targetInput ? targetInput.value.trim() : '';
+
+      const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
+      const result = generateLinearSearchSteps(activeObj.element, rawTarget, currentLang);
+
+      simSteps = result.steps;
+      simFullExplanation = result.fullExplanationLines;
+      window.isSimulating = true;
+      return simSteps.length > 0;
+    }
+
+    function resetSimulation() {
+      stopAutoPlay();
+      simSteps = [];
+      simFullExplanation = [];
+      simCurrentStepIdx = -1;
+      window.isSimulating = false;
+
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      if (activeObj) {
+        activeObj.element._simState = null;
+        renderDsContainer(activeObj);
+      }
+
+      highlightActiveCodeLine();
+      stepCounterLabels.forEach(lbl => { lbl.textContent = '0 / 0'; });
+      updateTraversalCard(null);
+      updateStateViewPane();
+    }
+
+    // "Run" text button -> Builds trace and jumps straight to the final result
+    document.querySelectorAll('.sync-start-sim').forEach(btn => {
+      btn.addEventListener('click', () => {
+        stopAutoPlay();
+        if (buildSimulationIfNeeded()) {
+          applySimulationStep(simSteps.length - 1);
+        }
+      });
+    });
+
+    // "Visualize" (Play/Pause) icon button -> Animates step-by-step using the speed slider
+    document.querySelectorAll('.sync-run').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (isSimPlaying) {
+          stopAutoPlay();
+          return;
+        }
+        if (simSteps.length === 0 || simCurrentStepIdx >= simSteps.length - 1) {
+          if (!buildSimulationIfNeeded()) return;
+          applySimulationStep(0);
+        }
+        setPlayButtonIcons(true);
+        scheduleNextStep();
+      });
+    });
+
+    // "Step Forward" icon button
+    document.querySelectorAll('.sync-step-front').forEach(btn => {
+      btn.addEventListener('click', () => {
+        stopAutoPlay();
+        if (simSteps.length === 0) {
+          if (!buildSimulationIfNeeded()) return;
+          applySimulationStep(0);
+        } else if (simCurrentStepIdx < simSteps.length - 1) {
+          applySimulationStep(simCurrentStepIdx + 1);
+        }
+      });
+    });
+
+    // "Step Backward" icon button
+    document.querySelectorAll('.sync-step-back').forEach(btn => {
+      btn.addEventListener('click', () => {
+        stopAutoPlay();
+        if (simCurrentStepIdx > 0) {
+          applySimulationStep(simCurrentStepIdx - 1);
+        }
+      });
+    });
+
+    // "Reset" icon button -> Clears simulation and unlocks array editing
+    document.querySelectorAll('.sync-reset').forEach(btn => {
+      btn.addEventListener('click', resetSimulation);
+    });
 
     function setActiveStateTab(tabType, tabText) {
       /* setActiveStateTab synchronizes the active state between desktop State/Explanation tabs (#tab-state-variables, #tab-explanation) and the mobile dropdown (#state-tab-trigger-btn) */
