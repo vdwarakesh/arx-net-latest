@@ -1,21 +1,18 @@
-// dsa/Linear-Search.js
-import { getContainerArrayData, parseSingleToken } from './Array.js';
+import { getContainerArrayData } from '../data-structures/Array.js';
 import { tracePythonArrayAlgorithm } from '../js/pyodide-runner.js';
 
-export async function linearSearch(containerEl, rawTarget = '') {
+export async function linearSearch(containerEl, rawKwargs = {}) {
   const data = getContainerArrayData(containerEl);
-  const parsedTarget = parseSingleToken(rawTarget);
-  const targetVal = parsedTarget.value;
   const arrValues = data.map((d) => d.value);
 
-  const res = await fetch('dsa/Linear-Search.py');
+  const res = await fetch('algorithms/Linear-Search.py');
   const pythonCode = await res.text();
 
   const { steps: pyFrames, error } = await tracePythonArrayAlgorithm(
     pythonCode,
     'linear_search',
     arrValues,
-    targetVal
+    rawKwargs
   );
 
   const steps = [];
@@ -58,13 +55,12 @@ export async function linearSearch(containerEl, rawTarget = '') {
     });
   });
 
-  // If an exception or infinite loop occurred, append a final diagnostic step
   if (error) {
     const errLine = error.line || (pyFrames.length ? pyFrames[pyFrames.length - 1].line : 1);
     const lastStep = steps[steps.length - 1];
     const errDesc = `${error.type}: ${error.message}`;
 
-    fullExplanationLines.push(`❌ Error (Line ${errLine}): ${errDesc}`);
+    fullExplanationLines.push(`Error (Line ${errLine}): ${errDesc}`);
 
     steps.push({
       lines: {

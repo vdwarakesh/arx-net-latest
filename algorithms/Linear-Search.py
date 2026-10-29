@@ -1,4 +1,4 @@
-def linear_search(arr, target):
+def linear_search(arr, target, start_index=0, end_index=None):
     for i in range(len(arr)):
         if arr[i] == target:
             return i

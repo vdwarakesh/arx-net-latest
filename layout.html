@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="js/quickdraw/quickdraw.css" />
   <script src="js/tailwind.js"></script>
   <script src="js/prism.js"></script>
-  <script src="https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.js"></script>
   <style>
     /* Property ordering
       1. position
@@ -2756,6 +2755,60 @@
 
     /* ========== End of Welcome Tour Spotlight & Card ========== */
 
+    /* ========== Interactive Code Signature Editor (Settings Card) ========== */
+    .signature-editor-pre {
+      margin: 0 !important;
+      padding: 0.65rem 0.75rem !important;
+      background-color: var(--bg-input) !important;
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.35rem !important;
+      font-family: 'Noto Sans Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.75;
+      overflow-x: auto !important;
+    }
+
+    .signature-editor-pre code[class*="language-"] {
+      white-space: pre !important;
+    }
+
+    .sig-inline-input {
+      display: inline-block;
+      width: 8.5rem;
+      height: 1.35rem;
+      padding: 0 0.35rem;
+      background-color: var(--bg-card);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.2rem;
+      font-family: inherit;
+      font-size: 0.82rem;
+      color: var(--prism-number);
+      outline: none;
+      vertical-align: baseline;
+      transition: border-color 0.12s ease, background-color 0.12s ease;
+    }
+
+    .sig-inline-input:focus {
+      border-color: var(--accent-primary);
+      background-color: var(--bg-app);
+    }
+
+    .sig-inline-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.65;
+    }
+
+    .sig-ds-linked-badge {
+      display: inline-block;
+      padding: 0.05rem 0.4rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem dashed var(--border-color);
+      border-radius: 0.2rem;
+      font-size: 0.78rem;
+      color: var(--prism-property);
+    }
+
+    /* ========== End of interactive Code Signature Editor (Settings Card) ========== */
 
     /* ========== Prism Syntax Highlighter Overrides ========== */
     pre[class*=language-] {
@@ -3956,25 +4009,19 @@
                   </div>
                   <!--==========-->
 
-                  <!--===== Parameters =====-->
-                  <div id="algo-params-section" style="margin-bottom: 0.75rem;">
-                    <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Parameters</h4>
-                    <span class="card-body-text" id="algo-params-container" style="color: var(--text-muted);"></span>
-                  </div>
-                  <!--==========-->
-
-                  <!--===== Optional Parameters =====-->
-                  <div id="algo-optional-params-section" style="margin-bottom: 1rem;">
-                    <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.25rem;">Optional Parameters
-                    </h4>
-                    <span class="card-body-text" id="algo-optional-params-container"
-                      style="color: var(--text-muted);"></span>
+                  <!--===== Unified Creation Settings / Interactive Function Signature =====-->
+                  <div id="algo-config-section" style="margin-bottom: 0.75rem;">
+                    <h4 id="algo-config-heading" class="card-body-text"
+                      style="display: none; font-weight: 600; margin-bottom: 0.35rem;"></h4>
+                    <div id="algo-config-container" class="card-body-text" style="color: var(--text-muted);">
+                      Select a data structure or algorithm to configure.
+                    </div>
                   </div>
                   <!--==========-->
 
                   <button type="button" id="algo-settings-submit-btn" class="vscode-btn-secondary"
                     style="display: none; width: 100%; margin-bottom: 0rem;">Create</button>
-                </div> <!-- This div only exists to give some padding -->
+                </div>
               </div>
               <!--========== End of settings card content ==========-->
 
@@ -4420,7 +4467,7 @@
   <script type="module">
     import { createQuickdraw } from './js/quickdraw/index.js';
     import { warmUpPyodide } from './js/pyodide-runner.js';
-    import { drawArray, setupArrayInteractions } from './dsa/Array.js';
+    import { drawArray, setupArrayInteractions, getContainerArrayData } from './data-structures/Array.js';
 
     /* ========== 1. Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
@@ -4700,7 +4747,10 @@
 
     /* ========== 3. Loading Screen Handler ========== */
     window.addEventListener('load', () => {
-      /* Fades out and removes the full-screen loading overlay (#loading-screen) once all window assets finish loading */
+      // Tell the background worker to start caching its modules silently
+      warmUpPyodide();
+
+      /* Fades out and removes the full-screen loading overlay immediately */
       const loadingScreen = document.getElementById('loading-screen');
       if (loadingScreen) {
         loadingScreen.classList.add('fade-out');
@@ -4708,8 +4758,6 @@
           loadingScreen.remove();
         }, 400);
       }
-      // Starts the WASM download and Python module caching in the background
-      warmUpPyodide();
     });
     /* ========== End of Loading Screen Handler ========== */
 
@@ -6127,7 +6175,8 @@
       const currentTab = activeRightTopTab;
       const ext = currentTab === 'notes' ? '.html' : currentLangExt;
       const formattedTarget = currentTarget.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
-      const filePath = `dsa/${formattedTarget}${ext}`;
+      const folder = selectedDsaType === 'ds' ? 'data-structures' : 'algorithms';
+      const filePath = `${folder}/${formattedTarget}${ext}`;
 
       try {
         const response = await fetch(filePath);
@@ -6595,32 +6644,34 @@
       const isAlgoSelected = selectedDsaType === 'algo' && selectedDsaName;
       const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
 
+      // Keep the linked DS badge in the signature editor updated
+      const dsBadge = document.getElementById('sig-active-ds-badge');
+      if (dsBadge) {
+        dsBadge.textContent = activeObj ? `${activeObj.name} (${activeObj.dsType})` : 'No active DS';
+      }
+
       let isCompatible = false;
       let requirementError = null;
 
-      if (isAlgoSelected && activeObj && typeof algorithms !== 'undefined') {
-        // 1. Find the algorithm entry in algorithms.js (case-insensitive)
-        const algoKey = Object.keys(algorithms).find(
+      if (isAlgoSelected && activeObj && algorithmsJson && Object.keys(algorithmsJson).length > 0) {
+        const algoKey = Object.keys(algorithmsJson).find(
           (k) => k.toLowerCase() === selectedDsaName.toLowerCase().replace(/[-_]+/g, ' ')
         );
-        const algoConfig = algoKey ? algorithms[algoKey] : null;
+        const algoConfig = algoKey ? algorithmsJson[algoKey] : null;
 
         if (algoConfig && algoConfig.inputs) {
-          // 2. Check if activeObj.dsType (e.g., "Array") is listed in algoConfig.inputs
           const matchingDsKey = Object.keys(algoConfig.inputs).find(
             (dsKey) => dsKey.toLowerCase() === activeObj.dsType.toLowerCase()
           );
 
           if (matchingDsKey) {
             isCompatible = true;
-            // 3. Validate sub-requirements like { "sorted": true }
             const dsRequirements = algoConfig.inputs[matchingDsKey];
             requirementError = checkDataStructureRequirements(activeObj, dsRequirements);
           }
         }
       }
 
-      // 4. Update both playback bars
       const playbackBars = document.querySelectorAll('.playback-bar');
       playbackBars.forEach((bar) => {
         const controls = bar.querySelector('.playback-ui-controls');
@@ -6631,7 +6682,7 @@
           controls.style.display = 'none';
           message.style.display = 'block';
           message.textContent =
-            'Create a data structure AND choose a compatible algorithm to visualize';
+            'Create a data structure and choose a compatible algorithm to visualize';
         } else if (requirementError) {
           controls.style.display = 'none';
           message.style.display = 'block';
@@ -6647,7 +6698,6 @@
         }
       });
 
-      // Reset running simulation if the state becomes invalid
       if ((!isCompatible || requirementError || currentLang !== 'Python') && window.isSimulating) {
         if (typeof resetSimulation === 'function') resetSimulation();
       }
@@ -6729,17 +6779,69 @@
       return span;
     }
 
-    /* Algorithm Settings Card & Item Selection */
-    function updateAlgorithmSettings(name, parentDsName = null, itemType = 'algo') {
-      /* Populates the Settings card (#algo-settings-card) for either a Data Structure ('ds') or an Algorithm ('algo') */
-      const paramsContainer = document.getElementById('algo-params-container');
-      const optParamsSection = document.getElementById('algo-optional-params-section');
-      const optParamsContainer = document.getElementById('algo-optional-params-container');
+    function parsePythonSignature(pyCode) {
+      /* Extracts function name and parameters (with optional defaults) from the first top-level def */
+      const match = pyCode.match(/^\s*def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)/m);
+      if (!match) return null;
+      const funcName = match[1];
+      const rawParams = match[2].trim();
+      if (!rawParams) return { funcName, params: [] };
+
+      const parts = [];
+      let current = '';
+      let depth = 0;
+      let inQuote = null;
+
+      for (let i = 0; i < rawParams.length; i++) {
+        const ch = rawParams[i];
+        if (inQuote) {
+          current += ch;
+          if (ch === inQuote && rawParams[i - 1] !== '\\') inQuote = null;
+        } else if (ch === '"' || ch === "'") {
+          inQuote = ch;
+          current += ch;
+        } else if (ch === '(' || ch === '[' || ch === '{') {
+          depth++;
+          current += ch;
+        } else if (ch === ')' || ch === ']' || ch === '}') {
+          depth--;
+          current += ch;
+        } else if (ch === ',' && depth === 0) {
+          parts.push(current.trim());
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      if (current.trim()) parts.push(current.trim());
+
+      const params = parts.map((part, idx) => {
+        const eqIdx = part.indexOf('=');
+        let namePart = eqIdx !== -1 ? part.slice(0, eqIdx).trim() : part.trim();
+        const defaultVal = eqIdx !== -1 ? part.slice(eqIdx + 1).trim() : null;
+        const colonIdx = namePart.indexOf(':');
+        if (colonIdx !== -1) namePart = namePart.slice(0, colonIdx).trim();
+
+        return {
+          name: namePart,
+          hasDefault: eqIdx !== -1,
+          defaultVal,
+          isDataStructure: idx === 0
+        };
+      });
+
+      return { funcName, params };
+    }
+
+    async function updateAlgorithmSettings(name, parentDsName = null, itemType = 'algo') {
+      /* Populates #algo-settings-card with either "Creation Settings" (for DS) or an interactive <pre><code> signature (for Algorithms) */
+      const configHeading = document.getElementById('algo-config-heading');
+      const configContainer = document.getElementById('algo-config-container');
       const metaSection = document.getElementById('algo-settings-meta-section');
       const metaContainer = document.getElementById('algo-settings-meta-container');
-      if (!paramsContainer || !optParamsContainer) return;
+      if (!configContainer || !configHeading) return;
 
-      /* Case 1: A Data Structure was clicked */
+      /* Case 1: A Data Structure was clicked -> Show "Creation Settings" */
       if (itemType === 'ds' && name) {
         if (algoSettingsSubmitBtn) {
           algoSettingsSubmitBtn.style.display = 'inline-flex';
@@ -6748,27 +6850,29 @@
           metaContainer.innerHTML = '';
           metaSection.style.display = 'none';
         }
-        optParamsContainer.innerHTML = '';
 
-        paramsContainer.style.color = 'inherit';
-        paramsContainer.innerHTML = `
-        <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-          <input type="text" id="ds-input-name" class="param-input-field" placeholder="name (default: ${name})" data-param-name="name" />
-          <input type="text" id="ds-input-content" class="param-input-field" placeholder="content" data-param-name="content" />
-        </div>
-      `;
+        configHeading.style.display = 'block';
+        configHeading.textContent = 'Creation Settings';
+        configContainer.style.color = 'inherit';
+        configContainer.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+            <input type="text" id="ds-input-name" class="param-input-field" placeholder="name (default: ${name})" data-param-name="name" />
+            <input type="text" id="ds-input-content" class="param-input-field" placeholder="content (e.g. 10, 20, 30)" data-param-name="content" />
+          </div>
+        `;
         return;
       }
 
-      /* Case 2: An Algorithm was clicked (or nothing selected) - Hide Create button */
+      /* Case 2: An Algorithm was clicked */
       if (algoSettingsSubmitBtn) {
         algoSettingsSubmitBtn.style.display = 'none';
       }
 
       const algoData = algorithmsJson[name];
       if (!name || !algoData) {
-        paramsContainer.innerHTML = '';
-        optParamsContainer.innerHTML = '';
+        configHeading.style.display = 'none';
+        configContainer.style.color = 'var(--text-muted)';
+        configContainer.textContent = 'Select a data structure or algorithm to configure.';
         if (metaSection && metaContainer) {
           metaContainer.innerHTML = '';
           metaSection.style.display = 'none';
@@ -6776,6 +6880,7 @@
         return;
       }
 
+      // Render Constraints & Tags
       if (metaSection && metaContainer) {
         metaContainer.innerHTML = '';
         const inputs = algoData.inputs || {};
@@ -6805,7 +6910,6 @@
             cImg.src = 'images/constraint.png';
             cImg.alt = 'constraint';
             cImg.className = 'algo-meta-icon';
-            if (constraintsJson[cKey]) cImg.setAttribute('title', constraintsJson[cKey]);
 
             const cText = document.createElement('span');
             cText.textContent = `${cKey}:${cVal}`;
@@ -6836,27 +6940,49 @@
         }
       }
 
-      const noReqParamsMsg = 'This function does not accept parameters';
-      const noOptParamsMsg = 'No optional parameters for this function';
+      // Fetch the Python file and build the interactive <pre><code> signature
+      configHeading.style.display = 'none';
+      const formattedTarget = name.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
 
-      const buildInputs = (paramsArray, emptyMsg) => {
-        if (!paramsArray || paramsArray.length === 0) return emptyMsg;
-        let html = '<div style="display: flex; flex-direction: column; gap: 0.35rem;">';
-        paramsArray.forEach(param => {
-          html += `<input type="text" class="param-input-field" placeholder="${param}" data-param-name="${param}" />`;
+      try {
+        const res = await fetch(`algorithms/${formattedTarget}.py`);
+        if (!res.ok) throw new Error('Python file not found');
+        const pyCode = await res.text();
+        if (selectedDsaName !== name) return;
+
+        const sig = parsePythonSignature(pyCode);
+        if (!sig) throw new Error('No function signature found');
+
+        const activeObj = dsContainers.find(c => c.name === activeContainerName);
+        const dsLabel = activeObj ? `${activeObj.name} (${activeObj.dsType})` : 'No active DS';
+
+        const linesHtml = sig.params.map((p, idx) => {
+          const comma = idx < sig.params.length - 1 ? '<span class="token punctuation">,</span>' : '';
+          if (p.isDataStructure) {
+            return `  <span class="token property">${p.name}</span> <span class="token operator">=</span> <span id="sig-active-ds-badge" class="sig-ds-linked-badge">${dsLabel}</span>${comma}`;
+          }
+          const placeholder = p.hasDefault ? p.defaultVal : 'required';
+          const optComment = p.hasDefault
+            ? ` <span class="token comment"># default: ${p.defaultVal}</span>`
+            : '';
+          return `  <span class="token property">${p.name}</span> <span class="token operator">=</span> <input type="text" class="sig-inline-input" data-param-name="${p.name}" data-has-default="${p.hasDefault}" placeholder="${placeholder}" />${comma}${optComment}`;
+        }).join('\n');
+
+        configContainer.style.color = 'inherit';
+        configContainer.innerHTML = `<pre class="signature-editor-pre language-python"><code class="language-python"><span class="token function">${sig.funcName}</span><span class="token punctuation">(</span>\n${linesHtml}\n<span class="token punctuation">)</span></code></pre>`;
+
+        // Reset any running simulation if the user edits a parameter in the signature
+        configContainer.querySelectorAll('.sig-inline-input').forEach(inp => {
+          inp.addEventListener('input', () => {
+            if (window.isSimulating && typeof resetSimulation === 'function') {
+              resetSimulation();
+            }
+          });
         });
-        html += '</div>';
-        return html;
-      };
-
-      const reqParams = algoData.parameters ? algoData.parameters.required : [];
-      const optParams = algoData.parameters ? algoData.parameters.optional : [];
-
-      paramsContainer.innerHTML = buildInputs(reqParams, noReqParamsMsg);
-      optParamsContainer.innerHTML = buildInputs(optParams, noOptParamsMsg);
-
-      paramsContainer.style.color = reqParams && reqParams.length ? 'inherit' : 'var(--text-muted)';
-      optParamsContainer.style.color = optParams && optParams.length ? 'inherit' : 'var(--text-muted)';
+      } catch (err) {
+        configContainer.style.color = 'var(--text-muted)';
+        configContainer.textContent = 'Algorithm signature not available yet.';
+      }
     }
 
     function selectDsaItem(name, parentDsName = null, itemType = 'algo') {
@@ -7313,14 +7439,36 @@
       const activeObj = dsContainers.find((c) => c.name === activeContainerName);
       if (!activeObj || selectedDsaType !== 'algo' || !selectedDsaName) return false;
 
-      // 1. Extract values from all required and optional parameter inputs in order
-      const reqValues = Array.from(
-        document.querySelectorAll('#algo-params-container input')
-      ).map((input) => input.value.trim());
+      // 1. Collect parameter values keyed by their exact Python parameter name
+      const paramInputs = document.querySelectorAll(
+        '#algo-settings-body input[data-param-name]'
+      );
+      const rawKwargs = {};
 
-      const optValues = Array.from(
-        document.querySelectorAll('#algo-optional-params-container input')
-      ).map((input) => input.value.trim());
+      for (const inp of paramInputs) {
+        const paramName = inp.getAttribute('data-param-name');
+        if (!paramName || paramName === 'name' || paramName === 'content') continue;
+
+        const hasDefault = inp.getAttribute('data-has-default') === 'true';
+        const rawVal = inp.value.trim();
+
+        if (rawVal === '') {
+          if (!hasDefault) {
+            if (stateViewPane) {
+              stateViewPane.innerHTML = `
+                <div class="card-inner-pad">
+                  <span class="card-body-text" style="color: #ef4444; font-weight: 500;">
+                    Missing required argument: '${paramName}'
+                  </span>
+                </div>`;
+            }
+            return false;
+          }
+          continue; // Omit empty optional parameter so Python uses its default
+        }
+
+        rawKwargs[paramName] = rawVal;
+      }
 
       // 2. Show loading status while Pyodide executes
       if (stateViewPane) {
@@ -7332,33 +7480,28 @@
         const fileBase = toKebabPascal(selectedDsaName); // e.g. "Linear-Search"
         const fnName = toCamelCase(selectedDsaName);     // e.g. "linearSearch"
 
-        const algoModule = await import(`./dsa/${fileBase}.js`);
+        const algoModule = await import(`./algorithms/${fileBase}.js`);
         const algoFn = algoModule[fnName] || algoModule.default;
 
         if (typeof algoFn !== 'function') {
-          console.error(`Function "${fnName}" not found in ./dsa/${fileBase}.js`);
+          console.error(`Function "${fnName}" not found in ./algorithms/${fileBase}.js`);
           return false;
         }
 
-        // 4. Call the algorithm function with the container element and unpacked input values
-        const result = await algoFn(activeObj.element, ...reqValues, ...optValues);
+        // 4. Pass the container element and the rawKwargs dictionary
+        const result = await algoFn(activeObj.element, rawKwargs);
 
         if (result.error && (!result.steps || result.steps.length === 0)) {
           if (stateViewPane) {
             stateViewPane.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text" style="color: #ef4444; font-weight: 500;">
-              ${result.error.type}: ${result.error.message}
-            </span>
-          </div>`;
+              <div class="card-inner-pad">
+                <span class="card-body-text" style="color: #ef4444; font-weight: 500;">
+                  ${result.error.type}: ${result.error.message}
+                </span>
+              </div>`;
           }
           return false;
         }
-
-        simSteps = result.steps || [];
-        simFullExplanation = result.fullExplanationLines || [];
-        window.isSimulating = simSteps.length > 0;
-        return window.isSimulating;
 
         simSteps = result.steps || [];
         simFullExplanation = result.fullExplanationLines || [];
