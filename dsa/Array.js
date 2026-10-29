@@ -7,8 +7,12 @@ const d3 = window.d3 || d3Module;
 
 // ========== Hyperparameters ==========
 export const ARRAY_HYPERPARAMETERS = {
+  // ----- Layout -----
   MIN_BAR_HEIGHT_RATIO: 0.10, // Least element is 10% of the canvas height
   MAX_BAR_HEIGHT_RATIO: 0.30, // Max element is 30% of the canvas height (reaches 30% limit from 60% baseline)
+  MIN_BAR_HEIGHT: 100,         // Absolute floor on bar height in world px, regardless of ratio
+  MAX_BAR_HEIGHT: 480,        // Absolute ceiling on bar height in world px, regardless of ratio
+  MIN_HEIGHT_SPREAD: 160,      // Minimum gap enforced between the shortest and tallest bar, so scaling never collapses
   TOP_LIMIT_RATIO: 0.30,      // Top of the tallest bar sits at 30% from the top of the canvas
   BOTTOM_BASELINE_RATIO: 0.60,// Baseline of all bars sits at 60% from the top of the canvas
   HORIZONTAL_SPAN_RATIO: 0.70,// Array spans up to 70% of the canvas width
@@ -16,7 +20,54 @@ export const ARRAY_HYPERPARAMETERS = {
   MIN_BAR_WIDTH: 24,          // Minimum width of a single bar in world px
   BAR_PADDING: 0.22,          // Padding ratio between bars (for d3.scaleBand)
   FONT_FAMILY: "'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+
+  // ----- Fonts -----
+  VALUE_FONT_SIZE: 20,
+  INDEX_FONT_SIZE: 20,
+  VALUE_LABEL_OFFSET: 20,     // distance above baseline for the value label
+  INDEX_LABEL_OFFSET: 20,     // distance below baseline for the index label
+
+  // ----- Colors: CSS variable names (guaranteed to exist on :root) -----
+  BAR_FILL_VAR: '--ds-primary',
+  TEXT_BRIGHT_VAR: '--text-bright',
+  TEXT_DARK_VAR: '--text-dark',
+
+  // Simulation state: "found" bar (e.g. binary/linear search target located)
+  FOUND_FILL_VAR: '--ds-found-fill',
+
+  // Simulation state: "current" bar being inspected
+  CURRENT_FILL_VAR: '--ds-current-fill',
+
+  // Simulation state: bar already checked and ruled out (uses its own fill color, dimmed)
+  VISITED_FILL_VAR: '--ds-visited',
+  CHECKED_ALPHA: 0.5,
+
+  // Opaque default alpha for normal bars
+  DEFAULT_ALPHA: 1,
 };
+
+/**
+ * Resolves every *_VAR entry in the hyperparameters object into a flat set of
+ * concrete style values, reading each CSS custom property from :root via
+ * getComputedStyle. These variables are guaranteed to be defined, so no fallback
+ * values are applied.
+ */
+function resolveStyleHyperparameters(hp) {
+  const rootStyle = getComputedStyle(document.documentElement);
+  const resolved = { ...hp };
+
+  const readVar = (varName) => rootStyle.getPropertyValue(varName).trim();
+
+  resolved.BAR_FILL = readVar(hp.BAR_FILL_VAR);
+  resolved.TEXT_BRIGHT = readVar(hp.TEXT_BRIGHT_VAR);
+  resolved.TEXT_DARK = readVar(hp.TEXT_DARK_VAR);
+
+  resolved.FOUND_FILL = readVar(hp.FOUND_FILL_VAR);
+  resolved.CURRENT_FILL = readVar(hp.CURRENT_FILL_VAR);
+  resolved.VISITED_FILL = readVar(hp.VISITED_FILL_VAR);
+
+  return resolved;
+}
 
 function recomputeNumericMagnitudes(items) {
   const allNumbers = items.length > 0 && items.every((d) => d.isNumber);
@@ -102,7 +153,9 @@ export function getContainerArrayData(containerEl) {
 export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   if (!containerEl) return;
 
-  const hp = { ...ARRAY_HYPERPARAMETERS, ...customHyperparams };
+  const mergedHp = { ...ARRAY_HYPERPARAMETERS, ...customHyperparams };
+  const hp = resolveStyleHyperparameters(mergedHp);
+
   const canvas = containerEl.querySelector('canvas.ds-grid-canvas') || containerEl.querySelector('canvas');
   if (!canvas) return;
 
@@ -117,11 +170,6 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
 
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   const ctx = canvas.getContext('2d');
-
-  const rootStyle = getComputedStyle(document.documentElement);
-  const barFill = rootStyle.getPropertyValue('--ds-primary').trim();
-  const textBright = rootStyle.getPropertyValue('--text-bright').trim();
-  const textDark = rootStyle.getPropertyValue('--text-dark').trim();
 
   const cam = camera || containerEl._camera || { x: 0, y: 0, z: 1 };
   const useWorldOrigin = Boolean(camera || containerEl._camera);
@@ -138,8 +186,14 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const originX = useWorldOrigin && containerEl._worldOrigin ? containerEl._worldOrigin.x : 0;
   const originY = useWorldOrigin && containerEl._worldOrigin ? containerEl._worldOrigin.y : 0;
 
-  const minBarH = baseH * hp.MIN_BAR_HEIGHT_RATIO;
-  const maxBarH = baseH * hp.MAX_BAR_HEIGHT_RATIO;
+  // Ratio-based sizing, clamped to the absolute MIN_BAR_HEIGHT / MAX_BAR_HEIGHT bounds.
+  // minBarH is the floor; maxBarH is then pushed to be at least MIN_HEIGHT_SPREAD above
+  // minBarH (still capped at MAX_BAR_HEIGHT) so that when the canvas is small and the
+  // ratio-based max would otherwise collapse down to the same value as the min, there's
+  // still a real range for d3's scaleLinear to map values across.
+  const minBarH = Math.min(Math.max(baseH * hp.MIN_BAR_HEIGHT_RATIO, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
+  const ratioMaxBarH = Math.min(Math.max(baseH * hp.MAX_BAR_HEIGHT_RATIO, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
+  const maxBarH = Math.min(Math.max(ratioMaxBarH, minBarH + hp.MIN_HEIGHT_SPREAD), hp.MAX_BAR_HEIGHT);
   const baselineY = useWorldOrigin
     ? originY - (baseH / 2) + (baseH * hp.BOTTOM_BASELINE_RATIO)
     : (baseH * hp.BOTTOM_BASELINE_RATIO);
@@ -185,7 +239,8 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
 
   data.forEach((d, i) => {
     const isDraggingThis = dragState && dragState.index === i;
-    const barH = minVal === maxVal ? maxBarH : heightScale(d.numericValue);
+    const rawBarH = minVal === maxVal ? maxBarH : heightScale(d.numericValue);
+    const barH = Math.min(Math.max(rawBarH, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
     const x = isDraggingThis ? (dragState.worldX - barWidth / 2) : xScale(i);
     const y = baselineY - barH;
 
@@ -204,52 +259,45 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     const isFoundBar = simState && simState.foundIndex === i;
     const isCheckedBar = simState && Array.isArray(simState.checkedIndices) && simState.checkedIndices.includes(i);
 
-    let currentFill = barFill;
-    let currentBorder = '#00000000';
-    let currentAlpha = isDraggingThis ? 0.98 : 0.86;
+    let currentFill = hp.BAR_FILL;
+    let currentAlpha = hp.DEFAULT_ALPHA;
 
     if (isFoundBar) {
-      currentFill = '#12a67c'; // Green when target is found
-      currentBorder = '#5cbd6e';
-      currentAlpha = 1;
+      currentFill = hp.FOUND_FILL;
+      currentAlpha = hp.DEFAULT_ALPHA;
     } else if (isCurrentBar) {
-      currentFill = '#f1ac4b'; // Amber/Gold when currently inspecting i
-      currentBorder = '#ffffff';
-      currentAlpha = 1;
+      currentFill = hp.CURRENT_FILL;
+      currentAlpha = hp.DEFAULT_ALPHA;
     } else if (isCheckedBar) {
-      currentAlpha = 0.42; // Dimmed after being checked and not matching
+      currentFill = hp.VISITED_FILL; // Distinct "visited" color, dimmed
+      currentAlpha = hp.CHECKED_ALPHA;
     }
 
-    // 1. Sharp Rectangular Bar (no border-radius)
+    // 1. Sharp Rectangular Bar (no border-radius, no stroke)
     ctx.beginPath();
     ctx.rect(x, y, barWidth, barH);
     ctx.fillStyle = currentFill;
     ctx.globalAlpha = currentAlpha;
     ctx.fill();
 
-    ctx.globalAlpha = 1;
-    ctx.lineWidth = (isDraggingThis || isCurrentBar || isFoundBar) ? 2.4 : 1.5;
-    ctx.strokeStyle = currentBorder;
-    ctx.stroke();
+    ctx.globalAlpha = hp.DEFAULT_ALPHA;
 
     // 2. Value Label (placed near the bottom inside the bar, right above the baseline)
-    const valFontSize = 20;
-    ctx.font = `700 ${valFontSize}px ${hp.FONT_FAMILY}`;
+    ctx.font = `700 ${hp.VALUE_FONT_SIZE}px ${hp.FONT_FAMILY}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
     const valX = x + barWidth / 2;
-    const valY = baselineY - 20;
+    const valY = baselineY - hp.VALUE_LABEL_OFFSET;
 
-    ctx.fillStyle = textDark;
+    ctx.fillStyle = hp.TEXT_DARK;
     ctx.fillText(String(d.value), valX, valY);
 
     // 3. Index Label (placed directly below the baseline, right below the value)
-    const idxFontSize = 20;
-    ctx.font = `700 ${idxFontSize}px ${hp.FONT_FAMILY}`;
-    ctx.fillStyle = textBright;
+    ctx.font = `700 ${hp.INDEX_FONT_SIZE}px ${hp.FONT_FAMILY}`;
+    ctx.fillStyle = hp.TEXT_BRIGHT;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.fillText(String(i), valX, baselineY + 20);
+    ctx.fillText(String(i), valX, baselineY + hp.INDEX_LABEL_OFFSET);
   });
 
   ctx.restore();
