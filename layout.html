@@ -4419,8 +4419,8 @@
 
   <script type="module">
     import { createQuickdraw } from './js/quickdraw/index.js';
+    import { warmUpPyodide } from './js/pyodide-runner.js';
     import { drawArray, setupArrayInteractions } from './dsa/Array.js';
-    import { generateLinearSearchSteps } from './dsa/Linear-Search.js';
 
     /* ========== 1. Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
@@ -4708,7 +4708,8 @@
           loadingScreen.remove();
         }, 400);
       }
-      getPyodide();
+      // Starts the WASM download and Python module caching in the background
+      warmUpPyodide();
     });
     /* ========== End of Loading Screen Handler ========== */
 
@@ -6567,24 +6568,61 @@
       return lineage.some(ds => Object.prototype.hasOwnProperty.call(algoData.inputs, ds));
     }
 
+    function checkDataStructureRequirements(activeObj, requirements = {}) {
+      /* Validates specific requirements defined in algorithms.js (e.g., { sorted: true }) */
+      if (!requirements || Object.keys(requirements).length === 0) return null;
+
+      if (activeObj.dsType === 'Array') {
+        const data = getContainerArrayData(activeObj.element) || [];
+        const values = data.map((d) => d.value);
+
+        // Check "sorted": true requirement (ascending or descending)
+        if (requirements.sorted && values.length > 1) {
+          const isAsc = values.every((v, i) => i === 0 || values[i - 1] <= v);
+          const isDesc = values.every((v, i) => i === 0 || values[i - 1] >= v);
+          if (!isAsc && !isDesc) {
+            return `This algorithm requires a sorted ${activeObj.dsType}`;
+          }
+        }
+      }
+
+      // Future requirements (e.g., weighted, directed, acyclic for Graphs) can be checked here
+      return null;
+    }
+
     function updatePlaybackCompatibilityUI() {
-      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      const activeObj = dsContainers.find((c) => c.name === activeContainerName);
       const isAlgoSelected = selectedDsaType === 'algo' && selectedDsaName;
       const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
 
-      // 1. Determine if the current data structure matches the algorithm
       let isCompatible = false;
-      if (isAlgoSelected && activeObj) {
-        const algoLower = selectedDsaName.toLowerCase().replace(/[-_\s]+/g, ' ');
-        if (algoLower === 'linear search' && activeObj.dsType === 'Array') {
-          isCompatible = true;
+      let requirementError = null;
+
+      if (isAlgoSelected && activeObj && typeof algorithms !== 'undefined') {
+        // 1. Find the algorithm entry in algorithms.js (case-insensitive)
+        const algoKey = Object.keys(algorithms).find(
+          (k) => k.toLowerCase() === selectedDsaName.toLowerCase().replace(/[-_]+/g, ' ')
+        );
+        const algoConfig = algoKey ? algorithms[algoKey] : null;
+
+        if (algoConfig && algoConfig.inputs) {
+          // 2. Check if activeObj.dsType (e.g., "Array") is listed in algoConfig.inputs
+          const matchingDsKey = Object.keys(algoConfig.inputs).find(
+            (dsKey) => dsKey.toLowerCase() === activeObj.dsType.toLowerCase()
+          );
+
+          if (matchingDsKey) {
+            isCompatible = true;
+            // 3. Validate sub-requirements like { "sorted": true }
+            const dsRequirements = algoConfig.inputs[matchingDsKey];
+            requirementError = checkDataStructureRequirements(activeObj, dsRequirements);
+          }
         }
-        // Add future algorithm compatibility checks here
       }
 
-      // 2. Update both playback bars
+      // 4. Update both playback bars
       const playbackBars = document.querySelectorAll('.playback-bar');
-      playbackBars.forEach(bar => {
+      playbackBars.forEach((bar) => {
         const controls = bar.querySelector('.playback-ui-controls');
         const message = bar.querySelector('.playback-ui-message');
         if (!controls || !message) return;
@@ -6592,19 +6630,25 @@
         if (!activeObj || !isAlgoSelected || !isCompatible) {
           controls.style.display = 'none';
           message.style.display = 'block';
-          message.textContent = 'Create a data structure and choose a compatible algorithm to visualize';
+          message.textContent =
+            'Create a data structure AND choose a compatible algorithm to visualize';
+        } else if (requirementError) {
+          controls.style.display = 'none';
+          message.style.display = 'block';
+          message.textContent = requirementError;
         } else if (currentLang !== 'Python') {
           controls.style.display = 'none';
           message.style.display = 'block';
-          message.textContent = 'Visualizations for other languages are still in development';
+          message.textContent =
+            'Visualizations for other languages are still in development';
         } else {
           controls.style.display = 'flex';
           message.style.display = 'none';
         }
       });
 
-      // Automatically reset any running simulation when state invalidates
-      if ((!isCompatible || currentLang !== 'Python') && window.isSimulating) {
+      // Reset running simulation if the state becomes invalid
+      if ((!isCompatible || requirementError || currentLang !== 'Python') && window.isSimulating) {
         if (typeof resetSimulation === 'function') resetSimulation();
       }
     }
@@ -6703,9 +6747,6 @@
         if (metaSection && metaContainer) {
           metaContainer.innerHTML = '';
           metaSection.style.display = 'none';
-        }
-        if (optParamsSection) {
-          optParamsSection.style.display = 'none';
         }
         optParamsContainer.innerHTML = '';
 
@@ -6810,10 +6851,6 @@
 
       const reqParams = algoData.parameters ? algoData.parameters.required : [];
       const optParams = algoData.parameters ? algoData.parameters.optional : [];
-
-      if (optParamsSection) {
-        optParamsSection.style.display = 'block';
-      }
 
       paramsContainer.innerHTML = buildInputs(reqParams, noReqParamsMsg);
       optParamsContainer.innerHTML = buildInputs(optParams, noOptParamsMsg);
@@ -7257,34 +7294,80 @@
       }, delayMs);
     }
 
+    // Helper: "linear search" -> "Linear-Search" (matches your dsa/ file naming)
+    const toKebabPascal = (str) =>
+      str
+        .trim()
+        .split(/[-_\s]+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join('-');
+
+    // Helper: "linear search" -> "linearSearch" (matches your exported function name)
+    const toCamelCase = (str) =>
+      str
+        .trim()
+        .toLowerCase()
+        .replace(/[-_\s]+(\w)/g, (_, c) => c.toUpperCase());
+
     async function buildSimulationIfNeeded() {
-      const activeObj = dsContainers.find(c => c.name === activeContainerName);
-      if (!activeObj) return false;
+      const activeObj = dsContainers.find((c) => c.name === activeContainerName);
+      if (!activeObj || selectedDsaType !== 'algo' || !selectedDsaName) return false;
 
-      const isLinearSearch =
-        selectedDsaType === 'algo' &&
-        selectedDsaName &&
-        selectedDsaName.toLowerCase().replace(/[-_\s]+/g, ' ') === 'linear search';
+      // 1. Extract values from all required and optional parameter inputs in order
+      const reqValues = Array.from(
+        document.querySelectorAll('#algo-params-container input')
+      ).map((input) => input.value.trim());
 
-      if (!isLinearSearch || activeObj.dsType !== 'Array') return false;
+      const optValues = Array.from(
+        document.querySelectorAll('#algo-optional-params-container input')
+      ).map((input) => input.value.trim());
 
-      const targetInput = document.querySelector('#algo-params-container input[data-param-name="target"]')
-        || document.querySelector('#algo-params-container input');
-      const rawTarget = targetInput ? targetInput.value.trim() : '';
-
-      const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
-
-      // Show a quick loading status in State Variables on first Pyodide boot
+      // 2. Show loading status while Pyodide executes
       if (stateViewPane) {
-        stateViewPane.innerHTML = `<div class="card-inner-pad"><span class="card-body-text">Running Python in WebAssembly...</span></div>`;
+        stateViewPane.innerHTML = `<div class="card-inner-pad"><span class="card-body-text">Running Python (WASM)...</span></div>`;
       }
 
-      const result = await generateLinearSearchSteps(activeObj.element, rawTarget, currentLang);
+      try {
+        // 3. Dynamically resolve file path and function name
+        const fileBase = toKebabPascal(selectedDsaName); // e.g. "Linear-Search"
+        const fnName = toCamelCase(selectedDsaName);     // e.g. "linearSearch"
 
-      simSteps = result.steps;
-      simFullExplanation = result.fullExplanationLines;
-      window.isSimulating = true;
-      return simSteps.length > 0;
+        const algoModule = await import(`./dsa/${fileBase}.js`);
+        const algoFn = algoModule[fnName] || algoModule.default;
+
+        if (typeof algoFn !== 'function') {
+          console.error(`Function "${fnName}" not found in ./dsa/${fileBase}.js`);
+          return false;
+        }
+
+        // 4. Call the algorithm function with the container element and unpacked input values
+        const result = await algoFn(activeObj.element, ...reqValues, ...optValues);
+
+        if (result.error && (!result.steps || result.steps.length === 0)) {
+          if (stateViewPane) {
+            stateViewPane.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: #ef4444; font-weight: 500;">
+              ${result.error.type}: ${result.error.message}
+            </span>
+          </div>`;
+          }
+          return false;
+        }
+
+        simSteps = result.steps || [];
+        simFullExplanation = result.fullExplanationLines || [];
+        window.isSimulating = simSteps.length > 0;
+        return window.isSimulating;
+
+        simSteps = result.steps || [];
+        simFullExplanation = result.fullExplanationLines || [];
+        window.isSimulating = simSteps.length > 0;
+        return window.isSimulating;
+      } catch (err) {
+        console.error(`Failed to run simulation for "${selectedDsaName}":`, err);
+        return false;
+      }
     }
 
     function resetSimulation() {

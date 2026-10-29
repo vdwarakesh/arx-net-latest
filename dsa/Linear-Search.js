@@ -2,25 +2,22 @@
 import { getContainerArrayData, parseSingleToken } from './Array.js';
 import { tracePythonArrayAlgorithm } from '../js/pyodide-runner.js';
 
-export async function generateLinearSearchSteps(containerEl, rawTarget) {
+export async function linearSearch(containerEl, rawTarget = '') {
   const data = getContainerArrayData(containerEl);
   const parsedTarget = parseSingleToken(rawTarget);
   const targetVal = parsedTarget.value;
   const arrValues = data.map((d) => d.value);
 
-  // 1. Fetch the clean Python file displayed in the editor
   const res = await fetch('dsa/Linear-Search.py');
   const pythonCode = await res.text();
 
-  // 2. Execute in Pyodide with VisualArray proxy
-  const pyFrames = await tracePythonArrayAlgorithm(
+  const { steps: pyFrames, error } = await tracePythonArrayAlgorithm(
     pythonCode,
     'linear_search',
     arrValues,
     targetVal
   );
 
-  // 3. Map Python's emitted frames to the UI playback format
   const steps = [];
   const fullExplanationLines = [];
 
@@ -31,9 +28,10 @@ export async function generateLinearSearchSteps(containerEl, rawTarget) {
 
     let stepDescription = `Line ${pyLine}`;
     if (frame.event === 'return') {
-      stepDescription = vis.foundIndex >= 0
-        ? `Target found at index ${vis.foundIndex}! Returning ${sv.return}.`
-        : `Target not found in array. Returning ${sv.return}.`;
+      stepDescription =
+        vis.foundIndex >= 0
+          ? `Target found at index ${vis.foundIndex}! Returning ${sv.return}.`
+          : `Target not found in array. Returning ${sv.return}.`;
     } else if (pyLine === 2) {
       stepDescription = `Loop iteration: i = ${sv.i}`;
     } else if (pyLine === 3) {
@@ -48,7 +46,7 @@ export async function generateLinearSearchSteps(containerEl, rawTarget) {
 
     steps.push({
       lines: {
-        Python: { active: String(pyLine) }
+        Python: { active: String(pyLine) },
       },
       activeLineKey: 'active',
       activeIndex: vis.activeIndex,
@@ -60,5 +58,31 @@ export async function generateLinearSearchSteps(containerEl, rawTarget) {
     });
   });
 
-  return { steps, fullExplanationLines };
+  // If an exception or infinite loop occurred, append a final diagnostic step
+  if (error) {
+    const errLine = error.line || (pyFrames.length ? pyFrames[pyFrames.length - 1].line : 1);
+    const lastStep = steps[steps.length - 1];
+    const errDesc = `${error.type}: ${error.message}`;
+
+    fullExplanationLines.push(`❌ Error (Line ${errLine}): ${errDesc}`);
+
+    steps.push({
+      lines: {
+        Python: { active: String(errLine) },
+      },
+      activeLineKey: 'active',
+      activeIndex: lastStep ? lastStep.activeIndex : -1,
+      foundIndex: -1,
+      checkedIndices: lastStep ? lastStep.checkedIndices : [],
+      traversal: lastStep ? lastStep.traversal : [],
+      stateVars: {
+        ...(lastStep ? lastStep.stateVars : {}),
+        error: `${error.type}: ${error.message}`,
+      },
+      stepDescription: errDesc,
+      isError: true,
+    });
+  }
+
+  return { steps, fullExplanationLines, error };
 }

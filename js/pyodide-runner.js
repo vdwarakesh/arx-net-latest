@@ -3,37 +3,73 @@ let pyodideInstance = null;
 let pyodideReadyPromise = null;
 
 export async function getPyodide() {
-  if (pyodideInstance) return pyodideInstance;
-  if (!pyodideReadyPromise) {
-    pyodideReadyPromise = (async () => {
-        pyodideInstance = await window.loadPyodide({
-          indexURL: 'https://cdn.jsdelivr.net/pyodide/v314.0.7/full/',
-        });
-      
-      return pyodideInstance;
-    })();
-  }
-  return pyodideReadyPromise;
+    if (pyodideInstance) return pyodideInstance;
+    if (!pyodideReadyPromise) {
+        pyodideReadyPromise = (async () => {
+            try {
+                pyodideInstance = await window.loadPyodide({ indexURL: './js/' });
+            } catch {
+                pyodideInstance = await window.loadPyodide({
+                    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/',
+                });
+            }
+            return pyodideInstance;
+        })();
+    }
+    return pyodideReadyPromise;
+}
+
+/**
+ * Pre-loads Pyodide and imports standard library modules in the background.
+ */
+export async function warmUpPyodide() {
+    try {
+        const py = await getPyodide();
+        await py.runPythonAsync(`
+import sys
+import json
+import inspect
+import traceback
+    `);
+        console.log("Pyodide warmed up and ready.");
+    } catch (err) {
+        console.error("Pyodide warm-up failed:", err);
+    }
 }
 
 /**
  * Executes a Python algorithm using a VisualArray proxy and sys.settrace().
- * Automatically tracks array accesses for visual highlighting and filters out input constants.
+ * Protected against infinite loops, deep recursion, and runtime exceptions.
+ *
+ * @returns {Promise<{ steps: Array, error: { type: string, message: string, line: number|null } | null }>}
  */
-export async function tracePythonArrayAlgorithm(pythonCode, funcName, arrValues, targetVal) {
-  const py = await getPyodide();
+export async function tracePythonArrayAlgorithm(
+    pythonCode,
+    funcName,
+    arrValues,
+    targetVal,
+    maxSteps = 2500
+) {
+    const py = await getPyodide();
 
-  py.globals.set('_user_code', pythonCode);
-  py.globals.set('_func_name', funcName);
-  py.globals.set('_raw_arr', py.toPy(arrValues));
-  py.globals.set('_input_target', py.toPy(targetVal));
+    py.globals.set('_user_code', pythonCode);
+    py.globals.set('_func_name', funcName);
+    py.globals.set('_raw_arr', py.toPy(arrValues));
+    py.globals.set('_input_target', py.toPy(targetVal));
+    py.globals.set('_MAX_STEPS', maxSteps);
 
-  const tracerScript = `
+    const tracerScript = `
 import sys
 import json
 import inspect
+import traceback
 
 _trace_steps = []
+_error_info = None
+_step_count = 0
+
+class _StepLimitExceeded(Exception):
+    pass
 
 class VisualArray(list):
     def __init__(self, iterable):
@@ -45,7 +81,6 @@ class VisualArray(list):
 
     def _record_access(self, idx):
         if isinstance(idx, int) and 0 <= idx < len(self):
-            # Move previous active index into checked_indices
             if self.active_index != -1 and self.active_index != idx:
                 if self.active_index not in self.checked_indices:
                     self.checked_indices.append(self.active_index)
@@ -71,69 +106,129 @@ def _serialize(v):
         return {str(k): _serialize(val) for k, val in v.items()}
     return repr(v)
 
-# 1. Compile the clean algorithm file
-_ns = {}
-exec(compile(_user_code, '<algorithm>', 'exec'), _ns)
-_fn = _ns[_func_name]
+def _extract_algo_line(exc_tb):
+    """Finds the last line number inside <algorithm> from a traceback."""
+    tb_list = traceback.extract_tb(exc_tb)
+    for frame_summary in reversed(tb_list):
+        if frame_summary.filename == '<algorithm>':
+            return frame_summary.lineno
+    return _trace_steps[-1]['line'] if _trace_steps else None
 
-# 2. Identify function parameters (e.g. 'arr', 'target') so we exclude constants from State Variables
-_param_names = set(inspect.signature(_fn).parameters.keys())
-_visual_arr = VisualArray(_raw_arr)
+try:
+    # 1. Compile and execute the algorithm definition
+    _ns = {}
+    exec(compile(_user_code, '<algorithm>', 'exec'), _ns)
 
-def _tracer(frame, event, arg):
-    if frame.f_code.co_filename != '<algorithm>':
+    if _func_name not in _ns:
+        raise NameError(f"Function '{_func_name}' was not found in the algorithm file.")
+
+    _fn = _ns[_func_name]
+    _param_names = set(inspect.signature(_fn).parameters.keys())
+    _visual_arr = VisualArray(_raw_arr)
+
+    def _tracer(frame, event, arg):
+        global _step_count
+        if frame.f_code.co_filename != '<algorithm>':
+            return _tracer
+
+        if event in ('line', 'return'):
+            _step_count += 1
+            if _step_count > _MAX_STEPS:
+                raise _StepLimitExceeded(
+                    f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
+                )
+
+            state_vars = {}
+            for k, v in frame.f_locals.items():
+                if not k.startswith('_') and k not in _param_names:
+                    state_vars[k] = _serialize(v)
+
+            if 'i' in state_vars and isinstance(state_vars['i'], int):
+                idx = state_vars['i']
+                if 0 <= idx < len(_visual_arr):
+                    _visual_arr._record_access(idx)
+                    state_vars[f'arr[{idx}]'] = _serialize(list.__getitem__(_visual_arr, idx))
+
+            found_index = -1
+            if event == 'return':
+                ret_val = _serialize(arg)
+                state_vars['return'] = ret_val
+                if isinstance(ret_val, int) and 0 <= ret_val < len(_visual_arr):
+                    found_index = ret_val
+                else:
+                    if _visual_arr.active_index != -1 and _visual_arr.active_index not in _visual_arr.checked_indices:
+                        _visual_arr.checked_indices.append(_visual_arr.active_index)
+                    _visual_arr.active_index = -1
+
+            _trace_steps.append({
+                'event': event,
+                'line': frame.f_lineno,
+                'stateVars': state_vars,
+                'visual': {
+                    'activeIndex': found_index if found_index >= 0 else _visual_arr.active_index,
+                    'foundIndex': found_index,
+                    'checkedIndices': list(_visual_arr.checked_indices),
+                    'traversal': list(_visual_arr.traversal),
+                }
+            })
+
         return _tracer
 
-    if event in ('line', 'return'):
-        # Extract only dynamic local variables (ignores 'arr', 'target', and private vars)
-        state_vars = {}
-        for k, v in frame.f_locals.items():
-            if not k.startswith('_') and k not in _param_names:
-                state_vars[k] = _serialize(v)
+    # 2. Lower recursion limit so infinite recursion fails quickly
+    _old_rec_limit = sys.getrecursionlimit()
+    sys.setrecursionlimit(250)
 
-        # If 'i' is in scope and in bounds, also peek at arr[i] without triggering proxy side-effects
-        if 'i' in state_vars and isinstance(state_vars['i'], int):
-            idx = state_vars['i']
-            if 0 <= idx < len(_visual_arr):
-                # Highlight the bar as soon as the loop sets 'i'
-                _visual_arr._record_access(idx)
-                state_vars[f'arr[{idx}]'] = _serialize(list.__getitem__(_visual_arr, idx))
+    sys.settrace(_tracer)
+    try:
+        _fn(_visual_arr, _input_target)
+    finally:
+        sys.settrace(None)
+        sys.setrecursionlimit(_old_rec_limit)
 
-        found_index = -1
-        if event == 'return':
-            ret_val = _serialize(arg)
-            state_vars['return'] = ret_val
-            if isinstance(ret_val, int) and 0 <= ret_val < len(_visual_arr):
-                found_index = ret_val
-            else:
-                # Returning -1 (not found): mark the last active element as checked
-                if _visual_arr.active_index != -1 and _visual_arr.active_index not in _visual_arr.checked_indices:
-                    _visual_arr.checked_indices.append(_visual_arr.active_index)
-                _visual_arr.active_index = -1
+except _StepLimitExceeded as e:
+    _error_info = {
+        'type': 'InfiniteLoopError',
+        'message': str(e),
+        'line': _trace_steps[-1]['line'] if _trace_steps else 1
+    }
+except RecursionError:
+    _, _, _tb = sys.exc_info()
+    _error_info = {
+        'type': 'RecursionError',
+        'message': 'Maximum recursion depth exceeded (possible infinite recursion).',
+        'line': _extract_algo_line(_tb)
+    }
+except SyntaxError as e:
+    _error_info = {
+        'type': 'SyntaxError',
+        'message': f"{e.msg} (line {e.lineno})",
+        'line': e.lineno
+    }
+except Exception as e:
+    _, _, _tb = sys.exc_info()
+    _error_info = {
+        'type': type(e).__name__,
+        'message': str(e),
+        'line': _extract_algo_line(_tb)
+    }
 
-        _trace_steps.append({
-            'event': event,
-            'line': frame.f_lineno,
-            'stateVars': state_vars,
-            'visual': {
-                'activeIndex': found_index if found_index >= 0 else _visual_arr.active_index,
-                'foundIndex': found_index,
-                'checkedIndices': list(_visual_arr.checked_indices),
-                'traversal': list(_visual_arr.traversal),
-            }
-        })
-
-    return _tracer
-
-sys.settrace(_tracer)
-try:
-    _fn(_visual_arr, _input_target)
-finally:
-    sys.settrace(None)
-
-json.dumps(_trace_steps)
+json.dumps({
+    'steps': _trace_steps,
+    'error': _error_info
+})
   `;
 
-  const rawJson = await py.runPythonAsync(tracerScript);
-  return JSON.parse(rawJson);
+    try {
+        const rawJson = await py.runPythonAsync(tracerScript);
+        return JSON.parse(rawJson);
+    } catch (fatalErr) {
+        return {
+            steps: [],
+            error: {
+                type: 'RuntimeError',
+                message: fatalErr.message || String(fatalErr),
+                line: null,
+            },
+        };
+    }
 }
