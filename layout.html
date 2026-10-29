@@ -3778,34 +3778,42 @@
 
               <!--========== Playback bar - Speed and step controls - Right side shows step x/y ==========-->
               <div class="playback-bar">
-                <div class="playback-controls-left">
-                  <button type="button" class="playback-text-btn sync-start-sim" title="Run">
-                    Run
-                  </button>
-                  <div class="visualization-options">
-                    Steps&nbsp;
-                    <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
-                      <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
-                    </button>
-                    <button type="button" class="playback-icon-btn sync-run" title="Visualize">
-                      <img src="images/run.png" alt="Run" class="playback-icon-img" />
-                    </button>
-                    <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
-                      <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
-                    </button>
-                    <button type="button" class="playback-icon-btn sync-reset" title="Reset">
-                      <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
-                    </button>
-                    <div class="playback-speed-group">
-                      <img src="images/speed.png" class="playback-label-img" />
-                      <input id="speed-slider" type="range" min="0.25" max="4" step="0.25" value="1"
-                        class="vscode-slider sync-speed-slider" />
-                      <span id="speed-label" class="playback-speed-value sync-speed-label">1x</span>
+                <!-- The Message Container -->
+                <div class="playback-ui-message"
+                  style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                  Create a data structure and choose a compatible algorithm to visualize
+                </div>
+
+                <!-- The Actual Controls (Hidden by default) -->
+                <div class="playback-ui-controls"
+                  style="display: none; width: 100%; justify-content: space-between; align-items: center;">
+                  <div class="playback-controls-left">
+                    <button type="button" class="playback-text-btn sync-start-sim" title="Run">Run</button>
+                    <div class="visualization-options">
+                      Steps&nbsp;
+                      <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
+                        <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
+                      </button>
+                      <button type="button" class="playback-icon-btn sync-run" title="Visualize">
+                        <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                      </button>
+                      <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
+                        <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
+                      </button>
+                      <button type="button" class="playback-icon-btn sync-reset" title="Reset">
+                        <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
+                      </button>
+                      <div class="playback-speed-group">
+                        <img src="images/speed.png" class="playback-label-img" />
+                        <input type="range" min="0.25" max="4" step="0.25" value="1"
+                          class="vscode-slider sync-speed-slider" />
+                        <span class="playback-speed-value sync-speed-label">1x</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="playback-controls-right">
-                  <span class="playback-muted-label sync-steps-label">0 / 0</span>
+                  <div class="playback-controls-right">
+                    <span class="playback-muted-label sync-steps-label">0 / 0</span>
+                  </div>
                 </div>
               </div>
               <!--========== End of playback bar ==========-->
@@ -4131,36 +4139,42 @@
 
             <!--========== Playback bar - Speed and step controls - Right side shows step x/y ==========-->
             <div class="playback-bar">
-              <div class="playback-controls-left">
-                <button type="button" class="playback-text-btn" title="Run">
-                  Run
-                </button>
-                <div class="visualization-options">
-                  Steps&nbsp;
-                  <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
-                    <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn sync-run" title="Visualize">
-                    <img src="images/run.png" alt="Run" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
-                    <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
-                  </button>
-                  <button type="button" class="playback-icon-btn sync-reset" title="Reset">
-                    <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
-                  </button>
-
-                  <div class="playback-speed-group">
-                    <img src="images/speed.png" class="playback-label-img" />
-                    <input type="range" min="0.25" max="4" step="0.25" value="1"
-                      class="vscode-slider sync-speed-slider" />
-                    <span class="playback-speed-value sync-speed-label">1x</span>
-                  </div>
-                </div>
+              <!-- The Message Container -->
+              <div class="playback-ui-message"
+                style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                Create a data structure and choose a compatible algorithm to visualize
               </div>
 
-              <div class="playback-controls-right">
-                <span class="playback-muted-label sync-steps-label">0 / 0</span>
+              <!-- The Actual Controls (Hidden by default) -->
+              <div class="playback-ui-controls"
+                style="display: none; width: 100%; justify-content: space-between; align-items: center;">
+                <div class="playback-controls-left">
+                  <button type="button" class="playback-text-btn sync-start-sim" title="Run">Run</button>
+                  <div class="visualization-options">
+                    Steps&nbsp;
+                    <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
+                      <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn sync-run" title="Visualize">
+                      <img src="images/run.png" alt="Run" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn sync-step-front" title="Step Forward">
+                      <img src="images/step-front.png" alt="Step Forward" class="playback-icon-img" />
+                    </button>
+                    <button type="button" class="playback-icon-btn sync-reset" title="Reset">
+                      <img src="images/reset.png" alt="Reset" class="playback-icon-img" />
+                    </button>
+                    <div class="playback-speed-group">
+                      <img src="images/speed.png" class="playback-label-img" />
+                      <input type="range" min="0.25" max="4" step="0.25" value="1"
+                        class="vscode-slider sync-speed-slider" />
+                      <span class="playback-speed-value sync-speed-label">1x</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="playback-controls-right">
+                  <span class="playback-muted-label sync-steps-label">0 / 0</span>
+                </div>
               </div>
             </div>
             <!--========== End of playback bar ==========-->
@@ -6358,6 +6372,7 @@
         if (activeRightTopTab === 'code' && selectedDsaName) {
           updateCodeViewPane();
         }
+        updatePlaybackCompatibilityUI();
       });
     });
 
@@ -6553,22 +6568,45 @@
     }
 
     function updatePlaybackCompatibilityUI() {
-      /* Replaces the playback bar with the incompatibility message when the compatible filter is disabled
-         and an algorithm is selected that is not compatible with the current active data structure */
-      const currentDsType = getActiveContainerDsType();
-      const showIncompatibleMsg =
-        !isCompatibleFilterActive &&
-        selectedDsaType === 'algo' &&
-        selectedDsaName &&
-        (!currentDsType || !isAlgoCompatibleWithDs(selectedDsaName, currentDsType));
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      const isAlgoSelected = selectedDsaType === 'algo' && selectedDsaName;
+      const currentLang = langActiveLabel ? langActiveLabel.textContent.trim() : 'Python';
 
-      document.querySelectorAll('.playback-bar').forEach(bar => {
-        bar.style.display = showIncompatibleMsg ? 'none' : 'flex';
+      // 1. Determine if the current data structure matches the algorithm
+      let isCompatible = false;
+      if (isAlgoSelected && activeObj) {
+        const algoLower = selectedDsaName.toLowerCase().replace(/[-_\s]+/g, ' ');
+        if (algoLower === 'linear search' && activeObj.dsType === 'Array') {
+          isCompatible = true;
+        }
+        // Add future algorithm compatibility checks here
+      }
+
+      // 2. Update both playback bars
+      const playbackBars = document.querySelectorAll('.playback-bar');
+      playbackBars.forEach(bar => {
+        const controls = bar.querySelector('.playback-ui-controls');
+        const message = bar.querySelector('.playback-ui-message');
+        if (!controls || !message) return;
+
+        if (!activeObj || !isAlgoSelected || !isCompatible) {
+          controls.style.display = 'none';
+          message.style.display = 'block';
+          message.textContent = 'Create a data structure and choose a compatible algorithm to visualize';
+        } else if (currentLang !== 'Python') {
+          controls.style.display = 'none';
+          message.style.display = 'block';
+          message.textContent = 'Visualizations for other languages are still in development';
+        } else {
+          controls.style.display = 'flex';
+          message.style.display = 'none';
+        }
       });
 
-      document.querySelectorAll('.incompatible-bar').forEach(msgBar => {
-        msgBar.style.display = showIncompatibleMsg ? 'flex' : 'none';
-      });
+      // Automatically reset any running simulation when state invalidates
+      if ((!isCompatible || currentLang !== 'Python') && window.isSimulating) {
+        if (typeof resetSimulation === 'function') resetSimulation();
+      }
     }
 
     function isExactOrAcronymMatch(query, target) {

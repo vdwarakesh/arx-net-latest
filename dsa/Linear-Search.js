@@ -2,16 +2,7 @@
 import { getContainerArrayData, parseSingleToken } from './Array.js';
 import { tracePythonArrayAlgorithm } from '../js/pyodide-runner.js';
 
-// Maps Python line numbers in dsa/Linear-Search.py to C++ and Java line numbers
-const PY_LINE_TO_OTHER_LANGS = {
-  1: { Python: '1', 'C++': '1', Java: '2' },
-  2: { Python: '2', 'C++': '2', Java: '3' },
-  3: { Python: '3', 'C++': '3', Java: '4' },
-  4: { Python: '4', 'C++': '4', Java: '5' },
-  5: { Python: '5', 'C++': '7', Java: '8' },
-};
-
-export async function generateLinearSearchSteps(containerEl, rawTarget, selectedLang = 'Python') {
+export async function generateLinearSearchSteps(containerEl, rawTarget) {
   const data = getContainerArrayData(containerEl);
   const parsedTarget = parseSingleToken(rawTarget);
   const targetVal = parsedTarget.value;
@@ -57,9 +48,7 @@ export async function generateLinearSearchSteps(containerEl, rawTarget, selected
 
     steps.push({
       lines: {
-        Python: { active: PY_LINE_TO_OTHER_LANGS[pyLine]?.Python || String(pyLine) },
-        'C++':  { active: PY_LINE_TO_OTHER_LANGS[pyLine]?.['C++'] || String(pyLine) },
-        Java:   { active: PY_LINE_TO_OTHER_LANGS[pyLine]?.Java || String(pyLine) },
+        Python: { active: String(pyLine) }
       },
       activeLineKey: 'active',
       activeIndex: vis.activeIndex,
@@ -71,5 +60,5 @@ export async function generateLinearSearchSteps(containerEl, rawTarget, selected
     });
   });
 
-  return { steps, fullExplanationLines, selectedLang };
+  return { steps, fullExplanationLines };
 }
