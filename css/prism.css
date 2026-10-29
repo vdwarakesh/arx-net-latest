@@ -11,11 +11,6 @@ pre[class*=language-] {
     word-spacing: normal;
     word-break: normal;
     word-wrap: normal;
-    /* white-space: pre-wrap;
-    word-spacing: normal;
-    word-break: break-word;
-    overflow-wrap: break-word; */
-    /* The commented lines enable word wrap but they are incompatible with prism */
     line-height: 1.5;
     -moz-tab-size: 4;
     -o-tab-size: 4;

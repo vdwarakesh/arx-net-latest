@@ -1318,9 +1318,9 @@
       display: flex;
       align-items: center;
       gap: 0.2rem;
-      margin: 0 0rem 0 0.25rem;
-      padding: 0 0.5rem;
-      border-left: 0.0375rem solid var(--splitter-pill);
+      margin: 0;
+      padding: 0;
+      border-left: none;
     }
 
     .playback-icon-btn {
@@ -2760,16 +2760,12 @@
       margin: 0 !important;
       padding: 0.65rem 0.75rem !important;
       background-color: var(--bg-input) !important;
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.35rem !important;
-      font-family: 'Noto Sans Mono', monospace;
-      font-size: 0.85rem;
-      line-height: 1.75;
-      overflow-x: auto !important;
+      overflow-x: scroll !important;
     }
 
-    .signature-editor-pre code[class*="language-"] {
-      white-space: pre !important;
+    .signature-editor-pre code[class*=language-],
+    pre[class*=language-] {
+      line-height: 2;
     }
 
     .sig-inline-input {
@@ -3841,7 +3837,6 @@
                 <div class="playback-ui-controls"
                   style="display: none; width: 100%; justify-content: space-between; align-items: center;">
                   <div class="playback-controls-left">
-                    <button type="button" class="playback-text-btn sync-start-sim" title="Run">Run</button>
                     <div class="visualization-options">
                       Steps&nbsp;
                       <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
@@ -3864,7 +3859,9 @@
                       </div>
                     </div>
                   </div>
-                  <div class="playback-controls-right">
+                  <div class="playback-controls-right" style="gap: 0.5rem;">
+                    <input type="range" min="1" max="1" step="1" value="1" class="vscode-slider sync-step-slider"
+                      title="Seek to step" disabled />
                     <span class="playback-muted-label sync-steps-label">0 / 0</span>
                   </div>
                 </div>
@@ -4196,7 +4193,6 @@
               <div class="playback-ui-controls"
                 style="display: none; width: 100%; justify-content: space-between; align-items: center;">
                 <div class="playback-controls-left">
-                  <button type="button" class="playback-text-btn sync-start-sim" title="Run">Run</button>
                   <div class="visualization-options">
                     Steps&nbsp;
                     <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
@@ -4219,7 +4215,9 @@
                     </div>
                   </div>
                 </div>
-                <div class="playback-controls-right">
+                <div class="playback-controls-right" style="gap: 0.5rem;">
+                  <input type="range" min="1" max="1" step="1" value="1" class="vscode-slider sync-step-slider"
+                    title="Seek to step" disabled />
                   <span class="playback-muted-label sync-steps-label">0 / 0</span>
                 </div>
               </div>
@@ -4482,6 +4480,8 @@
       LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
       FAVOURITES_STORAGE_KEY: 'shard-spiral-favourites',
       ZEN_STORAGE_KEY: 'shard-spiral-zen-mode',
+      COLLAPSED_SIM_WARNING_KEY: 'shard-spiral-collapsed-sim-warning-shown',
+      ZEN_STORAGE_KEY: 'shard-spiral-zen-mode',
 
       /* Theme Cycling & Icon Paths */
       THEME_CYCLE_ORDER: ['system', 'light', 'dark'],
@@ -4687,6 +4687,7 @@
     const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
     const speedLabels = document.querySelectorAll('.playback-speed-value');
     const stepCounterLabels = document.querySelectorAll('.sync-steps-label');
+    const stepSliders = document.querySelectorAll('.sync-step-slider');
     const playPauseImgs = document.querySelectorAll('.sync-run img');
 
     /* Profile Modal DOM Elements */
@@ -6844,6 +6845,7 @@
       /* Case 1: A Data Structure was clicked -> Show "Creation Settings" */
       if (itemType === 'ds' && name) {
         if (algoSettingsSubmitBtn) {
+          algoSettingsSubmitBtn.textContent = 'Create';
           algoSettingsSubmitBtn.style.display = 'inline-flex';
         }
         if (metaSection && metaContainer) {
@@ -6962,14 +6964,16 @@
             return `  <span class="token property">${p.name}</span> <span class="token operator">=</span> <span id="sig-active-ds-badge" class="sig-ds-linked-badge">${dsLabel}</span>${comma}`;
           }
           const placeholder = p.hasDefault ? p.defaultVal : 'required';
-          const optComment = p.hasDefault
-            ? ` <span class="token comment"># default: ${p.defaultVal}</span>`
-            : '';
-          return `  <span class="token property">${p.name}</span> <span class="token operator">=</span> <input type="text" class="sig-inline-input" data-param-name="${p.name}" data-has-default="${p.hasDefault}" placeholder="${placeholder}" />${comma}${optComment}`;
+          return `  <span class="token property">${p.name}</span> <span class="token operator">=</span> <input type="text" class="sig-inline-input" data-param-name="${p.name}" data-has-default="${p.hasDefault}" placeholder="${placeholder}" />${comma}`;
         }).join('\n');
 
         configContainer.style.color = 'inherit';
         configContainer.innerHTML = `<pre class="signature-editor-pre language-python"><code class="language-python"><span class="token function">${sig.funcName}</span><span class="token punctuation">(</span>\n${linesHtml}\n<span class="token punctuation">)</span></code></pre>`;
+
+        if (algoSettingsSubmitBtn) {
+          algoSettingsSubmitBtn.textContent = 'Run';
+          algoSettingsSubmitBtn.style.display = 'inline-flex';
+        }
 
         // Reset any running simulation if the user edits a parameter in the signature
         configContainer.querySelectorAll('.sig-inline-input').forEach(inp => {
@@ -6980,6 +6984,9 @@
           });
         });
       } catch (err) {
+        if (algoSettingsSubmitBtn) {
+          algoSettingsSubmitBtn.style.display = 'none';
+        }
         configContainer.style.color = 'var(--text-muted)';
         configContainer.textContent = 'Algorithm signature not available yet.';
       }
@@ -7328,7 +7335,102 @@
       renderMainAlgoTree();
     });
 
-    algoSettingsSubmitBtn.addEventListener('click', () => {
+    function checkAndShowCollapsedPanelsWarning() {
+      /* Checks if DS (main), Code, Traversal, or State/Explanation cards are collapsed when an algorithm runs.
+         Shows a single consolidated FloatingWindow once per user (stored in localStorage). */
+      try {
+        if (localStorage.getItem(LAYOUT_CONFIG.COLLAPSED_SIM_WARNING_KEY) === '1') {
+          return;
+        }
+      } catch (e) { }
+
+      updateHorizontalCollapsedStates();
+      const isPhone = phoneMedia.matches;
+
+      const isMainDsCollapsed =
+        isDsCollapsed ||
+        dsCard.classList.contains('is-h-collapsed') ||
+        (isPhone && leftColumn.classList.contains('is-row-h-collapsed'));
+
+      const isCodeCardCollapsed =
+        isCodeCollapsed ||
+        codeCard.classList.contains('is-h-collapsed') ||
+        rightTopRow.classList.contains('is-row-h-collapsed');
+
+      const isTraversalCollapsed =
+        isDsCollapsed ||
+        logCard.classList.contains('is-h-collapsed') ||
+        (!isPhone && desktopTraversalSlot.classList.contains('log-h-collapsed')) ||
+        (isPhone && bottomSplitRow.classList.contains('is-row-h-collapsed'));
+
+      const isStateCollapsed =
+        stateCard.classList.contains('is-h-collapsed') ||
+        bottomSplitRow.classList.contains('is-row-h-collapsed');
+
+      const collapsedItems = [];
+      if (isMainDsCollapsed) {
+        collapsedItems.push({
+          name: 'Main Canvas (Data Structure Card)',
+          desc: 'Displays the live visual animation of your data structure as the algorithm steps through it.'
+        });
+      }
+      if (isCodeCardCollapsed) {
+        collapsedItems.push({
+          name: 'Code Card',
+          desc: 'Highlights the exact line of Python code currently executing at each simulation step.'
+        });
+      }
+      if (isTraversalCollapsed) {
+        collapsedItems.push({
+          name: 'Traversal Card',
+          desc: 'Shows the real-time sequence of elements or nodes visited and inspected so far.'
+        });
+      }
+      if (isStateCollapsed) {
+        collapsedItems.push({
+          name: 'State Variables / Explanation Card',
+          desc: 'Displays live local variable values (such as loop counters and return values) and step-by-step explanations.'
+        });
+      }
+
+      if (collapsedItems.length === 0) return;
+
+      try {
+        localStorage.setItem(LAYOUT_CONFIG.COLLAPSED_SIM_WARNING_KEY, '1');
+      } catch (e) { }
+
+      const itemsHtml = collapsedItems.map(item => `
+        <div style="padding: 0.45rem 0.6rem; background: var(--bg-elevated); border-left: 3px solid var(--accent-primary); border-radius: 0.25rem;">
+          <div style="font-weight: 600; color: var(--text-bright); margin-bottom: 0.15rem;">${item.name}</div>
+          <div style="font-size: 0.88em; color: var(--text-primary); line-height: 1.4;">${item.desc}</div>
+        </div>
+      `).join('');
+
+      setFloatingWindowTitle(sharedFloatingWindow, 'Collapsed Visualization Panels');
+      sharedFloatingWindow.setContent(`
+        <p style="margin: 0 0 0.5rem 0; line-height: 1.45;">
+          One or more visualization panels are currently collapsed while running this algorithm:
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 0.65rem;">
+          ${itemsHtml}
+        </div>
+        <p style="margin: 0; font-size: 0.82em; color: var(--text-muted); font-style: italic;">
+          Note: This reminder will only be shown once. You can expand any collapsed panel at any time by clicking its strip or dragging its splitter.
+        </p>
+      `);
+      sharedFloatingWindow.open();
+    }
+
+    async function startAlgorithmVisualization() {
+      stopAutoPlay();
+      if (!(await buildSimulationIfNeeded())) return;
+      checkAndShowCollapsedPanelsWarning();
+      applySimulationStep(0);
+      setPlayButtonIcons(true);
+      scheduleNextStep();
+    }
+
+    algoSettingsSubmitBtn.addEventListener('click', async () => {
       if (selectedDsaType === 'ds' && selectedDsaName) {
         const nameInputEl = document.getElementById('ds-input-name');
         const contentInputEl = document.getElementById('ds-input-content');
@@ -7339,6 +7441,11 @@
 
         if (nameInputEl) nameInputEl.value = '';
         if (contentInputEl) contentInputEl.value = '';
+      } else if (selectedDsaType === 'algo' && selectedDsaName) {
+        // Collapse the Algorithms & Settings column and start the visualization
+        setAlgoCollapsed(true);
+        saveLayoutState();
+        await startAlgorithmVisualization();
       }
     });
 
@@ -7348,12 +7455,12 @@
 
 
     /* ========== 11. Algorithm Simulation & Playback Engine ========== */
-    // Keep this so the "1x" text updates and syncs across desktop/mobile when you drag the slider
-    speedSliders.forEach(slider => {
+    stepSliders.forEach(slider => {
       slider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        speedSliders.forEach(s => s.value = val);
-        speedLabels.forEach(l => l.textContent = `${val}x`);
+        if (simSteps.length === 0) return;
+        stopAutoPlay();
+        const targetStep = parseInt(e.target.value, 10) - 1;
+        applySimulationStep(targetStep);
       });
     });
 
@@ -7372,12 +7479,18 @@
       };
       renderDsContainer(activeObj);
 
-      // 2. Highlight active line in Python / C++ / Java
+      // 2. Highlight active line in Python
       highlightActiveCodeLine();
 
-      // 3. Update step counter ("x / y")
+      // 3. Update step counter ("x / y") and sync step-seek sliders
       stepCounterLabels.forEach(lbl => {
         lbl.textContent = `${simCurrentStepIdx + 1} / ${simSteps.length}`;
+      });
+      stepSliders.forEach(s => {
+        s.disabled = false;
+        s.min = '1';
+        s.max = String(simSteps.length);
+        s.value = String(simCurrentStepIdx + 1);
       });
 
       // 4. Update Traversal and State Variables / Explanation cards
@@ -7528,28 +7641,25 @@
 
       highlightActiveCodeLine();
       stepCounterLabels.forEach(lbl => { lbl.textContent = '0 / 0'; });
+      stepSliders.forEach(s => {
+        s.disabled = true;
+        s.min = '1';
+        s.max = '1';
+        s.value = '1';
+      });
       updateTraversalCard(null);
       updateStateViewPane();
     }
 
-    // "Run" text button -> Builds trace and jumps straight to the final result
-    document.querySelectorAll('.sync-start-sim').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        stopAutoPlay();
-        if (await buildSimulationIfNeeded()) {
-          applySimulationStep(simSteps.length - 1);
-        }
-      });
-    });
-
-    // "Visualize" (Play/Pause) icon button -> Animates step-by-step using the speed slider
+    // "Visualize" (Play/Pause) icon button in the playback bar
     document.querySelectorAll('.sync-run').forEach(btn => {
       btn.addEventListener('click', async () => {
         if (isSimPlaying) { stopAutoPlay(); return; }
         if (simSteps.length === 0 || simCurrentStepIdx >= simSteps.length - 1) {
-          if (!(await buildSimulationIfNeeded())) return;
-          applySimulationStep(0);
+          await startAlgorithmVisualization();
+          return;
         }
+        checkAndShowCollapsedPanelsWarning();
         setPlayButtonIcons(true);
         scheduleNextStep();
       });
@@ -7561,6 +7671,7 @@
         stopAutoPlay();
         if (simSteps.length === 0) {
           if (!(await buildSimulationIfNeeded())) return;
+          checkAndShowCollapsedPanelsWarning();
           applySimulationStep(0);
         } else if (simCurrentStepIdx < simSteps.length - 1) {
           applySimulationStep(simCurrentStepIdx + 1);
