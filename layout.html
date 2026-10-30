@@ -4496,7 +4496,6 @@
   <script type="module">
     import { createQuickdraw } from './js/quickdraw/index.js';
     import { warmUpPyodide } from './js/pyodide-runner.js';
-    import { drawArray, setupArrayInteractions, getContainerArrayData } from './data-structures/Array.js';
 
     /* ========== 1. Layout, Breakpoint & Storage Configuration ========== */
     const LAYOUT_CONFIG = {
@@ -4908,13 +4907,13 @@
 
     function renderDsContainer(containerObj) {
       if (!containerObj || !containerObj.canvas) return;
-      // 1. Draw the infinite background grid
+
       drawStandaloneGrid(containerObj.canvas, currentDsGridType, containerObj.camera);
 
-      // 2. If it's an Array, draw the array bars on the canvas
-      if (containerObj.dsType === 'Array') {
+      // Call the standardized draw function for whatever data structure this is
+      if (containerObj.dsModule && typeof containerObj.dsModule.draw === 'function') {
         containerObj.element._camera = containerObj.camera;
-        drawArray(containerObj.element, containerObj.camera);
+        containerObj.dsModule.draw(containerObj.element, containerObj.camera);
       }
     }
 
@@ -6026,7 +6025,7 @@
       redrawAllDsCanvases();
     }
 
-    function createDataStructureContainer(dsType, rawNameInput, contentInput) {
+    async function createDataStructureContainer(dsType, rawNameInput, contentInput) {
       /* Creates a new container DOM element with a standalone grid canvas, appends it to the DS card, adds it to History, and selects it */
       const uniqueName = getUniqueContainerName(rawNameInput, dsType);
 
@@ -6035,18 +6034,23 @@
       containerEl.dataset.containerName = uniqueName;
       containerEl.dataset.dsType = dsType;
 
-      /* Keep content as an attribute/property on the container and name as the header value */
       containerEl.setAttribute('userInput', contentInput);
       containerEl.userInput = contentInput;
       containerEl.containerName = uniqueName;
 
-      /* Create the standalone grid canvas */
       const canvasEl = document.createElement('canvas');
       canvasEl.className = 'ds-grid-canvas';
       containerEl.appendChild(canvasEl);
 
-      if (dsCanvasAreaEl) {
-        dsCanvasAreaEl.appendChild(containerEl);
+      if (dsCanvasAreaEl) dsCanvasAreaEl.appendChild(containerEl);
+
+      // 1. DYNAMICALLY IMPORT THE DATA STRUCTURE MODULE
+      let dsModule = null;
+      try {
+        const formattedType = dsType.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+        dsModule = await import(`./data-structures/${formattedType}.js`);
+      } catch (err) {
+        console.error(`Failed to load module for Data Structure: ${dsType}`, err);
       }
 
       const containerObj = {
@@ -6055,44 +6059,35 @@
         userInput: contentInput,
         element: containerEl,
         canvas: canvasEl,
-        camera: { x: 0, y: 0, z: 1 }
+        camera: { x: 0, y: 0, z: 1 },
+        dsModule // 2. Store the module on the object for later use
       };
 
       dsContainers.push(containerObj);
-
-      /* Activate the container first */
       selectContainer(uniqueName);
-
       attachStandaloneCameraControls(containerObj);
 
-      /* Attach interactive Array right-click & drag-to-reorder controls */
-      if (dsType === 'Array') {
-        setupArrayInteractions(containerEl, () => renderDsContainer(containerObj));
+      // 3. Setup interactions using the standardized interface
+      if (dsModule && typeof dsModule.setupInteractions === 'function') {
+        dsModule.setupInteractions(containerEl, () => renderDsContainer(containerObj));
       }
 
-      /* Center and zoom-to-fit on first real layout pass, and redraw whenever the panel is resized */
       let isInitialCentered = false;
       const ro = new ResizeObserver(() => {
         if (containerEl.classList.contains('active')) {
           const r = canvasEl.getBoundingClientRect();
           if (r.width > 0 && r.height > 0 && !isInitialCentered) {
             isInitialCentered = true;
-
-            // 1. Perform an initial hidden render to calculate _structureBounds based on the raw data
             renderDsContainer(containerObj);
-
-            // 2. Immediately apply the exact same zoom and pan math used by double-click
             if (typeof containerObj.centerView === 'function') {
               containerObj.centerView();
             }
           } else {
-            // Normal resize redraw
             renderDsContainer(containerObj);
           }
         }
       });
       ro.observe(containerEl);
-      renderDsContainer(containerObj);
     }
 
     function exportActiveDsCanvas(mode = 'normal') {
@@ -6722,24 +6717,24 @@
     }
 
     function checkDataStructureRequirements(activeObj, requirements = {}) {
-      /* Validates specific requirements defined in algorithms.js (e.g., { sorted: true }) */
       if (!requirements || Object.keys(requirements).length === 0) return null;
 
-      if (activeObj.dsType === 'Array') {
-        const data = getContainerArrayData(activeObj.element) || [];
-        const values = data.map((d) => d.value);
+      // Use the standardized getData function
+      if (activeObj.dsModule && typeof activeObj.dsModule.getData === 'function') {
+        const data = activeObj.dsModule.getData(activeObj.element) || [];
 
-        // Check "sorted": true requirement (ascending or descending)
-        if (requirements.sorted && values.length > 1) {
+        // Example check: Is the structure sorted?
+        if (requirements.sorted && data.length > 1) {
+          // Assumes data objects have a 'numericValue' or 'value' property
+          const values = data.map(d => d.numericValue !== undefined ? d.numericValue : d.value);
           const isAsc = values.every((v, i) => i === 0 || values[i - 1] <= v);
           const isDesc = values.every((v, i) => i === 0 || values[i - 1] >= v);
+
           if (!isAsc && !isDesc) {
             return `This algorithm requires a sorted ${activeObj.dsType}`;
           }
         }
       }
-
-      // Future requirements (e.g., weighted, directed, acyclic for Graphs) can be checked here
       return null;
     }
 

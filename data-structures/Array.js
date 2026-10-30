@@ -646,4 +646,8 @@ export function setupArrayInteractions(containerEl, requestRender) {
   canvas.addEventListener('pointercancel', endDrag, { capture: true });
 }
 
-export default drawArray;
+export { 
+  drawArray as draw, 
+  setupArrayInteractions as setupInteractions, 
+  getContainerArrayData as getData 
+};
