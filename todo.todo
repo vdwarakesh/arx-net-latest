@@ -1,7 +1,6 @@
-When custom warning is open, pause visualization. 
-Double click should only center the view, not redraw the canvas and grid.
+
+
 Playback bar content overflow fix in mobile.
-Padding in code card when not visualizing
 
 Add notes for all algorithms
 Add algorithm implementations in all languages

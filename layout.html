@@ -600,7 +600,7 @@
     .modal-window {
       display: flex;
       flex-direction: column;
-      min-width: 30rem;
+      min-width: min(30rem, 92vw);
       max-width: min(45rem, 92vw);
       max-height: 85dvh;
       background-color: var(--bg-card);
@@ -2814,6 +2814,8 @@
       min-width: 0 !important;
       max-width: 100% !important;
       margin: 0 !important;
+      padding-top: 1em !important;
+      padding-bottom: 1em !important;
       border-radius: 0;
       font-variant-ligatures: none !important;
       white-space: pre-wrap !important;
@@ -4421,6 +4423,7 @@
       constructor(title, width = 'auto', height = 'auto') {
         this.overlay = document.createElement('div');
         this.overlay.className = 'modal-overlay';
+        this.onCloseCallback = null;
 
         // Applies dynamic sizing with inline styles
         this.overlay.innerHTML = `
@@ -4449,15 +4452,22 @@
         this.body.innerHTML = htmlString;
       }
 
-      open() {
+      open(onClose = null) {
+        this.onCloseCallback = typeof onClose === 'function' ? onClose : null;
         this.overlay.classList.add('active');
       }
 
       close() {
+        const wasOpen = this.overlay.classList.contains('active');
         this.overlay.classList.remove('active');
+        if (wasOpen && this.onCloseCallback) {
+          const cb = this.onCloseCallback;
+          this.onCloseCallback = null;
+          cb();
+        }
       }
     }
-    window.FloatingWindow = FloatingWindow; // Make accessible to dsa/Array.js
+    window.FloatingWindow = FloatingWindow;
     /* ========== End of floating window ========== */
 
   </script>
@@ -4948,15 +4958,38 @@
         const r = canvas.getBoundingClientRect();
         if (r.width <= 0 || r.height <= 0) return;
 
-        // Reset camera pan to symmetric center of current view while preserving current zoom (camera.z)
-        centerGridForMaxPoints(canvas, camera);
+        const el = containerObj.element;
+        const prevZ = camera.z || 1;
+        const prevCamX = camera.x;
+        const prevCamY = camera.y;
 
-        // Re-anchor the data structure to the current view dimensions and centered world origin
-        containerObj.element._baseViewport = { w: r.width, h: r.height };
-        containerObj.element._worldOrigin = {
-          x: (r.width / (2 * camera.z)) - camera.x,
-          y: (r.height / (2 * camera.z)) - camera.y,
-        };
+        // Calculate world-space center of the data structure from its min/max pixel bounds
+        let targetWorldX = el._worldOrigin ? el._worldOrigin.x : (r.width / (2 * prevZ) - prevCamX);
+        let targetWorldY = el._worldOrigin ? el._worldOrigin.y : (r.height / (2 * prevZ) - prevCamY);
+
+        if (el._structureBounds) {
+          // If explicit world bounds { minX, maxX, minY, maxY } exist
+          targetWorldX = (el._structureBounds.minX + el._structureBounds.maxX) / 2;
+          targetWorldY = (el._structureBounds.minY + el._structureBounds.maxY) / 2;
+        } else if (Array.isArray(el._barRects) && el._barRects.length > 0) {
+          // Compute min/max pixel bounds across all rendered elements and convert to world coordinates
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const rect of el._barRects) {
+            if (rect.x < minX) minX = rect.x;
+            if (rect.y < minY) minY = rect.y;
+            if (rect.x + rect.w > maxX) maxX = rect.x + rect.w;
+            if (rect.y + rect.h > maxY) maxY = rect.y + rect.h;
+          }
+          const screenCenterX = (minX + maxX) / 2;
+          const screenCenterY = (minY + maxY) / 2;
+          targetWorldX = (screenCenterX / prevZ) - prevCamX;
+          targetWorldY = (screenCenterY / prevZ) - prevCamY;
+        }
+
+        // Reset zoom to 1 and position camera so (targetWorldX, targetWorldY) is at the viewport center
+        camera.z = 1;
+        camera.x = (r.width / 2) - targetWorldX;
+        camera.y = (r.height / 2) - targetWorldY;
 
         render();
       };
@@ -7335,12 +7368,11 @@
       renderMainAlgoTree();
     });
 
-    function checkAndShowCollapsedPanelsWarning() {
-      /* Checks if DS (main), Code, Traversal, or State/Explanation cards are collapsed when an algorithm runs.
-         Shows a single consolidated FloatingWindow once per user (stored in localStorage). */
+    function checkAndShowCollapsedPanelsWarning(onCloseCallback = null) {
+      /* Returns true if the warning modal was opened, or false if no warning was needed */
       try {
         if (localStorage.getItem(LAYOUT_CONFIG.COLLAPSED_SIM_WARNING_KEY) === '1') {
-          return;
+          return false;
         }
       } catch (e) { }
 
@@ -7393,7 +7425,7 @@
         });
       }
 
-      if (collapsedItems.length === 0) return;
+      if (collapsedItems.length === 0) return false;
 
       try {
         localStorage.setItem(LAYOUT_CONFIG.COLLAPSED_SIM_WARNING_KEY, '1');
@@ -7405,6 +7437,9 @@
           <div style="font-size: 0.88em; color: var(--text-primary); line-height: 1.4;">${item.desc}</div>
         </div>
       `).join('');
+
+      // Pause any active playback while the warning window is open
+      stopAutoPlay();
 
       setFloatingWindowTitle(sharedFloatingWindow, 'Collapsed Visualization Panels');
       sharedFloatingWindow.setContent(`
@@ -7418,16 +7453,24 @@
           Note: This reminder will only be shown once. You can expand any collapsed panel at any time by clicking its strip or dragging its splitter.
         </p>
       `);
-      sharedFloatingWindow.open();
+      sharedFloatingWindow.open(onCloseCallback);
+      return true;
     }
 
     async function startAlgorithmVisualization() {
       stopAutoPlay();
       if (!(await buildSimulationIfNeeded())) return;
-      checkAndShowCollapsedPanelsWarning();
       applySimulationStep(0);
-      setPlayButtonIcons(true);
-      scheduleNextStep();
+
+      const beginPlay = () => {
+        setPlayButtonIcons(true);
+        scheduleNextStep();
+      };
+
+      // If warning opens, stay paused on step 0 until the user closes the modal
+      if (!checkAndShowCollapsedPanelsWarning(beginPlay)) {
+        beginPlay();
+      }
     }
 
     algoSettingsSubmitBtn.addEventListener('click', async () => {
@@ -7659,9 +7702,13 @@
           await startAlgorithmVisualization();
           return;
         }
-        checkAndShowCollapsedPanelsWarning();
-        setPlayButtonIcons(true);
-        scheduleNextStep();
+        const resumePlay = () => {
+          setPlayButtonIcons(true);
+          scheduleNextStep();
+        };
+        if (!checkAndShowCollapsedPanelsWarning(resumePlay)) {
+          resumePlay();
+        }
       });
     });
 
