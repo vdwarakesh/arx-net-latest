@@ -6110,8 +6110,8 @@
         // Both 'transparent' and 'printable' require temporarily hiding the grid
         const tempContainer = activeObj.element;
         drawStandaloneGrid(srcCanvas, 'none', activeObj.camera);
-        if (activeObj.dsType === 'Array') {
-          drawArray(tempContainer, activeObj.camera);
+        if (activeObj.dsModule && typeof activeObj.dsModule.draw === 'function') {
+          activeObj.dsModule.draw(tempContainer, activeObj.camera);
         }
 
         if (mode === 'printable') {

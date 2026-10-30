@@ -547,7 +547,7 @@ export function setupArrayInteractions(containerEl, requestRender) {
     };
   };
 
-  // 1. Right-Click Context Menu Listener
+  // 1. Right-Click Context Menu Listener (Blocked during simulation + shows warning)
   canvas.addEventListener('contextmenu', (e) => {
     if (window.isSimulating) {
       e.preventDefault();
@@ -571,15 +571,9 @@ export function setupArrayInteractions(containerEl, requestRender) {
     }
   });
 
-  // 2. Left-Click Drag on an Element -> Reorder Array
+  // 2. Left-Click Drag on an Element -> Reorder Array (Silently disabled during simulation so camera pan/recenter works)
   canvas.addEventListener('pointerdown', (e) => {
-    if (window.isSimulating) {
-      // Show warning only on left-click (intended drag), ignore middle/right clicks
-      if (e.button === 0 && !e.shiftKey && typeof window.showSimulationRunningWarning === 'function') {
-        window.showSimulationRunningWarning();
-      }
-      return;
-    }
+    if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
 
     const worldPt = screenToWorld(e.clientX, e.clientY);
@@ -646,8 +640,8 @@ export function setupArrayInteractions(containerEl, requestRender) {
   canvas.addEventListener('pointercancel', endDrag, { capture: true });
 }
 
-export { 
-  drawArray as draw, 
-  setupArrayInteractions as setupInteractions, 
-  getContainerArrayData as getData 
+export {
+  drawArray as draw,
+  setupArrayInteractions as setupInteractions,
+  getContainerArrayData as getData
 };
