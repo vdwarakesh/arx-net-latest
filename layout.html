@@ -1225,7 +1225,7 @@
       flex-direction: column;
       width: 100%;
       height: 100%;
-      padding: 1rem;
+      padding: 0.25rem;
       /* Edge-to-edge canvas */
       overflow: hidden;
     }
@@ -5030,6 +5030,7 @@
 
         render();
       };
+      containerObj.centerView = centerDataStructureToCurrentView;
 
       // 1. Wheel: Touchpad 2-finger pinch (ctrlKey) or Mouse scroll wheel -> Zoom from Center
       // Touchpad 2-finger move -> Pan
@@ -6069,28 +6070,25 @@
         setupArrayInteractions(containerEl, () => renderDsContainer(containerObj));
       }
 
-      /* Center on first real layout pass, and redraw whenever the panel is resized */
+      /* Center and zoom-to-fit on first real layout pass, and redraw whenever the panel is resized */
       let isInitialCentered = false;
       const ro = new ResizeObserver(() => {
         if (containerEl.classList.contains('active')) {
           const r = canvasEl.getBoundingClientRect();
           if (r.width > 0 && r.height > 0 && !isInitialCentered) {
             isInitialCentered = true;
-            centerGridForMaxPoints(canvasEl, containerObj.camera);
-            containerEl._baseViewport = { w: r.width, h: r.height };
-            containerEl._worldOrigin = {
-              x: (r.width / (2 * containerObj.camera.z)) - containerObj.camera.x,
-              y: (r.height / (2 * containerObj.camera.z)) - containerObj.camera.y,
-            };
-            // Render once to compute _structureBounds, then center camera on the true bounds
+
+            // 1. Perform an initial hidden render to calculate _structureBounds based on the raw data
             renderDsContainer(containerObj);
-            if (containerEl._structureBounds) {
-              const sb = containerEl._structureBounds;
-              containerObj.camera.x = (r.width / 2) - ((sb.minX + sb.maxX) / 2);
-              containerObj.camera.y = (r.height / 2) - ((sb.minY + sb.maxY) / 2);
+
+            // 2. Immediately apply the exact same zoom and pan math used by double-click
+            if (typeof containerObj.centerView === 'function') {
+              containerObj.centerView();
             }
+          } else {
+            // Normal resize redraw
+            renderDsContainer(containerObj);
           }
-          renderDsContainer(containerObj);
         }
       });
       ro.observe(containerEl);
