@@ -16,8 +16,8 @@ export const ARRAY_HYPERPARAMETERS = {
   TOP_LIMIT_RATIO: 0.30,      // Top of the tallest bar sits at 30% from the top of the canvas
   BOTTOM_BASELINE_RATIO: 0.60,// Baseline of all bars sits at 60% from the top of the canvas
   HORIZONTAL_SPAN_RATIO: 0.70,// Array spans up to 70% of the canvas width
-  MAX_BAR_WIDTH: 68,          // Maximum width of a single bar in world px
-  MIN_BAR_WIDTH: 24,          // Minimum width of a single bar in world px
+  MAX_BAR_WIDTH: 50,          // Maximum width of a single bar in world px
+  MIN_BAR_WIDTH: 50,          // Minimum width of a single bar in world px
   BAR_PADDING: 0.22,          // Padding ratio between bars (for d3.scaleBand)
   FONT_FAMILY: "'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif",
 
@@ -392,13 +392,16 @@ export function setupArrayInteractions(containerEl, requestRender) {
   };
 
   // Helper to open the second floating window for inputting values (with a Back button)
-  const openValueInputModal = (title, placeholder, buttonText, onSubmit, onBack) => {
+  const openValueInputModal = (title, placeholder, buttonText, onSubmit, onBack, initialValue = '') => {
     const win = getModal(title);
     if (!win) return;
 
+    // Sanitize initial value for the HTML attribute
+    const safeInitial = String(initialValue).replace(/"/g, '&quot;');
+
     win.setContent(`
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <input type="text" id="arr-fw-val" class="param-input-field" placeholder="${placeholder}" />
+        <input type="text" id="arr-fw-val" class="param-input-field" placeholder="${placeholder}" value="${safeInitial}" />
         <div style="display: flex; gap: 0.4rem;">
           <button type="button" id="arr-fw-back" class="vscode-btn-secondary" style="flex: 1;">Back</button>
           <button type="button" id="arr-fw-submit" class="vscode-btn-secondary" style="flex: 2;">${buttonText}</button>
@@ -423,7 +426,11 @@ export function setupArrayInteractions(containerEl, requestRender) {
     inputEl.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter') handleConfirm();
     });
-    setTimeout(() => inputEl.focus(), 20);
+
+    setTimeout(() => {
+      inputEl.focus();
+      if (initialValue) inputEl.select(); // Auto-highlight the existing value so typing immediately overwrites it
+    }, 20);
   };
 
   // Step 1A: Options menu when right-clicking empty canvas space
@@ -434,6 +441,7 @@ export function setupArrayInteractions(containerEl, requestRender) {
     win.setContent(`
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
         <button type="button" id="arr-opt-add" class="vscode-btn-secondary" style="width: 100%;">Add element</button>
+        <button type="button" id="arr-opt-copy" class="vscode-btn-secondary" style="width: 100%;">Copy array values (CSV)</button>
       </div>
     `);
     win.open();
@@ -452,6 +460,23 @@ export function setupArrayInteractions(containerEl, requestRender) {
         () => openCanvasOptionsMenu(data)
       );
     };
+
+    win.body.querySelector('#arr-opt-copy').onclick = () => {
+      const copyBtn = win.body.querySelector('#arr-opt-copy');
+      // Map out the pure values and join them with a comma
+      const csvStr = data.map(d => d.value).join(',');
+
+      navigator.clipboard.writeText(csvStr).then(() => {
+        copyBtn.textContent = 'Copied!';
+        copyBtn.style.color = '#12a67c'; // Highlight green on success
+        setTimeout(() => {
+          win.close();
+        }, 600);
+      }).catch(err => {
+        copyBtn.textContent = 'Failed to copy';
+        copyBtn.style.color = '#ef4444'; // Red on fail
+      });
+    };
   };
 
   // Step 1B: Options menu when right-clicking an existing array element
@@ -462,15 +487,31 @@ export function setupArrayInteractions(containerEl, requestRender) {
 
     win.setContent(`
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <button type="button" id="arr-opt-edit" class="vscode-btn-secondary" style="width: 100%;">Edit element</button>
         <button type="button" id="arr-opt-left" class="vscode-btn-secondary" style="width: 100%;">Add to left</button>
         <button type="button" id="arr-opt-right" class="vscode-btn-secondary" style="width: 100%;">Add to right</button>
-        <button type="button" id="arr-opt-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete element</button>
+        <button type="button" id="arr-opt-del" class="vscode-btn-secondary" style="width: 100%; color: #ef4444;">Delete element</button>
       </div>
     `);
     win.open();
 
+    win.body.querySelector('#arr-opt-edit').onclick = () => {
+      openValueInputModal(
+        `Element [${hitIdx}] - Edit`,
+        'Enter new value',
+        'Save',
+        (raw) => {
+          const newTokens = parseArrayInput(raw);
+          // Splice out the 1 old element and insert the new one(s)
+          data.splice(hitIdx, 1, ...newTokens);
+          syncArrayDataToContainer(containerEl, data);
+        },
+        () => openElementOptionsMenu(data, hitIdx),
+        targetItem.raw // Pre-fill the input with the current raw string
+      );
+    };
+
     win.body.querySelector('#arr-opt-left').onclick = () => {
-      // Step 2: Settings window for "Add to left"
       openValueInputModal(
         `Element [${hitIdx}] - Add to Left`,
         'Enter value (or space/comma separated values)',
@@ -485,7 +526,6 @@ export function setupArrayInteractions(containerEl, requestRender) {
     };
 
     win.body.querySelector('#arr-opt-right').onclick = () => {
-      // Step 2: Settings window for "Add to right"
       openValueInputModal(
         `Element [${hitIdx}] - Add to Right`,
         'Enter value (or space/comma separated values)',

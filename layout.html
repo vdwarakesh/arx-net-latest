@@ -4551,7 +4551,7 @@
     /* Grid Constants & Themes */
     const STANDALONE_GRID_STEP = 80;
     const STANDALONE_GRID_BAND = 40;
-    const DS_ZOOM_MIN = 0.5;
+    const DS_ZOOM_MIN = 0.05;
     const DS_ZOOM_MAX = 5;
 
     const STANDALONE_GRID_THEMES = {
@@ -4980,15 +4980,30 @@
         if (r.width <= 0 || r.height <= 0) return;
 
         const el = containerObj.element;
-        let targetWorldX = el._worldOrigin ? el._worldOrigin.x : (r.width / (2 * (camera.z || 1)) - camera.x);
-        let targetWorldY = el._worldOrigin ? el._worldOrigin.y : (r.height / (2 * (camera.z || 1)) - camera.y);
+        const prevZ = camera.z || 1;
+        const prevCamX = camera.x;
+        const prevCamY = camera.y;
+
+        let targetWorldX = el._worldOrigin ? el._worldOrigin.x : (r.width / (2 * prevZ) - prevCamX);
+        let targetWorldY = el._worldOrigin ? el._worldOrigin.y : (r.height / (2 * prevZ) - prevCamY);
+
+        let targetZoom = 1;
 
         if (el._structureBounds) {
-          // Exact world-space bounding box (from top of tallest bar to bottom of index labels)
-          targetWorldX = (el._structureBounds.minX + el._structureBounds.maxX) / 2;
-          targetWorldY = (el._structureBounds.minY + el._structureBounds.maxY) / 2;
+          const sb = el._structureBounds;
+          const contentW = sb.maxX - sb.minX;
+          const contentH = sb.maxY - sb.minY;
+
+          targetWorldX = (sb.minX + sb.maxX) / 2;
+          targetWorldY = (sb.minY + sb.maxY) / 2;
+
+          if (contentW > 0 && contentH > 0) {
+            // Leave a 10% margin so the array doesn't touch the absolute edges of the canvas
+            const padX = r.width * 0.9;
+            const padY = r.height * 0.9;
+            targetZoom = Math.min(padX / contentW, padY / contentH);
+          }
         } else if (Array.isArray(el._barHitBoxes) && el._barHitBoxes.length > 0) {
-          // Fallback: compute world bounds directly from _barHitBoxes
           let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
           for (const b of el._barHitBoxes) {
             if (b.x < minX) minX = b.x;
@@ -4998,12 +5013,20 @@
           }
           targetWorldX = (minX + maxX) / 2;
           targetWorldY = (minY + maxY) / 2;
+
+          const contentW = maxX - minX;
+          const contentH = maxY - minY;
+          if (contentW > 0 && contentH > 0) {
+            const padX = r.width * 0.9;
+            const padY = r.height * 0.9;
+            targetZoom = Math.min(padX / contentW, padY / contentH);
+          }
         }
 
-        // Reset zoom to 1 and center the camera on the true midpoint of the structure
-        camera.z = 1;
-        camera.x = (r.width / 2) - targetWorldX;
-        camera.y = (r.height / 2) - targetWorldY;
+        // Cap zoom at 1x so tiny arrays don't scale up gigantically, but allow shrinking to fit
+        camera.z = Math.max(DS_ZOOM_MIN, Math.min(1, targetZoom));
+        camera.x = (r.width / 2) / camera.z - targetWorldX;
+        camera.y = (r.height / 2) / camera.z - targetWorldY;
 
         render();
       };
@@ -5020,7 +5043,7 @@
           (e.deltaMode !== 0 || Math.abs(e.deltaY) >= 40);
 
         if (isTouchpadPinch || isDiscreteMouseWheel) {
-          const factor = isTouchpadPinch ? -e.deltaY * 0.015 : -e.deltaY * 0.0025;
+          const factor = -e.deltaY * 0.0025;
           zoomCenter(Math.exp(factor));
         } else {
           // Two-finger touchpad move pans the canvas
