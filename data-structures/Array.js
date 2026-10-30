@@ -40,7 +40,7 @@ export const ARRAY_HYPERPARAMETERS = {
 
   // Simulation state: bar already checked and ruled out (uses its own fill color, dimmed)
   VISITED_FILL_VAR: '--ds-visited',
-  CHECKED_ALPHA: 0.5,
+  CHECKED_ALPHA: 0.45,
 
   // Opaque default alpha for normal bars
   DEFAULT_ALPHA: 1,
