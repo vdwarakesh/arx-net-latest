@@ -4930,6 +4930,7 @@
     let dataStructuresJson = {};
     let algorithmsJson = {};
     let constraintsJson = {};
+    let attributesDescJson = {};
     let dsDirectAlgorithmsMap = {};
     let selectedDsaName = null;
     let selectedDsaType = null; // 'ds' | 'algo'
@@ -6315,7 +6316,7 @@
       }
       updatePlaybackCompatibilityUI();
       updateDsHeaderWarningState();
-      updateMetadataUI(); 
+      updateMetadataUI();
       redrawAllDsCanvases();
     }
 
@@ -7279,14 +7280,15 @@
     }
 
     async function updateAlgorithmSettings(name, parentDsName = null, itemType = 'algo') {
-      /* Populates #algo-settings-card with either "Creation Settings" (for DS) or an interactive <pre><code> signature (for Algorithms) */
+      /* Populates #algo-settings-card with either Attributes + "Creation Settings" (for DS) or Constraints & Tags + interactive <pre><code> signature (for Algorithms) */
       const configHeading = document.getElementById('algo-config-heading');
       const configContainer = document.getElementById('algo-config-container');
       const metaSection = document.getElementById('algo-settings-meta-section');
       const metaContainer = document.getElementById('algo-settings-meta-container');
+      const metaHeading = metaSection ? metaSection.querySelector('h4') : null;
       if (!configContainer || !configHeading) return;
 
-      /* Case 1: A Data Structure was clicked -> Show "Creation Settings" */
+      /* Case 1: A Data Structure was clicked -> Show "Attributes" & "Creation Settings" */
       if (itemType === 'ds' && name) {
         if (algoSettingsSubmitBtn) {
           algoSettingsSubmitBtn.textContent = 'Create';
@@ -7295,9 +7297,53 @@
         const algoIncompatibleMsg = document.getElementById('algo-settings-incompatible-msg');
         if (algoIncompatibleMsg) algoIncompatibleMsg.style.display = 'none';
 
+        // Gather inherited + direct attributes along the data structure lineage
         if (metaSection && metaContainer) {
           metaContainer.innerHTML = '';
-          metaSection.style.display = 'none';
+          const lineage = getDsLineage(name) || [name];
+          let collectedAttributes = [];
+          let currNode = dataStructuresJson;
+
+          for (const nodeName of lineage) {
+            if (currNode && currNode[nodeName]) {
+              if (Array.isArray(currNode[nodeName].attributes)) {
+                collectedAttributes.push(...currNode[nodeName].attributes);
+              }
+              currNode = currNode[nodeName].children || {};
+            } else {
+              break;
+            }
+          }
+          collectedAttributes = [...new Set(collectedAttributes)];
+
+          if (collectedAttributes.length > 0) {
+            if (metaHeading) metaHeading.textContent = 'Attributes';
+            metaSection.style.display = 'block';
+
+            for (const attrKey of collectedAttributes) {
+              // Safely extract the 'description' string from the JSON object
+              const desc = attributesDescJson[attrKey]?.description || '';
+
+              const badge = document.createElement('span');
+              badge.className = 'algo-meta-badge constraint-badge';
+              if (desc) badge.setAttribute('title', desc);
+
+              const img = document.createElement('img');
+              img.src = 'images/attributes.png';
+              img.alt = 'attribute';
+              img.className = 'algo-meta-icon';
+              if (desc) img.setAttribute('title', desc);
+
+              const text = document.createElement('span');
+              text.textContent = attrKey;
+
+              badge.appendChild(img);
+              badge.appendChild(text);
+              metaContainer.appendChild(badge);
+            }
+          } else {
+            metaSection.style.display = 'none';
+          }
         }
 
         configHeading.style.display = 'block';
@@ -7313,6 +7359,8 @@
       }
 
       /* Case 2: An Algorithm was clicked */
+
+      if (metaHeading) metaHeading.textContent = 'Constraints & Tags';
       if (algoSettingsSubmitBtn) {
         algoSettingsSubmitBtn.style.display = 'none';
       }
@@ -7714,17 +7762,19 @@
     }
 
     async function loadDsaMetadata() {
-      /* loadDsaMetadata fetches data-structures.json, algorithms.json, and constraints-description.json and initializes the filter and main trees */
+      /* loadDsaMetadata fetches data-structures.json, algorithms.json, constraints-description.json, and attributes-description.json */
       try {
-        const [dsRes, algoRes, constRes] = await Promise.all([
+        const [dsRes, algoRes, constRes, attrRes] = await Promise.all([
           fetch('data-structures.json'),
           fetch('algorithms.json'),
-          fetch('constraints-description.json')
+          fetch('constraints-description.json'),
+          fetch('attributes-description.json')
         ]);
 
         dataStructuresJson = dsRes.ok ? await dsRes.json() : {};
         algorithmsJson = algoRes.ok ? await algoRes.json() : {};
         constraintsJson = constRes.ok ? await constRes.json() : {};
+        attributesDescJson = attrRes.ok ? await attrRes.json() : {};
 
         buildDirectAlgorithmsMap();
         renderFilterDsTree();
