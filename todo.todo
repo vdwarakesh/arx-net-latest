@@ -1,6 +1,5 @@
-
-
-Playback bar content overflow fix in mobile.
+remove hardcoded font sizes
+remove unwanted files
 
 Add notes for all algorithms
 Add algorithm implementations in all languages

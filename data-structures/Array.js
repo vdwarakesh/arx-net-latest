@@ -134,8 +134,14 @@ function syncArrayDataToContainer(containerEl, items) {
   const serialized = items.map((d) => d.raw).join(', ');
   containerEl.userInput = serialized;
   containerEl.setAttribute('userInput', serialized);
+
   if (typeof window.updateDsHeaderWarningState === 'function') {
     window.updateDsHeaderWarningState();
+  }
+
+  // Instantly recompute metrics whenever the array is modified
+  if (typeof window.updateMetadataUI === 'function') {
+    window.updateMetadataUI();
   }
 }
 

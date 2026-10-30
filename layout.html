@@ -132,7 +132,7 @@
       /* Default width of history section on desktop */
       --history-default-width-mobile: 40%;
       /* Default width of history section on mobile */
-      --history-top-height: 30%;
+      --history-top-height: 50%;
       /* Ratio of history to metadata */
       --code-card-min-width: 0;
       /* Minimum width of the Code / Notes card so tabs and dropdown remain usable */
@@ -6109,6 +6109,117 @@
     }
     window.updateDsHeaderWarningState = updateDsHeaderWarningState;
 
+    function updateMetadataUI() {
+      /* Dynamically calculates and renders structure properties inside #metadata-body */
+      const metadataBody = document.getElementById('metadata-body');
+      if (!metadataBody) return;
+
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      if (!activeObj) {
+        metadataBody.innerHTML = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: var(--text-muted);">
+              Create a data structure to view its metadata.
+            </span>
+          </div>`;
+        return;
+      }
+
+      if (activeObj.dsType === 'Array') {
+        let data = [];
+        if (activeObj.dsModule && typeof activeObj.dsModule.getData === 'function') {
+          data = activeObj.dsModule.getData(activeObj.element) || [];
+        }
+
+        const len = data.length;
+        let isSorted = 'Yes';
+        let isUnique = 'Yes';
+        let minVal = 'N/A';
+        let maxVal = 'N/A';
+
+        if (len === 0) {
+          isSorted = 'N/A';
+          isUnique = 'N/A';
+        } else {
+          let asc = true;
+          let desc = true;
+          const uniqueSet = new Set();
+
+          minVal = data[0].value;
+          maxVal = data[0].value;
+          let minNum = data[0].numericValue;
+          let maxNum = data[0].numericValue;
+
+          for (let i = 0; i < len; i++) {
+            const num = data[i].numericValue;
+            const val = data[i].value;
+
+            uniqueSet.add(val);
+
+            if (num < minNum) { minNum = num; minVal = val; }
+            if (num > maxNum) { maxNum = num; maxVal = val; }
+
+            if (i > 0) {
+              const prevNum = data[i - 1].numericValue;
+              if (num < prevNum) asc = false;
+              if (num > prevNum) desc = false;
+            }
+          }
+
+          if (asc && desc) {
+            isSorted = 'Yes (All identical)';
+          } else if (asc) {
+            isSorted = 'Yes (Ascending)';
+          } else if (desc) {
+            isSorted = 'Yes (Descending)';
+          } else {
+            isSorted = 'No';
+          }
+
+          isUnique = uniqueSet.size === len ? 'Yes' : 'No';
+        }
+
+        const rowsHtml = [
+          ['Name', activeObj.name],
+          ['Length', len],
+          ['Sorted', isSorted],
+          ['All Unique', isUnique],
+          ['Min Value', minVal],
+          ['Max Value', maxVal]
+        ].map(([k, v]) => `
+          <div class="state-var-row" style="grid-template-columns: minmax(5.5rem, 40%) 1fr;">
+            <div class="state-var-key">${k}</div>
+            <div class="state-var-val">${v}</div>
+          </div>
+        `).join('');
+
+        metadataBody.innerHTML = `
+          <div class="card-inner-pad">
+            <div class="state-vars-grid">
+              ${rowsHtml}
+            </div>
+          </div>
+        `;
+      } else {
+        // Fallback for other future data structures
+        metadataBody.innerHTML = `
+          <div class="card-inner-pad">
+            <div class="state-vars-grid">
+              <div class="state-var-row" style="grid-template-columns: minmax(5.5rem, 40%) 1fr;">
+                <div class="state-var-key">Name</div>
+                <div class="state-var-val">${activeObj.name}</div>
+              </div>
+              <div class="state-var-row" style="grid-template-columns: minmax(5.5rem, 40%) 1fr;">
+                <div class="state-var-key">Type</div>
+                <div class="state-var-val">${activeObj.dsType}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+    window.updateMetadataUI = updateMetadataUI;
+
     window.showSimulationRunningWarning = function () {
       /* Displays a warning if the user attempts to edit the data structure during an active simulation */
       if (sharedFloatingWindow) {
@@ -6217,6 +6328,7 @@
       }
       updatePlaybackCompatibilityUI();
       updateDsHeaderWarningState();
+      updateMetadataUI(); 
       redrawAllDsCanvases();
     }
 
