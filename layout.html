@@ -616,7 +616,6 @@
       justify-content: space-between;
       gap: 1rem;
       height: var(--card-header-height-desktop);
-      min-height: var(--card-header-height-desktop);
       padding: 0 0.75rem;
       background-color: var(--bg-card-header);
       border-bottom: 0.0625rem solid var(--border-color);
@@ -625,7 +624,6 @@
     }
 
     .modal-close {
-      font-size: 1.35rem;
       line-height: 1;
       color: var(--text-muted);
       cursor: pointer;
@@ -4959,34 +4957,27 @@
         if (r.width <= 0 || r.height <= 0) return;
 
         const el = containerObj.element;
-        const prevZ = camera.z || 1;
-        const prevCamX = camera.x;
-        const prevCamY = camera.y;
-
-        // Calculate world-space center of the data structure from its min/max pixel bounds
-        let targetWorldX = el._worldOrigin ? el._worldOrigin.x : (r.width / (2 * prevZ) - prevCamX);
-        let targetWorldY = el._worldOrigin ? el._worldOrigin.y : (r.height / (2 * prevZ) - prevCamY);
+        let targetWorldX = el._worldOrigin ? el._worldOrigin.x : (r.width / (2 * (camera.z || 1)) - camera.x);
+        let targetWorldY = el._worldOrigin ? el._worldOrigin.y : (r.height / (2 * (camera.z || 1)) - camera.y);
 
         if (el._structureBounds) {
-          // If explicit world bounds { minX, maxX, minY, maxY } exist
+          // Exact world-space bounding box (from top of tallest bar to bottom of index labels)
           targetWorldX = (el._structureBounds.minX + el._structureBounds.maxX) / 2;
           targetWorldY = (el._structureBounds.minY + el._structureBounds.maxY) / 2;
-        } else if (Array.isArray(el._barRects) && el._barRects.length > 0) {
-          // Compute min/max pixel bounds across all rendered elements and convert to world coordinates
+        } else if (Array.isArray(el._barHitBoxes) && el._barHitBoxes.length > 0) {
+          // Fallback: compute world bounds directly from _barHitBoxes
           let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-          for (const rect of el._barRects) {
-            if (rect.x < minX) minX = rect.x;
-            if (rect.y < minY) minY = rect.y;
-            if (rect.x + rect.w > maxX) maxX = rect.x + rect.w;
-            if (rect.y + rect.h > maxY) maxY = rect.y + rect.h;
+          for (const b of el._barHitBoxes) {
+            if (b.x < minX) minX = b.x;
+            if (b.y < minY) minY = b.y;
+            if (b.x + b.w > maxX) maxX = b.x + b.w;
+            if (b.y + b.h > maxY) maxY = b.y + b.h;
           }
-          const screenCenterX = (minX + maxX) / 2;
-          const screenCenterY = (minY + maxY) / 2;
-          targetWorldX = (screenCenterX / prevZ) - prevCamX;
-          targetWorldY = (screenCenterY / prevZ) - prevCamY;
+          targetWorldX = (minX + maxX) / 2;
+          targetWorldY = (minY + maxY) / 2;
         }
 
-        // Reset zoom to 1 and position camera so (targetWorldX, targetWorldY) is at the viewport center
+        // Reset zoom to 1 and center the camera on the true midpoint of the structure
         camera.z = 1;
         camera.x = (r.width / 2) - targetWorldX;
         camera.y = (r.height / 2) - targetWorldY;
@@ -5877,6 +5868,34 @@
     }
     window.updateDsHeaderWarningState = updateDsHeaderWarningState;
 
+    window.showSimulationRunningWarning = function() {
+      /* Displays a warning if the user attempts to edit the data structure during an active simulation */
+      if (sharedFloatingWindow) {
+        setFloatingWindowTitle(sharedFloatingWindow, 'Simulation Running');
+        sharedFloatingWindow.setContent(`
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 0.5rem 0.25rem;">
+            <span style="color: var(--text-primary); line-height: 1.5;">
+              Canvas editing is locked while a visualization is currently active.
+            </span>
+            <span style="color: var(--text-muted); line-height: 1.5; font-size: 0.9em;">
+              Click the <strong>Reset</strong> button 
+              <span style="display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 0.25rem; vertical-align: middle; margin: 0 0.25rem;">
+                <img src="images/reset.png" alt="Reset" style="width: 1rem; height: 1rem; filter: var(--sidebar-icon-filter);">
+              </span>
+              in the playback bar to stop the animation and enable editing again.
+            </span>
+            <button type="button" id="fw-sim-warn-close" class="vscode-btn-secondary" style="margin-top: 0.25rem; width: 100%;">Got it</button>
+          </div>
+        `);
+        sharedFloatingWindow.open();
+        
+        const closeBtn = sharedFloatingWindow.body.querySelector('#fw-sim-warn-close');
+        if (closeBtn) {
+          closeBtn.onclick = () => sharedFloatingWindow.close();
+        }
+      }
+    };
+
     function renderHistoryList() {
       /* Renders all created containers inside the History card (#history-body) */
       if (!historyBodyEl) return;
@@ -6017,6 +6036,13 @@
               x: (r.width / (2 * containerObj.camera.z)) - containerObj.camera.x,
               y: (r.height / (2 * containerObj.camera.z)) - containerObj.camera.y,
             };
+            // Render once to compute _structureBounds, then center camera on the true bounds
+            renderDsContainer(containerObj);
+            if (containerEl._structureBounds) {
+              const sb = containerEl._structureBounds;
+              containerObj.camera.x = (r.width / 2) - ((sb.minX + sb.maxX) / 2);
+              containerObj.camera.y = (r.height / 2) - ((sb.minY + sb.maxY) / 2);
+            }
           }
           renderDsContainer(containerObj);
         }

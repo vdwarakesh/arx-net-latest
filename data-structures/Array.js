@@ -187,21 +187,41 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
   const originY = useWorldOrigin && containerEl._worldOrigin ? containerEl._worldOrigin.y : 0;
 
   // Ratio-based sizing, clamped to the absolute MIN_BAR_HEIGHT / MAX_BAR_HEIGHT bounds.
-  // minBarH is the floor; maxBarH is then pushed to be at least MIN_HEIGHT_SPREAD above
-  // minBarH (still capped at MAX_BAR_HEIGHT) so that when the canvas is small and the
-  // ratio-based max would otherwise collapse down to the same value as the min, there's
-  // still a real range for d3's scaleLinear to map values across.
   const minBarH = Math.min(Math.max(baseH * hp.MIN_BAR_HEIGHT_RATIO, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
   const ratioMaxBarH = Math.min(Math.max(baseH * hp.MAX_BAR_HEIGHT_RATIO, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
-  const maxBarH = Math.min(Math.max(ratioMaxBarH, minBarH + hp.MIN_HEIGHT_SPREAD), hp.MAX_BAR_HEIGHT);
+  let maxBarH = Math.max(ratioMaxBarH, minBarH + hp.MIN_HEIGHT_SPREAD);
   const baselineY = useWorldOrigin
     ? originY - (baseH / 2) + (baseH * hp.BOTTOM_BASELINE_RATIO)
     : (baseH * hp.BOTTOM_BASELINE_RATIO);
 
-  const [minVal, maxVal] = d3.extent(data, (d) => d.numericValue);
-  const heightScale = d3.scaleLinear()
-    .domain(minVal === maxVal ? [minVal - 1, maxVal + 1] : [minVal, maxVal])
-    .range([minBarH, maxBarH]);
+  // 1. Extract and sort unique numeric values
+  const uniqueVals = [...new Set(data.map(d => d.numericValue))].sort((a, b) => a - b);
+  const maxRank = uniqueVals.length - 1;
+  const MIN_DELTA = 15;
+
+  // 2. Ensure we have enough total vertical height for the strict minimum deltas
+  if (maxBarH < minBarH + maxRank * MIN_DELTA) {
+    maxBarH = minBarH + maxRank * MIN_DELTA;
+  }
+
+  const availableExtraSpace = Math.max(0, (maxBarH - minBarH) - (maxRank * MIN_DELTA));
+  const totalValueSpan = maxRank > 0 ? (uniqueVals[maxRank] - uniqueVals[0]) : 1;
+
+  // 3. Map values to heights: guarantee MIN_DELTA for every step, plus proportional extra space
+  const heightMap = new Map();
+  if (maxRank === 0) {
+    heightMap.set(uniqueVals[0], maxBarH);
+  } else {
+    let currentHeight = minBarH;
+    heightMap.set(uniqueVals[0], currentHeight);
+
+    for (let i = 1; i <= maxRank; i++) {
+      const valDiff = uniqueVals[i] - uniqueVals[i - 1];
+      const linearShare = (valDiff / totalValueSpan) * availableExtraSpace;
+      currentHeight += MIN_DELTA + linearShare;
+      heightMap.set(uniqueVals[i], currentHeight);
+    }
+  }
 
   const maxSpanW = baseW * hp.HORIZONTAL_SPAN_RATIO;
   const idealTotalW = Math.min(maxSpanW, data.length * (hp.MAX_BAR_WIDTH / (1 - hp.BAR_PADDING)));
@@ -239,8 +259,7 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
 
   data.forEach((d, i) => {
     const isDraggingThis = dragState && dragState.index === i;
-    const rawBarH = minVal === maxVal ? maxBarH : heightScale(d.numericValue);
-    const barH = Math.min(Math.max(rawBarH, hp.MIN_BAR_HEIGHT), hp.MAX_BAR_HEIGHT);
+    const barH = heightMap.get(d.numericValue);
     const x = isDraggingThis ? (dragState.worldX - barWidth / 2) : xScale(i);
     const y = baselineY - barH;
 
@@ -299,6 +318,32 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
     ctx.textBaseline = 'top';
     ctx.fillText(String(i), valX, baselineY + hp.INDEX_LABEL_OFFSET);
   });
+
+  // Compute exact world-space bounding box of the entire array (tallest bar top to index label bottom)
+  if (containerEl._barHitBoxes.length > 0) {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+
+    for (const b of containerEl._barHitBoxes) {
+      if (b.x < minX) minX = b.x;
+      if (b.y < minY) minY = b.y;
+      if (b.x + b.w > maxX) maxX = b.x + b.w;
+      if (b.y + b.h > maxY) maxY = b.y + b.h;
+    }
+
+    // Include the index labels below the baseline in the vertical bounds
+    const bottomWithLabels = maxY + hp.INDEX_LABEL_OFFSET + hp.INDEX_FONT_SIZE;
+    containerEl._structureBounds = {
+      minX,
+      maxX,
+      minY,
+      maxY: bottomWithLabels,
+    };
+  } else {
+    containerEl._structureBounds = null;
+  }
 
   ctx.restore();
 }
@@ -467,6 +512,9 @@ export function setupArrayInteractions(containerEl, requestRender) {
     if (window.isSimulating) {
       e.preventDefault();
       e.stopPropagation();
+      if (typeof window.showSimulationRunningWarning === 'function') {
+        window.showSimulationRunningWarning();
+      }
       return;
     }
     e.preventDefault();
@@ -485,8 +533,15 @@ export function setupArrayInteractions(containerEl, requestRender) {
 
   // 2. Left-Click Drag on an Element -> Reorder Array
   canvas.addEventListener('pointerdown', (e) => {
-    if (window.isSimulating) return;
+    if (window.isSimulating) {
+      // Show warning only on left-click (intended drag), ignore middle/right clicks
+      if (e.button === 0 && !e.shiftKey && typeof window.showSimulationRunningWarning === 'function') {
+        window.showSimulationRunningWarning();
+      }
+      return;
+    }
     if (e.button !== 0 || e.shiftKey) return;
+
     const worldPt = screenToWorld(e.clientX, e.clientY);
     const hitIdx = hitTestBar(worldPt.x, worldPt.y);
     if (hitIdx === -1) return;
