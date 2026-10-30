@@ -3273,17 +3273,37 @@
       }
 
       .playback-bar {
-        /* Compacts the bottom playback controls bar inside #ds-card and #code-card on mobile */
-        gap: 0.3rem;
-        height: var(--playback-bar-height-mobile);
-        min-height: var(--playback-bar-height-mobile);
-        padding: 0 0.45rem;
+        /* .playback-bar is used here at the bottom of .ds-body-wrapper and #code-card to house simulation playback and speed controls */
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.375rem;
+        height: var(--playback-bar-height-desktop);
+        min-height: var(--playback-bar-height-desktop);
+        padding: 0 0.625rem;
+        background-color: var(--bg-card);
+        border-top: 0.0625rem solid var(--border-color);
+        overflow-x: auto;
+        overflow-y: hidden;
       }
 
       .incompatible-bar {
-        height: var(--playback-bar-height-mobile);
-        min-height: var(--playback-bar-height-mobile);
-        padding: 0 0.45rem;
+        display: none;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        height: var(--playback-bar-height-desktop);
+        min-height: var(--playback-bar-height-desktop);
+        padding: 0 0.625rem;
+        background-color: var(--bg-card);
+        border-top: 0.0625rem solid var(--border-color);
+        font-weight: 500;
+        color: var(--text-muted);
+        text-align: center;
+        white-space: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
       }
 
       .playback-text-btn {
@@ -3829,13 +3849,13 @@
               <div class="playback-bar">
                 <!-- The Message Container -->
                 <div class="playback-ui-message"
-                  style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-                  Create a data structure and choose a compatible algorithm to visualize
+                  style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap;">
+                  Create a compatible data structure to visualize algorithms
                 </div>
 
                 <!-- The Actual Controls (Hidden by default) -->
                 <div class="playback-ui-controls"
-                  style="display: none; width: 100%; justify-content: space-between; align-items: center;">
+                  style="display: none; width: 100%; min-width: max-content; justify-content: space-between; align-items: center;">
                   <div class="playback-controls-left">
                     <div class="visualization-options">
                       Steps&nbsp;
@@ -4018,6 +4038,9 @@
 
                   <button type="button" id="algo-settings-submit-btn" class="vscode-btn-secondary"
                     style="display: none; width: 100%; margin-bottom: 0rem;">Create</button>
+                  <div id="algo-settings-incompatible-msg"
+                    style="display: none; width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem; padding: 0.65rem; background-color: var(--bg-card); border: 0.0625rem solid var(--border-color); border-radius: 0.25rem;">
+                  </div>
                 </div>
               </div>
               <!--========== End of settings card content ==========-->
@@ -4185,13 +4208,13 @@
             <div class="playback-bar">
               <!-- The Message Container -->
               <div class="playback-ui-message"
-                style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-                Create a data structure and choose a compatible algorithm to visualize
+                style="width: 100%; text-align: center; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap;">
+                Create a compatible data structure to visualize algorithms
               </div>
 
               <!-- The Actual Controls (Hidden by default) -->
               <div class="playback-ui-controls"
-                style="display: none; width: 100%; justify-content: space-between; align-items: center;">
+                style="display: none; width: 100%; min-width: max-content; justify-content: space-between; align-items: center;">
                 <div class="playback-controls-left">
                   <div class="visualization-options">
                     Steps&nbsp;
@@ -5868,7 +5891,7 @@
     }
     window.updateDsHeaderWarningState = updateDsHeaderWarningState;
 
-    window.showSimulationRunningWarning = function() {
+    window.showSimulationRunningWarning = function () {
       /* Displays a warning if the user attempts to edit the data structure during an active simulation */
       if (sharedFloatingWindow) {
         setFloatingWindowTitle(sharedFloatingWindow, 'Simulation Running');
@@ -5888,7 +5911,7 @@
           </div>
         `);
         sharedFloatingWindow.open();
-        
+
         const closeBtn = sharedFloatingWindow.body.querySelector('#fw-sim-warn-close');
         if (closeBtn) {
           closeBtn.onclick = () => sharedFloatingWindow.close();
@@ -6713,7 +6736,7 @@
       let isCompatible = false;
       let requirementError = null;
 
-      if (isAlgoSelected && activeObj && algorithmsJson && Object.keys(algorithmsJson).length > 0) {
+      if (isAlgoSelected && activeObj && typeof algorithmsJson !== 'undefined' && Object.keys(algorithmsJson).length > 0) {
         const algoKey = Object.keys(algorithmsJson).find(
           (k) => k.toLowerCase() === selectedDsaName.toLowerCase().replace(/[-_]+/g, ' ')
         );
@@ -6732,6 +6755,7 @@
         }
       }
 
+      // 1. Update both playback bars
       const playbackBars = document.querySelectorAll('.playback-bar');
       playbackBars.forEach((bar) => {
         const controls = bar.querySelector('.playback-ui-controls');
@@ -6741,8 +6765,7 @@
         if (!activeObj || !isAlgoSelected || !isCompatible) {
           controls.style.display = 'none';
           message.style.display = 'block';
-          message.textContent =
-            'Create a data structure and choose a compatible algorithm to visualize';
+          message.textContent = 'Create a compatible data structure to visualize algorithms';
         } else if (requirementError) {
           controls.style.display = 'none';
           message.style.display = 'block';
@@ -6750,13 +6773,37 @@
         } else if (currentLang !== 'Python') {
           controls.style.display = 'none';
           message.style.display = 'block';
-          message.textContent =
-            'Visualizations for other languages are still in development';
+          message.textContent = 'Visualizations for other languages are still in development';
         } else {
           controls.style.display = 'flex';
           message.style.display = 'none';
         }
       });
+
+      // 2. Update the Settings Card "Run" button and Warning Message
+      const algoSubmitBtn = document.getElementById('algo-settings-submit-btn');
+      const algoIncompatibleMsg = document.getElementById('algo-settings-incompatible-msg');
+
+      if (isAlgoSelected && algoSubmitBtn && algoIncompatibleMsg) {
+        if (!activeObj || !isCompatible) {
+          algoSubmitBtn.style.display = 'none';
+          algoIncompatibleMsg.style.display = 'block';
+          algoIncompatibleMsg.textContent = 'Choose or create a compatible data structure to visualize this algorithm';
+        } else if (requirementError) {
+          algoSubmitBtn.style.display = 'none';
+          algoIncompatibleMsg.style.display = 'block';
+          algoIncompatibleMsg.textContent = requirementError;
+        } else if (currentLang !== 'Python') {
+          algoSubmitBtn.style.display = 'none';
+          algoIncompatibleMsg.style.display = 'block';
+          algoIncompatibleMsg.textContent = 'Visualizations for other languages are still in development';
+        } else {
+          algoSubmitBtn.style.display = 'inline-flex';
+          algoIncompatibleMsg.style.display = 'none';
+        }
+      } else if (!isAlgoSelected && algoIncompatibleMsg) {
+        algoIncompatibleMsg.style.display = 'none';
+      }
 
       if ((!isCompatible || requirementError || currentLang !== 'Python') && window.isSimulating) {
         if (typeof resetSimulation === 'function') resetSimulation();
@@ -6907,6 +6954,9 @@
           algoSettingsSubmitBtn.textContent = 'Create';
           algoSettingsSubmitBtn.style.display = 'inline-flex';
         }
+        const algoIncompatibleMsg = document.getElementById('algo-settings-incompatible-msg');
+        if (algoIncompatibleMsg) algoIncompatibleMsg.style.display = 'none';
+
         if (metaSection && metaContainer) {
           metaContainer.innerHTML = '';
           metaSection.style.display = 'none';
@@ -7029,9 +7079,12 @@
         configContainer.style.color = 'inherit';
         configContainer.innerHTML = `<pre class="signature-editor-pre language-python"><code class="language-python"><span class="token function">${sig.funcName}</span><span class="token punctuation">(</span>\n${linesHtml}\n<span class="token punctuation">)</span></code></pre>`;
 
+        // Set the text to "Run", but let the compatibility checker decide if it should be visible
         if (algoSettingsSubmitBtn) {
           algoSettingsSubmitBtn.textContent = 'Run';
-          algoSettingsSubmitBtn.style.display = 'inline-flex';
+        }
+        if (typeof updatePlaybackCompatibilityUI === 'function') {
+          updatePlaybackCompatibilityUI();
         }
 
         // Reset any running simulation if the user edits a parameter in the signature
@@ -7043,9 +7096,10 @@
           });
         });
       } catch (err) {
-        if (algoSettingsSubmitBtn) {
-          algoSettingsSubmitBtn.style.display = 'none';
-        }
+        if (algoSettingsSubmitBtn) algoSettingsSubmitBtn.style.display = 'none';
+        const algoIncompatibleMsg = document.getElementById('algo-settings-incompatible-msg');
+        if (algoIncompatibleMsg) algoIncompatibleMsg.style.display = 'none';
+
         configContainer.style.color = 'var(--text-muted)';
         configContainer.textContent = 'Algorithm signature not available yet.';
       }
