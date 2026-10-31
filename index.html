@@ -1804,7 +1804,7 @@
       /* .ds-leaf-dot::after renders the small vertical bar inside .ds-leaf-dot */
       content: '';
       width: 0.3rem;
-      height: 0.6rem;
+      height: 0.3rem;
       background-color: var(--text-muted);
       transition: background-color 0.12s ease;
     }
@@ -1864,6 +1864,7 @@
       display: none;
       flex-direction: column;
       margin-left: 0.45rem;
+      margin-top: 0.5rem;
       padding-left: 0.75rem;
       border-left: 0.125rem solid var(--scrollbar-thumb);
     }
@@ -4144,6 +4145,10 @@
                     aria-pressed="false">
                     <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
                   </button>
+                  <button type="button" id="algo-syllabus-filter-btn" class="algo-filter-btn has-active-filter" title="Show Syllabus Only"
+                    aria-pressed="true">
+                    <img src="images/syllabus.png" alt="Syllabus" class="algo-filter-icon" />
+                  </button>
                   <button type="button" id="algo-compatible-filter-btn" class="algo-filter-btn"
                     title="Show Compatible Algorithms Only" aria-pressed="false">
                     <img src="images/compatible.png" alt="Compatible Only" class="algo-filter-icon" />
@@ -4858,6 +4863,7 @@
     const algoSearchInput = document.getElementById('algo-search-input');
     const algoSearchClearBtn = document.getElementById('algo-search-clear-btn');
     const algoFavFilterBtn = document.getElementById('algo-fav-filter-btn');
+    const algoSyllabusFilterBtn = document.getElementById('algo-syllabus-filter-btn');
     const algoCompatibleFilterBtn = document.getElementById('algo-compatible-filter-btn');
     const algoHideBtn = document.getElementById('algo-hide-btn');
     const algoFilterBtn = document.getElementById('algo-filter-btn');
@@ -4935,6 +4941,8 @@
     let selectedDsaName = null;
     let selectedDsaType = null; // 'ds' | 'algo'
     let isFavFilterActive = false;
+    let syllabusJson = { "data-structures": [], "algorithms": [] };
+    let isSyllabusFilterActive = true;
     let isCompatibleFilterActive = false;
     let isAlgosHidden = false;
     let favouritesSet = new Set();
@@ -7602,9 +7610,28 @@
       // Calculate the lineage path for the active DS once before building the tree
       const activeDsLineage = currentDsType ? (getDsLineage(currentDsType) || [currentDsType]) : [];
 
+      // Quick-lookup sets from syllabusJson, built once per render
+      const syllabusDsSet = isSyllabusFilterActive
+        ? new Set(syllabusJson['data-structures'] || [])
+        : null;
+      const syllabusAlgoSet = isSyllabusFilterActive
+        ? new Set(syllabusJson['algorithms'] || [])
+        : null;
+
+      function dsSubtreeMatchesSyllabus(dsName, dsObj) {
+        if (syllabusDsSet.has(dsName) || favouritesSet.has(dsName)) return true;
+
+        const directAlgos = dsDirectAlgorithmsMap[dsName] || [];
+        if (directAlgos.some(algo => favouritesSet.has(algo.name))) return true;
+
+        const children = Object.entries((dsObj && dsObj.children) || {});
+        return children.some(([childName, childObj]) => dsSubtreeMatchesSyllabus(childName, childObj));
+      }
+
       function buildDsSubtree(dsName, dsObj, ancestorMatchedSearch = false) {
         if (!isNodeInFilterScope(dsName, dsObj)) return null;
         if (isFavFilterActive && !dsSubtreeHasFavourite(dsName, dsObj)) return null;
+        if (isSyllabusFilterActive && !dsSubtreeMatchesSyllabus(dsName, dsObj)) return null;
 
         // If compatibility filter is active, only render nodes that are in the lineage of the active DS
         if (isCompatibleFilterActive) {
@@ -7616,9 +7643,15 @@
         const directAllowed = isDirectDsAllowedByFilter(dsName);
         let allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
 
-        // Apply Favourite filter if active
+        // Apply Favourite filter if active (favourited DS bypasses algo filtering entirely)
         if (isFavFilterActive && !favouritesSet.has(dsName)) {
           allDirectAlgos = allDirectAlgos.filter(algo => favouritesSet.has(algo.name));
+        }
+
+        if (isSyllabusFilterActive && !favouritesSet.has(dsName)) {
+          allDirectAlgos = allDirectAlgos.filter(algo =>
+            syllabusAlgoSet.has(algo.name) || favouritesSet.has(algo.name)
+          );
         }
 
         const childEntries = Object.entries((dsObj && dsObj.children) || {});
@@ -7663,6 +7696,8 @@
         } else if (isFavFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
           isExpanded = true;
         } else if (isCompatibleFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
+          isExpanded = true;
+        } else if (isSyllabusFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
           isExpanded = true;
         }
 
@@ -7764,17 +7799,19 @@
     async function loadDsaMetadata() {
       /* loadDsaMetadata fetches data-structures.json, algorithms.json, constraints-description.json, and attributes-description.json */
       try {
-        const [dsRes, algoRes, constRes, attrRes] = await Promise.all([
+        const [dsRes, algoRes, constRes, attrRes, syllRes] = await Promise.all([
           fetch('data-structures.json'),
           fetch('algorithms.json'),
           fetch('constraints-description.json'),
-          fetch('attributes-description.json')
+          fetch('attributes-description.json'),
+          fetch('syllabus.json')
         ]);
 
         dataStructuresJson = dsRes.ok ? await dsRes.json() : {};
         algorithmsJson = algoRes.ok ? await algoRes.json() : {};
         constraintsJson = constRes.ok ? await constRes.json() : {};
         attributesDescJson = attrRes.ok ? await attrRes.json() : {};
+        syllabusJson = syllRes.ok ? await syllRes.json() : { "data-structures": [], "algorithms": [] };
 
         buildDirectAlgorithmsMap();
         renderFilterDsTree();
@@ -7807,13 +7844,20 @@
       renderMainAlgoTree();
     });
 
+    algoSyllabusFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isSyllabusFilterActive = !isSyllabusFilterActive;
+      algoSyllabusFilterBtn.classList.toggle('has-active-filter', isSyllabusFilterActive);
+      algoSyllabusFilterBtn.setAttribute('aria-pressed', String(isSyllabusFilterActive));
+      renderMainAlgoTree();
+    });
+
     algoCompatibleFilterBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       isCompatibleFilterActive = !isCompatibleFilterActive;
       algoCompatibleFilterBtn.classList.toggle('has-active-filter', isCompatibleFilterActive);
       algoCompatibleFilterBtn.setAttribute('aria-pressed', String(isCompatibleFilterActive));
       renderMainAlgoTree();
-      updatePlaybackCompatibilityUI();
     });
 
     algoHideBtn.addEventListener('click', (e) => {
@@ -8674,6 +8718,13 @@
         description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
         onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
       },
+      syllabus: {
+        id: 'algo-syllabus-filter-btn',
+        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
+        title: 'Syllabus',
+        description: 'Filter the list to show only the data structures and algorithms assigned by your institution.',
+        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
+      },
       filterByCompatible: {
         id: 'algo-compatible-filter-btn',
         fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
@@ -8730,6 +8781,21 @@
         title: 'Fullscreen',
         description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.'
       },
+      grid: {
+        id: 'grid-dropdown-wrapper',
+        title: 'Grid varieties',
+        description: 'Choose your preferred background in the canvas.'
+      },
+      annotations: {
+        id: 'annotation-tools-menu',
+        title: 'Annotations',
+        description: 'Annotate on your screen to mark anything you wish to.'
+      },
+      toggleAnnotations: {
+        id: 'btnToggleAnnotationsVis',
+        title: 'Toggle annotations',
+        description: 'Show/hide your drawn annotations on the screen.'
+      },
       zenMode: {
         id: 'zen-mode-btn',
         title: 'Zen Mode',
@@ -8756,6 +8822,7 @@
       'codeAndNotes',
       'algorithms',
       'favourites',
+      'syllabus',
       'filterByCompatible',
       'filterByAlgorithm',
       'filterByDataStructure',
@@ -8765,6 +8832,9 @@
       'metadata',
       'history',
       'fullscreen',
+      'grid',
+      'annotations',
+      'toggleAnnotations',
       'zenMode',
       'resetLayout',
       'btnHelp'
