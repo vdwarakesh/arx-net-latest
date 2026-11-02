@@ -1295,6 +1295,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
           <button type="button" id="fw-graph-add-node-btn" class="vscode-btn-secondary" style="height: var(--control-btn-height-desktop); min-height: var(--control-btn-height-desktop); padding: 0 0.75rem;">Add node</button>
         </div>
         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 0.15rem 0;" />
+        <button type="button" id="fw-rearrange-nodes" class="vscode-btn-secondary" style="width: 100%;">Rearrange nodes</button>
         <button type="button" id="fw-copy-edge-list" class="vscode-btn-secondary" style="width: 100%;">Copy as edge list</button>
         <button type="button" id="fw-copy-adj-list" class="vscode-btn-secondary" style="width: 100%;">Copy as adjacency list</button>
         <button type="button" id="fw-copy-adj-matrix" class="vscode-btn-secondary" style="width: 100%;">Copy as adjacency matrix</button>
@@ -1330,6 +1331,33 @@ export function setupGraphInteractions(containerEl, requestRender) {
       addInput.addEventListener('keydown', (ev) => {
         if (ev.key === 'Enter') handleAddNode();
       });
+    }
+
+    // --- Rearrange Nodes Handler ---
+    const rearrangeBtn = modal.body.querySelector('#fw-rearrange-nodes');
+    if (rearrangeBtn) {
+      rearrangeBtn.onclick = () => {
+        const w = (canvas && canvas.clientWidth) ? canvas.clientWidth : 800;
+        const h = (canvas && canvas.clientHeight) ? canvas.clientHeight : 600;
+
+        // Re-execute simulated annealing crossing minimization & circular placement
+        applyCircularNodeLayout(graphData.nodes, w, h, graphData.edges);
+
+        // Recalculate edge geometries and bounds
+        refreshEdgeFlags(graphData);
+        syncGraphDataToContainer(containerEl, graphData);
+        requestRender();
+
+        // Automatically zoom/center the camera to fit the rearranged graph
+        const activeContainerObj = (typeof dsContainers !== 'undefined')
+          ? dsContainers.find(c => c.element === containerEl)
+          : null;
+        if (activeContainerObj && typeof activeContainerObj.centerView === 'function') {
+          activeContainerObj.centerView();
+        }
+
+        modal.close();
+      };
     }
 
     const copyAndClose = (text) => {
