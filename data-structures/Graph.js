@@ -53,7 +53,7 @@ export const GRAPH_HYPERPARAMETERS = {
 
   // ----- Colors: CSS variable names (guaranteed to exist on :root) -----
   NODE_FILL_VAR: '--ds-primary',
-  NODE_STROKE_VAR: '--border-color',
+  NODE_STROKE_VAR: '--bg-card',
   NODE_DRAG_FILL_VAR: '--ds-hover-primary',
 
   EDGE_STROKE_VAR: '--ds-secondary',
@@ -452,25 +452,90 @@ function refreshEdgeFlags(graphData) {
   });
 }
 
+function allocateNextNodeId(graphData) {
+  if (typeof graphData._nextNodeId !== 'number') {
+    const maxExisting = (graphData.nodes || []).reduce((max, n) => {
+      const num = Number(n.id);
+      return Number.isInteger(num) && num > max ? num : max;
+    }, -1);
+    graphData._nextNodeId = maxExisting + 1;
+  }
+  return graphData._nextNodeId++;
+}
+
+function generateDefaultNodeLabel(nodes) {
+  if (!nodes || nodes.length === 0) return '0';
+
+  const labels = nodes.map(n => String(n.label !== undefined ? n.label : n.id).trim());
+  const allInts = labels.every(l => /^-?\d+$/.test(l));
+
+  // 1. All integer labels -> next ascending integer after max
+  if (allInts) {
+    const maxVal = Math.max(...labels.map(Number));
+    return String(maxVal + 1);
+  }
+
+  // 2. All alphabetic strings -> increment last character (e.g. A -> B -> C, Z -> AA)
+  const allAlpha = labels.every(l => /^[a-zA-Z]+$/.test(l));
+  if (allAlpha) {
+    const sorted = [...labels].sort((a, b) => a.length - b.length || a.localeCompare(b));
+    const last = sorted[sorted.length - 1];
+    const isLower = last === last.toLowerCase();
+    const baseCode = isLower ? 97 : 65;
+
+    const chars = last.split('').map(c => c.toUpperCase().charCodeAt(0) - 65);
+    let carry = 1;
+    for (let i = chars.length - 1; i >= 0 && carry > 0; i--) {
+      const sum = chars[i] + carry;
+      chars[i] = sum % 26;
+      carry = Math.floor(sum / 26);
+    }
+    if (carry > 0) chars.unshift(0);
+    const candidate = chars.map(c => String.fromCharCode(baseCode + c)).join('');
+    if (!labels.includes(candidate)) return candidate;
+  }
+
+  // 3. Hybrid labels -> random short unique identifier
+  const existingSet = new Set(labels);
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const candidate =
+      alphabet[Math.floor(Math.random() * 26)] +
+      alphabet[Math.floor(Math.random() * alphabet.length)];
+    if (!existingSet.has(candidate)) return candidate;
+  }
+  return `N${nodes.length}`;
+}
+
 function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
   const { isDirected, isWeighted } = resolveGraphTypeFlags(dsType, extraInputs);
 
   const text = (rawInput || '').trim();
-  const nodesMap = new Map();
+  const nodesByTokenMap = new Map();
+  const nodes = [];
   const edges = [];
+  let nextInternalId = 0;
 
-  const ensureNode = (idVal) => {
-    const cleanId = String(idVal).trim().replace(/^['"]|['"]$/g, '');
-    if (!cleanId) return null;
-    if (!nodesMap.has(cleanId)) {
-      nodesMap.set(cleanId, { id: cleanId, label: cleanId, x: 0, y: 0 });
+  // Maps input token -> node with internal integer id (0, 1, 2...) and visual label
+  const ensureNode = (tokenVal) => {
+    const cleanLabel = String(tokenVal).trim().replace(/^['"]|['"]$/g, '');
+    if (!cleanLabel) return null;
+    if (!nodesByTokenMap.has(cleanLabel)) {
+      const nodeObj = {
+        id: nextInternalId++,
+        label: cleanLabel,
+        x: 0,
+        y: 0
+      };
+      nodesByTokenMap.set(cleanLabel, nodeObj);
+      nodes.push(nodeObj);
     }
-    return nodesMap.get(cleanId);
+    return nodesByTokenMap.get(cleanLabel);
   };
 
-  const addEdge = (uId, vId, weightVal = 1) => {
-    const uNode = ensureNode(uId);
-    const vNode = ensureNode(vId);
+  const addEdge = (uToken, vToken, weightVal = 1) => {
+    const uNode = ensureNode(uToken);
+    const vNode = ensureNode(vToken);
     if (!uNode || !vNode) return;
     const parsedW = (weightVal !== undefined && weightVal !== null && weightVal !== '' && !Number.isNaN(Number(weightVal)))
       ? Number(weightVal)
@@ -479,11 +544,9 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
   };
 
   if (text) {
-    // 1. Try parsing JSON or Python-like Dict/Array (Adjacency List, Adjacency Matrix, or Edge List)
     let parsedJson = null;
     if (text.startsWith('{') || text.startsWith('[')) {
       try {
-        // Automatically quote unquoted identifiers so { A: [B, C] } parses as valid JSON
         const normalizedJson = text
           .replace(/'/g, '"')
           .replace(/([{,\[])\s*([a-zA-Z0-9_.-]+)\s*:/g, '$1"$2":')
@@ -495,7 +558,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
 
     if (parsedJson !== null && typeof parsedJson === 'object') {
       if (Array.isArray(parsedJson)) {
-        // Check if Square Adjacency Matrix: [[0, 1, 0], [1, 0, 5], ...]
         const n = parsedJson.length;
         const isSquareMatrix = n > 0 && parsedJson.every(row =>
           Array.isArray(row) && row.length === n && row.every(val => typeof val === 'number' || !Number.isNaN(Number(val)))
@@ -513,7 +575,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
             }
           }
         } else {
-          // Array Edge List: [[u, v], [u, v, w]] or [{source, target, weight}]
           for (const item of parsedJson) {
             if (Array.isArray(item) && item.length >= 2) {
               addEdge(item[0], item[1], item[2]);
@@ -529,7 +590,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
           }
         }
       } else {
-        // Object Adjacency List: { "A": ["B", ["C", 5]], "B": { "C": 2 } }
         for (const [u, neighbors] of Object.entries(parsedJson)) {
           ensureNode(u);
           if (Array.isArray(neighbors)) {
@@ -551,7 +611,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
         }
       }
     } else {
-      // 2. Check if Plain-Text Multi-line Adjacency Matrix (e.g., rows of numbers)
       const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
       const matrixRows = lines.map(l => l.split(/[\s,]+/).filter(Boolean));
       const isTextMatrix = matrixRows.length > 1 &&
@@ -571,7 +630,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
           }
         }
       } else if (lines.some(l => /^[a-zA-Z0-9_.-]+\s*:\s*/.test(l) && !l.includes('->') && !l.includes('-'))) {
-        // 3. Plain-Text Adjacency List: "A: B, C(5)" or "A: B C" per line
         for (const line of lines) {
           const colonIdx = line.indexOf(':');
           if (colonIdx === -1) {
@@ -594,7 +652,6 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
           }
         }
       } else {
-        // 4. Standard Edge List Tokens: "A-B, B-C:5, C->A" or "1 2 5" or single nodes "A, B, C"
         const tokens = text.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
         for (const token of tokens) {
           const arrowMatch = token.match(/^(.+?)\s*(->|<->|--|-)\s*(.+?)(?:\s*[:=]\s*([+-]?\d+(?:\.\d+)?))?$/);
@@ -619,10 +676,95 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
     }
   }
 
-  const nodes = Array.from(nodesMap.values());
-  const graphData = { nodes, edges, isDirected, isWeighted };
+  const graphData = { nodes, edges, isDirected, isWeighted, _nextNodeId: nextInternalId };
   refreshEdgeFlags(graphData);
   return graphData;
+}
+
+// --- Graph Copy / Export Formatters ---
+function formatGraphAsEdgeList(graphData) {
+  const { nodes, edges, isDirected, isWeighted } = graphData;
+  const connectedIds = new Set();
+  const op = isDirected ? '->' : '-';
+
+  const edgeStrings = edges.map(e => {
+    connectedIds.add(e.source.id);
+    connectedIds.add(e.target.id);
+    const u = e.source.label ?? e.source.id;
+    const v = e.target.label ?? e.target.id;
+    const w = isWeighted ? `:${e.weight ?? 1}` : '';
+    return `${u}${op}${v}${w}`;
+  });
+
+  const isolatedStrings = nodes
+    .filter(n => !connectedIds.has(n.id))
+    .map(n => String(n.label ?? n.id));
+
+  return [...edgeStrings, ...isolatedStrings].join(', ');
+}
+
+function formatGraphAsAdjacencyList(graphData) {
+  const { nodes, edges, isDirected, isWeighted } = graphData;
+  const adj = new Map(nodes.map(n => [n.id, []]));
+
+  edges.forEach(e => {
+    const uId = e.source.id;
+    const vId = e.target.id;
+    const uLabel = e.source.label ?? uId;
+    const vLabel = e.target.label ?? vId;
+    const w = e.weight ?? 1;
+
+    if (adj.has(uId)) {
+      adj.get(uId).push(isWeighted ? [vLabel, w] : vLabel);
+    }
+    if (!isDirected && uId !== vId && adj.has(vId)) {
+      adj.get(vId).push(isWeighted ? [uLabel, w] : uLabel);
+    }
+  });
+
+  const resultObj = {};
+  nodes.forEach(n => {
+    const key = String(n.label ?? n.id);
+    const finalKey = Object.prototype.hasOwnProperty.call(resultObj, key) ? `${key}#${n.id}` : key;
+    resultObj[finalKey] = adj.get(n.id) || [];
+  });
+  return JSON.stringify(resultObj, null, 2);
+}
+
+function formatGraphAsAdjacencyMatrix(graphData) {
+  const { nodes, edges, isDirected, isWeighted } = graphData;
+  const n = nodes.length;
+  const idxById = new Map(nodes.map((node, i) => [node.id, i]));
+  const matrix = Array.from({ length: n }, () => new Array(n).fill(0));
+
+  edges.forEach(e => {
+    const i = idxById.get(e.source.id);
+    const j = idxById.get(e.target.id);
+    if (i === undefined || j === undefined) return;
+    const val = isWeighted ? (e.weight ?? 1) : 1;
+    matrix[i][j] = val;
+    if (!isDirected) matrix[j][i] = val;
+  });
+
+  return JSON.stringify(matrix);
+}
+
+function formatGraphAsJsonWithAttributes(graphData) {
+  return JSON.stringify({
+    isDirected: Boolean(graphData.isDirected),
+    isWeighted: Boolean(graphData.isWeighted),
+    nodes: graphData.nodes.map(n => ({
+      id: n.id,
+      label: n.label ?? String(n.id),
+      x: Math.round(n.x),
+      y: Math.round(n.y)
+    })),
+    edges: graphData.edges.map(e => ({
+      source: e.source.id,
+      target: e.target.id,
+      weight: e.weight ?? 1
+    }))
+  }, null, 2);
 }
 
 export function getContainerGraphData(containerEl) {
@@ -785,6 +927,37 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       expandBounds(geom.bounds.minX - pad, geom.bounds.minY - pad, geom.bounds.maxX + pad, geom.bounds.maxY + pad);
     }
     renderedEdges.push({ edge, geom, isHovered });
+  }
+
+  // 1b. Render live preview edge while double-click dragging from a source node
+  const edgeCreateState = containerEl._edgeCreateState;
+  if (edgeCreateState && edgeCreateState.sourceNode) {
+    const src = edgeCreateState.sourceNode;
+    const tgtNode = edgeCreateState.hoverTargetNode;
+    const endX = tgtNode ? tgtNode.x : edgeCreateState.currX;
+    const endY = tgtNode ? tgtNode.y : edgeCreateState.currY;
+
+    ctx.save();
+    ctx.strokeStyle = hp.EDGE_HOVER_STROKE;
+    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
+    ctx.setLineDash([8, 6]);
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+
+    if (tgtNode && tgtNode === src) {
+      const r = hp.SELF_LOOP_RADIUS;
+      ctx.arc(src.x + hp.SELF_LOOP_OFFSET_X, src.y + hp.SELF_LOOP_OFFSET_Y, r, 0, Math.PI * 2);
+    } else {
+      ctx.moveTo(src.x, src.y);
+      ctx.lineTo(endX, endY);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    if (isDirected && (!tgtNode || tgtNode !== src)) {
+      const angle = Math.atan2(endY - src.y, endX - src.x);
+      drawDirectedArrowhead(ctx, endX, endY, angle, false, hp.EDGE_HOVER_STROKE, hp);
+    }
   }
 
   // 2. Render nodes (rounded rectangles) and node labels
@@ -1059,10 +1232,10 @@ export function setupGraphInteractions(containerEl, requestRender) {
     setModalTitle(modal, `Node Options (ID: ${node.id})`);
     modal.setContent(`
       <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <label style="font-size: 0.85rem; color: var(--text-muted);">Display Value (ID remains ${node.id})</label>
-        <div style="display: flex; gap: 0.4rem;">
-          <input type="text" id="fw-graph-node-val-input" class="param-input-field" value="${safeDisplay}" placeholder="Node display value" />
-          <button type="button" id="fw-graph-node-val-save" class="vscode-btn-secondary">Update</button>
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Node Value (Internal ID: ${node.id})</label>
+        <div style="display: flex; align-items: stretch; gap: 0.4rem;">
+          <input type="text" id="fw-graph-node-val-input" class="param-input-field" style="flex: 1; height: var(--control-btn-height-desktop); min-height: var(--control-btn-height-desktop);" value="${safeDisplay}" placeholder="Node display value" />
+          <button type="button" id="fw-graph-node-val-save" class="vscode-btn-secondary" style="height: var(--control-btn-height-desktop); min-height: var(--control-btn-height-desktop); padding: 0 0.75rem;">Update</button>
         </div>
         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 0.25rem 0;" />
         <button type="button" id="fw-graph-node-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete Node</button>
@@ -1081,7 +1254,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const commitNodeValue = () => {
       const nextVal = inputEl.value.trim();
       if (nextVal !== '') {
-        node.label = nextVal; // Only updates visual display value; node.id stays unique
+        node.label = nextVal;
         requestRender();
       }
       modal.close();
@@ -1106,14 +1279,81 @@ export function setupGraphInteractions(containerEl, requestRender) {
     }
   };
 
-  // 1. Left-Click: Weight Pill Click -> Edit Weight | Node Click -> Drag Node
+  const openCanvasContextMenu = (worldPt) => {
+    const modal = getGraphModal();
+    if (!modal) return;
+    const graphData = getContainerGraphData(containerEl);
+    const suggestedName = generateDefaultNodeLabel(graphData.nodes);
+    const safeSuggested = String(suggestedName).replace(/"/g, '&quot;');
+
+    setModalTitle(modal, 'Canvas Options');
+    modal.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.45rem;">
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Add Node</label>
+        <div style="display: flex; align-items: stretch; gap: 0.4rem; margin-bottom: 0.25rem;">
+          <input type="text" id="fw-graph-add-node-input" class="param-input-field" style="flex: 1; height: var(--control-btn-height-desktop); min-height: var(--control-btn-height-desktop);" placeholder="Name (default: ${safeSuggested})" />
+          <button type="button" id="fw-graph-add-node-btn" class="vscode-btn-secondary" style="height: var(--control-btn-height-desktop); min-height: var(--control-btn-height-desktop); padding: 0 0.75rem;">Add node</button>
+        </div>
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 0.15rem 0;" />
+        <button type="button" id="fw-copy-edge-list" class="vscode-btn-secondary" style="width: 100%;">Copy as edge list</button>
+        <button type="button" id="fw-copy-adj-list" class="vscode-btn-secondary" style="width: 100%;">Copy as adjacency list</button>
+        <button type="button" id="fw-copy-adj-matrix" class="vscode-btn-secondary" style="width: 100%;">Copy as adjacency matrix</button>
+        <button type="button" id="fw-copy-json-attr" class="vscode-btn-secondary" style="width: 100%;">Copy as JSON (preserves attributes)</button>
+      </div>
+    `);
+    modal.open();
+
+    const addInput = modal.body.querySelector('#fw-graph-add-node-input');
+    const addBtn = modal.body.querySelector('#fw-graph-add-node-btn');
+
+    if (addInput) {
+      requestAnimationFrame(() => addInput.focus());
+    }
+
+    const handleAddNode = () => {
+      const rawVal = addInput ? addInput.value.trim() : '';
+      const finalLabel = rawVal !== '' ? rawVal : generateDefaultNodeLabel(graphData.nodes);
+      const newId = allocateNextNodeId(graphData);
+      graphData.nodes.push({
+        id: newId,
+        label: finalLabel,
+        x: worldPt.x,
+        y: worldPt.y
+      });
+      syncGraphDataToContainer(containerEl, graphData);
+      requestRender();
+      modal.close();
+    };
+
+    if (addBtn) addBtn.onclick = handleAddNode;
+    if (addInput) {
+      addInput.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') handleAddNode();
+      });
+    }
+
+    const copyAndClose = (text) => {
+      navigator.clipboard?.writeText(text).catch(() => { });
+      modal.close();
+    };
+
+    modal.body.querySelector('#fw-copy-edge-list').onclick = () => copyAndClose(formatGraphAsEdgeList(graphData));
+    modal.body.querySelector('#fw-copy-adj-list').onclick = () => copyAndClose(formatGraphAsAdjacencyList(graphData));
+    modal.body.querySelector('#fw-copy-adj-matrix').onclick = () => copyAndClose(formatGraphAsAdjacencyMatrix(graphData));
+    modal.body.querySelector('#fw-copy-json-attr').onclick = () => copyAndClose(formatGraphAsJsonWithAttributes(graphData));
+  };
+
+  // Track last node pointerdown for double-click drag edge creation
+  let lastNodeDown = { time: 0, node: null };
+
+  // 1. Left-Click: Weight Pill -> Edit Weight | Double-Click Drag Node -> Create Edge | Single-Click Drag Node -> Move Node
   canvas.addEventListener('pointerdown', (e) => {
     if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
 
     const worldPt = screenToWorld(e.clientX, e.clientY);
 
-    // Check weight box first (since weight labels render on top)
+    // Check weight box first
     const hitWeightEdge = hitTestWeightBox(worldPt.x, worldPt.y);
     if (hitWeightEdge) {
       e.stopImmediatePropagation();
@@ -1128,6 +1368,26 @@ export function setupGraphInteractions(containerEl, requestRender) {
     e.stopImmediatePropagation();
     try { canvas.setPointerCapture(e.pointerId); } catch { }
 
+    const now = performance.now();
+    const isDoubleClickOnSameNode = (lastNodeDown.node === hitNode) && (now - lastNodeDown.time < 350);
+
+    if (isDoubleClickOnSameNode) {
+      lastNodeDown = { time: 0, node: null };
+      containerEl._edgeCreateState = {
+        pointerId: e.pointerId,
+        sourceNode: hitNode,
+        currX: worldPt.x,
+        currY: worldPt.y,
+        hoverTargetNode: hitNode
+      };
+      containerEl._hoveredEdge = null;
+      canvas.style.cursor = 'crosshair';
+      requestRender();
+      return;
+    }
+
+    lastNodeDown = { time: now, node: hitNode };
+
     containerEl._dragState = {
       pointerId: e.pointerId,
       node: hitNode,
@@ -1139,11 +1399,22 @@ export function setupGraphInteractions(containerEl, requestRender) {
     requestRender();
   }, { capture: true });
 
-  // 2. Pointer Move: Drag Node | Weight I-Beam Cursor | Node Grab Cursor | Edge Hover
+  // 2. Pointer Move: Edge Creation Preview | Node Drag | Hover States
   canvas.addEventListener('pointermove', (e) => {
     const worldPt = screenToWorld(e.clientX, e.clientY);
-    const dragState = containerEl._dragState;
 
+    const edgeCreateState = containerEl._edgeCreateState;
+    if (edgeCreateState && edgeCreateState.pointerId === e.pointerId) {
+      e.stopImmediatePropagation();
+      edgeCreateState.currX = worldPt.x;
+      edgeCreateState.currY = worldPt.y;
+      edgeCreateState.hoverTargetNode = hitTestNode(worldPt.x, worldPt.y);
+      canvas.style.cursor = 'crosshair';
+      requestRender();
+      return;
+    }
+
+    const dragState = containerEl._dragState;
     if (dragState && dragState.pointerId === e.pointerId) {
       e.stopImmediatePropagation();
       dragState.node.x = worldPt.x + dragState.offsetX;
@@ -1155,7 +1426,6 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
     if (window.isSimulating) return;
 
-    // Hovering over a weight box -> I-beam ('text') cursor + highlight its parent edge
     const hitWeightEdge = hitTestWeightBox(worldPt.x, worldPt.y);
     if (hitWeightEdge) {
       if (containerEl._hoveredEdge !== hitWeightEdge) {
@@ -1184,7 +1454,38 @@ export function setupGraphInteractions(containerEl, requestRender) {
     canvas.style.cursor = '';
   }, { capture: true });
 
-  const endNodeDrag = (e) => {
+  const endPointerInteraction = (e) => {
+    const edgeCreateState = containerEl._edgeCreateState;
+    if (edgeCreateState && edgeCreateState.pointerId === e.pointerId) {
+      e.stopImmediatePropagation();
+      try { canvas.releasePointerCapture(e.pointerId); } catch { }
+      const worldPt = screenToWorld(e.clientX, e.clientY);
+      const targetNode = e.type !== 'pointercancel' ? hitTestNode(worldPt.x, worldPt.y) : null;
+      const sourceNode = edgeCreateState.sourceNode;
+      containerEl._edgeCreateState = null;
+
+      if (targetNode && sourceNode) {
+        const graphData = getContainerGraphData(containerEl);
+        const alreadyExists = graphData.edges.some(edge => {
+          const sameDir = edge.source === sourceNode && edge.target === targetNode;
+          const oppDir = !graphData.isDirected && edge.source === targetNode && edge.target === sourceNode;
+          return sameDir || oppDir;
+        });
+
+        if (!alreadyExists) {
+          graphData.edges.push({
+            source: sourceNode,
+            target: targetNode,
+            weight: 1 // Defaults to 1 when created
+          });
+          syncGraphDataToContainer(containerEl, graphData);
+        }
+      }
+      canvas.style.cursor = targetNode ? 'grab' : '';
+      requestRender();
+      return;
+    }
+
     const dragState = containerEl._dragState;
     if (!dragState || dragState.pointerId !== e.pointerId) return;
     e.stopImmediatePropagation();
@@ -1194,8 +1495,8 @@ export function setupGraphInteractions(containerEl, requestRender) {
     requestRender();
   };
 
-  canvas.addEventListener('pointerup', endNodeDrag, { capture: true });
-  canvas.addEventListener('pointercancel', endNodeDrag, { capture: true });
+  canvas.addEventListener('pointerup', endPointerInteraction, { capture: true });
+  canvas.addEventListener('pointercancel', endPointerInteraction, { capture: true });
 
   canvas.addEventListener('pointerleave', () => {
     if (containerEl._hoveredEdge) {
@@ -1204,7 +1505,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     }
   });
 
-  // 3. Right-Click Context Menu: Node Menu or Edge Menu
+  // 3. Right-Click Context Menu: Node Menu | Edge Menu | Canvas Menu
   canvas.addEventListener('contextmenu', (e) => {
     if (window.isSimulating) {
       e.preventDefault();
@@ -1227,7 +1528,10 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const hitEdge = hitTestWeightBox(worldPt.x, worldPt.y) || hitTestEdge(worldPt.x, worldPt.y);
     if (hitEdge) {
       openEdgeContextMenu(hitEdge);
+      return;
     }
+
+    openCanvasContextMenu(worldPt);
   });
 }
 
