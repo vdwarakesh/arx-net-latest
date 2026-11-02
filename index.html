@@ -257,6 +257,11 @@
 
       /* Data structures */
       --ds-primary: #eeb700;
+      --ds-secondary: #005fb8;
+
+      --ds-hover-primary: #ee7300;
+      --ds-hover-secondary: #c586c0;
+
       --ds-current-fill: #ee7300;
       --ds-visited: #eeb700;
       --ds-found-fill: #12a67c;
@@ -1963,6 +1968,15 @@
       border-color: var(--accent-primary);
     }
 
+    textarea.param-input-field {
+      height: auto;
+      min-height: 4.5rem;
+      padding: 0.4rem 0.5rem;
+      line-height: 1.4;
+      resize: vertical;
+      font-family: inherit;
+    }
+
     .vscode-btn-secondary {
       /* .vscode-btn-secondary gives the "Run" button inside the Settings card (#algo-settings-card) and the "Sign Out" button inside the Profile modal (#profile-pane-account) their styles */
       display: inline-flex;
@@ -3569,7 +3583,7 @@
 
       .vscode-btn-secondary,
       .algo-search-input,
-      .param-input-field {
+      input.param-input-field {
         /* Compacts the height and padding of the Settings "Run" button, Profile "Sign Out" button, search input, and parameter inputs on mobile */
         gap: 0.2rem;
         height: var(--control-btn-height-mobile);
@@ -4145,8 +4159,8 @@
                     aria-pressed="false">
                     <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
                   </button>
-                  <button type="button" id="algo-syllabus-filter-btn" class="algo-filter-btn has-active-filter" title="Show Syllabus Only"
-                    aria-pressed="true">
+                  <button type="button" id="algo-syllabus-filter-btn" class="algo-filter-btn has-active-filter"
+                    title="Show Syllabus Only" aria-pressed="true">
                     <img src="images/syllabus.png" alt="Syllabus" class="algo-filter-icon" />
                   </button>
                   <button type="button" id="algo-compatible-filter-btn" class="algo-filter-btn"
@@ -6328,7 +6342,7 @@
       redrawAllDsCanvases();
     }
 
-    async function createDataStructureContainer(dsType, rawNameInput, contentInput) {
+    async function createDataStructureContainer(dsType, rawNameInput, contentInput, extraInputs = {}) {
       /* Creates a new container DOM element with a standalone grid canvas, appends it to the DS card, adds it to History, and selects it */
       const uniqueName = getUniqueContainerName(rawNameInput, dsType);
 
@@ -6336,9 +6350,11 @@
       containerEl.className = 'ds-container-instance';
       containerEl.dataset.containerName = uniqueName;
       containerEl.dataset.dsType = dsType;
+      containerEl.dataset.dsInputs = JSON.stringify(extraInputs || {});
 
       containerEl.setAttribute('userInput', contentInput);
       containerEl.userInput = contentInput;
+      containerEl.dsInputs = extraInputs || {};
       containerEl.containerName = uniqueName;
 
       const canvasEl = document.createElement('canvas');
@@ -6474,7 +6490,7 @@
         sharedFloatingWindow.body.querySelector('#fw-btn-dup').onclick = () => {
           sharedFloatingWindow.close();
           const currentInput = activeObj.element.userInput ?? activeObj.userInput ?? '';
-          createDataStructureContainer(activeObj.dsType, activeObj.name, currentInput);
+          createDataStructureContainer(activeObj.dsType, activeObj.name, currentInput, { ...activeObj.dsInputs });
         };
 
         sharedFloatingWindow.body.querySelector('#fw-btn-png').onclick = () => {
@@ -7296,7 +7312,7 @@
       const metaHeading = metaSection ? metaSection.querySelector('h4') : null;
       if (!configContainer || !configHeading) return;
 
-      /* Case 1: A Data Structure was clicked -> Show "Attributes" & "Creation Settings" */
+      /* Case 1: A Data Structure was clicked -> Show "Properties" & "Creation Settings" */
       if (itemType === 'ds' && name) {
         if (algoSettingsSubmitBtn) {
           algoSettingsSubmitBtn.textContent = 'Create';
@@ -7305,45 +7321,61 @@
         const algoIncompatibleMsg = document.getElementById('algo-settings-incompatible-msg');
         if (algoIncompatibleMsg) algoIncompatibleMsg.style.display = 'none';
 
-        // Gather inherited + direct attributes along the data structure lineage
+        // Gather inherited + direct properties, placeholder, and inputs along the DS lineage
+        const lineage = getDsLineage(name) || [name];
+        let collectedProperties = [];
+        let resolvedPlaceholder = 'content (e.g. 10, 20, 30)';
+        let collectedInputs = {};
+        let currNode = dataStructuresJson;
+
+        for (const nodeName of lineage) {
+          if (currNode && currNode[nodeName]) {
+            const nodeData = currNode[nodeName];
+            // Support both "properties" and legacy "attributes"
+            const props = nodeData.properties || nodeData.attributes;
+            if (Array.isArray(props)) {
+              collectedProperties.push(...props);
+            }
+            if (nodeData.placeholder) {
+              resolvedPlaceholder = nodeData.placeholder;
+            }
+            if (Array.isArray(nodeData.inputs)) {
+              for (const inputGroup of nodeData.inputs) {
+                if (inputGroup && typeof inputGroup === 'object') {
+                  Object.assign(collectedInputs, inputGroup);
+                }
+              }
+            } else if (nodeData.inputs && typeof nodeData.inputs === 'object') {
+              Object.assign(collectedInputs, nodeData.inputs);
+            }
+            currNode = nodeData.children || {};
+          } else {
+            break;
+          }
+        }
+        collectedProperties = [...new Set(collectedProperties)];
+
         if (metaSection && metaContainer) {
           metaContainer.innerHTML = '';
-          const lineage = getDsLineage(name) || [name];
-          let collectedAttributes = [];
-          let currNode = dataStructuresJson;
-
-          for (const nodeName of lineage) {
-            if (currNode && currNode[nodeName]) {
-              if (Array.isArray(currNode[nodeName].attributes)) {
-                collectedAttributes.push(...currNode[nodeName].attributes);
-              }
-              currNode = currNode[nodeName].children || {};
-            } else {
-              break;
-            }
-          }
-          collectedAttributes = [...new Set(collectedAttributes)];
-
-          if (collectedAttributes.length > 0) {
-            if (metaHeading) metaHeading.textContent = 'Attributes';
+          if (collectedProperties.length > 0) {
+            if (metaHeading) metaHeading.textContent = 'Properties';
             metaSection.style.display = 'block';
 
-            for (const attrKey of collectedAttributes) {
-              // Safely extract the 'description' string from the JSON object
-              const desc = attributesDescJson[attrKey]?.description || '';
+            for (const propKey of collectedProperties) {
+              const desc = attributesDescJson[propKey]?.description || '';
 
               const badge = document.createElement('span');
               badge.className = 'algo-meta-badge constraint-badge';
               if (desc) badge.setAttribute('title', desc);
 
               const img = document.createElement('img');
-              img.src = 'images/attributes.png';
-              img.alt = 'attribute';
+              img.src = 'images/properties.png';
+              img.alt = 'property';
               img.className = 'algo-meta-icon';
               if (desc) img.setAttribute('title', desc);
 
               const text = document.createElement('span');
-              text.textContent = attrKey;
+              text.textContent = propKey;
 
               badge.appendChild(img);
               badge.appendChild(text);
@@ -7354,13 +7386,34 @@
           }
         }
 
+        // Build dynamic extra inputs (checkboxes, text inputs, etc.)
+        const extraInputsHtml = Object.entries(collectedInputs).map(([labelKey, inputType]) => {
+          const safeKey = labelKey.replace(/"/g, '&quot;');
+          const typeStr = String(inputType).toLowerCase().trim();
+
+          if (typeStr === 'checkbox') {
+            return `
+              <label style="display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer; user-select: none; padding: 0.15rem 0; color: var(--text-primary);">
+                <input type="checkbox" class="filter-checkbox ds-extra-input" data-ds-input-key="${safeKey}" />
+                <span>${labelKey}</span>
+              </label>
+            `;
+          }
+          return `
+            <input type="${typeStr}" class="param-input-field ds-extra-input" data-ds-input-key="${safeKey}" placeholder="${safeKey}" />
+          `;
+        }).join('');
+
+        const safePlaceholder = resolvedPlaceholder.replace(/"/g, '&quot;');
+
         configHeading.style.display = 'block';
         configHeading.textContent = 'Creation Settings';
         configContainer.style.color = 'inherit';
         configContainer.innerHTML = `
-          <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
             <input type="text" id="ds-input-name" class="param-input-field" placeholder="name (default: ${name})" data-param-name="name" />
-            <input type="text" id="ds-input-content" class="param-input-field" placeholder="content (e.g. 10, 20, 30)" data-param-name="content" />
+            <textarea id="ds-input-content" class="param-input-field" rows="3" placeholder="${safePlaceholder}" data-param-name="content"></textarea>
+            ${extraInputsHtml ? `<div style="display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.15rem;">${extraInputsHtml}</div>` : ''}
           </div>
         `;
         return;
@@ -7992,12 +8045,23 @@
         const rawName = nameInputEl ? nameInputEl.value : '';
         const rawContent = contentInputEl ? contentInputEl.value : '';
 
-        createDataStructureContainer(selectedDsaName, rawName, rawContent);
+        // Collect all dynamic DS inputs (checkboxes / text fields)
+        const extraInputs = {};
+        document.querySelectorAll('#algo-config-container .ds-extra-input').forEach(inp => {
+          const key = inp.getAttribute('data-ds-input-key');
+          if (!key) return;
+          extraInputs[key] = inp.type === 'checkbox' ? inp.checked : inp.value.trim();
+        });
+
+        await createDataStructureContainer(selectedDsaName, rawName, rawContent, extraInputs);
 
         if (nameInputEl) nameInputEl.value = '';
         if (contentInputEl) contentInputEl.value = '';
+        document.querySelectorAll('#algo-config-container .ds-extra-input').forEach(inp => {
+          if (inp.type === 'checkbox') inp.checked = false;
+          else inp.value = '';
+        });
       } else if (selectedDsaType === 'algo' && selectedDsaName) {
-        // Collapse the Algorithms & Settings column and start the visualization
         setAlgoCollapsed(true);
         saveLayoutState();
         await startAlgorithmVisualization();

@@ -1,6 +1,4 @@
 // dsa/Array.js
-// Parses user input from containerEl.userInput, draws an Array on the container's canvas using D3.js,
-// and provides right-click dynamic add/delete and drag-to-reorder interactions.
 
 import * as d3Module from './d3.js';
 const d3 = window.d3 || d3Module;

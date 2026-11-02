@@ -1,32 +1,130 @@
 // data-structures/Graph.js
 
+import * as d3Module from './d3.js'; // Adjust path to your d3.js as needed
+const d3 = window.d3 || d3Module;
+
 const textMeasurementContext = document.createElement('canvas').getContext('2d');
 
-const NODE_MIN_WIDTH = 60;
-const NODE_HEIGHT = 60;
-const NODE_PADDING_X = 20;
-const NODE_CORNER_RADIUS = 30;
-const EDGE_HIT_BUFFER_WIDTH = 20;
-const EDGE_STROKE_WIDTH = 4;
-const NODE_FONT = 'bold 25px sans-serif';
-const EDGE_LABEL_FONT = 'bold 18px sans-serif';
+// ========== Hyperparameters ==========
+export const GRAPH_HYPERPARAMETERS = {
+  // ----- Node Dimensions & Geometry -----
+  NODE_MIN_WIDTH: 60,           // Minimum width of a node in world px
+  NODE_HEIGHT: 60,              // Fixed height of a node in world px
+  NODE_PADDING_X: 20,           // Horizontal inner padding on each side of the node label
+  NODE_CORNER_RADIUS: 30,       // Corner radius (30px with 60px height creates a pill/circle)
+  NODE_STROKE_WIDTH: 5,       // Border thickness of nodes
+
+  // ----- Edge Geometry & Hit Testing -----
+  EDGE_STROKE_WIDTH: 4,         // Visible thickness of graph edges
+  EDGE_HIT_BUFFER_WIDTH: 20,    // Transparent stroke width used for mouse hover/click hit-testing
+  BIDIRECTIONAL_OFFSET: -8,     // Perpendicular pixel offset for curved bidirectional edge pairs
+  BIDIRECTIONAL_ARC_FACTOR: 1.2,// Multiplier on node distance to compute arc radius
+  SELF_LOOP_RADIUS: 50,         // Radius of the circular self-loop path
+  SELF_LOOP_OFFSET_X: 0,        // Horizontal offset of self-loop anchor from node center
+  SELF_LOOP_OFFSET_Y: -35,      // Vertical offset of self-loop anchor from node center
+  SELF_LOOP_LABEL_OFFSET_X: -5, // Horizontal offset for weight label on a self-loop
+  SELF_LOOP_LABEL_OFFSET_Y: -85,// Vertical offset for weight label on a self-loop
+
+  // ----- Directed Arrowhead Geometry -----
+  ARROW_SCALE: 2,               // Scale multiplier for the (-5..5, 0..10) arrowhead polygon
+  ARROW_REF_X: 9,               // Standard arrowhead tip pullback along edge tangent
+  ARROW_REF_Y: 0,               // Standard arrowhead perpendicular offset
+  ARROW_SELF_LOOP_REF_X: 4,     // Self-loop arrowhead tip pullback
+  ARROW_SELF_LOOP_REF_Y: -0.5,  // Self-loop arrowhead perpendicular offset
+
+  // ----- Circular Layout & Crossing Minimization -----
+  MIN_NODE_GAP: 200,            // Minimum arc gap between nodes around the layout circle
+  MIN_CIRCLE_RADIUS: 150,       // Floor on the circular layout radius in world px
+  CROSSING_MAX_ITERATIONS: 20000,// Simulated annealing iterations for minimizing edge crossings
+  INITIAL_TEMPERATURE: 2.0,     // Starting temperature for simulated annealing
+  FINAL_TEMPERATURE: 0.01,      // Ending temperature floor for simulated annealing
+  BOUNDS_PADDING: 25,           // World-space margin added around nodes/edges for zoom-to-fit
+
+  // ----- Fonts & Weight Pill Badges -----
+  FONT_FAMILY: "'Adwaita Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+  NODE_FONT_SIZE: 25,
+  NODE_FONT_WEIGHT: 'bold',
+  EDGE_LABEL_FONT_SIZE: 25,
+  EDGE_LABEL_FONT_WEIGHT: 'bold',
+  WEIGHT_PILL_PADDING_X: 15,     // Horizontal padding inside the edge weight badge
+  WEIGHT_PILL_HEIGHT: 40,       // Height of the edge weight badge
+  WEIGHT_PILL_RADIUS: 6,        // Corner radius of the edge weight badge
+  WEIGHT_PILL_STROKE_WIDTH: 0,// Border width of the edge weight badge
+
+  // ----- Colors: CSS variable names (guaranteed to exist on :root) -----
+  NODE_FILL_VAR: '--ds-primary',
+  NODE_STROKE_VAR: '--border-color',
+  NODE_DRAG_FILL_VAR: '--ds-hover-primary',
+
+  EDGE_STROKE_VAR: '--ds-secondary',
+  EDGE_HOVER_STROKE_VAR: '--ds-hover-secondary',
+
+  TEXT_BRIGHT_VAR: '--text-bright',
+  TEXT_DARK_VAR: '--text-dark',
+  WEIGHT_BG_VAR: '--bg-elevated',
+
+  // Simulation state variables
+  FOUND_FILL_VAR: '--ds-found-fill',
+  CURRENT_FILL_VAR: '--ds-current-fill',
+  VISITED_FILL_VAR: '--ds-visited',
+  CHECKED_ALPHA: 0.45,
+  DEFAULT_ALPHA: 1,
+};
+
+/**
+ * Resolves CSS variables into concrete colors.
+ */
+function resolveStyleHyperparameters(hp) {
+  const rootStyle = getComputedStyle(document.documentElement);
+  const resolved = { ...hp };
+
+  const readVar = (varName) => {
+    const val = rootStyle.getPropertyValue(varName).trim();
+    return val || '#000000'; // Fallback to prevent canvas errors if css var is missing
+  };
+
+  resolved.NODE_FILL = readVar(hp.NODE_FILL_VAR);
+  resolved.NODE_STROKE = readVar(hp.NODE_STROKE_VAR);
+  resolved.NODE_DRAG_FILL = readVar(hp.NODE_DRAG_FILL_VAR);
+
+  resolved.EDGE_STROKE = readVar(hp.EDGE_STROKE_VAR);
+  resolved.EDGE_HOVER_STROKE = readVar(hp.EDGE_HOVER_STROKE_VAR);
+
+  resolved.TEXT_BRIGHT = readVar(hp.TEXT_BRIGHT_VAR);
+  resolved.TEXT_DARK = readVar(hp.TEXT_DARK_VAR);
+  resolved.WEIGHT_BG = readVar(hp.WEIGHT_BG_VAR);
+
+  resolved.FOUND_FILL = readVar(hp.FOUND_FILL_VAR);
+  resolved.CURRENT_FILL = readVar(hp.CURRENT_FILL_VAR);
+  resolved.VISITED_FILL = readVar(hp.VISITED_FILL_VAR);
+
+  return resolved;
+}
 
 // ============================================================================
 // 1. NODE SIZING & POSITIONING
 // ============================================================================
 
-function measureNodeLabelWidth(text, font = NODE_FONT) {
-  textMeasurementContext.font = font;
+function getNodeFont(hp = GRAPH_HYPERPARAMETERS) {
+  return `${hp.NODE_FONT_WEIGHT} ${hp.NODE_FONT_SIZE}px ${hp.FONT_FAMILY}`;
+}
+
+function getEdgeLabelFont(hp = GRAPH_HYPERPARAMETERS) {
+  return `${hp.EDGE_LABEL_FONT_WEIGHT} ${hp.EDGE_LABEL_FONT_SIZE}px ${hp.FONT_FAMILY}`;
+}
+
+function measureNodeLabelWidth(text, hp = GRAPH_HYPERPARAMETERS) {
+  textMeasurementContext.font = getNodeFont(hp);
   return textMeasurementContext.measureText(String(text)).width;
 }
 
-function calculateNodeWidth(nodeData) {
+function calculateNodeWidth(nodeData, hp = GRAPH_HYPERPARAMETERS) {
   const displayText = nodeData.label !== undefined ? nodeData.label : nodeData.id;
-  return Math.max(NODE_MIN_WIDTH, measureNodeLabelWidth(displayText) + NODE_PADDING_X * 2);
+  return Math.max(hp.NODE_MIN_WIDTH, measureNodeLabelWidth(displayText, hp) + hp.NODE_PADDING_X * 2);
 }
 
 // ============================================================================
-// 2. EDGE GEOMETRY & ALIGNMENT (SELF-LOOPS, BIDIRECTIONAL ARCS, STRAIGHT LINES)
+// 2. EDGE GEOMETRY & ALIGNMENT
 // ============================================================================
 
 function calculateRectBorderIntersection(centerX, centerY, halfWidth, halfHeight, targetX, targetY, cornerRadius) {
@@ -41,7 +139,6 @@ function calculateRectBorderIntersection(centerX, centerY, halfWidth, halfHeight
   const scaleX = deltaX !== 0 ? halfWidth / Math.abs(deltaX) : Infinity;
   const scaleY = deltaY !== 0 ? halfHeight / Math.abs(deltaY) : Infinity;
 
-  // Cap at 1 so we never overshoot past the other node's center
   const borderScale = Math.min(scaleX, scaleY, 1);
   const flatIntersectionX = deltaX * borderScale;
   const flatIntersectionY = deltaY * borderScale;
@@ -71,24 +168,21 @@ function calculateRectBorderIntersection(centerX, centerY, halfWidth, halfHeight
   return { x: centerX + unitX * rayDistance, y: centerY + unitY * rayDistance };
 }
 
-function calculateEdgePathAndLabelPosition(edgeData) {
-  const BIDIRECTIONAL_OFFSET = -8;
-
-  // Case 1: Self-loop edge
+function calculateEdgePathAndLabelPosition(edgeData, hp = GRAPH_HYPERPARAMETERS) {
   if (edgeData.selfLoop) {
     const nodeX = edgeData.source.x;
     const nodeY = edgeData.source.y;
-    const loopRadius = 50;
-    const offsetX = 0;
-    const offsetY = -35;
+    const loopRadius = hp.SELF_LOOP_RADIUS;
+    const offsetX = hp.SELF_LOOP_OFFSET_X;
+    const offsetY = hp.SELF_LOOP_OFFSET_Y;
 
     const startX = nodeX + offsetX;
     const startY = nodeY + offsetY - loopRadius;
 
     return {
       svgPath: `M${startX},${startY} a${loopRadius},${loopRadius} 0 1,1 0,${2 * loopRadius} a${loopRadius},${loopRadius} 0 1,1 0,${-2 * loopRadius}`,
-      labelX: nodeX + offsetX - 5,
-      labelY: nodeY - 85,
+      labelX: nodeX + offsetX + hp.SELF_LOOP_LABEL_OFFSET_X,
+      labelY: nodeY + hp.SELF_LOOP_LABEL_OFFSET_Y,
       arrowX: startX,
       arrowY: startY,
       arrowAngle: 0,
@@ -102,29 +196,28 @@ function calculateEdgePathAndLabelPosition(edgeData) {
     };
   }
 
-  // Case 2: Curved bidirectional edge
   if (edgeData.bidirectional) {
-    const sourceHalfWidth = calculateNodeWidth(edgeData.source) / 2;
-    const sourceHalfHeight = NODE_HEIGHT / 2;
-    const targetHalfWidth = calculateNodeWidth(edgeData.target) / 2;
-    const targetHalfHeight = NODE_HEIGHT / 2;
+    const sourceHalfWidth = calculateNodeWidth(edgeData.source, hp) / 2;
+    const sourceHalfHeight = hp.NODE_HEIGHT / 2;
+    const targetHalfWidth = calculateNodeWidth(edgeData.target, hp) / 2;
+    const targetHalfHeight = hp.NODE_HEIGHT / 2;
 
     const startPoint = calculateRectBorderIntersection(
       edgeData.source.x, edgeData.source.y, sourceHalfWidth, sourceHalfHeight,
-      edgeData.target.x, edgeData.target.y, NODE_CORNER_RADIUS
+      edgeData.target.x, edgeData.target.y, hp.NODE_CORNER_RADIUS
     );
     const endPoint = calculateRectBorderIntersection(
       edgeData.target.x, edgeData.target.y, targetHalfWidth, targetHalfHeight,
-      edgeData.source.x, edgeData.source.y, NODE_CORNER_RADIUS
+      edgeData.source.x, edgeData.source.y, hp.NODE_CORNER_RADIUS
     );
 
     const centerDeltaX = edgeData.target.x - edgeData.source.x;
     const centerDeltaY = edgeData.target.y - edgeData.source.y;
     const centerDistance = Math.sqrt(centerDeltaX * centerDeltaX + centerDeltaY * centerDeltaY) || 1;
-    const arcRadius = centerDistance * 1.2;
+    const arcRadius = centerDistance * hp.BIDIRECTIONAL_ARC_FACTOR;
 
-    const perpendicularOffsetX = (-centerDeltaY / centerDistance) * BIDIRECTIONAL_OFFSET;
-    const perpendicularOffsetY = (centerDeltaX / centerDistance) * BIDIRECTIONAL_OFFSET;
+    const perpendicularOffsetX = (-centerDeltaY / centerDistance) * hp.BIDIRECTIONAL_OFFSET;
+    const perpendicularOffsetY = (centerDeltaX / centerDistance) * hp.BIDIRECTIONAL_OFFSET;
     startPoint.x += perpendicularOffsetX;
     startPoint.y += perpendicularOffsetY;
     endPoint.x += perpendicularOffsetX;
@@ -137,7 +230,6 @@ function calculateEdgePathAndLabelPosition(edgeData) {
     const midPointY = (startPoint.y + endPoint.y) / 2;
     const sagittaHeight = Math.sqrt(Math.max(arcRadius * arcRadius - (chordLength / 2) * (chordLength / 2), 0));
 
-    // Compute exact circle center for sweep-flag=1 to orient the canvas arrowhead tangent
     const normalX = -chordDeltaY / chordLength;
     const normalY = chordDeltaX / chordLength;
     const circleCenterX = midPointX + normalX * sagittaHeight;
@@ -166,12 +258,11 @@ function calculateEdgePathAndLabelPosition(edgeData) {
     };
   }
 
-  // Case 3: Standard straight edge
-  const targetHalfWidth = calculateNodeWidth(edgeData.target) / 2;
-  const targetHalfHeight = NODE_HEIGHT / 2;
+  const targetHalfWidth = calculateNodeWidth(edgeData.target, hp) / 2;
+  const targetHalfHeight = hp.NODE_HEIGHT / 2;
   const endPoint = calculateRectBorderIntersection(
     edgeData.target.x, edgeData.target.y, targetHalfWidth, targetHalfHeight,
-    edgeData.source.x, edgeData.source.y, NODE_CORNER_RADIUS
+    edgeData.source.x, edgeData.source.y, hp.NODE_CORNER_RADIUS
   );
 
   const arrowAngle = Math.atan2(endPoint.y - edgeData.source.y, endPoint.x - edgeData.source.x);
@@ -197,18 +288,24 @@ function calculateEdgePathAndLabelPosition(edgeData) {
 // 3. CIRCULAR LAYOUT & CROSSING MINIMIZATION
 // ============================================================================
 
-export function applyCircularNodeLayout(nodes, canvasWidth, canvasHeight, edges = []) {
+export function applyCircularNodeLayout(nodes, canvasWidth, canvasHeight, edges = [], hp = GRAPH_HYPERPARAMETERS) {
   if (!nodes || nodes.length === 0) return;
 
   const getNodeId = node => node.id !== undefined ? node.id : node.label || node.name;
   const getEndpointId = endpoint => typeof endpoint === 'object' ? getNodeId(endpoint) : endpoint;
 
-  const circularSlotsByNodeIndex = computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpointId);
+  const circularSlotsByNodeIndex = computeCrossingMinimizedCircularOrder(
+    nodes,
+    edges,
+    getNodeId,
+    getEndpointId,
+    hp.CROSSING_MAX_ITERATIONS,
+    hp
+  );
   const nodeCount = nodes.length;
-  const MIN_NODE_GAP = 200;
 
-  const totalCircumferenceNeeded = nodes.reduce((sum, node) => sum + calculateNodeWidth(node) + MIN_NODE_GAP, 0);
-  const circleRadius = nodeCount === 1 ? 0 : Math.max(150, totalCircumferenceNeeded / (2 * Math.PI));
+  const totalCircumferenceNeeded = nodes.reduce((sum, node) => sum + calculateNodeWidth(node, hp) + hp.MIN_NODE_GAP, 0);
+  const circleRadius = nodeCount === 1 ? 0 : Math.max(hp.MIN_CIRCLE_RADIUS, totalCircumferenceNeeded / (2 * Math.PI));
   const angleStep = (2 * Math.PI) / Math.max(1, nodeCount);
 
   nodes.forEach((node, index) => {
@@ -218,7 +315,7 @@ export function applyCircularNodeLayout(nodes, canvasWidth, canvasHeight, edges 
   });
 }
 
-function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpointId, maxIterations = 20000) {
+function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpointId, maxIterations, hp) {
   const nodeCount = nodes.length;
   if (nodeCount < 4 || edges.length === 0) return nodes.map((_, i) => i);
 
@@ -241,7 +338,6 @@ function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpo
     adjacencyList[targetIdx].push(sourceIdx);
   });
 
-  // Initial ordering via BFS starting from highest-degree nodes
   const nodesSortedByDegree = [...Array(nodeCount).keys()].sort((a, b) => adjacencyList[b].length - adjacencyList[a].length);
   const visitedNodes = new Array(nodeCount).fill(false);
   const initialNodeOrder = [];
@@ -284,12 +380,11 @@ function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpo
     return crossings;
   };
 
-  // Simulated annealing over pairwise slot swaps
   let currentCrossings = countChordCrossings();
   let minCrossings = currentCrossings;
   let bestSlotAssignment = slotByNodeIndex.slice();
-  let temperature = 2.0;
-  const coolingFactor = Math.pow(0.01 / 2.0, 1 / maxIterations);
+  let temperature = hp.INITIAL_TEMPERATURE;
+  const coolingFactor = Math.pow(hp.FINAL_TEMPERATURE / hp.INITIAL_TEMPERATURE, 1 / maxIterations);
 
   for (let iteration = 0; iteration < maxIterations && minCrossings > 0; iteration++) {
     const nodeIdxA = Math.floor(Math.random() * nodeCount);
@@ -307,7 +402,6 @@ function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpo
         bestSlotAssignment = slotByNodeIndex.slice();
       }
     } else {
-      // Revert swap
       [slotByNodeIndex[nodeIdxA], slotByNodeIndex[nodeIdxB]] = [slotByNodeIndex[nodeIdxB], slotByNodeIndex[nodeIdxA]];
     }
     temperature *= coolingFactor;
@@ -320,10 +414,18 @@ function computeCrossingMinimizedCircularOrder(nodes, edges, getNodeId, getEndpo
 // 4. GRAPH DATA PARSING & STATE MANAGEMENT
 // ============================================================================
 
-function resolveGraphTypeFlags(dsType = '') {
+function resolveGraphTypeFlags(dsType = '', extraInputs = {}) {
   const lower = dsType.toLowerCase();
-  const isDirected = lower.includes('directed') && !lower.includes('undirected');
-  const isWeighted = lower.includes('weighted') && !lower.includes('unweighted');
+  let isDirected = lower.includes('directed') && !lower.includes('undirected');
+  let isWeighted = lower.includes('weighted') && !lower.includes('unweighted');
+
+  if (extraInputs && typeof extraInputs === 'object') {
+    for (const [k, v] of Object.entries(extraInputs)) {
+      const keyLower = k.toLowerCase();
+      if (keyLower === 'directed') isDirected = Boolean(v);
+      if (keyLower === 'weighted') isWeighted = Boolean(v);
+    }
+  }
   return { isDirected, isWeighted };
 }
 
@@ -350,17 +452,15 @@ function refreshEdgeFlags(graphData) {
   });
 }
 
-function parseGraphInput(rawInput, dsType = 'Graph') {
-  const { isDirected: typeDirected, isWeighted: typeWeighted } = resolveGraphTypeFlags(dsType);
-  let isDirected = typeDirected;
-  let isWeighted = typeWeighted;
+function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
+  const { isDirected, isWeighted } = resolveGraphTypeFlags(dsType, extraInputs);
 
   const text = (rawInput || '').trim();
   const nodesMap = new Map();
   const edges = [];
 
-  const ensureNode = (idStr) => {
-    const cleanId = String(idStr).trim();
+  const ensureNode = (idVal) => {
+    const cleanId = String(idVal).trim().replace(/^['"]|['"]$/g, '');
     if (!cleanId) return null;
     if (!nodesMap.has(cleanId)) {
       nodesMap.set(cleanId, { id: cleanId, label: cleanId, x: 0, y: 0 });
@@ -368,44 +468,153 @@ function parseGraphInput(rawInput, dsType = 'Graph') {
     return nodesMap.get(cleanId);
   };
 
-  if (text) {
-    // Supports JSON input or comma/semicolon/newline separated edge tokens:
-    // e.g. "A-B, B-C:5, C->A" or "1 2, 2 3, 3 1" or single nodes "A, B, C"
-    const tokens = text.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
-    for (const token of tokens) {
-      const arrowMatch = token.match(/^(.+?)\s*(->|<->|--|-)\s*(.+?)(?:\s*[:=]\s*([+-]?\d+(?:\.\d+)?))?$/);
-      if (arrowMatch) {
-        const [, uRaw, op, vRaw, wRaw] = arrowMatch;
-        if (op === '->' || op === '<->') isDirected = true;
-        if (wRaw !== undefined) isWeighted = true;
+  const addEdge = (uId, vId, weightVal = 1) => {
+    const uNode = ensureNode(uId);
+    const vNode = ensureNode(vId);
+    if (!uNode || !vNode) return;
+    const parsedW = (weightVal !== undefined && weightVal !== null && weightVal !== '' && !Number.isNaN(Number(weightVal)))
+      ? Number(weightVal)
+      : 1;
+    edges.push({ source: uNode, target: vNode, weight: parsedW });
+  };
 
-        const uNode = ensureNode(uRaw);
-        const vNode = ensureNode(vRaw);
-        if (uNode && vNode) {
-          const weight = wRaw !== undefined ? Number(wRaw) : 1;
-          edges.push({ source: uNode, target: vNode, weight });
-          if (op === '<->' && uNode.id !== vNode.id) {
-            edges.push({ source: vNode, target: uNode, weight });
+  if (text) {
+    // 1. Try parsing JSON or Python-like Dict/Array (Adjacency List, Adjacency Matrix, or Edge List)
+    let parsedJson = null;
+    if (text.startsWith('{') || text.startsWith('[')) {
+      try {
+        // Automatically quote unquoted identifiers so { A: [B, C] } parses as valid JSON
+        const normalizedJson = text
+          .replace(/'/g, '"')
+          .replace(/([{,\[])\s*([a-zA-Z0-9_.-]+)\s*:/g, '$1"$2":')
+          .replace(/:\s*([a-zA-Z_][a-zA-Z0-9_.-]*)\s*([,}\]])/g, ':"$1"$2')
+          .replace(/([\[,])\s*([a-zA-Z_][a-zA-Z0-9_.-]*)\s*(?=[,\]])/g, '$1"$2"');
+        parsedJson = JSON.parse(normalizedJson);
+      } catch { }
+    }
+
+    if (parsedJson !== null && typeof parsedJson === 'object') {
+      if (Array.isArray(parsedJson)) {
+        // Check if Square Adjacency Matrix: [[0, 1, 0], [1, 0, 5], ...]
+        const n = parsedJson.length;
+        const isSquareMatrix = n > 0 && parsedJson.every(row =>
+          Array.isArray(row) && row.length === n && row.every(val => typeof val === 'number' || !Number.isNaN(Number(val)))
+        ) && (n > 3 || parsedJson.some(row => row.filter(v => Number(v) === 0).length > 0));
+
+        if (isSquareMatrix) {
+          for (let i = 0; i < n; i++) ensureNode(i);
+          for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+              const w = Number(parsedJson[i][j]);
+              if (w !== 0 && !Number.isNaN(w)) {
+                if (!isDirected && j < i && Number(parsedJson[j][i]) === w) continue;
+                addEdge(i, j, w);
+              }
+            }
+          }
+        } else {
+          // Array Edge List: [[u, v], [u, v, w]] or [{source, target, weight}]
+          for (const item of parsedJson) {
+            if (Array.isArray(item) && item.length >= 2) {
+              addEdge(item[0], item[1], item[2]);
+            } else if (Array.isArray(item) && item.length === 1) {
+              ensureNode(item[0]);
+            } else if (item && typeof item === 'object') {
+              const u = item.source ?? item.u ?? item.from;
+              const v = item.target ?? item.v ?? item.to;
+              if (u !== undefined && v !== undefined) addEdge(u, v, item.weight ?? item.w);
+            } else if (item !== null && item !== undefined) {
+              ensureNode(item);
+            }
           }
         }
-        continue;
-      }
-
-      const parts = token.split(/\s+/);
-      if (parts.length >= 2) {
-        const uNode = ensureNode(parts[0]);
-        const vNode = ensureNode(parts[1]);
-        const hasWeight = parts.length >= 3 && !Number.isNaN(Number(parts[2]));
-        if (hasWeight) isWeighted = true;
-        if (uNode && vNode) {
-          edges.push({
-            source: uNode,
-            target: vNode,
-            weight: hasWeight ? Number(parts[2]) : 1
-          });
+      } else {
+        // Object Adjacency List: { "A": ["B", ["C", 5]], "B": { "C": 2 } }
+        for (const [u, neighbors] of Object.entries(parsedJson)) {
+          ensureNode(u);
+          if (Array.isArray(neighbors)) {
+            for (const targetItem of neighbors) {
+              if (Array.isArray(targetItem) && targetItem.length >= 2) {
+                addEdge(u, targetItem[0], targetItem[1]);
+              } else if (targetItem && typeof targetItem === 'object') {
+                const v = targetItem.node ?? targetItem.target ?? targetItem.id ?? targetItem.v;
+                if (v !== undefined) addEdge(u, v, targetItem.weight ?? targetItem.w);
+              } else if (targetItem !== null && targetItem !== undefined) {
+                addEdge(u, targetItem, 1);
+              }
+            }
+          } else if (neighbors && typeof neighbors === 'object') {
+            for (const [v, w] of Object.entries(neighbors)) {
+              addEdge(u, v, w);
+            }
+          }
         }
-      } else if (parts.length === 1) {
-        ensureNode(parts[0]);
+      }
+    } else {
+      // 2. Check if Plain-Text Multi-line Adjacency Matrix (e.g., rows of numbers)
+      const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const matrixRows = lines.map(l => l.split(/[\s,]+/).filter(Boolean));
+      const isTextMatrix = matrixRows.length > 1 &&
+        matrixRows.every(r => r.length === matrixRows.length && r.every(val => !Number.isNaN(Number(val)))) &&
+        (matrixRows.length !== 2 && matrixRows.length !== 3 || matrixRows.flat().some(v => Number(v) === 0));
+
+      if (isTextMatrix) {
+        const n = matrixRows.length;
+        for (let i = 0; i < n; i++) ensureNode(i);
+        for (let i = 0; i < n; i++) {
+          for (let j = 0; j < n; j++) {
+            const w = Number(matrixRows[i][j]);
+            if (w !== 0) {
+              if (!isDirected && j < i && Number(matrixRows[j][i]) === w) continue;
+              addEdge(i, j, w);
+            }
+          }
+        }
+      } else if (lines.some(l => /^[a-zA-Z0-9_.-]+\s*:\s*/.test(l) && !l.includes('->') && !l.includes('-'))) {
+        // 3. Plain-Text Adjacency List: "A: B, C(5)" or "A: B C" per line
+        for (const line of lines) {
+          const colonIdx = line.indexOf(':');
+          if (colonIdx === -1) {
+            ensureNode(line);
+            continue;
+          }
+          const u = line.slice(0, colonIdx).trim();
+          ensureNode(u);
+          const rest = line.slice(colonIdx + 1).trim();
+          if (!rest) continue;
+
+          const neighborTokens = rest.split(/[,;\s]+/).map(t => t.trim()).filter(Boolean);
+          for (const tok of neighborTokens) {
+            const weightMatch = tok.match(/^(.+?)(?:\(([-+]?\d*\.?\d+)\)|:([-+]?\d*\.?\d+))$/);
+            if (weightMatch) {
+              addEdge(u, weightMatch[1], weightMatch[2] ?? weightMatch[3]);
+            } else {
+              addEdge(u, tok, 1);
+            }
+          }
+        }
+      } else {
+        // 4. Standard Edge List Tokens: "A-B, B-C:5, C->A" or "1 2 5" or single nodes "A, B, C"
+        const tokens = text.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
+        for (const token of tokens) {
+          const arrowMatch = token.match(/^(.+?)\s*(->|<->|--|-)\s*(.+?)(?:\s*[:=]\s*([+-]?\d+(?:\.\d+)?))?$/);
+          if (arrowMatch) {
+            const [, uRaw, op, vRaw, wRaw] = arrowMatch;
+            addEdge(uRaw, vRaw, wRaw);
+            if (op === '<->' && String(uRaw).trim() !== String(vRaw).trim()) {
+              addEdge(vRaw, uRaw, wRaw);
+            }
+            continue;
+          }
+
+          const parts = token.split(/\s+/);
+          if (parts.length >= 2) {
+            const hasWeight = parts.length >= 3 && !Number.isNaN(Number(parts[2]));
+            addEdge(parts[0], parts[1], hasWeight ? parts[2] : 1);
+          } else if (parts.length === 1) {
+            ensureNode(parts[0]);
+          }
+        }
       }
     }
   }
@@ -421,9 +630,20 @@ export function getContainerGraphData(containerEl) {
 
   const rawInput = containerEl.getAttribute('userInput') || containerEl.userInput || '';
   const dsType = containerEl.dataset.dsType || 'Graph';
+  let extraInputs = containerEl.dsInputs || {};
+  if ((!extraInputs || Object.keys(extraInputs).length === 0) && containerEl.dataset.dsInputs) {
+    try {
+      extraInputs = JSON.parse(containerEl.dataset.dsInputs);
+    } catch { }
+  }
+  const serializedInputs = JSON.stringify(extraInputs);
 
-  if (!containerEl._graphData || containerEl._lastParsedGraphInput !== rawInput) {
-    const parsed = parseGraphInput(rawInput, dsType);
+  if (
+    !containerEl._graphData ||
+    containerEl._lastParsedGraphInput !== rawInput ||
+    containerEl._lastParsedGraphInputsJson !== serializedInputs
+  ) {
+    const parsed = parseGraphInput(rawInput, dsType, extraInputs);
     const canvas = containerEl.querySelector('canvas');
     const w = (canvas && canvas.clientWidth) ? canvas.clientWidth : 800;
     const h = (canvas && canvas.clientHeight) ? canvas.clientHeight : 600;
@@ -431,69 +651,20 @@ export function getContainerGraphData(containerEl) {
     applyCircularNodeLayout(parsed.nodes, w, h, parsed.edges);
     containerEl._graphData = parsed;
     containerEl._lastParsedGraphInput = rawInput;
+    containerEl._lastParsedGraphInputsJson = serializedInputs;
   }
 
   return containerEl._graphData;
-}
-
-export function syncGraphDataToContainer(containerEl, graphData) {
-  if (!containerEl || !graphData) return;
-  refreshEdgeFlags(graphData);
-
-  const connectedNodeIds = new Set();
-  const edgeTokens = graphData.edges.map(e => {
-    const u = typeof e.source === 'object' ? e.source.id : e.source;
-    const v = typeof e.target === 'object' ? e.target.id : e.target;
-    connectedNodeIds.add(String(u));
-    connectedNodeIds.add(String(v));
-    const op = graphData.isDirected ? '->' : '-';
-    const wSuffix = (graphData.isWeighted && e.weight !== undefined) ? `:${e.weight}` : '';
-    return `${u}${op}${v}${wSuffix}`;
-  });
-
-  const isolatedTokens = graphData.nodes
-    .filter(n => !connectedNodeIds.has(String(n.id)))
-    .map(n => String(n.id));
-
-  const serialized = [...edgeTokens, ...isolatedTokens].join(', ');
-  containerEl._graphData = graphData;
-  containerEl._lastParsedGraphInput = serialized;
-  containerEl.userInput = serialized;
-  containerEl.setAttribute('userInput', serialized);
-
-  if (typeof window.updateDsHeaderWarningState === 'function') {
-    window.updateDsHeaderWarningState();
-  }
-  if (typeof window.updateMetadataUI === 'function') {
-    window.updateMetadataUI();
-  }
 }
 
 // ============================================================================
 // 5. CORE CANVAS GRAPH RENDERING PIPELINE
 // ============================================================================
 
-function resolveThemeColors() {
-  const rootStyles = getComputedStyle(document.documentElement);
-  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  return {
-    nodeFill: rootStyles.getPropertyValue('--ds-bar-fill').trim() || '#42baff',
-    nodeStroke: rootStyles.getPropertyValue('--ds-bar-stroke').trim() || '#1e1e1e',
-    nodeDragFill: '#ff9800',
-    nodeCurrentFill: rootStyles.getPropertyValue('--ds-current-fill').trim() || '#f59e0b',
-    nodeFoundFill: rootStyles.getPropertyValue('--ds-found-fill').trim() || '#12a67c',
-    edgeStroke: isLight ? '#334155' : '#ffffff',
-    edgeHoverStroke: '#ff5252',
-    nodeTextColor: isLight ? '#0f172a' : '#ffffff',
-    weightBgColor: rootStyles.getPropertyValue('--bg-elevated').trim() || (isLight ? '#f8fafc' : '#1e293b')
-  };
-}
-
-function drawDirectedArrowhead(ctx, x, y, angle, isSelfLoop, color) {
-  // Matches SVG marker viewBox="0 -5 10 10", path="M0,-5 L10,0 L0,5", markerWidth=5, strokeWidth=4 (scale = 2)
-  const scale = 2;
-  const refX = isSelfLoop ? 4 : 9;
-  const refY = isSelfLoop ? -0.5 : 0;
+function drawDirectedArrowhead(ctx, x, y, angle, isSelfLoop, color, hp) {
+  const scale = hp.ARROW_SCALE;
+  const refX = isSelfLoop ? hp.ARROW_SELF_LOOP_REF_X : hp.ARROW_REF_X;
+  const refY = isSelfLoop ? hp.ARROW_SELF_LOOP_REF_Y : hp.ARROW_REF_Y;
 
   ctx.save();
   ctx.translate(x, y);
@@ -511,10 +682,15 @@ function drawDirectedArrowhead(ctx, x, y, angle, isSelfLoop, color) {
   ctx.restore();
 }
 
-export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
+export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHyperparameters = {}) {
   if (!containerEl) return;
   const canvas = containerEl.querySelector('canvas');
   if (!canvas) return;
+
+  const hp = resolveStyleHyperparameters({
+    ...GRAPH_HYPERPARAMETERS,
+    ...customHyperparameters,
+  });
 
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
@@ -523,7 +699,6 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
 
   refreshEdgeFlags(graphData);
 
-  const colors = resolveThemeColors();
   const hoveredEdge = containerEl._hoveredEdge || null;
   const draggedNode = containerEl._dragState ? containerEl._dragState.node : null;
   const simStep = containerEl._simStep || null;
@@ -541,32 +716,34 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
     if (y2 > maxY) maxY = y2;
   };
 
-  // 1. Render visible edges & cache Path2D objects for 20px hit-buffer detection
+  // 1. Render visible edges & cache Path2D objects for hit-buffer detection
   const renderedEdges = [];
   for (const edge of edges) {
     if (!edge.source || !edge.target) continue;
-    const geom = calculateEdgePathAndLabelPosition(edge);
+    const geom = calculateEdgePathAndLabelPosition(edge, hp);
     const path2D = new Path2D(geom.svgPath);
     edge._path2D = path2D;
     edge._geom = geom;
 
     const isHovered = (hoveredEdge === edge);
-    const strokeColor = isHovered ? colors.edgeHoverStroke : colors.edgeStroke;
+    const strokeColor = isHovered ? hp.EDGE_HOVER_STROKE : hp.EDGE_STROKE;
 
     ctx.save();
+    ctx.globalAlpha = hp.DEFAULT_ALPHA;
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = EDGE_STROKE_WIDTH;
+    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke(path2D);
     ctx.restore();
 
     if (isDirected) {
-      drawDirectedArrowhead(ctx, geom.arrowX, geom.arrowY, geom.arrowAngle, geom.isSelfLoop, strokeColor);
+      drawDirectedArrowhead(ctx, geom.arrowX, geom.arrowY, geom.arrowAngle, geom.isSelfLoop, strokeColor, hp);
     }
 
     if (geom.bounds) {
-      expandBounds(geom.bounds.minX - 25, geom.bounds.minY - 25, geom.bounds.maxX + 25, geom.bounds.maxY + 25);
+      const pad = hp.BOUNDS_PADDING;
+      expandBounds(geom.bounds.minX - pad, geom.bounds.minY - pad, geom.bounds.maxX + pad, geom.bounds.maxY + pad);
     }
     renderedEdges.push({ edge, geom, isHovered });
   }
@@ -575,49 +752,57 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
   const nodeHitBoxes = [];
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
-    const w = calculateNodeWidth(node);
-    const h = NODE_HEIGHT;
+    const w = calculateNodeWidth(node, hp);
+    const h = hp.NODE_HEIGHT;
     const x = node.x - w / 2;
     const y = node.y - h / 2;
     node._width = w;
     node._height = h;
 
-    let fillColor = colors.nodeFill;
+    let fillColor = hp.NODE_FILL;
+    let nodeAlpha = hp.DEFAULT_ALPHA;
+
     if (draggedNode === node) {
-      fillColor = colors.nodeDragFill;
+      fillColor = hp.NODE_DRAG_FILL;
     } else if (simStep) {
       const nodeIdStr = String(node.id);
+      const isVisited = Array.isArray(simStep.visitedNodes) && simStep.visitedNodes.map(String).includes(nodeIdStr);
       if (String(simStep.foundNodeId) === nodeIdStr || simStep.foundIndex === i) {
-        fillColor = colors.nodeFoundFill;
+        fillColor = hp.FOUND_FILL;
       } else if (String(simStep.activeNodeId) === nodeIdStr || simStep.activeIndex === i) {
-        fillColor = colors.nodeCurrentFill;
+        fillColor = hp.CURRENT_FILL;
+      } else if (isVisited) {
+        fillColor = hp.VISITED_FILL || hp.NODE_FILL;
+        nodeAlpha = hp.CHECKED_ALPHA;
       }
     }
 
     ctx.save();
+    ctx.globalAlpha = nodeAlpha;
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
-      ctx.roundRect(x, y, w, h, NODE_CORNER_RADIUS);
+      ctx.roundRect(x, y, w, h, hp.NODE_CORNER_RADIUS);
     } else {
       ctx.rect(x, y, w, h);
     }
     ctx.fillStyle = fillColor;
     ctx.fill();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = colors.nodeStroke;
+    ctx.lineWidth = hp.NODE_STROKE_WIDTH;
+    ctx.strokeStyle = hp.NODE_STROKE;
     ctx.stroke();
 
     // Node Label
     const displayText = String(node.label !== undefined ? node.label : node.id);
-    ctx.font = NODE_FONT;
-    ctx.fillStyle = colors.nodeTextColor;
+    ctx.font = getNodeFont(hp);
+    ctx.fillStyle = hp.TEXT_DARK;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(displayText, node.x, node.y);
     ctx.restore();
 
     nodeHitBoxes.push({ index: i, node, x, y, w, h });
-    expandBounds(x - 20, y - 20, x + w + 20, y + h + 20);
+    const pad = hp.BOUNDS_PADDING;
+    expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
   }
 
   // 3. Render edge weight labels on top
@@ -627,25 +812,24 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
       const weightText = String(edge.weight);
 
       ctx.save();
-      ctx.font = EDGE_LABEL_FONT;
+      ctx.font = getEdgeLabelFont(hp);
       const textWidth = ctx.measureText(weightText).width;
-      const padX = 7;
-      const pillW = textWidth + padX * 2;
-      const pillH = 26;
+      const pillW = textWidth + hp.WEIGHT_PILL_PADDING_X * 2;
+      const pillH = hp.WEIGHT_PILL_HEIGHT;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(geom.labelX - pillW / 2, geom.labelY - pillH / 2, pillW, pillH, 6);
+        ctx.roundRect(geom.labelX - pillW / 2, geom.labelY - pillH / 2, pillW, pillH, hp.WEIGHT_PILL_RADIUS);
       } else {
         ctx.rect(geom.labelX - pillW / 2, geom.labelY - pillH / 2, pillW, pillH);
       }
-      ctx.fillStyle = colors.weightBgColor;
+      ctx.fillStyle = hp.WEIGHT_BG;
       ctx.fill();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = isHovered ? colors.edgeHoverStroke : colors.edgeStroke;
+      ctx.lineWidth = hp.WEIGHT_PILL_STROKE_WIDTH;
+      ctx.strokeStyle = isHovered ? hp.EDGE_HOVER_STROKE : hp.EDGE_STROKE;
       ctx.stroke();
 
-      ctx.fillStyle = isHovered ? colors.edgeHoverStroke : colors.nodeTextColor;
+      ctx.fillStyle = isHovered ? hp.EDGE_HOVER_STROKE : hp.TEXT_BRIGHT;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(weightText, geom.labelX, geom.labelY);
@@ -664,7 +848,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }) {
 }
 
 // ============================================================================
-// 6. CANVAS INTERACTION HANDLERS (NODE DRAGGING & 20PX EDGE HOVER BUFFER)
+// 6. CANVAS INTERACTION HANDLERS (NODE DRAGGING & HOVER BUFFER)
 // ============================================================================
 
 export function setupGraphInteractions(containerEl, requestRender) {
@@ -673,6 +857,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
   if (!canvas) return;
 
   const hitTestCtx = document.createElement('canvas').getContext('2d');
+  const hp = GRAPH_HYPERPARAMETERS;
 
   const screenToWorld = (clientX, clientY) => {
     const rect = canvas.getBoundingClientRect();
@@ -696,7 +881,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
       if (dx > halfW || dy > halfH) continue;
 
-      const r = Math.min(NODE_CORNER_RADIUS, halfW, halfH);
+      const r = Math.min(hp.NODE_CORNER_RADIUS, halfW, halfH);
       const innerW = halfW - r;
       const innerH = halfH - r;
       if (dx <= innerW || dy <= innerH) return b.node;
@@ -715,7 +900,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const edges = graphData.edges || [];
     hitTestCtx.save();
     hitTestCtx.setTransform(1, 0, 0, 1, 0, 0);
-    hitTestCtx.lineWidth = EDGE_HIT_BUFFER_WIDTH;
+    hitTestCtx.lineWidth = hp.EDGE_HIT_BUFFER_WIDTH;
     hitTestCtx.lineCap = 'round';
     hitTestCtx.lineJoin = 'round';
 
@@ -730,7 +915,6 @@ export function setupGraphInteractions(containerEl, requestRender) {
     return null;
   };
 
-  // 1. Node Dragging (Left-Click) - Disabled during active simulation so camera pan/zoom still works
   canvas.addEventListener('pointerdown', (e) => {
     if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
@@ -740,7 +924,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     if (!hitNode) return;
 
     e.stopImmediatePropagation();
-    try { canvas.setPointerCapture(e.pointerId); } catch {}
+    try { canvas.setPointerCapture(e.pointerId); } catch { }
 
     containerEl._dragState = {
       pointerId: e.pointerId,
@@ -753,7 +937,6 @@ export function setupGraphInteractions(containerEl, requestRender) {
     requestRender();
   }, { capture: true });
 
-  // 2. Drag Move + Hover Highlighting on Nodes & Edges
   canvas.addEventListener('pointermove', (e) => {
     const worldPt = screenToWorld(e.clientX, e.clientY);
     const dragState = containerEl._dragState;
@@ -791,7 +974,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const dragState = containerEl._dragState;
     if (!dragState || dragState.pointerId !== e.pointerId) return;
     e.stopImmediatePropagation();
-    try { canvas.releasePointerCapture(e.pointerId); } catch {}
+    try { canvas.releasePointerCapture(e.pointerId); } catch { }
     containerEl._dragState = null;
     canvas.style.cursor = 'grab';
     requestRender();
@@ -807,7 +990,6 @@ export function setupGraphInteractions(containerEl, requestRender) {
     }
   });
 
-  // 3. Context Menu Hook (Ready for your custom Graph options menus)
   canvas.addEventListener('contextmenu', (e) => {
     if (window.isSimulating) {
       e.preventDefault();
@@ -824,8 +1006,8 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const hitNode = hitTestNode(worldPt.x, worldPt.y);
     const hitEdge = hitNode ? null : hitTestEdge(worldPt.x, worldPt.y);
 
-    // Expose hit targets for the upcoming context menu implementation
     containerEl._lastContextHit = { hitNode, hitEdge, worldPt };
+    // Open context menu here if needed, passing graph data
   });
 }
 

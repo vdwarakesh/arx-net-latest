@@ -401,9 +401,14 @@
     }
   },
   "Graph": {
-    "attributes": [
-      "directed"
+    "attributes": [],
+    "inputs": [
+      {
+        "Directed": "checkbox",
+        "Weighted": "checkbox"
+      }
     ],
+    "placeholder": "Enter as adjacency list, adjacency matrix, or edge list. Non quoted values will automatically be considered strings.",
     "children": {}
   },
   "Disjoint Set Union": {
