@@ -49,7 +49,7 @@ export const GRAPH_HYPERPARAMETERS = {
   WEIGHT_PILL_PADDING_X: 15,     // Horizontal padding inside the edge weight badge
   WEIGHT_PILL_HEIGHT: 40,       // Height of the edge weight badge
   WEIGHT_PILL_RADIUS: 6,        // Corner radius of the edge weight badge
-  WEIGHT_PILL_STROKE_WIDTH: 0,// Border width of the edge weight badge
+  WEIGHT_PILL_STROKE_WIDTH: 4,// Border width of the edge weight badge
 
   // ----- Colors: CSS variable names (guaranteed to exist on :root) -----
   NODE_FILL_VAR: '--ds-primary',
@@ -61,7 +61,7 @@ export const GRAPH_HYPERPARAMETERS = {
 
   TEXT_BRIGHT_VAR: '--text-bright',
   TEXT_DARK_VAR: '--text-dark',
-  WEIGHT_BG_VAR: '--bg-elevated',
+  WEIGHT_BG_VAR: '--bg-card',
 
   // Simulation state variables
   FOUND_FILL_VAR: '--ds-found-fill',
@@ -657,6 +657,45 @@ export function getContainerGraphData(containerEl) {
   return containerEl._graphData;
 }
 
+export function syncGraphDataToContainer(containerEl, graphData) {
+  if (!containerEl || !graphData) return;
+  refreshEdgeFlags(graphData);
+
+  const connectedNodeIds = new Set();
+  const edgeTokens = graphData.edges.map(e => {
+    const u = typeof e.source === 'object' ? e.source.id : e.source;
+    const v = typeof e.target === 'object' ? e.target.id : e.target;
+    connectedNodeIds.add(String(u));
+    connectedNodeIds.add(String(v));
+    const op = graphData.isDirected ? '->' : '-';
+    const wSuffix = (graphData.isWeighted && e.weight !== undefined) ? `:${e.weight}` : '';
+    return `${u}${op}${v}${wSuffix}`;
+  });
+
+  const isolatedTokens = graphData.nodes
+    .filter(n => !connectedNodeIds.has(String(n.id)))
+    .map(n => String(n.id));
+
+  const serialized = [...edgeTokens, ...isolatedTokens].join(', ');
+  containerEl._graphData = graphData;
+  containerEl._lastParsedGraphInput = serialized;
+
+  // Re-serialize the extra inputs (Directed/Weighted checkboxes)
+  const extraInputs = containerEl.dsInputs || {};
+  containerEl._lastParsedGraphInputsJson = JSON.stringify(extraInputs);
+
+  containerEl.userInput = serialized;
+  containerEl.setAttribute('userInput', serialized);
+
+  // Trigger UI updates in layout.html
+  if (typeof window.updateDsHeaderWarningState === 'function') {
+    window.updateDsHeaderWarningState();
+  }
+  if (typeof window.updateMetadataUI === 'function') {
+    window.updateMetadataUI();
+  }
+}
+
 // ============================================================================
 // 5. CORE CANVAS GRAPH RENDERING PIPELINE
 // ============================================================================
@@ -805,7 +844,8 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
   }
 
-  // 3. Render edge weight labels on top
+  // 3. Render edge weight labels on top (With border, records hit-boxes for I-beam & click-to-edit)
+  const weightHitBoxes = [];
   if (isWeighted) {
     for (const { edge, geom, isHovered } of renderedEdges) {
       if (edge.weight === undefined || edge.weight === null) continue;
@@ -814,32 +854,40 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       ctx.save();
       ctx.font = getEdgeLabelFont(hp);
       const textWidth = ctx.measureText(weightText).width;
-      const pillW = textWidth + hp.WEIGHT_PILL_PADDING_X * 2;
+      const pillW = Math.max(24, textWidth + hp.WEIGHT_PILL_PADDING_X * 2);
       const pillH = hp.WEIGHT_PILL_HEIGHT;
+      const pillX = geom.labelX - pillW / 2;
+      const pillY = geom.labelY - pillH / 2;
 
       ctx.beginPath();
       if (typeof ctx.roundRect === 'function') {
-        ctx.roundRect(geom.labelX - pillW / 2, geom.labelY - pillH / 2, pillW, pillH, hp.WEIGHT_PILL_RADIUS);
+        ctx.roundRect(pillX, pillY, pillW, pillH, hp.WEIGHT_PILL_RADIUS);
       } else {
-        ctx.rect(geom.labelX - pillW / 2, geom.labelY - pillH / 2, pillW, pillH);
+        ctx.rect(pillX, pillY, pillW, pillH);
       }
       ctx.fillStyle = hp.WEIGHT_BG;
       ctx.fill();
+
+      // Border stroke (changes color on edge/weight hover)
       ctx.lineWidth = hp.WEIGHT_PILL_STROKE_WIDTH;
       ctx.strokeStyle = isHovered ? hp.EDGE_HOVER_STROKE : hp.EDGE_STROKE;
       ctx.stroke();
 
-      ctx.fillStyle = isHovered ? hp.EDGE_HOVER_STROKE : hp.TEXT_BRIGHT;
+      // Text color (remains constant)
+      ctx.fillStyle = hp.TEXT_BRIGHT;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(weightText, geom.labelX, geom.labelY);
       ctx.restore();
+
+      weightHitBoxes.push({ edge, x: pillX, y: pillY, w: pillW, h: pillH });
     }
   }
 
   ctx.restore();
 
   containerEl._nodeHitBoxes = nodeHitBoxes;
+  containerEl._weightHitBoxes = weightHitBoxes;
   if (minX !== Infinity) {
     containerEl._structureBounds = { minX, minY, maxX, maxY };
   } else {
@@ -848,8 +896,21 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
 }
 
 // ============================================================================
-// 6. CANVAS INTERACTION HANDLERS (NODE DRAGGING & HOVER BUFFER)
+// 6. CANVAS INTERACTION HANDLERS (DRAG, WEIGHT EDIT, NODE/EDGE CONTEXT MENUS)
 // ============================================================================
+
+let graphOptionsModal = null;
+function getGraphModal() {
+  if (!graphOptionsModal && typeof window.FloatingWindow === 'function') {
+    graphOptionsModal = new window.FloatingWindow('Graph Options');
+  }
+  return graphOptionsModal;
+}
+
+function setModalTitle(modal, title) {
+  const titleEl = modal?.overlay?.querySelector('.modal-header span');
+  if (titleEl) titleEl.textContent = title;
+}
 
 export function setupGraphInteractions(containerEl, requestRender) {
   if (!containerEl) return;
@@ -857,7 +918,6 @@ export function setupGraphInteractions(containerEl, requestRender) {
   if (!canvas) return;
 
   const hitTestCtx = document.createElement('canvas').getContext('2d');
-  const hp = GRAPH_HYPERPARAMETERS;
 
   const screenToWorld = (clientX, clientY) => {
     const rect = canvas.getBoundingClientRect();
@@ -868,6 +928,19 @@ export function setupGraphInteractions(containerEl, requestRender) {
       x: sx / cam.z - cam.x,
       y: sy / cam.z - cam.y
     };
+  };
+
+  const hitTestWeightBox = (wx, wy) => {
+    const graphData = getContainerGraphData(containerEl);
+    if (!graphData.isWeighted) return null;
+    const boxes = containerEl._weightHitBoxes || [];
+    for (let i = boxes.length - 1; i >= 0; i--) {
+      const b = boxes[i];
+      if (wx >= b.x && wx <= b.x + b.w && wy >= b.y && wy <= b.y + b.h) {
+        return b.edge;
+      }
+    }
+    return null;
   };
 
   const hitTestNode = (wx, wy) => {
@@ -881,7 +954,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
       if (dx > halfW || dy > halfH) continue;
 
-      const r = Math.min(hp.NODE_CORNER_RADIUS, halfW, halfH);
+      const r = Math.min(GRAPH_HYPERPARAMETERS.NODE_CORNER_RADIUS, halfW, halfH);
       const innerW = halfW - r;
       const innerH = halfH - r;
       if (dx <= innerW || dy <= innerH) return b.node;
@@ -900,7 +973,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     const edges = graphData.edges || [];
     hitTestCtx.save();
     hitTestCtx.setTransform(1, 0, 0, 1, 0, 0);
-    hitTestCtx.lineWidth = hp.EDGE_HIT_BUFFER_WIDTH;
+    hitTestCtx.lineWidth = GRAPH_HYPERPARAMETERS.EDGE_HIT_BUFFER_WIDTH;
     hitTestCtx.lineCap = 'round';
     hitTestCtx.lineJoin = 'round';
 
@@ -915,11 +988,140 @@ export function setupGraphInteractions(containerEl, requestRender) {
     return null;
   };
 
+  // --- Floating Window Menus ---
+  const openEditWeightModal = (edge) => {
+    const modal = getGraphModal();
+    if (!modal) return;
+    const uLabel = edge.source.label ?? edge.source.id;
+    const vLabel = edge.target.label ?? edge.target.id;
+    setModalTitle(modal, `Edit Weight (${uLabel} → ${vLabel})`);
+    modal.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <input type="number" step="any" id="fw-graph-weight-input" class="param-input-field" value="${edge.weight ?? 1}" placeholder="Enter edge weight" />
+        <button type="button" id="fw-graph-weight-save" class="vscode-btn-secondary" style="width: 100%;">Save Weight</button>
+      </div>
+    `);
+    modal.open();
+
+    const inputEl = modal.body.querySelector('#fw-graph-weight-input');
+    const saveBtn = modal.body.querySelector('#fw-graph-weight-save');
+    if (inputEl) {
+      requestAnimationFrame(() => { inputEl.focus(); inputEl.select(); });
+    }
+    const commitWeight = () => {
+      const parsed = Number(inputEl.value.trim());
+      if (!Number.isNaN(parsed) && inputEl.value.trim() !== '') {
+        edge.weight = parsed;
+        const graphData = getContainerGraphData(containerEl);
+        syncGraphDataToContainer(containerEl, graphData);
+        requestRender();
+      }
+      modal.close();
+    };
+    if (saveBtn) saveBtn.onclick = commitWeight;
+    if (inputEl) {
+      inputEl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') commitWeight();
+      });
+    }
+  };
+
+  const openEdgeContextMenu = (edge) => {
+    const modal = getGraphModal();
+    if (!modal) return;
+    const uLabel = edge.source.label ?? edge.source.id;
+    const vLabel = edge.target.label ?? edge.target.id;
+    setModalTitle(modal, `Edge Options (${uLabel} - ${vLabel})`);
+    modal.setContent(`
+      <button type="button" id="fw-graph-edge-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete Edge</button>
+    `);
+    modal.open();
+
+    const delBtn = modal.body.querySelector('#fw-graph-edge-del');
+    if (delBtn) {
+      delBtn.onclick = () => {
+        const graphData = getContainerGraphData(containerEl);
+        const idx = graphData.edges.indexOf(edge);
+        if (idx !== -1) graphData.edges.splice(idx, 1);
+        if (containerEl._hoveredEdge === edge) containerEl._hoveredEdge = null;
+        syncGraphDataToContainer(containerEl, graphData);
+        requestRender();
+        modal.close();
+      };
+    }
+  };
+
+  const openNodeContextMenu = (node) => {
+    const modal = getGraphModal();
+    if (!modal) return;
+    const currentDisplay = node.label !== undefined ? node.label : node.id;
+    const safeDisplay = String(currentDisplay).replace(/"/g, '&quot;');
+    setModalTitle(modal, `Node Options (ID: ${node.id})`);
+    modal.setContent(`
+      <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label style="font-size: 0.85rem; color: var(--text-muted);">Display Value (ID remains ${node.id})</label>
+        <div style="display: flex; gap: 0.4rem;">
+          <input type="text" id="fw-graph-node-val-input" class="param-input-field" value="${safeDisplay}" placeholder="Node display value" />
+          <button type="button" id="fw-graph-node-val-save" class="vscode-btn-secondary">Update</button>
+        </div>
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 0.25rem 0;" />
+        <button type="button" id="fw-graph-node-del" class="vscode-btn-secondary" style="width: 100%; color: #f87777;">Delete Node</button>
+      </div>
+    `);
+    modal.open();
+
+    const inputEl = modal.body.querySelector('#fw-graph-node-val-input');
+    const saveBtn = modal.body.querySelector('#fw-graph-node-val-save');
+    const delBtn = modal.body.querySelector('#fw-graph-node-del');
+
+    if (inputEl) {
+      requestAnimationFrame(() => { inputEl.focus(); inputEl.select(); });
+    }
+
+    const commitNodeValue = () => {
+      const nextVal = inputEl.value.trim();
+      if (nextVal !== '') {
+        node.label = nextVal; // Only updates visual display value; node.id stays unique
+        requestRender();
+      }
+      modal.close();
+    };
+
+    if (saveBtn) saveBtn.onclick = commitNodeValue;
+    if (inputEl) {
+      inputEl.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter') commitNodeValue();
+      });
+    }
+
+    if (delBtn) {
+      delBtn.onclick = () => {
+        const graphData = getContainerGraphData(containerEl);
+        graphData.nodes = graphData.nodes.filter(n => n !== node);
+        graphData.edges = graphData.edges.filter(e => e.source !== node && e.target !== node);
+        syncGraphDataToContainer(containerEl, graphData);
+        requestRender();
+        modal.close();
+      };
+    }
+  };
+
+  // 1. Left-Click: Weight Pill Click -> Edit Weight | Node Click -> Drag Node
   canvas.addEventListener('pointerdown', (e) => {
     if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
 
     const worldPt = screenToWorld(e.clientX, e.clientY);
+
+    // Check weight box first (since weight labels render on top)
+    const hitWeightEdge = hitTestWeightBox(worldPt.x, worldPt.y);
+    if (hitWeightEdge) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      openEditWeightModal(hitWeightEdge);
+      return;
+    }
+
     const hitNode = hitTestNode(worldPt.x, worldPt.y);
     if (!hitNode) return;
 
@@ -937,6 +1139,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     requestRender();
   }, { capture: true });
 
+  // 2. Pointer Move: Drag Node | Weight I-Beam Cursor | Node Grab Cursor | Edge Hover
   canvas.addEventListener('pointermove', (e) => {
     const worldPt = screenToWorld(e.clientX, e.clientY);
     const dragState = containerEl._dragState;
@@ -951,6 +1154,17 @@ export function setupGraphInteractions(containerEl, requestRender) {
     }
 
     if (window.isSimulating) return;
+
+    // Hovering over a weight box -> I-beam ('text') cursor + highlight its parent edge
+    const hitWeightEdge = hitTestWeightBox(worldPt.x, worldPt.y);
+    if (hitWeightEdge) {
+      if (containerEl._hoveredEdge !== hitWeightEdge) {
+        containerEl._hoveredEdge = hitWeightEdge;
+        requestRender();
+      }
+      canvas.style.cursor = 'text';
+      return;
+    }
 
     const hitNode = hitTestNode(worldPt.x, worldPt.y);
     if (hitNode) {
@@ -967,7 +1181,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
       containerEl._hoveredEdge = hitEdge;
       requestRender();
     }
-    canvas.style.cursor = hitEdge ? 'pointer' : '';
+    canvas.style.cursor = '';
   }, { capture: true });
 
   const endNodeDrag = (e) => {
@@ -990,6 +1204,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
     }
   });
 
+  // 3. Right-Click Context Menu: Node Menu or Edge Menu
   canvas.addEventListener('contextmenu', (e) => {
     if (window.isSimulating) {
       e.preventDefault();
@@ -1004,10 +1219,15 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
     const worldPt = screenToWorld(e.clientX, e.clientY);
     const hitNode = hitTestNode(worldPt.x, worldPt.y);
-    const hitEdge = hitNode ? null : hitTestEdge(worldPt.x, worldPt.y);
+    if (hitNode) {
+      openNodeContextMenu(hitNode);
+      return;
+    }
 
-    containerEl._lastContextHit = { hitNode, hitEdge, worldPt };
-    // Open context menu here if needed, passing graph data
+    const hitEdge = hitTestWeightBox(worldPt.x, worldPt.y) || hitTestEdge(worldPt.x, worldPt.y);
+    if (hitEdge) {
+      openEdgeContextMenu(hitEdge);
+    }
   });
 }
 
