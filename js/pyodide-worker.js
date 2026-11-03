@@ -243,11 +243,12 @@ class _StepLimitExceeded(Exception):
 _raw_adj = json.loads(_raw_adj_json)
 _node_labels = json.loads(_node_labels_json)
 
-# Map both node id strings and display labels to canonical node key in graph
+# Map display labels to canonical node keys first, then fallback to internal IDs
 _label_to_key = {}
+for _k in _node_labels.keys():
+    _label_to_key[str(_k)] = str(_k)
 for _k, _lbl in _node_labels.items():
-    _label_to_key[str(_lbl)] = _k
-    _label_to_key[str(_k)] = _k
+    _label_to_key[str(_lbl)] = str(_k)
 
 class VisualGraph(dict):
     def __init__(self, adj):
