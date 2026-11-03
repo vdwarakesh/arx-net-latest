@@ -3,3 +3,7 @@ Add algorithm implementations in all languages
 Add visualization for all algorithms
 
 constraints and attributes description might be incomplete - verify
+
+
+highlight the borders of the weight pills when highlighting edges. graph is guaranteed to exist. Use different graph parser. Add other algorithms.
+speed slider and speed number not in sync

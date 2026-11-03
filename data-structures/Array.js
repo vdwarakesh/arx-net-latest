@@ -38,7 +38,7 @@ export const ARRAY_HYPERPARAMETERS = {
 
   // Simulation state: bar already checked and ruled out (uses its own fill color, dimmed)
   VISITED_FILL_VAR: '--ds-visited',
-  CHECKED_ALPHA: 0.45,
+  CHECKED_COLOR_VAR: '--ds-checked',
 
   // Opaque default alpha for normal bars
   DEFAULT_ALPHA: 1,
@@ -63,6 +63,7 @@ function resolveStyleHyperparameters(hp) {
   resolved.FOUND_FILL = readVar(hp.FOUND_FILL_VAR);
   resolved.CURRENT_FILL = readVar(hp.CURRENT_FILL_VAR);
   resolved.VISITED_FILL = readVar(hp.VISITED_FILL_VAR);
+  resolved.CHECKED_COLOR = readVar(hp.CHECKED_COLOR_VAR);
 
   return resolved;
 }
@@ -292,8 +293,7 @@ export function drawArray(containerEl, camera = null, customHyperparams = {}) {
       currentFill = hp.CURRENT_FILL;
       currentAlpha = hp.DEFAULT_ALPHA;
     } else if (isCheckedBar) {
-      currentFill = hp.VISITED_FILL; // Distinct "visited" color, dimmed
-      currentAlpha = hp.CHECKED_ALPHA;
+      currentFill = hp.CHECKED_COLOR || hp.VISITED_FILL;
     }
 
     // 1. Sharp Rectangular Bar (no border-radius, no stroke)

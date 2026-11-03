@@ -67,7 +67,7 @@ export const GRAPH_HYPERPARAMETERS = {
   FOUND_FILL_VAR: '--ds-found-fill',
   CURRENT_FILL_VAR: '--ds-current-fill',
   VISITED_FILL_VAR: '--ds-visited',
-  CHECKED_ALPHA: 0.45,
+  CHECKED_COLOR_VAR: '--ds-checked',
   DEFAULT_ALPHA: 1,
 };
 
@@ -97,6 +97,7 @@ function resolveStyleHyperparameters(hp) {
   resolved.FOUND_FILL = readVar(hp.FOUND_FILL_VAR);
   resolved.CURRENT_FILL = readVar(hp.CURRENT_FILL_VAR);
   resolved.VISITED_FILL = readVar(hp.VISITED_FILL_VAR);
+  resolved.CHECKED_COLOR = readVar(hp.CHECKED_COLOR_VAR);
 
   return resolved;
 }
@@ -929,7 +930,6 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       edgeWidth = hp.EDGE_STROKE_WIDTH + 2;
     } else if (isVisitedEdge) {
       strokeColor = hp.FOUND_FILL;
-      edgeWidth = hp.EDGE_STROKE_WIDTH + 1;
     }
 
     ctx.save();
@@ -1007,8 +1007,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       } else if (String(simStep.activeNodeId) === nodeIdStr || simStep.activeIndex === i) {
         fillColor = hp.CURRENT_FILL;
       } else if (isVisited) {
-        fillColor = hp.VISITED_FILL || hp.NODE_FILL;
-        nodeAlpha = hp.CHECKED_ALPHA;
+        fillColor = hp.CHECKED_COLOR || hp.VISITED_FILL || hp.NODE_FILL;
       }
     }
 
