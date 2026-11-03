@@ -64,10 +64,9 @@ export const GRAPH_HYPERPARAMETERS = {
   WEIGHT_BG_VAR: '--bg-card',
 
   // Simulation state variables
-  FOUND_FILL_VAR: '--ds-found-fill',
   CURRENT_FILL_VAR: '--ds-current-fill',
-  VISITED_FILL_VAR: '--ds-visited',
-  CHECKED_COLOR_VAR: '--ds-checked',
+  CHECKED_COLOR_VAR: '--ds-checked-primary',
+  EDGE_VISITED_VAR: '--ds-checked-secondary',
   DEFAULT_ALPHA: 1,
 };
 
@@ -94,9 +93,8 @@ function resolveStyleHyperparameters(hp) {
   resolved.TEXT_DARK = readVar(hp.TEXT_DARK_VAR);
   resolved.WEIGHT_BG = readVar(hp.WEIGHT_BG_VAR);
 
-  resolved.FOUND_FILL = readVar(hp.FOUND_FILL_VAR);
+  resolved.EDGE_VISITED = readVar(hp.EDGE_VISITED_VAR);
   resolved.CURRENT_FILL = readVar(hp.CURRENT_FILL_VAR);
-  resolved.VISITED_FILL = readVar(hp.VISITED_FILL_VAR);
   resolved.CHECKED_COLOR = readVar(hp.CHECKED_COLOR_VAR);
 
   return resolved;
@@ -929,7 +927,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       strokeColor = hp.CURRENT_FILL;
       edgeWidth = hp.EDGE_STROKE_WIDTH + 2;
     } else if (isVisitedEdge) {
-      strokeColor = hp.FOUND_FILL;
+      strokeColor = hp.EDGE_VISITED;
     }
 
     ctx.save();
@@ -1003,11 +1001,11 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       const nodeIdStr = String(node.id);
       const isVisited = Array.isArray(simStep.visitedNodes) && simStep.visitedNodes.map(String).includes(nodeIdStr);
       if (String(simStep.foundNodeId) === nodeIdStr || simStep.foundIndex === i) {
-        fillColor = hp.FOUND_FILL;
+        fillColor = hp.EDGE_VISITED;
       } else if (String(simStep.activeNodeId) === nodeIdStr || simStep.activeIndex === i) {
         fillColor = hp.CURRENT_FILL;
       } else if (isVisited) {
-        fillColor = hp.CHECKED_COLOR || hp.VISITED_FILL || hp.NODE_FILL;
+        fillColor = hp.CHECKED_COLOR;
       }
     }
 
