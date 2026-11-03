@@ -30,12 +30,19 @@ export async function linearSearch(containerEl, rawKwargs = {}) {
           ? `Target found at index ${vis.foundIndex}! Returning ${sv.return}.`
           : `Target not found in array. Returning ${sv.return}.`;
     } else if (pyLine === 2) {
-      stepDescription = `Loop iteration: i = ${sv.i}`;
+      stepDescription = `Checking if end_index was provided`;
     } else if (pyLine === 3) {
-      stepDescription = `Comparing arr[${sv.i}] (${sv[`arr[${sv.i}]`]}) with target`;
+      stepDescription = `Defaulting end_index to last index (${arrValues.length - 1})`;
     } else if (pyLine === 4) {
-      stepDescription = `Match found at index ${sv.i}! Preparing to return ${sv.i}.`;
+      stepDescription =
+        sv.i !== undefined
+          ? `Loop iteration: i = ${sv.i}`
+          : `Loop range exhausted without a match`;
     } else if (pyLine === 5) {
+      stepDescription = `Comparing arr[${sv.i}] (${sv[`arr[${sv.i}]`]}) with target`;
+    } else if (pyLine === 6) {
+      stepDescription = `Match found at index ${sv.i}! Preparing to return ${sv.i}.`;
+    } else if (pyLine === 7) {
       stepDescription = `Loop finished without a match. Preparing to return -1.`;
     }
 

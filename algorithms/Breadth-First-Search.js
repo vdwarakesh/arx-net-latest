@@ -74,7 +74,10 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
     } else if (pyLine === 13) {
       stepDescription = `Visiting node '${sv.node}' — order is now [${(sv.order || []).join(', ')}]`;
     } else if (pyLine === 14) {
-      stepDescription = `Inspecting edge from '${sv.node}' to neighbor '${sv.neighbor}'`;
+      stepDescription =
+        sv.neighbor !== undefined
+          ? `Inspecting edge from '${sv.node}' to neighbor '${sv.neighbor}'`
+          : `Finished checking all neighbors of '${sv.node}'`;
     } else if (pyLine === 15) {
       stepDescription = `Checking if neighbor '${sv.neighbor}' has already been visited`;
     } else if (pyLine === 16) {

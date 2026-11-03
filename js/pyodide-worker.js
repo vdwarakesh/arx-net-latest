@@ -47,6 +47,10 @@ _trace_steps = []
 _error_info = None
 _step_count = 0
 
+# Keyed by id(frame) so recursive calls each get their own independent
+# "line we're waiting to see the effects of" slot.
+_pending_steps = {}
+
 class _StepLimitExceeded(Exception):
     pass
 
@@ -111,50 +115,80 @@ try:
         except (ValueError, SyntaxError):
             _eval_kwargs[_k] = _v_str
 
+    def _build_state_vars(frame):
+        # Called exactly once per real trace event, so any array access
+        # instrumentation (_record_access) fires exactly once too.
+        state_vars = {}
+        for k, v in frame.f_locals.items():
+            if not k.startswith('_') and k not in _param_names:
+                state_vars[k] = _serialize(v)
+
+        if 'i' in state_vars and isinstance(state_vars['i'], int):
+            idx = state_vars['i']
+            if 0 <= idx < len(_visual_arr):
+                _visual_arr._record_access(idx)
+                state_vars[f'arr[{idx}]'] = _serialize(list.__getitem__(_visual_arr, idx))
+
+        return state_vars
+
+    def _visual_snapshot(found_index=-1):
+        return {
+            'activeIndex': found_index if found_index >= 0 else _visual_arr.active_index,
+            'foundIndex': found_index,
+            'checkedIndices': list(_visual_arr.checked_indices),
+            'traversal': list(_visual_arr.traversal),
+        }
+
     def _tracer(frame, event, arg):
         global _step_count
         if frame.f_code.co_filename != '<algorithm>':
             return _tracer
+        if event not in ('line', 'return'):
+            return _tracer
 
-        if event in ('line', 'return'):
-            _step_count += 1
-            if _step_count > _MAX_STEPS:
-                raise _StepLimitExceeded(
-                    f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
-                )
+        _step_count += 1
+        if _step_count > _MAX_STEPS:
+            raise _StepLimitExceeded(
+                f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
+            )
 
-            state_vars = {}
-            for k, v in frame.f_locals.items():
-                if not k.startswith('_') and k not in _param_names:
-                    state_vars[k] = _serialize(v)
+        fid = id(frame)
+        pending = _pending_steps.pop(fid, None)
 
-            if 'i' in state_vars and isinstance(state_vars['i'], int):
-                idx = state_vars['i']
-                if 0 <= idx < len(_visual_arr):
-                    _visual_arr._record_access(idx)
-                    state_vars[f'arr[{idx}]'] = _serialize(list.__getitem__(_visual_arr, idx))
+        # frame.f_locals here reflects everything that happened since the
+        # PENDING line started running (it has now fully executed), so this
+        # is the correct state to attribute to that pending line.
+        state_vars = _build_state_vars(frame)
+
+        if pending is not None and not (event == 'return' and pending['line'] == frame.f_lineno):
+            _trace_steps.append({
+                'event': 'line',
+                'line': pending['line'],
+                'stateVars': state_vars,
+                'visual': _visual_snapshot(),
+            })
+
+        if event == 'line':
+            # Don't know the effects of THIS line yet - wait for the next event.
+            _pending_steps[fid] = {'line': frame.f_lineno}
+        else:  # 'return'
+            ret_val = _serialize(arg)
+            ret_state_vars = dict(state_vars)
+            ret_state_vars['return'] = ret_val
 
             found_index = -1
-            if event == 'return':
-                ret_val = _serialize(arg)
-                state_vars['return'] = ret_val
-                if isinstance(ret_val, int) and 0 <= ret_val < len(_visual_arr):
-                    found_index = ret_val
-                else:
-                    if _visual_arr.active_index != -1 and _visual_arr.active_index not in _visual_arr.checked_indices:
-                        _visual_arr.checked_indices.append(_visual_arr.active_index)
-                    _visual_arr.active_index = -1
+            if isinstance(ret_val, int) and 0 <= ret_val < len(_visual_arr):
+                found_index = ret_val
+            else:
+                if _visual_arr.active_index != -1 and _visual_arr.active_index not in _visual_arr.checked_indices:
+                    _visual_arr.checked_indices.append(_visual_arr.active_index)
+                _visual_arr.active_index = -1
 
             _trace_steps.append({
-                'event': event,
+                'event': 'return',
                 'line': frame.f_lineno,
-                'stateVars': state_vars,
-                'visual': {
-                    'activeIndex': found_index if found_index >= 0 else _visual_arr.active_index,
-                    'foundIndex': found_index,
-                    'checkedIndices': list(_visual_arr.checked_indices),
-                    'traversal': list(_visual_arr.traversal),
-                }
+                'stateVars': ret_state_vars,
+                'visual': _visual_snapshot(found_index),
             })
 
         return _tracer
@@ -237,6 +271,10 @@ _trace_steps = []
 _error_info = None
 _step_count = 0
 
+# Keyed by id(frame) so recursive calls each get their own independent
+# "line we're waiting to see the effects of" slot.
+_pending_steps = {}
+
 class _StepLimitExceeded(Exception):
     pass
 
@@ -276,7 +314,7 @@ class VisualGraph(dict):
                 'subLabel': f"ID {s_key}"
             })
 
-def _serialize(v,vg=None):
+def _serialize(v):
     if isinstance(v, (int, float, bool, str)) or v is None:
         return v
     if isinstance(v, (list, tuple, set)):
@@ -316,64 +354,95 @@ try:
                 _val = _label_to_key[_s]
         _eval_kwargs[_k] = _val
 
+    def _build_state_vars(frame):
+        # Called exactly once per real trace event, so node/edge visit
+        # bookkeeping below only ever fires once per actual line executed.
+        loc = frame.f_locals
+        state_vars = {}
+        for k, v in loc.items():
+            if not k.startswith('_') and k not in _param_names:
+                if k in ('node', 'neighbor', 'start_node') and v is not None:
+                    state_vars[k] = _node_labels.get(str(v), v)
+                elif k in ('queue', 'visited', 'order', 'stack', 'path') and isinstance(v, (list, tuple, set)):
+                    state_vars[k] = [_node_labels.get(str(x), x) for x in v]
+                else:
+                    state_vars[k] = _serialize(v)
+
+        curr_node = str(loc['node']) if 'node' in loc and loc['node'] is not None else None
+        curr_neighbor = str(loc['neighbor']) if 'neighbor' in loc and loc['neighbor'] is not None else None
+
+        if curr_node is not None and curr_node in _visual_graph:
+            _visual_graph.record_visit(curr_node)
+
+        if curr_node is not None and curr_neighbor is not None:
+            _visual_graph.active_edge = [curr_node, curr_neighbor]
+            if 'visited' in loc and curr_neighbor in [str(x) for x in loc['visited']]:
+                edge_pair = [curr_node, curr_neighbor]
+                if edge_pair not in _visual_graph.visited_edges:
+                    _visual_graph.visited_edges.append(edge_pair)
+        else:
+            _visual_graph.active_edge = None
+
+        return state_vars
+
+    def _visual_snapshot():
+        return {
+            'activeNodeId': _visual_graph.active_node,
+            'visitedNodes': list(_visual_graph.visited_nodes),
+            'activeEdge': _visual_graph.active_edge,
+            'visitedEdges': list(_visual_graph.visited_edges),
+            'traversal': list(_visual_graph.traversal),
+        }
+
     def _tracer(frame, event, arg):
         global _step_count
         if frame.f_code.co_filename != '<algorithm>':
             return _tracer
+        if event not in ('line', 'return'):
+            return _tracer
 
-        if event in ('line', 'return'):
-            _step_count += 1
-            if _step_count > _MAX_STEPS:
-                raise _StepLimitExceeded(
-                    f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
-                )
+        _step_count += 1
+        if _step_count > _MAX_STEPS:
+            raise _StepLimitExceeded(
+                f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
+            )
 
-            loc = frame.f_locals
-            state_vars = {}
-            for k, v in loc.items():
-                if not k.startswith('_') and k not in _param_names:
-                    if k in ('node', 'neighbor', 'start_node') and v is not None:
-                        state_vars[k] = _node_labels.get(str(v), v)
-                    elif k in ('queue', 'visited') and isinstance(v, (list, tuple, set)):
-                        state_vars[k] = [_node_labels.get(str(x), x) for x in v]
-                    else:
-                        state_vars[k] = _serialize(v)
+        fid = id(frame)
+        pending = _pending_steps.pop(fid, None)
 
-            curr_node = str(loc['node']) if 'node' in loc and loc['node'] is not None else None
-            curr_neighbor = str(loc['neighbor']) if 'neighbor' in loc and loc['neighbor'] is not None else None
+        # frame.f_locals here reflects everything that happened since the
+        # PENDING line started running (it has now fully executed), so this
+        # is the correct state to attribute to that pending line - e.g. for
+        # "node = queue.pop(0)", by the time we get here 'node' is actually
+        # bound and 'queue' has actually been shortened.
+        state_vars = _build_state_vars(frame)
 
-            if curr_node is not None and curr_node in _visual_graph:
-                _visual_graph.record_visit(curr_node)
+        if pending is not None and not (event == 'return' and pending['line'] == frame.f_lineno):
+            _trace_steps.append({
+                'event': 'line',
+                'line': pending['line'],
+                'stateVars': state_vars,
+                'visual': _visual_snapshot(),
+            })
 
-            if curr_node is not None and curr_neighbor is not None:
-                _visual_graph.active_edge = [curr_node, curr_neighbor]
-                # If neighbor was just added to visited/queue, mark edge as traversed
-                if 'visited' in loc and curr_neighbor in [str(x) for x in loc['visited']]:
-                    edge_pair = [curr_node, curr_neighbor]
-                    if edge_pair not in _visual_graph.visited_edges:
-                        _visual_graph.visited_edges.append(edge_pair)
-            else:
-                _visual_graph.active_edge = None
+        if event == 'line':
+            # Don't know the effects of THIS line yet - wait for the next event.
+            _pending_steps[fid] = {'line': frame.f_lineno}
+        else:  # 'return'
+            ret_val = _serialize(arg)
+            ret_state_vars = dict(state_vars)
+            ret_state_vars['return'] = ret_val
 
-            if event == 'return':
-                ret_val = _serialize(arg)
-                state_vars['return'] = ret_val
-                if _visual_graph.active_node is not None and _visual_graph.active_node not in _visual_graph.visited_nodes:
-                    _visual_graph.visited_nodes.append(_visual_graph.active_node)
-                _visual_graph.active_node = None
-                _visual_graph.active_edge = None
+            if _visual_graph.active_node is not None and _visual_graph.active_node not in _visual_graph.visited_nodes:
+                _visual_graph.visited_nodes.append(_visual_graph.active_node)
+            _visual_graph.active_node = None
+            _visual_graph.active_edge = None
 
             _trace_steps.append({
-                'event': event,
+                'event': 'return',
                 'line': frame.f_lineno,
-                'stateVars': state_vars,
-                'visual': {
-                    'activeNodeId': _visual_graph.active_node,
-                    'visitedNodes': list(_visual_graph.visited_nodes),
-                    'activeEdge': _visual_graph.active_edge,
-                    'visitedEdges': list(_visual_graph.visited_edges),
-                    'traversal': list(_visual_graph.traversal),
-                }
+                'stateVars': ret_state_vars,
+                'visual': _visual_snapshot(),
             })
 
         return _tracer
