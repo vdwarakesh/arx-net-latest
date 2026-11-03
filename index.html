@@ -4930,8 +4930,8 @@
     const stateTabOptions = stateTabMenu ? stateTabMenu.querySelectorAll('.lang-option-item') : [];
 
     /* Playback Controls & Speed Slider DOM Elements */
-    const speedSliders = document.querySelectorAll('input[type="range"].vscode-slider');
-    const speedLabels = document.querySelectorAll('.playback-speed-value');
+    const speedSliders = document.querySelectorAll('.sync-speed-slider');
+    const speedLabels = document.querySelectorAll('.sync-speed-label');
     const stepCounterLabels = document.querySelectorAll('.sync-steps-label');
     const stepSliders = document.querySelectorAll('.sync-step-slider');
     const playPauseImgs = document.querySelectorAll('.sync-run img');
@@ -8088,6 +8088,23 @@
 
 
     /* ========== 11. Algorithm Simulation & Playback Engine ========== */
+    
+    speedSliders.forEach(slider => {
+      slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        speedSliders.forEach(s => {
+          if (s !== e.target) s.value = val;
+        });
+        speedLabels.forEach(lbl => {
+          lbl.textContent = `${val}x`;
+        });
+        if (isSimPlaying) {
+          clearTimeout(simTimer);
+          scheduleNextStep();
+        }
+      });
+    });
+
     stepSliders.forEach(slider => {
       slider.addEventListener('input', (e) => {
         if (simSteps.length === 0) return;
