@@ -47,3 +47,28 @@ export function tracePythonArrayAlgorithm(
     });
   });
 }
+
+export function tracePythonGraphAlgorithm(
+  pythonCode,
+  funcName,
+  adjList,
+  nodeLabels,
+  rawKwargs = {},
+  maxSteps = 2500
+) {
+  return new Promise((resolve) => {
+    const id = messageIdCounter++;
+    pendingResolves.set(id, resolve);
+
+    worker.postMessage({
+      id,
+      type: 'run_graph',
+      pythonCode,
+      funcName,
+      adjList,
+      nodeLabels,
+      rawKwargs,
+      maxSteps
+    });
+  });
+}

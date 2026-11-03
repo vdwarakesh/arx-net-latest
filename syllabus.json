@@ -1,4 +1,4 @@
 {
     "data-structures": ["Array","Stack","Graph","Tree"],
-    "algorithms": ["Breadth-First Search (BFS)", "Depth-First Search (DFS)"]
+    "algorithms": ["Breadth First Search", "Depth First Search"]
 }

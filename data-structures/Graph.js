@@ -907,12 +907,35 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     edge._geom = geom;
 
     const isHovered = (hoveredEdge === edge);
-    const strokeColor = isHovered ? hp.EDGE_HOVER_STROKE : hp.EDGE_STROKE;
+    const sId = String(typeof edge.source === 'object' ? edge.source.id : edge.source);
+    const tId = String(typeof edge.target === 'object' ? edge.target.id : edge.target);
+
+    const matchesEdgePair = (pair) => {
+      if (!Array.isArray(pair) || pair.length < 2) return false;
+      const u = String(pair[0]);
+      const v = String(pair[1]);
+      return (u === sId && v === tId) || (!isDirected && u === tId && v === sId);
+    };
+
+    const isActiveEdge = simStep && simStep.activeEdge && matchesEdgePair(simStep.activeEdge);
+    const isVisitedEdge = simStep && Array.isArray(simStep.visitedEdges) && simStep.visitedEdges.some(matchesEdgePair);
+
+    let strokeColor = hp.EDGE_STROKE;
+    let edgeWidth = hp.EDGE_STROKE_WIDTH;
+    if (isHovered) {
+      strokeColor = hp.EDGE_HOVER_STROKE;
+    } else if (isActiveEdge) {
+      strokeColor = hp.CURRENT_FILL;
+      edgeWidth = hp.EDGE_STROKE_WIDTH + 2;
+    } else if (isVisitedEdge) {
+      strokeColor = hp.FOUND_FILL;
+      edgeWidth = hp.EDGE_STROKE_WIDTH + 1;
+    }
 
     ctx.save();
     ctx.globalAlpha = hp.DEFAULT_ALPHA;
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
+    ctx.lineWidth = edgeWidth;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke(path2D);

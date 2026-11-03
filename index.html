@@ -6684,7 +6684,7 @@
           <div class="traversal-node-wrap">
             <div class="traversal-node-box${stateClass}">
               <span class="traversal-node-val">${item.value}</span>
-              <span class="traversal-node-idx">Index ${item.index}</span>
+              <span class="traversal-node-idx">${item.subLabel || `Index ${item.index}`}</span>
             </div>
             <span class="traversal-status-pill${stateClass}">${statusLabel}</span>
           </div>
@@ -8093,12 +8093,13 @@
       simCurrentStepIdx = Math.max(0, Math.min(index, simSteps.length - 1));
       const step = simSteps[simCurrentStepIdx];
 
-      // 1. Update bar visual state on the active container and redraw
+      // 1. Update visual state on the active container (Array uses _simState, Graph uses _simStep) and redraw
       activeObj.element._simState = {
         activeIndex: step.activeIndex,
         foundIndex: step.foundIndex,
         checkedIndices: step.checkedIndices,
       };
+      activeObj.element._simStep = step;
       renderDsContainer(activeObj);
 
       // 2. Highlight active line in Python
@@ -8258,6 +8259,7 @@
       const activeObj = dsContainers.find(c => c.name === activeContainerName);
       if (activeObj) {
         activeObj.element._simState = null;
+        activeObj.element._simStep = null;
         renderDsContainer(activeObj);
       }
 
