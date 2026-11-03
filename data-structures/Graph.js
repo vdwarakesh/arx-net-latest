@@ -506,6 +506,230 @@ function generateDefaultNodeLabel(nodes) {
   return `N${nodes.length}`;
 }
 
+/* ---------- Standalone Graph Input Parser ---------- */
+
+function parseEdges(edgesInput) {
+  const trimmed = edgesInput.trim();
+
+  if (trimmed.startsWith('{')) {
+    return parsePythonAdjacencyDict(trimmed);
+  }
+  if (trimmed.startsWith('[')) {
+    const inner = stripOuter(trimmed, '[', ']');
+    if (inner === '') return [];
+
+    const topLevelTokens = tokeniseTopLevel(inner);
+    const looksLikeTupleList = topLevelTokens.some(t => t.startsWith('('));
+    const looksLikeMatrix = topLevelTokens.some(t => t.startsWith('['));
+
+    if (looksLikeTupleList) return parsePythonEdgeList(trimmed);
+    if (looksLikeMatrix) return parseAdjacencyMatrix(trimmed);
+    return parseCompactEdges(trimmed);
+  }
+  return parseCompactEdges(trimmed);
+}
+
+function tokeniseTopLevel(input, delimiter = ',') {
+  const result = [];
+  let depth = 0;
+  let current = '';
+  for (const char of input) {
+    if (char === '(' || char === '[' || char === '{') depth++;
+    if (char === ')' || char === ']' || char === '}') depth--;
+    if (char === delimiter && depth === 0) {
+      if (current.trim()) result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  if (current.trim()) result.push(current.trim());
+  return result;
+}
+
+function stripOuter(s, open, close) {
+  s = s.trim();
+  if (s.startsWith(open) && s.endsWith(close)) return s.slice(1, -1).trim();
+  return s;
+}
+
+function parseNode(token) {
+  token = token.trim();
+  if ((token.startsWith('"') && token.endsWith('"')) ||
+    (token.startsWith("'") && token.endsWith("'"))) {
+    return token.slice(1, -1);
+  }
+  return token;
+}
+
+function parseWeight(token) {
+  if (token === undefined || token === null) return 1;
+  const w = parseFloat(token.trim());
+  return isNaN(w) ? 1 : w;
+}
+
+function parsePythonEdgeList(input) {
+  const edges = [];
+  const inner = stripOuter(input, '[', ']');
+  if (!inner) return edges;
+
+  const tuples = tokeniseTopLevel(inner);
+
+  for (const tuple of tuples) {
+    const t = tuple.trim();
+    if (!t.startsWith('(')) { console.error('Expected tuple, got:', t); continue; }
+    const tupleInner = stripOuter(t, '(', ')');
+    const parts = tokeniseTopLevel(tupleInner);
+
+    if (parts.length === 1 && parts[0]) {
+      edges.push({ source: parseNode(parts[0]), target: null, weight: null });
+      continue;
+    }
+    if (parts.length < 2) { console.error('Edge tuple needs >= 2 elements:', t); continue; }
+
+    const source = parseNode(parts[0]);
+    const target = parseNode(parts[1]);
+    const weight = parts.length >= 3 ? parseWeight(parts[2]) : 1;
+
+    edges.push({ source, target, weight });
+  }
+
+  return edges;
+}
+
+function parseNeighbourEntry(entry) {
+  entry = entry.trim();
+  if (entry.startsWith('(')) {
+    const inner = stripOuter(entry, '(', ')');
+    const parts = tokeniseTopLevel(inner);
+    if (parts.length >= 2) {
+      return { target: parseNode(parts[0]), weight: parseWeight(parts[1]) };
+    }
+    if (parts.length === 1) {
+      return { target: parseNode(parts[0]), weight: 1 };
+    }
+  }
+  return { target: parseNode(entry), weight: 1 };
+}
+
+function parsePythonAdjacencyDict(input) {
+  const edges = [];
+  const inner = stripOuter(input, '{', '}');
+  if (!inner) return edges;
+
+  const pairs = tokeniseTopLevel(inner);
+
+  for (const pair of pairs) {
+    let colonIdx = -1;
+    let depth = 0;
+    for (let i = 0; i < pair.length; i++) {
+      const c = pair[i];
+      if (c === '(' || c === '[' || c === '{') depth++;
+      if (c === ')' || c === ']' || c === '}') depth--;
+      if (c === ':' && depth === 0) { colonIdx = i; break; }
+    }
+    if (colonIdx === -1) { console.error('Invalid adjacency entry:', pair); continue; }
+
+    const source = parseNode(pair.slice(0, colonIdx).trim());
+    const valueStr = pair.slice(colonIdx + 1).trim();
+
+    if (valueStr.startsWith('[')) {
+      const listInner = stripOuter(valueStr, '[', ']');
+      if (!listInner) {
+        edges.push({ source, target: null, weight: null });
+        continue;
+      }
+      const neighbours = tokeniseTopLevel(listInner);
+      for (const nb of neighbours) {
+        const { target, weight } = parseNeighbourEntry(nb);
+        edges.push({ source, target, weight });
+      }
+    } else {
+      const { target, weight } = parseNeighbourEntry(valueStr);
+      edges.push({ source, target, weight });
+    }
+  }
+
+  return edges;
+}
+
+function parseAdjacencyMatrix(matrixInput) {
+  const trimmed = matrixInput.trim();
+  const outer = stripOuter(trimmed, '[', ']');
+  const rowTokens = tokeniseTopLevel(outer);
+
+  if (rowTokens.length === 0) {
+    throw new Error('Invalid adjacency matrix: no rows found.');
+  }
+
+  const rows = rowTokens.map(rowToken => {
+    const t = rowToken.trim();
+    if (!t.startsWith('[') || !t.endsWith(']')) {
+      throw new Error(`Invalid adjacency matrix: expected a row like "[1, 0, 2]", got "${t}".`);
+    }
+    const inner = stripOuter(t, '[', ']');
+    const cellTokens = inner === '' ? [] : tokeniseTopLevel(inner);
+
+    return cellTokens.map(cell => {
+      const c = cell.trim();
+      if (!/^-?\d+(\.\d+)?$/.test(c)) {
+        throw new Error(`Invalid adjacency matrix: non-numeric value "${c}" found. Only numeric vertices/weights are allowed.`);
+      }
+      return parseFloat(c);
+    });
+  });
+
+  const n = rows.length;
+  for (const row of rows) {
+    if (row.length !== n) {
+      throw new Error(`Invalid adjacency matrix: must be square (found ${n} rows but a row with ${row.length} columns).`);
+    }
+  }
+
+  const edges = [];
+  for (let i = 0; i < n; i++) {
+    let hasEdgeInRow = false;
+    for (let j = 0; j < n; j++) {
+      const value = rows[i][j];
+      if (value === 0) continue;
+      hasEdgeInRow = true;
+      edges.push({ source: i, target: j, weight: value });
+    }
+    if (!hasEdgeInRow) {
+      edges.push({ source: i, target: null, weight: null });
+    }
+  }
+
+  return edges;
+}
+
+function parseCompactEdges(edgesInput) {
+  const edgeFormat = /^([a-zA-Z0-9])([a-zA-Z0-9])(-?\d*\.?\d*)$/;
+  const vertexFormat = /^[a-zA-Z0-9]$/;
+
+  return tokeniseTopLevel(edgesInput).map(edge => {
+    edge = edge.trim();
+    let source, target, weight;
+
+    if (edgeFormat.test(edge)) {
+      const match = edge.match(edgeFormat);
+      source = match[1];
+      target = match[2];
+      weight = parseFloat(match[3]);
+      if (isNaN(weight)) weight = 1;
+    } else if (vertexFormat.test(edge)) {
+      source = edge;
+      target = null;
+      weight = null;
+    } else {
+      console.error('Invalid edge format:', edge);
+      return null;
+    }
+
+    return { source, target, weight };
+  }).filter(Boolean);
+}
+
 function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
   const { isDirected, isWeighted } = resolveGraphTypeFlags(dsType, extraInputs);
 
@@ -513,11 +737,12 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
   const nodesByTokenMap = new Map();
   const nodes = [];
   const edges = [];
+  const seenUndirectedPairs = new Set();
   let nextInternalId = 0;
 
-  // Maps input token -> node with internal integer id (0, 1, 2...) and visual label
   const ensureNode = (tokenVal) => {
-    const cleanLabel = String(tokenVal).trim().replace(/^['"]|['"]$/g, '');
+    if (tokenVal === null || tokenVal === undefined) return null;
+    const cleanLabel = String(tokenVal).trim();
     if (!cleanLabel) return null;
     if (!nodesByTokenMap.has(cleanLabel)) {
       const nodeObj = {
@@ -532,146 +757,32 @@ function parseGraphInput(rawInput, dsType = 'Graph', extraInputs = {}) {
     return nodesByTokenMap.get(cleanLabel);
   };
 
-  const addEdge = (uToken, vToken, weightVal = 1) => {
-    const uNode = ensureNode(uToken);
-    const vNode = ensureNode(vToken);
-    if (!uNode || !vNode) return;
-    const parsedW = (weightVal !== undefined && weightVal !== null && weightVal !== '' && !Number.isNaN(Number(weightVal)))
-      ? Number(weightVal)
-      : 1;
-    edges.push({ source: uNode, target: vNode, weight: parsedW });
-  };
-
   if (text) {
-    let parsedJson = null;
-    if (text.startsWith('{') || text.startsWith('[')) {
-      try {
-        const normalizedJson = text
-          .replace(/'/g, '"')
-          .replace(/([{,\[])\s*([a-zA-Z0-9_.-]+)\s*:/g, '$1"$2":')
-          .replace(/:\s*([a-zA-Z_][a-zA-Z0-9_.-]*)\s*([,}\]])/g, ':"$1"$2')
-          .replace(/([\[,])\s*([a-zA-Z_][a-zA-Z0-9_.-]*)\s*(?=[,\]])/g, '$1"$2"');
-        parsedJson = JSON.parse(normalizedJson);
-      } catch { }
+    let rawEdges = [];
+    try {
+      rawEdges = parseEdges(text);
+    } catch (err) {
+      console.error(err);
     }
 
-    if (parsedJson !== null && typeof parsedJson === 'object') {
-      if (Array.isArray(parsedJson)) {
-        const n = parsedJson.length;
-        const isSquareMatrix = n > 0 && parsedJson.every(row =>
-          Array.isArray(row) && row.length === n && row.every(val => typeof val === 'number' || !Number.isNaN(Number(val)))
-        ) && (n > 3 || parsedJson.some(row => row.filter(v => Number(v) === 0).length > 0));
+    for (const item of rawEdges) {
+      const uNode = ensureNode(item.source);
+      if (item.target === null || item.target === undefined) continue;
+      const vNode = ensureNode(item.target);
+      if (!uNode || !vNode) continue;
 
-        if (isSquareMatrix) {
-          for (let i = 0; i < n; i++) ensureNode(i);
-          for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-              const w = Number(parsedJson[i][j]);
-              if (w !== 0 && !Number.isNaN(w)) {
-                if (!isDirected && j < i && Number(parsedJson[j][i]) === w) continue;
-                addEdge(i, j, w);
-              }
-            }
-          }
-        } else {
-          for (const item of parsedJson) {
-            if (Array.isArray(item) && item.length >= 2) {
-              addEdge(item[0], item[1], item[2]);
-            } else if (Array.isArray(item) && item.length === 1) {
-              ensureNode(item[0]);
-            } else if (item && typeof item === 'object') {
-              const u = item.source ?? item.u ?? item.from;
-              const v = item.target ?? item.v ?? item.to;
-              if (u !== undefined && v !== undefined) addEdge(u, v, item.weight ?? item.w);
-            } else if (item !== null && item !== undefined) {
-              ensureNode(item);
-            }
-          }
-        }
-      } else {
-        for (const [u, neighbors] of Object.entries(parsedJson)) {
-          ensureNode(u);
-          if (Array.isArray(neighbors)) {
-            for (const targetItem of neighbors) {
-              if (Array.isArray(targetItem) && targetItem.length >= 2) {
-                addEdge(u, targetItem[0], targetItem[1]);
-              } else if (targetItem && typeof targetItem === 'object') {
-                const v = targetItem.node ?? targetItem.target ?? targetItem.id ?? targetItem.v;
-                if (v !== undefined) addEdge(u, v, targetItem.weight ?? targetItem.w);
-              } else if (targetItem !== null && targetItem !== undefined) {
-                addEdge(u, targetItem, 1);
-              }
-            }
-          } else if (neighbors && typeof neighbors === 'object') {
-            for (const [v, w] of Object.entries(neighbors)) {
-              addEdge(u, v, w);
-            }
-          }
-        }
+      if (!isDirected) {
+        const pairKey = uNode.id <= vNode.id
+          ? `${uNode.id}-${vNode.id}`
+          : `${vNode.id}-${uNode.id}`;
+        if (seenUndirectedPairs.has(pairKey)) continue;
+        seenUndirectedPairs.add(pairKey);
       }
-    } else {
-      const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-      const matrixRows = lines.map(l => l.split(/[\s,]+/).filter(Boolean));
-      const isTextMatrix = matrixRows.length > 1 &&
-        matrixRows.every(r => r.length === matrixRows.length && r.every(val => !Number.isNaN(Number(val)))) &&
-        (matrixRows.length !== 2 && matrixRows.length !== 3 || matrixRows.flat().some(v => Number(v) === 0));
 
-      if (isTextMatrix) {
-        const n = matrixRows.length;
-        for (let i = 0; i < n; i++) ensureNode(i);
-        for (let i = 0; i < n; i++) {
-          for (let j = 0; j < n; j++) {
-            const w = Number(matrixRows[i][j]);
-            if (w !== 0) {
-              if (!isDirected && j < i && Number(matrixRows[j][i]) === w) continue;
-              addEdge(i, j, w);
-            }
-          }
-        }
-      } else if (lines.some(l => /^[a-zA-Z0-9_.-]+\s*:\s*/.test(l) && !l.includes('->') && !l.includes('-'))) {
-        for (const line of lines) {
-          const colonIdx = line.indexOf(':');
-          if (colonIdx === -1) {
-            ensureNode(line);
-            continue;
-          }
-          const u = line.slice(0, colonIdx).trim();
-          ensureNode(u);
-          const rest = line.slice(colonIdx + 1).trim();
-          if (!rest) continue;
-
-          const neighborTokens = rest.split(/[,;\s]+/).map(t => t.trim()).filter(Boolean);
-          for (const tok of neighborTokens) {
-            const weightMatch = tok.match(/^(.+?)(?:\(([-+]?\d*\.?\d+)\)|:([-+]?\d*\.?\d+))$/);
-            if (weightMatch) {
-              addEdge(u, weightMatch[1], weightMatch[2] ?? weightMatch[3]);
-            } else {
-              addEdge(u, tok, 1);
-            }
-          }
-        }
-      } else {
-        const tokens = text.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
-        for (const token of tokens) {
-          const arrowMatch = token.match(/^(.+?)\s*(->|<->|--|-)\s*(.+?)(?:\s*[:=]\s*([+-]?\d+(?:\.\d+)?))?$/);
-          if (arrowMatch) {
-            const [, uRaw, op, vRaw, wRaw] = arrowMatch;
-            addEdge(uRaw, vRaw, wRaw);
-            if (op === '<->' && String(uRaw).trim() !== String(vRaw).trim()) {
-              addEdge(vRaw, uRaw, wRaw);
-            }
-            continue;
-          }
-
-          const parts = token.split(/\s+/);
-          if (parts.length >= 2) {
-            const hasWeight = parts.length >= 3 && !Number.isNaN(Number(parts[2]));
-            addEdge(parts[0], parts[1], hasWeight ? parts[2] : 1);
-          } else if (parts.length === 1) {
-            ensureNode(parts[0]);
-          }
-        }
-      }
+      const parsedW = (item.weight !== undefined && item.weight !== null && !Number.isNaN(Number(item.weight)))
+        ? Number(item.weight)
+        : 1;
+      edges.push({ source: uNode, target: vNode, weight: parsedW });
     }
   }
 
@@ -802,33 +913,30 @@ export function syncGraphDataToContainer(containerEl, graphData) {
   if (!containerEl || !graphData) return;
   refreshEdgeFlags(graphData);
 
-  const connectedNodeIds = new Set();
-  const edgeTokens = graphData.edges.map(e => {
-    const u = typeof e.source === 'object' ? e.source.id : e.source;
-    const v = typeof e.target === 'object' ? e.target.id : e.target;
-    connectedNodeIds.add(String(u));
-    connectedNodeIds.add(String(v));
-    const op = graphData.isDirected ? '->' : '-';
-    const wSuffix = (graphData.isWeighted && e.weight !== undefined) ? `:${e.weight}` : '';
-    return `${u}${op}${v}${wSuffix}`;
+  const adjEntries = graphData.nodes.map(n => {
+    const uLabel = String(n.label ?? n.id);
+    const outgoing = graphData.edges.filter(e => {
+      const sId = typeof e.source === 'object' ? e.source.id : e.source;
+      return sId === n.id;
+    });
+    const neighborTokens = outgoing.map(e => {
+      const vNode = typeof e.target === 'object' ? e.target : graphData.nodes.find(nd => nd.id === e.target);
+      const vLabel = vNode ? String(vNode.label ?? vNode.id) : String(e.target);
+      return graphData.isWeighted ? `(${vLabel}, ${e.weight ?? 1})` : `${vLabel}`;
+    });
+    return `${uLabel}: [${neighborTokens.join(', ')}]`;
   });
 
-  const isolatedTokens = graphData.nodes
-    .filter(n => !connectedNodeIds.has(String(n.id)))
-    .map(n => String(n.id));
-
-  const serialized = [...edgeTokens, ...isolatedTokens].join(', ');
+  const serialized = adjEntries.length > 0 ? `{${adjEntries.join(', ')}}` : '';
   containerEl._graphData = graphData;
   containerEl._lastParsedGraphInput = serialized;
 
-  // Re-serialize the extra inputs (Directed/Weighted checkboxes)
   const extraInputs = containerEl.dsInputs || {};
   containerEl._lastParsedGraphInputsJson = JSON.stringify(extraInputs);
 
   containerEl.userInput = serialized;
   containerEl.setAttribute('userInput', serialized);
 
-  // Trigger UI updates in layout.html
   if (typeof window.updateDsHeaderWarningState === 'function') {
     window.updateDsHeaderWarningState();
   }
@@ -920,12 +1028,10 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     const isVisitedEdge = simStep && Array.isArray(simStep.visitedEdges) && simStep.visitedEdges.some(matchesEdgePair);
 
     let strokeColor = hp.EDGE_STROKE;
-    let edgeWidth = hp.EDGE_STROKE_WIDTH;
     if (isHovered) {
       strokeColor = hp.EDGE_HOVER_STROKE;
     } else if (isActiveEdge) {
       strokeColor = hp.CURRENT_FILL;
-      edgeWidth = hp.EDGE_STROKE_WIDTH + 2;
     } else if (isVisitedEdge) {
       strokeColor = hp.EDGE_VISITED;
     }
@@ -933,7 +1039,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     ctx.save();
     ctx.globalAlpha = hp.DEFAULT_ALPHA;
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = edgeWidth;
+    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke(path2D);
@@ -947,7 +1053,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       const pad = hp.BOUNDS_PADDING;
       expandBounds(geom.bounds.minX - pad, geom.bounds.minY - pad, geom.bounds.maxX + pad, geom.bounds.maxY + pad);
     }
-    renderedEdges.push({ edge, geom, isHovered });
+    renderedEdges.push({ edge, geom, strokeColor });
   }
 
   // 1b. Render live preview edge while double-click dragging from a source node
@@ -993,7 +1099,6 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     node._height = h;
 
     let fillColor = hp.NODE_FILL;
-    let nodeAlpha = hp.DEFAULT_ALPHA;
 
     if (draggedNode === node) {
       fillColor = hp.NODE_DRAG_FILL;
@@ -1001,7 +1106,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       const nodeIdStr = String(node.id);
       const isVisited = Array.isArray(simStep.visitedNodes) && simStep.visitedNodes.map(String).includes(nodeIdStr);
       if (String(simStep.foundNodeId) === nodeIdStr || simStep.foundIndex === i) {
-        fillColor = hp.EDGE_VISITED;
+        fillColor = hp.FOUND_FILL;
       } else if (String(simStep.activeNodeId) === nodeIdStr || simStep.activeIndex === i) {
         fillColor = hp.CURRENT_FILL;
       } else if (isVisited) {
@@ -1010,7 +1115,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     }
 
     ctx.save();
-    ctx.globalAlpha = nodeAlpha;
+    ctx.globalAlpha = hp.DEFAULT_ALPHA;
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') {
       ctx.roundRect(x, y, w, h, hp.NODE_CORNER_RADIUS);
@@ -1037,10 +1142,10 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
   }
 
-  // 3. Render edge weight labels on top (With border, records hit-boxes for I-beam & click-to-edit)
+  // 3. Render edge weight labels on top (Border matches edge highlight state)
   const weightHitBoxes = [];
   if (isWeighted) {
-    for (const { edge, geom, isHovered } of renderedEdges) {
+    for (const { edge, geom, strokeColor } of renderedEdges) {
       if (edge.weight === undefined || edge.weight === null) continue;
       const weightText = String(edge.weight);
 
@@ -1061,9 +1166,9 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
       ctx.fillStyle = hp.WEIGHT_BG;
       ctx.fill();
 
-      // Border stroke (changes color on edge/weight hover)
+      // Border stroke matches the edge's active, visited, hovered, or default color
       ctx.lineWidth = hp.WEIGHT_PILL_STROKE_WIDTH;
-      ctx.strokeStyle = isHovered ? hp.EDGE_HOVER_STROKE : hp.EDGE_STROKE;
+      ctx.strokeStyle = strokeColor;
       ctx.stroke();
 
       // Text color (remains constant)
