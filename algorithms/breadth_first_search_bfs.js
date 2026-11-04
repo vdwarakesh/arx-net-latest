@@ -1,7 +1,7 @@
-import { getContainerGraphData } from '../data-structures/Graph.js';
+import { getContainerGraphData } from '../data-structures/graph.js';
 import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
-export async function depthFirstSearch(containerEl, rawKwargs = {}) {
+export async function breadth_first_search_bfs(containerEl, rawKwargs = {}, simOptions = {}) {
   const graphData = getContainerGraphData(containerEl);
   const { nodes, edges, isDirected } = graphData;
 
@@ -25,16 +25,18 @@ export async function depthFirstSearch(containerEl, rawKwargs = {}) {
     }
   });
 
-  const res = await fetch('algorithms/Depth-First-Search.py');
+  const res = await fetch('algorithms/breadth_first_search_bfs.py');
   const pythonCode = await res.text();
 
   const { steps: pyFrames, error } = await tracePythonAlgorithm({
     dsCategory: 'graph',
     pythonCode,
-    funcName: 'depth_first_search',
+    funcName: 'breadth_first_search',
     dsData: adjList,
     nodeLabels,
     rawKwargs,
+    simMode: simOptions.mode || 'auto',
+    userChoices: simOptions.userChoices || [],
   });
 
   const steps = [];
@@ -47,7 +49,7 @@ export async function depthFirstSearch(containerEl, rawKwargs = {}) {
 
     let stepDescription = `Line ${pyLine}`;
     if (frame.event === 'return') {
-      stepDescription = `DFS complete! Traversal order: [${(sv.return || []).join(', ')}].`;
+      stepDescription = `BFS complete! Traversal order: [${(sv.return || []).join(', ')}].`;
     } else if (pyLine === 2) {
       stepDescription = `Checking if graph is empty`;
     } else if (pyLine === 4) {
@@ -55,37 +57,42 @@ export async function depthFirstSearch(containerEl, rawKwargs = {}) {
     } else if (pyLine === 5) {
       stepDescription = `Defaulting start_node to first node in graph`;
     } else if (pyLine === 8) {
-      stepDescription = `Initializing visited list`;
+      stepDescription = `Marking start_node as visited`;
     } else if (pyLine === 9) {
-      stepDescription = `Initializing stack with start_node: [${(sv.stack || []).join(', ')}]`;
+      stepDescription = `Initializing queue with start_node: [${(sv.queue || []).join(', ')}]`;
     } else if (pyLine === 10) {
       stepDescription = `Initializing empty traversal order list`;
     } else if (pyLine === 11) {
-      stepDescription = `Checking if stack has nodes remaining (stack: [${(sv.stack || []).join(', ')}])`;
+      stepDescription = `Checking if queue has nodes remaining (queue: [${(sv.queue || []).join(', ')}])`;
     } else if (pyLine === 12) {
-      stepDescription = `Popped node '${sv.node}' from top of stack`;
+      stepDescription = `Dequeued node '${sv.node}' from front of queue`;
     } else if (pyLine === 13) {
-      stepDescription = `Checking if node '${sv.node}' has been visited`;
+      stepDescription = `Visiting node '${sv.node}' - order is now [${(sv.order || []).join(', ')}]`;
     } else if (pyLine === 14) {
-      stepDescription = `Marking node '${sv.node}' as visited`;
+      stepDescription =
+        sv.neighbor !== undefined
+          ? `Inspecting edge from '${sv.node}' to neighbor '${sv.neighbor}'`
+          : `Finished checking all neighbors of '${sv.node}'`;
     } else if (pyLine === 15) {
-      stepDescription = `Visiting node '${sv.node}' — order is now [${(sv.order || []).join(', ')}]`;
+      stepDescription = `Checking if neighbor '${sv.neighbor}' has already been visited`;
     } else if (pyLine === 16) {
-      stepDescription = `Fetching neighbors of node '${sv.node}'`;
+      stepDescription = `Marking neighbor '${sv.neighbor}' as visited`;
     } else if (pyLine === 17) {
-      stepDescription = `Inspecting neighbor '${sv.neighbor}'`;
+      stepDescription = `Enqueuing neighbor '${sv.neighbor}' into queue: [${(sv.queue || []).join(', ')}]`;
     } else if (pyLine === 18) {
-      stepDescription = `Checking if neighbor '${sv.neighbor}' has been visited`;
-    } else if (pyLine === 19) {
-      stepDescription = `Pushing neighbor '${sv.neighbor}' onto stack`;
-    } else if (pyLine === 20) {
-      stepDescription = `Stack is empty. Returning DFS traversal order.`;
+      stepDescription = `Queue is empty. Returning BFS traversal order.`;
+    }
+
+    if (frame.interaction) {
+      stepDescription = frame.interaction.title;
     }
 
     fullExplanationLines.push(`Step ${idx + 1}: ${stepDescription}`);
 
     steps.push({
-      lines: { Python: { active: String(pyLine) } },
+      lines: {
+        Python: { active: String(pyLine) },
+      },
       activeLineKey: 'active',
       activeIndex: -1,
       foundIndex: -1,
@@ -98,6 +105,7 @@ export async function depthFirstSearch(containerEl, rawKwargs = {}) {
       traversal: vis.traversal,
       stateVars: sv,
       stepDescription,
+      interaction: frame.interaction || null,
     });
   });
 
@@ -109,20 +117,23 @@ export async function depthFirstSearch(containerEl, rawKwargs = {}) {
     fullExplanationLines.push(`Error (Line ${errLine}): ${errDesc}`);
 
     steps.push({
-      lines: { Python: { active: String(errLine) } },
+      lines: {
+        Python: { active: String(pyLine) },
+      },
       activeLineKey: 'active',
       activeIndex: -1,
       foundIndex: -1,
       checkedIndices: [],
-      activeNodeId: lastStep ? lastStep.activeNodeId : null,
+      activeNodeId: vis.activeNodeId,
+      activeNodeIds: vis.activeNodeIds || [],
       foundNodeId: null,
-      visitedNodes: lastStep ? lastStep.visitedNodes : [],
-      activeEdge: null,
-      visitedEdges: lastStep ? lastStep.visitedEdges : [],
-      traversal: lastStep ? lastStep.traversal : [],
-      stateVars: { ...(lastStep ? lastStep.stateVars : {}), error: `${error.type}: ${error.message}` },
-      stepDescription: errDesc,
-      isError: true,
+      visitedNodes: vis.visitedNodes,
+      activeEdge: vis.activeEdge,
+      visitedEdges: vis.visitedEdges,
+      traversal: vis.traversal,
+      stateVars: sv,
+      stepDescription,
+      interaction: frame.interaction || null,
     });
   }
 

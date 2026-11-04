@@ -1,11 +1,11 @@
-import { getContainerArrayData } from '../data-structures/Array.js';
+import { getContainerArrayData } from '../data-structures/array.js';
 import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
 export async function linearSearch(containerEl, rawKwargs = {}) {
   const data = getContainerArrayData(containerEl);
   const arrValues = data.map((d) => d.value);
 
-  const res = await fetch('algorithms/Linear-Search.py');
+  const res = await fetch('algorithms/linear_search.py');
   const pythonCode = await res.text();
 
   const { steps: pyFrames, error } = await tracePythonAlgorithm({

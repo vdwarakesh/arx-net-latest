@@ -6457,7 +6457,15 @@
       // 1. DYNAMICALLY IMPORT THE DATA STRUCTURE MODULE
       let dsModule = null;
       try {
-        const formattedType = dsType.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+        const toSnakeCase = (str) =>
+          str
+            .trim()
+            .replace(/['’]/g, '')
+            .replace(/\+/g, 'plus')
+            .replace(/[^a-zA-Z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toLowerCase();
+        const formattedType = toSnakeCase(dsType);
         dsModule = await import(`./data-structures/${formattedType}.js`);
       } catch (err) {
         console.error(`Failed to load module for Data Structure: ${dsType}`, err);
@@ -6683,7 +6691,15 @@
       const currentTarget = selectedDsaName;
       const currentTab = activeRightTopTab;
       const ext = currentTab === 'notes' ? '.html' : currentLangExt;
-      const formattedTarget = currentTarget.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+      const toSnakeCase = (str) =>
+        str
+          .trim()
+          .replace(/['’]/g, '')
+          .replace(/\+/g, 'plus')
+          .replace(/[^a-zA-Z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '')
+          .toLowerCase();
+      const formattedTarget = toSnakeCase(currentTarget);
       const folder = selectedDsaType === 'ds' ? 'data-structures' : 'algorithms';
       const filePath = `${folder}/${formattedTarget}${ext}`;
 
@@ -7009,7 +7025,15 @@
       const activeOption = document.querySelector('#lang-dropdown-menu .lang-option-item.active');
       const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
       const codeText = codeElement.textContent;
-      const baseName = (selectedDsaName || 'algorithm').replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+      const toSnakeCase = (str) =>
+        str
+          .trim()
+          .replace(/['’]/g, '')
+          .replace(/\+/g, 'plus')
+          .replace(/[^a-zA-Z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '')
+          .toLowerCase();
+      const baseName = toSnakeCase(selectedDsaName || 'algorithm');
 
       const blob = new Blob([codeText], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -7210,8 +7234,17 @@
       let requirementError = null;
 
       if (isAlgoSelected && activeObj && typeof algorithmsJson !== 'undefined' && Object.keys(algorithmsJson).length > 0) {
+        const normalize = (str) =>
+          str
+            .trim()
+            .replace(/['’]/g, '')
+            .replace(/\+/g, 'plus')
+            .replace(/[^a-zA-Z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '')
+            .toLowerCase();
+
         const algoKey = Object.keys(algorithmsJson).find(
-          (k) => k.toLowerCase() === selectedDsaName.toLowerCase().replace(/[-_]+/g, ' ')
+          (k) => normalize(k) === normalize(selectedDsaName)
         );
         const algoConfig = algoKey ? algorithmsJson[algoKey] : null;
 
@@ -7610,7 +7643,15 @@
 
       // Fetch the Python file and build the interactive <pre><code> signature
       configHeading.style.display = 'none';
-      const formattedTarget = name.replace(/\s+/g, '-').replace(/\+/g, 'Plus');
+      const toSnakeCase = (str) =>
+        str
+          .trim()
+          .replace(/['’]/g, '')
+          .replace(/\+/g, 'plus')
+          .replace(/[^a-zA-Z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '')
+          .toLowerCase();
+      const formattedTarget = toSnakeCase(name);
 
       try {
         const res = await fetch(`algorithms/${formattedTarget}.py`);
@@ -8299,20 +8340,14 @@
       }, delayMs);
     }
 
-    // Helper: "linear search" -> "Linear-Search" (matches your dsa/ file naming)
-    const toKebabPascal = (str) =>
+    const toSnakeCase = (str) =>
       str
         .trim()
-        .split(/[-_\s]+/)
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join('-');
-
-    // Helper: "linear search" -> "linearSearch" (matches your exported function name)
-    const toCamelCase = (str) =>
-      str
-        .trim()
-        .toLowerCase()
-        .replace(/[-_\s]+(\w)/g, (_, c) => c.toUpperCase());
+        .normalize('NFKD')                  // split accented chars from diacritics (optional but safer)
+        .replace(/['’]/g, '')                // drop apostrophes entirely (don't -> dont)
+        .replace(/[^a-zA-Z0-9]+/g, '_')       // any run of non-alphanumeric chars -> single underscore
+        .replace(/^_+|_+$/g, '')              // trim leading/trailing underscores
+        .toLowerCase();
 
     async function buildSimulationIfNeeded() {
       const activeObj = dsContainers.find((c) => c.name === activeContainerName);
@@ -8356,8 +8391,8 @@
 
       try {
         // 3. Dynamically resolve file path and function name
-        const fileBase = toKebabPascal(selectedDsaName); // e.g. "Linear-Search"
-        const fnName = toCamelCase(selectedDsaName);     // e.g. "linearSearch"
+        const fileBase = toSnakeCase(selectedDsaName);
+        const fnName = toSnakeCase(selectedDsaName);
 
         const algoModule = await import(`./algorithms/${fileBase}.js`);
         const algoFn = algoModule[fnName] || algoModule.default;
