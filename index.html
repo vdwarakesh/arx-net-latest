@@ -8201,12 +8201,21 @@
       });
     });
 
+    async function rewindChoicesFromStep(targetStepIdx) {
+      const prevLen = simUserChoices.length;
+      simUserChoices = simUserChoices.filter(c => c.stepIdx < targetStepIdx);
+      if (simUserChoices.length !== prevLen) {
+        await buildSimulationIfNeeded();
+      }
+      applySimulationStep(targetStepIdx);
+    }
+
     stepSliders.forEach(slider => {
-      slider.addEventListener('input', (e) => {
+      slider.addEventListener('input', async (e) => {
         if (simSteps.length === 0) return;
         stopAutoPlay();
         const targetStep = parseInt(e.target.value, 10) - 1;
-        applySimulationStep(targetStep);
+        await rewindChoicesFromStep(targetStep);
       });
     });
 
@@ -8217,13 +8226,17 @@
       simCurrentStepIdx = Math.max(0, Math.min(index, simSteps.length - 1));
       const step = simSteps[simCurrentStepIdx];
 
-      // 1. Update visual state on the active container (Array uses _simState, Graph uses _simStep) and redraw
+      // 1. Update visual state on the active container and reset cursor/hover state
       activeObj.element._simState = {
         activeIndex: step.activeIndex,
         foundIndex: step.foundIndex,
         checkedIndices: step.checkedIndices,
       };
       activeObj.element._simStep = step;
+      activeObj.element._hoveredEdge = null;
+      if (activeObj.canvas && !step.interaction) {
+        activeObj.canvas.style.cursor = '';
+      }
       renderDsContainer(activeObj);
 
       // 2. Highlight active line in Python
@@ -8357,7 +8370,7 @@
         // 4. Pass the container element, rawKwargs, and manual interaction options
         const result = await algoFn(activeObj.element, rawKwargs, {
           mode: simMode,
-          userChoices: simUserChoices,
+          userChoices: simUserChoices.map(c => c.chosenId),
         });
 
         if (result.error && (!result.steps || result.steps.length === 0)) {
@@ -8394,6 +8407,8 @@
       if (activeObj) {
         activeObj.element._simState = null;
         activeObj.element._simStep = null;
+        activeObj.element._hoveredEdge = null;
+        if (activeObj.canvas) activeObj.canvas.style.cursor = '';
         renderDsContainer(activeObj);
       }
 
@@ -8443,10 +8458,10 @@
 
     // "Step Backward" icon button
     document.querySelectorAll('.sync-step-back').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         stopAutoPlay();
         if (simCurrentStepIdx > 0) {
-          applySimulationStep(simCurrentStepIdx - 1);
+          await rewindChoicesFromStep(simCurrentStepIdx - 1);
         }
       });
     });
@@ -8468,23 +8483,31 @@
     // Called when the user clicks a candidate node/edge on the canvas or in the State Variables box
     window.submitManualSimChoice = async function (chosenNodeId) {
       if (!window.isSimulating) return;
-      const wasPlaying = isSimPlaying;
       stopAutoPlay();
 
-      const resumeStepIdx = simCurrentStepIdx;
-      simUserChoices.push(String(chosenNodeId));
+      const decisionStepIdx = simCurrentStepIdx;
+      // Keep only choices strictly before this decision step, then append the new choice
+      simUserChoices = simUserChoices.filter(c => c.stepIdx < decisionStepIdx);
+      simUserChoices.push({
+        stepIdx: decisionStepIdx,
+        chosenId: String(chosenNodeId),
+      });
+
+      const activeObj = dsContainers.find(c => c.name === activeContainerName);
+      if (activeObj && activeObj.canvas) {
+        activeObj.element._hoveredEdge = null;
+        activeObj.canvas.style.cursor = '';
+      }
 
       if (await buildSimulationIfNeeded()) {
-        // Advance immediately to the step that processes the user's chosen neighbor
-        const nextIdx = Math.min(resumeStepIdx + 1, simSteps.length - 1);
+        // Advance immediately to the step that processes the user's chosen neighbor and continue playing
+        const nextIdx = Math.min(decisionStepIdx + 1, simSteps.length - 1);
         applySimulationStep(nextIdx);
-        if (wasPlaying) {
-          setPlayButtonIcons(true);
-          scheduleNextStep();
-        }
+        setPlayButtonIcons(true);
+        scheduleNextStep();
       }
     };
-    
+
     // "Reset" icon button -> Clears simulation and unlocks array editing
     document.querySelectorAll('.sync-reset').forEach(btn => {
       btn.addEventListener('click', resetSimulation);
