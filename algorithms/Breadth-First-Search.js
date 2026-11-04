@@ -1,11 +1,10 @@
 import { getContainerGraphData } from '../data-structures/Graph.js';
-import { tracePythonGraphAlgorithm } from '../js/pyodide-runner.js';
+import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
 export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
   const graphData = getContainerGraphData(containerEl);
   const { nodes, edges, isDirected } = graphData;
 
-  // Build adjacency list keyed by node.id (as string) and map of node.id -> display label
   const adjList = {};
   const nodeLabels = {};
 
@@ -29,28 +28,22 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
   const res = await fetch('algorithms/Breadth-First-Search.py');
   const pythonCode = await res.text();
 
-  const { steps: pyFrames, error } = await tracePythonGraphAlgorithm(
+  const { steps: pyFrames, error } = await tracePythonAlgorithm({
+    dsCategory: 'graph',
     pythonCode,
-    'breadth_first_search',
-    adjList,
+    funcName: 'breadth_first_search',
+    dsData: adjList,
     nodeLabels,
-    rawKwargs
-  );
+    rawKwargs,
+  });
 
   const steps = [];
   const fullExplanationLines = [];
 
   pyFrames.forEach((frame, idx) => {
     const pyLine = frame.line;
-    const sv = { ...(frame.stateVars || {}) };
+    const sv = frame.stateVars || {};
     const vis = frame.visual;
-
-    if (Array.isArray(sv.order)) {
-      sv.order = sv.order.map((id) => nodeLabels[String(id)] ?? id);
-    }
-    if (Array.isArray(sv.return)) {
-      sv.return = sv.return.map((id) => nodeLabels[String(id)] ?? id);
-    }
 
     let stepDescription = `Line ${pyLine}`;
     if (frame.event === 'return') {

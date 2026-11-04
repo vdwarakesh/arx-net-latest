@@ -1,5 +1,5 @@
 import { getContainerArrayData } from '../data-structures/Array.js';
-import { tracePythonArrayAlgorithm } from '../js/pyodide-runner.js';
+import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
 export async function linearSearch(containerEl, rawKwargs = {}) {
   const data = getContainerArrayData(containerEl);
@@ -8,12 +8,13 @@ export async function linearSearch(containerEl, rawKwargs = {}) {
   const res = await fetch('algorithms/Linear-Search.py');
   const pythonCode = await res.text();
 
-  const { steps: pyFrames, error } = await tracePythonArrayAlgorithm(
+  const { steps: pyFrames, error } = await tracePythonAlgorithm({
+    dsCategory: 'sequence',
     pythonCode,
-    'linear_search',
-    arrValues,
-    rawKwargs
-  );
+    funcName: 'linear_search',
+    dsData: arrValues,
+    rawKwargs,
+  });
 
   const steps = [];
   const fullExplanationLines = [];

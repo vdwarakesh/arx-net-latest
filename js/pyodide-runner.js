@@ -16,59 +16,43 @@ worker.onmessage = (event) => {
 };
 
 export function warmUpPyodide() {
-  // Tell the worker to cache the standard library modules
   worker.postMessage({ id: -1, type: 'warmup' });
 }
 
 /**
- * Sends the Python code to the Web Worker for execution.
- * Does not block the main UI thread.
+ * Unified generic Python algorithm tracer.
+ * @param {Object} config
+ * @param {'sequence'|'graph'} config.dsCategory - Proxy category to wrap the input data structure in
+ * @param {string} config.pythonCode - Raw Python source code
+ * @param {string} config.funcName - Entry function name in Python
+ * @param {*} config.dsData - Serialized data structure payload (e.g. array of values, or adjacency dict)
+ * @param {Object} [config.nodeLabels={}] - Optional ID -> display label map (for graphs/trees)
+ * @param {Object} [config.rawKwargs={}] - User-supplied keyword arguments from the UI
+ * @param {number} [config.maxSteps=2500] - Maximum execution steps before InfiniteLoopError
  */
-export function tracePythonArrayAlgorithm(
+export function tracePythonAlgorithm({
+  dsCategory = 'sequence',
   pythonCode,
   funcName,
-  arrValues,
+  dsData,
+  nodeLabels = {},
   rawKwargs = {},
-  maxSteps = 2500
-) {
+  maxSteps = 2500,
+}) {
   return new Promise((resolve) => {
     const id = messageIdCounter++;
     pendingResolves.set(id, resolve);
 
-    // If the user clicks "Run" before the worker finishes booting, queues the message and execute it when ready.
     worker.postMessage({
       id,
       type: 'run',
+      dsCategory,
       pythonCode,
       funcName,
-      arrValues,
-      rawKwargs,
-      maxSteps
-    });
-  });
-}
-
-export function tracePythonGraphAlgorithm(
-  pythonCode,
-  funcName,
-  adjList,
-  nodeLabels,
-  rawKwargs = {},
-  maxSteps = 2500
-) {
-  return new Promise((resolve) => {
-    const id = messageIdCounter++;
-    pendingResolves.set(id, resolve);
-
-    worker.postMessage({
-      id,
-      type: 'run_graph',
-      pythonCode,
-      funcName,
-      adjList,
+      dsData,
       nodeLabels,
       rawKwargs,
-      maxSteps
+      maxSteps,
     });
   });
 }
