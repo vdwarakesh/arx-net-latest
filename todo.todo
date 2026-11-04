@@ -9,6 +9,8 @@ add other graph algorithms
 
 
 Delete traversal card
+Selection double tap on mobile - not working reliably.
+Double tap recenter - not correct - mobile
 
 Parse quotes and hyphens in algorithm names (Dijkstra's Algorithm, Breadth-First Search)
 exact kebab and snake case - use the same thing overall (snake case)
