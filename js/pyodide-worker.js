@@ -54,6 +54,8 @@ import json
 import inspect
 import traceback
 import ast
+import math
+from collections import deque
 
 _trace_steps = []
 _error_info = None
@@ -249,20 +251,39 @@ class VisualGraph(dict):
         self.active_edge = [u_str, v_str]
 
     def _promote_discovered_edges(self, frame_locals):
-        """Whenever an inspected neighbor v is stored into any collection
-        (e.g., queue, stack, visited set, parent dict), mark edge (u, v) as traversed."""
+        """Supports BFS/DFS discovery, Dijkstra/Prim/Flow parent maps, and Kruskal edge lists."""
+        # 1. If the algorithm maintains a parent/prev/came_from dict {child: parent},
+        #    sync visited_edges directly to the active shortest-path / MST tree!
+        for var_name, val in frame_locals.items():
+            if isinstance(val, dict) and not isinstance(val, VisualGraph) and val:
+                keys_in_graph = all(str(k) in self for k in val.keys())
+                vals_in_graph = all(v is None or str(v) in self for v in val.values())
+                # Distinguish a parent map {node: parent_node} from a distance map {node: number}
+                has_node_val = any(isinstance(v, _NodeId) for v in val.values() if v is not None)
+                if keys_in_graph and vals_in_graph and has_node_val:
+                    self.visited_edges = [
+                        [str(p), str(child)]
+                        for child, p in val.items()
+                        if p is not None and str(p) in self and str(child) in self
+                    ]
+                    return
+
+        # 2. Otherwise (BFS / DFS / simple traversal), promote active_edge when v enters any collection
         if not self.active_edge:
             return
         u_str, v_str = self.active_edge
         for val in frame_locals.values():
-            if isinstance(val, (list, tuple, set)):
-                if any(str(x) == v_str for x in val):
-                    pair = [u_str, v_str]
-                    if pair not in self.visited_edges:
-                        self.visited_edges.append(pair)
-                    break
-            elif isinstance(val, dict) and not isinstance(val, VisualGraph):
-                if any(str(x) == v_str for x in val.keys()):
+            if isinstance(val, (list, tuple, set, deque)):
+                # Matches direct node lists [v, ...] or priority queue tuples [(dist, v), ...]
+                found = False
+                for item in val:
+                    if str(item) == v_str:
+                        found = True
+                        break
+                    if isinstance(item, (tuple, list)) and any(isinstance(x, _NodeId) and str(x) == v_str for x in item):
+                        found = True
+                        break
+                if found:
                     pair = [u_str, v_str]
                     if pair not in self.visited_edges:
                         self.visited_edges.append(pair)
@@ -360,9 +381,17 @@ _PROXY_REGISTRY = {
 def _serialize(v):
     if isinstance(v, _NodeId):
         return _node_labels.get(str(v), str(v))
-    if isinstance(v, (int, float, bool, str)) or v is None:
+    if isinstance(v, bool) or v is None:
         return v
-    if isinstance(v, (list, tuple, set)):
+    if isinstance(v, float):
+        if math.isinf(v):
+            return "∞" if v > 0 else "-∞"
+        if math.isnan(v):
+            return "NaN"
+        return round(v, 4) if v != int(v) else int(v)
+    if isinstance(v, (int, str)):
+        return v
+    if isinstance(v, (list, tuple, set, deque)):
         return [_serialize(x) for x in v]
     if isinstance(v, dict):
         return {str(_serialize(k)): _serialize(val) for k, val in v.items()}
@@ -437,7 +466,8 @@ try:
 
         state_vars = {}
         for k, v in loc.items():
-            if not k.startswith('_') and k not in _param_names:
+            # Hide internal variables, functions/modules, and the primary data structure parameter, but SHOW scalar/optional parameters (like target, start_node, end_index)
+            if not k.startswith('_') and k != _first_param and not inspect.isfunction(v) and not inspect.ismodule(v):
                 state_vars[k] = _serialize(v)
 
         _visual_ds.enhance_state_vars(state_vars)
