@@ -3,7 +3,7 @@
  * Supports four input formats, auto-detected from the trimmed string:
  *   1. Python edge list:      [(A, B), (B, C, 5), ...]
  *   2. Python adjacency dict: {A: [B, C], B: [(C, 5)]}
- *   3. Adjacency matrix:      [[1,0,4,3,0], [2,1,...], ...] — purely
+ *   3. Adjacency matrix:      [[1,0,4,3,0], [2,1,...], ...] - purely
  *                             numeric rows of equal length; 0 = no edge,
  *                             any other number = weight. Vertices are
  *                             named by their numeric row/column index
@@ -12,7 +12,7 @@
  *                             strings, tuples, etc.) is a format error.
  *   4. Simple 2-char format:  "AB5, AC, BC2, D" (single char = lone vertex)
  *
- * No directedness handling and no deduplication is performed here — the
+ * No directedness handling and no deduplication is performed here - the
  * caller is responsible for that if needed. Every parser returns a flat
  * array of { source, target, weight } objects (target/weight are null
  * for a lone-vertex declaration).
@@ -179,8 +179,8 @@ function parsePythonAdjacencyDict(input) {
  * Every cell is read (including below the diagonal and the diagonal
  * itself), so a symmetric matrix will produce both i->j and j->i edges.
  *
- * Anything that isn't a clean numeric matrix — letters, quoted strings,
- * nested tuples, ragged/non-square rows, non-numeric cells — is a format
+ * Anything that isn't a clean numeric matrix - letters, quoted strings,
+ * nested tuples, ragged/non-square rows, non-numeric cells - is a format
  * error, and this function throws rather than silently guessing.
  */
 function parseAdjacencyMatrix(matrixInput) {

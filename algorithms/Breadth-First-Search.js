@@ -65,7 +65,7 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
     } else if (pyLine === 12) {
       stepDescription = `Dequeued node '${sv.node}' from front of queue`;
     } else if (pyLine === 13) {
-      stepDescription = `Visiting node '${sv.node}' — order is now [${(sv.order || []).join(', ')}]`;
+      stepDescription = `Visiting node '${sv.node}' - order is now [${(sv.order || []).join(', ')}]`;
     } else if (pyLine === 14) {
       stepDescription =
         sv.neighbor !== undefined

@@ -75,7 +75,7 @@ for _k, _lbl in _node_labels.items():
 
 
 # ============================================================================
-# 1. GENERIC PROXY DATA STRUCTURES (ZERO HARDCODED VARIABLE NAMES)
+# 1. GENERIC PROXY DATA STRUCTURES (WITH EXACT FUTURE-ACCESS TRACKING)
 # ============================================================================
 
 class _NodeId(str):
@@ -90,20 +90,19 @@ class VisualSequence(list):
         super().__init__(iterable)
         self.param_name = param_name
         self.active_index = -1
-        self.checked_indices = []
         self.traversal = []
         self._visited_set = set()
         self.recent_accesses = {}
+        self.step_accessed_indices = set()
 
     def on_step_start(self):
         self.recent_accesses.clear()
+        self.step_accessed_indices.clear()
 
     def _record_access(self, idx):
         if isinstance(idx, int) and not isinstance(idx, bool) and 0 <= idx < len(self):
-            if self.active_index != -1 and self.active_index != idx:
-                if self.active_index not in self.checked_indices:
-                    self.checked_indices.append(self.active_index)
             self.active_index = idx
+            self.step_accessed_indices.add(idx)
             val = super().__getitem__(idx)
             self.recent_accesses[f"{self.param_name}[{idx}]"] = val
             if idx not in self._visited_set:
@@ -124,11 +123,12 @@ class VisualSequence(list):
             self._record_access(idx)
         return super().__setitem__(idx, val)
 
-    def on_line_fallback(self, assigned_vars, frame_locals):
-        """If a line assigned an integer index (e.g. 'for k in range(...)' or 'mid = ...')
-        without indexing the list yet, highlight that index automatically."""
+    def on_line_fallback(self, loop_target_vars, frame_locals):
+        """Only if a line is a 'for <var> in ...' loop header and didn't index
+        the array directly on that line, highlight the loop variable's index.
+        Ordinary assignments like 'end_index = len(arr) - 1' are ignored."""
         if not self.recent_accesses:
-            for var_val in assigned_vars:
+            for var_val in loop_target_vars:
                 if isinstance(var_val, int) and not isinstance(var_val, bool) and 0 <= var_val < len(self):
                     self._record_access(var_val)
                     break
@@ -141,19 +141,51 @@ class VisualSequence(list):
         found_idx = -1
         if isinstance(ret_val, int) and not isinstance(ret_val, bool) and 0 <= ret_val < len(self):
             found_idx = ret_val
-        else:
-            if self.active_index != -1 and self.active_index not in self.checked_indices:
-                self.checked_indices.append(self.active_index)
-            self.active_index = -1
+        self.active_index = -1
+        self.step_accessed_indices.clear()
         return self.snapshot(found_idx)
 
     def snapshot(self, found_index=-1):
         return {
             'activeIndex': found_index if found_index >= 0 else self.active_index,
             'foundIndex': found_index,
-            'checkedIndices': list(self.checked_indices),
+            'checkedIndices': [],  # Populated accurately in post_process_steps
             'traversal': list(self.traversal),
+            '_accessed': list(self.step_accessed_indices),
         }
+
+    def finalize_steps(self, trace_steps):
+        """Post-processes all recorded steps so an index is marked 'checked'
+        ONLY after the final step in the entire execution where it is ever accessed."""
+        last_access_step = {}
+        first_access_step = {}
+
+        for step_idx, step in enumerate(trace_steps):
+            vis = step['visual']
+            accessed = vis.pop('_accessed', [])
+            if vis['activeIndex'] >= 0 and vis['activeIndex'] not in accessed:
+                accessed.append(vis['activeIndex'])
+            for arr_idx in accessed:
+                if arr_idx not in first_access_step:
+                    first_access_step[arr_idx] = step_idx
+                last_access_step[arr_idx] = step_idx
+
+        ever_accessed_in_order = sorted(first_access_step.keys(), key=lambda k: first_access_step[k])
+
+        for step_idx, step in enumerate(trace_steps):
+            vis = step['visual']
+            active = vis['activeIndex']
+            found = vis['foundIndex']
+            # An element is guaranteed done if it was already accessed earlier
+            # and its final access across the entire algorithm was before step_idx
+            checked = [
+                k for k in ever_accessed_in_order
+                if first_access_step[k] < step_idx
+                and last_access_step[k] < step_idx
+                and k != active
+                and k != found
+            ]
+            vis['checkedIndices'] = checked
 
 
 class _GraphNeighborList(list):
@@ -187,23 +219,21 @@ class VisualGraph(dict):
         super().__init__(wrapped)
 
         self.active_node = None
-        self.visited_nodes = []
         self.traversal = []
         self._visited_set = set()
         self.active_edge = None
         self.visited_edges = []
+        self.step_accessed_nodes = set()
 
     def on_step_start(self):
-        pass
+        self.step_accessed_nodes.clear()
 
     def record_visit(self, node_key):
         s_key = str(node_key)
         if s_key not in self:
             return
-        if self.active_node is not None and self.active_node != s_key:
-            if self.active_node not in self.visited_nodes:
-                self.visited_nodes.append(self.active_node)
         self.active_node = s_key
+        self.step_accessed_nodes.add(s_key)
         if s_key not in self._visited_set:
             self._visited_set.add(s_key)
             self.traversal.append({
@@ -258,8 +288,8 @@ class VisualGraph(dict):
     def keys(self):
         return [_NodeId(k) for k in super().keys()]
 
-    def on_line_fallback(self, assigned_vars, frame_locals):
-        for val in assigned_vars:
+    def on_line_fallback(self, loop_target_vars, frame_locals):
+        for val in loop_target_vars:
             if isinstance(val, _NodeId) and str(val) in self:
                 self.record_visit(str(val))
                 break
@@ -269,10 +299,9 @@ class VisualGraph(dict):
         pass
 
     def on_return(self, ret_val):
-        if self.active_node is not None and self.active_node not in self.visited_nodes:
-            self.visited_nodes.append(self.active_node)
         self.active_node = None
         self.active_edge = None
+        self.step_accessed_nodes.clear()
         return self.snapshot()
 
     def snapshot(self):
@@ -282,11 +311,43 @@ class VisualGraph(dict):
             'checkedIndices': [],
             'activeNodeId': self.active_node,
             'foundNodeId': None,
-            'visitedNodes': list(self.visited_nodes),
+            'visitedNodes': [],  # Populated accurately in finalize_steps
             'activeEdge': self.active_edge,
             'visitedEdges': list(self.visited_edges),
             'traversal': list(self.traversal),
+            '_accessed': list(self.step_accessed_nodes),
         }
+
+    def finalize_steps(self, trace_steps):
+        """Post-processes all recorded steps so a node is marked 'visitedNodes' (checked color)
+        ONLY after the final step in the entire execution where that node is ever active."""
+        last_access_step = {}
+        first_access_step = {}
+
+        for step_idx, step in enumerate(trace_steps):
+            vis = step['visual']
+            accessed = vis.pop('_accessed', [])
+            if vis['activeNodeId'] is not None and vis['activeNodeId'] not in accessed:
+                accessed.append(vis['activeNodeId'])
+            for node_id in accessed:
+                if node_id not in first_access_step:
+                    first_access_step[node_id] = step_idx
+                last_access_step[node_id] = step_idx
+
+        ever_accessed_in_order = sorted(first_access_step.keys(), key=lambda k: first_access_step[k])
+
+        for step_idx, step in enumerate(trace_steps):
+            vis = step['visual']
+            active = vis['activeNodeId']
+            found = vis['foundNodeId']
+            visited = [
+                k for k in ever_accessed_in_order
+                if first_access_step[k] < step_idx
+                and last_access_step[k] < step_idx
+                and k != active
+                and k != found
+            ]
+            vis['visitedNodes'] = visited
 
 
 # Registry mapping dsCategory -> Proxy Factory
@@ -308,26 +369,19 @@ def _serialize(v):
     return repr(v)
 
 
-def _build_line_assigned_names(code_str):
-    """Parses the Python AST once to map each line number to the variable names
-    assigned or iterated on that line."""
+def _build_loop_target_names(code_str):
+    """Parses the Python AST once to map ONLY 'for' loop lines to their loop
+    target variable names (so ordinary assignments like 'end_index = len(arr) - 1'
+    never trigger false-positive index visits)."""
     line_map = {}
     try:
         tree = ast.parse(code_str)
         for node in ast.walk(tree):
-            targets = []
-            if isinstance(node, (ast.For, ast.AsyncFor)):
-                targets.append(node.target)
-            elif isinstance(node, ast.Assign):
-                targets.extend(node.targets)
-            elif isinstance(node, ast.AugAssign):
-                targets.append(node.target)
-            if targets and hasattr(node, 'lineno'):
-                names = []
-                for t in targets:
-                    for sub in ast.walk(t):
-                        if isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Store):
-                            names.append(sub.id)
+            if isinstance(node, (ast.For, ast.AsyncFor)) and hasattr(node, 'lineno'):
+                names = [
+                    sub.id for sub in ast.walk(node.target)
+                    if isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Store)
+                ]
                 if names:
                     line_map.setdefault(node.lineno, []).extend(names)
     except Exception:
@@ -354,7 +408,7 @@ try:
     _sig_params = list(inspect.signature(_fn).parameters.keys())
     _param_names = set(_sig_params)
     _first_param = _sig_params[0] if _sig_params else 'data'
-    _line_targets = _build_line_assigned_names(_user_code)
+    _loop_targets = _build_loop_target_names(_user_code)
 
     _factory = _PROXY_REGISTRY.get(_ds_category, _PROXY_REGISTRY['sequence'])
     _visual_ds = _factory(_payload, _first_param)
@@ -374,9 +428,12 @@ try:
 
     def _build_state_vars(frame, executed_lineno):
         loc = frame.f_locals
-        assigned_names = _line_targets.get(executed_lineno, [])
-        assigned_vals = [loc[name] for name in assigned_names if name in loc]
-        _visual_ds.on_line_fallback(assigned_vals, loc)
+        loop_var_names = _loop_targets.get(executed_lineno, [])
+        loop_var_vals = [
+            loc[name] for name in loop_var_names
+            if name in loc and name not in _param_names
+        ]
+        _visual_ds.on_line_fallback(loop_var_vals, loc)
 
         state_vars = {}
         for k, v in loc.items():
@@ -441,13 +498,18 @@ try:
         sys.settrace(None)
         sys.setrecursionlimit(_old_rec_limit)
 
+    # Compute exact checkedIndices / visitedNodes using future-access knowledge
+    _visual_ds.finalize_steps(_trace_steps)
+
 except _StepLimitExceeded as e:
+    _visual_ds.finalize_steps(_trace_steps)
     _error_info = {
         'type': 'InfiniteLoopError',
         'message': str(e),
         'line': _trace_steps[-1]['line'] if _trace_steps else 1
     }
 except RecursionError:
+    _visual_ds.finalize_steps(_trace_steps)
     _, _, _tb = sys.exc_info()
     _error_info = {
         'type': 'RecursionError',
@@ -461,6 +523,8 @@ except SyntaxError as e:
         'line': e.lineno
     }
 except Exception as e:
+    if '_visual_ds' in locals():
+        _visual_ds.finalize_steps(_trace_steps)
     _, _, _tb = sys.exc_info()
     _error_info = {
         'type': type(e).__name__,
