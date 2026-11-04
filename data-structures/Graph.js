@@ -1107,16 +1107,32 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     node._width = w;
     node._height = h;
 
+    const nodeIdStr = String(node.id);
+    const isCandidateNode =
+      simStep?.interaction?.candidateNodeIds &&
+      simStep.interaction.candidateNodeIds.map(String).includes(nodeIdStr);
+
     let fillColor = hp.NODE_FILL;
 
     if (draggedNode === node) {
       fillColor = hp.NODE_DRAG_FILL;
+    } else if (isCandidateNode) {
+      fillColor = hp.NODE_FILL;
     } else if (simStep) {
-      const nodeIdStr = String(node.id);
       const isVisited = Array.isArray(simStep.visitedNodes) && simStep.visitedNodes.map(String).includes(nodeIdStr);
+      const isEndpointOfActiveEdge =
+        Array.isArray(simStep.activeEdge) && simStep.activeEdge.map(String).includes(nodeIdStr);
+      const isInActiveNodes =
+        Array.isArray(simStep.activeNodeIds) && simStep.activeNodeIds.map(String).includes(nodeIdStr);
+
       if (String(simStep.foundNodeId) === nodeIdStr || simStep.foundIndex === i) {
         fillColor = hp.FOUND_FILL;
-      } else if (String(simStep.activeNodeId) === nodeIdStr || simStep.activeIndex === i) {
+      } else if (
+        String(simStep.activeNodeId) === nodeIdStr ||
+        isInActiveNodes ||
+        isEndpointOfActiveEdge ||
+        simStep.activeIndex === i
+      ) {
         fillColor = hp.CURRENT_FILL;
       } else if (isVisited) {
         fillColor = hp.CHECKED_COLOR;
@@ -1149,11 +1165,6 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     nodeHitBoxes.push({ index: i, node, x, y, w, h });
     const pad = hp.BOUNDS_PADDING;
     expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
-
-    const nodeIdStr = String(node.id);
-    const isCandidateNode =
-      simStep?.interaction?.candidateNodeIds &&
-      simStep.interaction.candidateNodeIds.map(String).includes(nodeIdStr);
 
     ctx.lineWidth = isCandidateNode ? hp.NODE_STROKE_WIDTH + 2 : hp.NODE_STROKE_WIDTH;
     ctx.strokeStyle = isCandidateNode ? hp.CANDIDATE : hp.NODE_STROKE;

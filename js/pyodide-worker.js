@@ -7,52 +7,52 @@ importScripts('https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js');
 let pyodideReadyPromise = loadPyodide();
 
 self.onmessage = async (event) => {
-  const {
-    id,
-    type,
-    dsCategory,
-    pythonCode,
-    funcName,
-    dsData,
-    nodeLabels,
-    rawKwargs,
-    simMode,
-    userChoices,
-    maxSteps,
-  } = event.data;
+    const {
+        id,
+        type,
+        dsCategory,
+        pythonCode,
+        funcName,
+        dsData,
+        nodeLabels,
+        rawKwargs,
+        simMode,
+        userChoices,
+        maxSteps,
+    } = event.data;
 
-  if (type === 'warmup') {
-    try {
-      const py = await pyodideReadyPromise;
-      await py.runPythonAsync(`
+    if (type === 'warmup') {
+        try {
+            const py = await pyodideReadyPromise;
+            await py.runPythonAsync(`
 import sys
 import json
 import inspect
 import traceback
 import ast
       `);
-      self.postMessage({ id, status: 'ready' });
-    } catch (err) {
-      console.error('Worker warm-up failed:', err);
+            self.postMessage({ id, status: 'ready' });
+        } catch (err) {
+            console.error('Worker warm-up failed:', err);
+        }
+        return;
     }
-    return;
-  }
 
-  if (type === 'run') {
-    try {
-      const py = await pyodideReadyPromise;
+    if (type === 'run') {
+        try {
+            const py = await pyodideReadyPromise;
 
-      py.globals.set('_user_code', pythonCode);
-      py.globals.set('_func_name', funcName);
-      py.globals.set('_ds_category', dsCategory || 'sequence');
-      py.globals.set('_ds_payload_json', JSON.stringify(dsData ?? []));
-      py.globals.set('_node_labels_json', JSON.stringify(nodeLabels || {}));
-      py.globals.set('_raw_kwargs_json', JSON.stringify(rawKwargs || {}));
-      py.globals.set('_sim_mode', simMode || 'auto');
-      py.globals.set('_user_choices_json', JSON.stringify(userChoices || []));
-      py.globals.set('_MAX_STEPS', maxSteps || 2500);
+            py.globals.set('_user_code', pythonCode);
+            py.globals.set('_func_name', funcName);
+            py.globals.set('_ds_category', dsCategory || 'sequence');
+            py.globals.set('_ds_payload_json', JSON.stringify(dsData ?? []));
+            py.globals.set('_node_labels_json', JSON.stringify(nodeLabels || {}));
+            py.globals.set('_raw_kwargs_json', JSON.stringify(rawKwargs || {}));
+            py.globals.set('_sim_mode', simMode || 'auto');
+            py.globals.set('_user_choices_json', JSON.stringify(userChoices || []));
+            py.globals.set('_MAX_STEPS', maxSteps || 2500);
 
-      const tracerScript = `
+            const tracerScript = `
 import sys
 import json
 import inspect
@@ -203,10 +203,10 @@ class _WaitForUserChoice(Exception):
 
 class _GraphNeighborList(list):
     """In 'auto' mode, iterates in standard order.
-    In 'manual' mode, filters unvisited neighbors:
-      - If 0 or 1 unvisited neighbor remains, yields automatically without bothering the user.
-      - If 2+ unvisited neighbors exist, checks if the user has already made a choice in _user_choices;
-        if not, pauses execution and emits an interaction payload explaining why those nodes/edges can be chosen."""
+    In 'manual' mode, treats ALL remaining incident edges of the current node
+    as choices whenever 2 or more edges remain to be inspected (including edges
+    leading to already-visited nodes, so the user can see the algorithm inspect
+    and skip visited neighbors or pick unvisited ones)."""
     def __init__(self, graph, source_key, neighbors):
         super().__init__(neighbors)
         self._graph = graph
@@ -222,14 +222,8 @@ class _GraphNeighborList(list):
 
         remaining = list(super().__iter__())
         while remaining:
-            # Find which remaining neighbors haven't been discovered yet
-            unvisited = [
-                nb for nb in remaining
-                if (str(nb[0]) if isinstance(nb, tuple) else str(nb)) not in self._graph._discovered_nodes
-            ]
-
-            # Only prompt the user when there is a genuine choice (>= 2 unvisited neighbors)
-            if len(unvisited) > 1:
+            # Prompt the user whenever 2 or more incident edges remain to be inspected
+            if len(remaining) > 1:
                 if _user_choices:
                     chosen_id = str(_user_choices.pop(0))
                     match_idx = next(
@@ -241,7 +235,7 @@ class _GraphNeighborList(list):
                 else:
                     src_label = _node_labels.get(self._source, self._source)
                     candidates = []
-                    for nb in unvisited:
+                    for nb in remaining:
                         nb_id = str(nb[0]) if isinstance(nb, tuple) else str(nb)
                         nb_label = _node_labels.get(nb_id, nb_id)
                         candidates.append({
@@ -256,13 +250,11 @@ class _GraphNeighborList(list):
                         'candidateNodeIds': [c['id'] for c in candidates],
                         'candidateEdges': [c['edge'] for c in candidates],
                         'candidates': candidates,
-                        'title': f"Choose the next neighbor of '{src_label}' to visit",
+                        'title': f"Choose the next neighbor of '{src_label}' to inspect",
                         'reason': (
-                            f"Node '{src_label}' is currently at the front of the BFS queue and has "
-                            f"{len(candidates)} unvisited adjacent neighbors ({', '.join(c['label'] for c in candidates)}). "
-                            f"Because BFS explores all neighbors at the current level before moving deeper, "
-                            f"you can choose any of these unvisited edges to inspect and enqueue next. "
-                            f"Click a highlighted node or edge on the canvas (or select below):"
+                            f"Node '{src_label}' has {len(candidates)} remaining incident edges to inspect "
+                            f"({', '.join(c['label'] for c in candidates)}). "
+                            f"Select any of these neighbors/edges to check whether it has been visited yet:"
                         )
                     })
             else:
@@ -319,6 +311,7 @@ class VisualGraph(dict):
         v_str = str(v_entry[0]) if isinstance(v_entry, tuple) else str(v_entry)
         self.record_visit(u_str)
         self.active_edge = [u_str, v_str]
+        self.step_accessed_nodes.add(v_str)
 
     def _promote_discovered_edges(self, frame_locals):
         for val in frame_locals.values():
@@ -371,11 +364,19 @@ class VisualGraph(dict):
         return self.snapshot()
 
     def snapshot(self):
+        active_nodes = []
+        if self.active_node is not None:
+            active_nodes.append(self.active_node)
+        if self.active_edge:
+            for endpoint in self.active_edge:
+                if endpoint not in active_nodes:
+                    active_nodes.append(endpoint)
         return {
             'activeIndex': -1,
             'foundIndex': -1,
             'checkedIndices': [],
             'activeNodeId': self.active_node,
+            'activeNodeIds': active_nodes,
             'foundNodeId': None,
             'visitedNodes': [],
             'activeEdge': self.active_edge,
@@ -403,12 +404,15 @@ class VisualGraph(dict):
         for step_idx, step in enumerate(trace_steps):
             vis = step['visual']
             active = vis['activeNodeId']
+            active_set = set(str(x) for x in (vis.get('activeNodeIds') or []))
+            if active is not None:
+                active_set.add(str(active))
             found = vis['foundNodeId']
             visited = [
                 k for k in ever_accessed_in_order
                 if first_access_step[k] < step_idx
-                and (not is_paused_for_choice and last_access_step[k] < step_idx or is_paused_for_choice and k != active)
-                and k != active
+                and (not is_paused_for_choice and last_access_step[k] < step_idx or is_paused_for_choice and k not in active_set)
+                and k not in active_set
                 and k != found
             ]
             vis['visitedNodes'] = visited
@@ -615,20 +619,20 @@ json.dumps({
 })
       `;
 
-      const rawJson = await py.runPythonAsync(tracerScript);
-      self.postMessage({ id, result: JSON.parse(rawJson) });
-    } catch (fatalErr) {
-      self.postMessage({
-        id,
-        result: {
-          steps: [],
-          error: {
-            type: 'RuntimeError',
-            message: fatalErr.message || String(fatalErr),
-            line: null,
-          },
-        },
-      });
+            const rawJson = await py.runPythonAsync(tracerScript);
+            self.postMessage({ id, result: JSON.parse(rawJson) });
+        } catch (fatalErr) {
+            self.postMessage({
+                id,
+                result: {
+                    steps: [],
+                    error: {
+                        type: 'RuntimeError',
+                        message: fatalErr.message || String(fatalErr),
+                        line: null,
+                    },
+                },
+            });
+        }
     }
-  }
 };
