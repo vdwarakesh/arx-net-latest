@@ -2536,6 +2536,74 @@
       color: #ef4444;
     }
 
+    .state-manual-prompt-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 0.65rem;
+      padding: 0.65rem 0.8rem;
+      background-color: rgba(238, 183, 0, 0.12);
+      border: 0.09375rem dashed var(--ds-primary);
+      border-radius: 0.4rem;
+      color: var(--text-bright);
+    }
+
+    .state-manual-prompt-title {
+      font-weight: 700;
+      color: var(--ds-primary);
+    }
+
+    .state-manual-prompt-reason {
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text-primary);
+    }
+
+    .state-manual-candidates {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.15rem;
+    }
+
+    .state-manual-candidate-btn {
+      padding: 0.2rem 0.6rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--ds-primary);
+      border-radius: 0.3rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      cursor: pointer;
+      transition: background-color 0.12s ease, transform 0.1s ease;
+    }
+
+    .state-manual-candidate-btn:hover {
+      background-color: var(--bg-active-item);
+      transform: translateY(-1px);
+    }
+
+    .sim-mode-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--playback-icon-btn-size-desktop);
+      padding: 0 0.55rem;
+      margin-right: 0.25rem;
+      background-color: var(--bg-input);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+    }
+
+    .sim-mode-toggle-btn.is-manual {
+      background-color: var(--bg-active-item);
+      border-color: var(--ds-primary);
+      color: var(--ds-primary);
+    }
+
     .state-vars-grid {
       display: flex;
       flex-direction: column;
@@ -4070,7 +4138,10 @@
                   style="display: none; width: 100%; min-width: max-content; justify-content: space-between; align-items: center;">
                   <div class="playback-controls-left">
                     <div class="visualization-options">
-                      Steps&nbsp;
+                      <button type="button" class="sim-mode-toggle-btn sync-sim-mode"
+                        title="Switch between Auto and Manual neighbor selection">
+                        Auto
+                      </button>
                       <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
                         <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
                       </button>
@@ -4433,7 +4504,10 @@
                 style="display: none; width: 100%; min-width: max-content; justify-content: space-between; align-items: center;">
                 <div class="playback-controls-left">
                   <div class="visualization-options">
-                    Steps&nbsp;
+                    <button type="button" class="sim-mode-toggle-btn sync-sim-mode"
+                      title="Switch between Auto and Manual neighbor selection">
+                      Auto
+                    </button>
                     <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
                       <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
                     </button>
@@ -4992,6 +5066,8 @@
     let simCurrentStepIdx = -1;
     let simTimer = null;
     let isSimPlaying = false;
+    let simMode = 'auto'; // 'auto' | 'manual'
+    let simUserChoices = []; // Stores user-selected node IDs at manual decision points
     window.isSimulating = false; // Locks array editing while active
     /* ========== End of Centralized DOM References & Application State ========== */
 
@@ -6754,6 +6830,24 @@
         const isErrorStep = Boolean(currentStep.isError);
         const bannerClass = isErrorStep ? ' is-error' : (isFoundStep ? ' is-found' : '');
 
+        let manualPromptHtml = '';
+        if (currentStep.interaction) {
+          const inter = currentStep.interaction;
+          const btnsHtml = (inter.candidates || []).map(c => `
+            <button type="button" class="state-manual-candidate-btn" onclick="window.submitManualSimChoice('${c.id}')">
+              ${c.edgeLabel || c.label}
+            </button>
+          `).join('');
+
+          manualPromptHtml = `
+            <div class="state-manual-prompt-box">
+              <div class="state-manual-prompt-title">${inter.title || 'Manual Choice Required'}</div>
+              <div class="state-manual-prompt-reason">${inter.reason || ''}</div>
+              <div class="state-manual-candidates">${btnsHtml}</div>
+            </div>
+          `;
+        }
+
         const entries = Object.entries(currentStep.stateVars || {});
         const rowsHtml = entries.map(([k, v]) => {
           const isHighlightVal = isFoundStep && (k.startsWith('arr[') || k === 'return');
@@ -6767,6 +6861,7 @@
 
         stateViewPane.innerHTML = `
           <div class="card-inner-pad">
+            ${manualPromptHtml}
             <div class="state-step-banner${bannerClass}">
               <span>${currentStep.stepDescription || ''}</span>
             </div>
@@ -8089,7 +8184,7 @@
 
 
     /* ========== 11. Algorithm Simulation & Playback Engine ========== */
-    
+
     speedSliders.forEach(slider => {
       slider.addEventListener('input', (e) => {
         const val = e.target.value;
@@ -8169,10 +8264,16 @@
     function scheduleNextStep() {
       if (!isSimPlaying) return;
 
-      // Fetch the slider directly from the DOM
+      // Pause auto-play if the current step requires a manual user selection
+      const currentStep = simSteps[simCurrentStepIdx];
+      if (currentStep && currentStep.interaction) {
+        stopAutoPlay();
+        return;
+      }
+
       const speedInput = document.querySelector('.sync-speed-slider');
       const speedVal = parseFloat(speedInput?.value || '1') || 1;
-      const delayMs = 800 / speedVal; // 1x = 800ms, 2x = 400ms, 4x = 200ms, 0.25x = 3200ms
+      const delayMs = 800 / speedVal;
 
       simTimer = setTimeout(() => {
         if (!isSimPlaying) return;
@@ -8253,8 +8354,11 @@
           return false;
         }
 
-        // 4. Pass the container element and the rawKwargs dictionary
-        const result = await algoFn(activeObj.element, rawKwargs);
+        // 4. Pass the container element, rawKwargs, and manual interaction options
+        const result = await algoFn(activeObj.element, rawKwargs, {
+          mode: simMode,
+          userChoices: simUserChoices,
+        });
 
         if (result.error && (!result.steps || result.steps.length === 0)) {
           if (stateViewPane) {
@@ -8283,6 +8387,7 @@
       simSteps = [];
       simFullExplanation = [];
       simCurrentStepIdx = -1;
+      simUserChoices = [];
       window.isSimulating = false;
 
       const activeObj = dsContainers.find(c => c.name === activeContainerName);
@@ -8346,6 +8451,40 @@
       });
     });
 
+    // Sync Auto / Manual mode buttons
+    document.querySelectorAll('.sync-sim-mode').forEach(btn => {
+      btn.addEventListener('click', () => {
+        simMode = simMode === 'auto' ? 'manual' : 'auto';
+        document.querySelectorAll('.sync-sim-mode').forEach(b => {
+          b.textContent = simMode === 'manual' ? 'Manual' : 'Auto';
+          b.classList.toggle('is-manual', simMode === 'manual');
+        });
+        if (window.isSimulating) {
+          resetSimulation();
+        }
+      });
+    });
+
+    // Called when the user clicks a candidate node/edge on the canvas or in the State Variables box
+    window.submitManualSimChoice = async function (chosenNodeId) {
+      if (!window.isSimulating) return;
+      const wasPlaying = isSimPlaying;
+      stopAutoPlay();
+
+      const resumeStepIdx = simCurrentStepIdx;
+      simUserChoices.push(String(chosenNodeId));
+
+      if (await buildSimulationIfNeeded()) {
+        // Advance immediately to the step that processes the user's chosen neighbor
+        const nextIdx = Math.min(resumeStepIdx + 1, simSteps.length - 1);
+        applySimulationStep(nextIdx);
+        if (wasPlaying) {
+          setPlayButtonIcons(true);
+          scheduleNextStep();
+        }
+      }
+    };
+    
     // "Reset" icon button -> Clears simulation and unlocks array editing
     document.querySelectorAll('.sync-reset').forEach(btn => {
       btn.addEventListener('click', resetSimulation);

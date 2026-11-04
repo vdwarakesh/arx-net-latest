@@ -37,6 +37,8 @@ export function tracePythonAlgorithm({
   dsData,
   nodeLabels = {},
   rawKwargs = {},
+  simMode = 'auto',
+  userChoices = [],
   maxSteps = 2500,
 }) {
   return new Promise((resolve) => {
@@ -52,6 +54,8 @@ export function tracePythonAlgorithm({
       dsData,
       nodeLabels,
       rawKwargs,
+      simMode,
+      userChoices,
       maxSteps,
     });
   });

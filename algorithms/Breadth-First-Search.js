@@ -1,7 +1,7 @@
 import { getContainerGraphData } from '../data-structures/Graph.js';
 import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
-export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
+export async function breadthFirstSearch(containerEl, rawKwargs = {}, simOptions = {}) {
   const graphData = getContainerGraphData(containerEl);
   const { nodes, edges, isDirected } = graphData;
 
@@ -35,6 +35,8 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
     dsData: adjList,
     nodeLabels,
     rawKwargs,
+    simMode: simOptions.mode || 'auto',
+    userChoices: simOptions.userChoices || [],
   });
 
   const steps = [];
@@ -81,6 +83,10 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
       stepDescription = `Queue is empty. Returning BFS traversal order.`;
     }
 
+    if (frame.interaction) {
+      stepDescription = frame.interaction.title;
+    }
+
     fullExplanationLines.push(`Step ${idx + 1}: ${stepDescription}`);
 
     steps.push({
@@ -99,6 +105,7 @@ export async function breadthFirstSearch(containerEl, rawKwargs = {}) {
       traversal: vis.traversal,
       stateVars: sv,
       stepDescription,
+      interaction: frame.interaction || null,
     });
   });
 

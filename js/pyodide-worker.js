@@ -16,6 +16,8 @@ self.onmessage = async (event) => {
     dsData,
     nodeLabels,
     rawKwargs,
+    simMode,
+    userChoices,
     maxSteps,
   } = event.data;
 
@@ -46,6 +48,8 @@ import ast
       py.globals.set('_ds_payload_json', JSON.stringify(dsData ?? []));
       py.globals.set('_node_labels_json', JSON.stringify(nodeLabels || {}));
       py.globals.set('_raw_kwargs_json', JSON.stringify(rawKwargs || {}));
+      py.globals.set('_sim_mode', simMode || 'auto');
+      py.globals.set('_user_choices_json', JSON.stringify(userChoices || []));
       py.globals.set('_MAX_STEPS', maxSteps || 2500);
 
       const tracerScript = `
@@ -190,20 +194,84 @@ class VisualSequence(list):
             vis['checkedIndices'] = checked
 
 
+_user_choices = list(json.loads(_user_choices_json))
+
+class _WaitForUserChoice(Exception):
+    def __init__(self, interaction):
+        self.interaction = interaction
+
+
 class _GraphNeighborList(list):
-    """Wraps a node's adjacency list so iterating over graph[u] automatically
-    tracks active edges and traversal edges without checking variable names."""
+    """In 'auto' mode, iterates in standard order.
+    In 'manual' mode, filters unvisited neighbors:
+      - If 0 or 1 unvisited neighbor remains, yields automatically without bothering the user.
+      - If 2+ unvisited neighbors exist, checks if the user has already made a choice in _user_choices;
+        if not, pauses execution and emits an interaction payload explaining why those nodes/edges can be chosen."""
     def __init__(self, graph, source_key, neighbors):
         super().__init__(neighbors)
         self._graph = graph
-        self._source = source_key
+        self._source = str(source_key)
 
     def __iter__(self):
-        for nb in super().__iter__():
+        if _sim_mode != 'manual':
+            for nb in super().__iter__():
+                self._graph._on_edge_inspect(self._source, nb)
+                yield nb
+            self._graph.active_edge = None
+            return
+
+        remaining = list(super().__iter__())
+        while remaining:
+            # Find which remaining neighbors haven't been discovered yet
+            unvisited = [
+                nb for nb in remaining
+                if (str(nb[0]) if isinstance(nb, tuple) else str(nb)) not in self._graph._discovered_nodes
+            ]
+
+            # Only prompt the user when there is a genuine choice (>= 2 unvisited neighbors)
+            if len(unvisited) > 1:
+                if _user_choices:
+                    chosen_id = str(_user_choices.pop(0))
+                    match_idx = next(
+                        (i for i, nb in enumerate(remaining)
+                         if (str(nb[0]) if isinstance(nb, tuple) else str(nb)) == chosen_id),
+                        0
+                    )
+                    nb = remaining.pop(match_idx)
+                else:
+                    src_label = _node_labels.get(self._source, self._source)
+                    candidates = []
+                    for nb in unvisited:
+                        nb_id = str(nb[0]) if isinstance(nb, tuple) else str(nb)
+                        nb_label = _node_labels.get(nb_id, nb_id)
+                        candidates.append({
+                            'id': nb_id,
+                            'label': nb_label,
+                            'edge': [self._source, nb_id],
+                            'edgeLabel': f"{src_label} → {nb_label}"
+                        })
+                    raise _WaitForUserChoice({
+                        'type': 'select_neighbor',
+                        'sourceNodeId': self._source,
+                        'candidateNodeIds': [c['id'] for c in candidates],
+                        'candidateEdges': [c['edge'] for c in candidates],
+                        'candidates': candidates,
+                        'title': f"Choose the next neighbor of '{src_label}' to visit",
+                        'reason': (
+                            f"Node '{src_label}' is currently at the front of the BFS queue and has "
+                            f"{len(candidates)} unvisited adjacent neighbors ({', '.join(c['label'] for c in candidates)}). "
+                            f"Because BFS explores all neighbors at the current level before moving deeper, "
+                            f"you can choose any of these unvisited edges to inspect and enqueue next. "
+                            f"Click a highlighted node or edge on the canvas (or select below):"
+                        )
+                    })
+            else:
+                nb = remaining.pop(0)
+
             self._graph._on_edge_inspect(self._source, nb)
             yield nb
-        self._graph.active_edge = None
 
+        self._graph.active_edge = None
 
 class VisualGraph(dict):
     """Generic proxy for Graph, Directed Graph, Weighted Graph, Tree, etc."""
@@ -223,6 +291,7 @@ class VisualGraph(dict):
         self.active_node = None
         self.traversal = []
         self._visited_set = set()
+        self._discovered_nodes = set()
         self.active_edge = None
         self.visited_edges = []
         self.step_accessed_nodes = set()
@@ -236,6 +305,7 @@ class VisualGraph(dict):
             return
         self.active_node = s_key
         self.step_accessed_nodes.add(s_key)
+        self._discovered_nodes.add(s_key)
         if s_key not in self._visited_set:
             self._visited_set.add(s_key)
             self.traversal.append({
@@ -251,43 +321,18 @@ class VisualGraph(dict):
         self.active_edge = [u_str, v_str]
 
     def _promote_discovered_edges(self, frame_locals):
-        """Supports BFS/DFS discovery, Dijkstra/Prim/Flow parent maps, and Kruskal edge lists."""
-        # 1. If the algorithm maintains a parent/prev/came_from dict {child: parent},
-        #    sync visited_edges directly to the active shortest-path / MST tree!
-        for var_name, val in frame_locals.items():
-            if isinstance(val, dict) and not isinstance(val, VisualGraph) and val:
-                keys_in_graph = all(str(k) in self for k in val.keys())
-                vals_in_graph = all(v is None or str(v) in self for v in val.values())
-                # Distinguish a parent map {node: parent_node} from a distance map {node: number}
-                has_node_val = any(isinstance(v, _NodeId) for v in val.values() if v is not None)
-                if keys_in_graph and vals_in_graph and has_node_val:
-                    self.visited_edges = [
-                        [str(p), str(child)]
-                        for child, p in val.items()
-                        if p is not None and str(p) in self and str(child) in self
-                    ]
-                    return
-
-        # 2. Otherwise (BFS / DFS / simple traversal), promote active_edge when v enters any collection
+        for val in frame_locals.values():
+            if isinstance(val, (list, tuple, set)):
+                for item in val:
+                    if isinstance(item, _NodeId) or str(item) in self:
+                        self._discovered_nodes.add(str(item))
         if not self.active_edge:
             return
         u_str, v_str = self.active_edge
-        for val in frame_locals.values():
-            if isinstance(val, (list, tuple, set, deque)):
-                # Matches direct node lists [v, ...] or priority queue tuples [(dist, v), ...]
-                found = False
-                for item in val:
-                    if str(item) == v_str:
-                        found = True
-                        break
-                    if isinstance(item, (tuple, list)) and any(isinstance(x, _NodeId) and str(x) == v_str for x in item):
-                        found = True
-                        break
-                if found:
-                    pair = [u_str, v_str]
-                    if pair not in self.visited_edges:
-                        self.visited_edges.append(pair)
-                    break
+        if v_str in self._discovered_nodes:
+            pair = [u_str, v_str]
+            if pair not in self.visited_edges:
+                self.visited_edges.append(pair)
 
     def __getitem__(self, key):
         s_key = _NodeId(str(key))
@@ -332,16 +377,14 @@ class VisualGraph(dict):
             'checkedIndices': [],
             'activeNodeId': self.active_node,
             'foundNodeId': None,
-            'visitedNodes': [],  # Populated accurately in finalize_steps
+            'visitedNodes': [],
             'activeEdge': self.active_edge,
             'visitedEdges': list(self.visited_edges),
             'traversal': list(self.traversal),
             '_accessed': list(self.step_accessed_nodes),
         }
 
-    def finalize_steps(self, trace_steps):
-        """Post-processes all recorded steps so a node is marked 'visitedNodes' (checked color)
-        ONLY after the final step in the entire execution where that node is ever active."""
+    def finalize_steps(self, trace_steps, is_paused_for_choice=False):
         last_access_step = {}
         first_access_step = {}
 
@@ -364,12 +407,11 @@ class VisualGraph(dict):
             visited = [
                 k for k in ever_accessed_in_order
                 if first_access_step[k] < step_idx
-                and last_access_step[k] < step_idx
+                and (not is_paused_for_choice and last_access_step[k] < step_idx or is_paused_for_choice and k != active)
                 and k != active
                 and k != found
             ]
             vis['visitedNodes'] = visited
-
 
 # Registry mapping dsCategory -> Proxy Factory
 _PROXY_REGISTRY = {
@@ -531,6 +573,11 @@ try:
     # Compute exact checkedIndices / visitedNodes using future-access knowledge
     _visual_ds.finalize_steps(_trace_steps)
 
+except _WaitForUserChoice as pause_exc:
+    _visual_ds.finalize_steps(_trace_steps, is_paused_for_choice=True)
+    if _trace_steps:
+        _trace_steps[-1]['interaction'] = pause_exc.interaction
+        
 except _StepLimitExceeded as e:
     _visual_ds.finalize_steps(_trace_steps)
     _error_info = {

@@ -67,6 +67,8 @@ export const GRAPH_HYPERPARAMETERS = {
   CURRENT_FILL_VAR: '--ds-current-fill',
   CHECKED_COLOR_VAR: '--ds-checked-primary',
   EDGE_VISITED_VAR: '--ds-checked-secondary',
+
+  CANDIDATE_VAR: '--ds-current-fill',
   DEFAULT_ALPHA: 1,
 };
 
@@ -88,6 +90,7 @@ function resolveStyleHyperparameters(hp) {
 
   resolved.EDGE_STROKE = readVar(hp.EDGE_STROKE_VAR);
   resolved.EDGE_HOVER_STROKE = readVar(hp.EDGE_HOVER_STROKE_VAR);
+  resolved.CANDIDATE = readVar(hp.CANDIDATE_VAR);
 
   resolved.TEXT_BRIGHT = readVar(hp.TEXT_BRIGHT_VAR);
   resolved.TEXT_DARK = readVar(hp.TEXT_DARK_VAR);
@@ -1026,10 +1029,13 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
 
     const isActiveEdge = simStep && simStep.activeEdge && matchesEdgePair(simStep.activeEdge);
     const isVisitedEdge = simStep && Array.isArray(simStep.visitedEdges) && simStep.visitedEdges.some(matchesEdgePair);
+    const isCandidateEdge = simStep?.interaction?.candidateEdges && simStep.interaction.candidateEdges.some(matchesEdgePair);
 
     let strokeColor = hp.EDGE_STROKE;
     if (isHovered) {
       strokeColor = hp.EDGE_HOVER_STROKE;
+    } else if (isCandidateEdge) {
+      strokeColor = hp.CANDIDATE;
     } else if (isActiveEdge) {
       strokeColor = hp.CURRENT_FILL;
     } else if (isVisitedEdge) {
@@ -1038,8 +1044,11 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
 
     ctx.save();
     ctx.globalAlpha = hp.DEFAULT_ALPHA;
+    if (isCandidateEdge && !isHovered) {
+      ctx.setLineDash([10, 6]);
+    }
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
+    ctx.lineWidth = isCandidateEdge ? hp.EDGE_STROKE_WIDTH + 1.5 : hp.EDGE_STROKE_WIDTH;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke(path2D);
@@ -1140,6 +1149,15 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     nodeHitBoxes.push({ index: i, node, x, y, w, h });
     const pad = hp.BOUNDS_PADDING;
     expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
+
+    const nodeIdStr = String(node.id);
+    const isCandidateNode =
+      simStep?.interaction?.candidateNodeIds &&
+      simStep.interaction.candidateNodeIds.map(String).includes(nodeIdStr);
+
+    ctx.lineWidth = isCandidateNode ? hp.NODE_STROKE_WIDTH + 2 : hp.NODE_STROKE_WIDTH;
+    ctx.strokeStyle = isCandidateNode ? hp.CANDIDATE : hp.NODE_STROKE;
+    ctx.stroke();
   }
 
   // 3. Render edge weight labels on top (Border matches edge highlight state)
@@ -1501,8 +1519,41 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
   // 1. Left-Click: Weight Pill -> Edit Weight | Double-Click Drag Node -> Create Edge | Single-Click Drag Node -> Move Node
   canvas.addEventListener('pointerdown', (e) => {
-    if (window.isSimulating) return;
     if (e.button !== 0 || e.shiftKey) return;
+
+    // Allow clicking selectable candidate nodes or edges during Manual Simulation Mode
+    if (window.isSimulating) {
+      const inter = containerEl._simStep?.interaction;
+      if (inter && Array.isArray(inter.candidateNodeIds)) {
+        const worldPt = screenToWorld(e.clientX, e.clientY);
+        const clickedNode = hitTestNode(worldPt.x, worldPt.y);
+        if (clickedNode && inter.candidateNodeIds.map(String).includes(String(clickedNode.id))) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          if (typeof window.submitManualSimChoice === 'function') {
+            window.submitManualSimChoice(String(clickedNode.id));
+          }
+          return;
+        }
+
+        const clickedEdge = hitTestWeightBox(worldPt.x, worldPt.y) || hitTestEdge(worldPt.x, worldPt.y);
+        if (clickedEdge) {
+          const sId = String(typeof clickedEdge.source === 'object' ? clickedEdge.source.id : clickedEdge.source);
+          const tId = String(typeof clickedEdge.target === 'object' ? clickedEdge.target.id : clickedEdge.target);
+          const srcId = String(inter.sourceNodeId);
+          let chosenId = null;
+          if (sId === srcId && inter.candidateNodeIds.map(String).includes(tId)) chosenId = tId;
+          else if (tId === srcId && inter.candidateNodeIds.map(String).includes(sId)) chosenId = sId;
+
+          if (chosenId && typeof window.submitManualSimChoice === 'function') {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+            window.submitManualSimChoice(chosenId);
+          }
+        }
+      }
+      return;
+    }
 
     const worldPt = screenToWorld(e.clientX, e.clientY);
 
@@ -1577,7 +1628,29 @@ export function setupGraphInteractions(containerEl, requestRender) {
       return;
     }
 
-    if (window.isSimulating) return;
+    if (window.isSimulating) {
+      const inter = containerEl._simStep?.interaction;
+      if (inter && Array.isArray(inter.candidateNodeIds)) {
+        const hitNode = hitTestNode(worldPt.x, worldPt.y);
+        const isCandNode = hitNode && inter.candidateNodeIds.map(String).includes(String(hitNode.id));
+        const hitEdge = hitTestWeightBox(worldPt.x, worldPt.y) || hitTestEdge(worldPt.x, worldPt.y);
+        let isCandEdge = false;
+        if (hitEdge) {
+          const sId = String(typeof hitEdge.source === 'object' ? hitEdge.source.id : hitEdge.source);
+          const tId = String(typeof hitEdge.target === 'object' ? hitEdge.target.id : hitEdge.target);
+          const srcId = String(inter.sourceNodeId);
+          isCandEdge =
+            (sId === srcId && inter.candidateNodeIds.map(String).includes(tId)) ||
+            (tId === srcId && inter.candidateNodeIds.map(String).includes(sId));
+        }
+        if (containerEl._hoveredEdge !== (isCandEdge ? hitEdge : null)) {
+          containerEl._hoveredEdge = isCandEdge ? hitEdge : null;
+          requestRender();
+        }
+        canvas.style.cursor = (isCandNode || isCandEdge) ? 'pointer' : '';
+      }
+      return;
+    }
 
     const hitWeightEdge = hitTestWeightBox(worldPt.x, worldPt.y);
     if (hitWeightEdge) {
