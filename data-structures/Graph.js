@@ -12,7 +12,7 @@ export const GRAPH_HYPERPARAMETERS = {
   NODE_HEIGHT: 60,              // Fixed height of a node in world px
   NODE_PADDING_X: 20,           // Horizontal inner padding on each side of the node label
   NODE_CORNER_RADIUS: 30,       // Corner radius (30px with 60px height creates a pill/circle)
-  NODE_STROKE_WIDTH: 5,       // Border thickness of nodes
+  NODE_STROKE_WIDTH: 0,       // Border thickness of nodes
 
   // ----- Edge Geometry & Hit Testing -----
   EDGE_STROKE_WIDTH: 4,         // Visible thickness of graph edges
@@ -1117,7 +1117,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     if (draggedNode === node) {
       fillColor = hp.NODE_DRAG_FILL;
     } else if (isCandidateNode) {
-      fillColor = hp.NODE_FILL;
+      fillColor = hp.CURRENT_FILL;
     } else if (simStep) {
       const isVisited = Array.isArray(simStep.visitedNodes) && simStep.visitedNodes.map(String).includes(nodeIdStr);
       const isEndpointOfActiveEdge =
@@ -1166,7 +1166,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     const pad = hp.BOUNDS_PADDING;
     expandBounds(x - pad, y - pad, x + w + pad, y + h + pad);
 
-    ctx.lineWidth = isCandidateNode ? hp.NODE_STROKE_WIDTH + 2 : hp.NODE_STROKE_WIDTH;
+    ctx.lineWidth = hp.NODE_STROKE_WIDTH;
     ctx.strokeStyle = isCandidateNode ? hp.CANDIDATE : hp.NODE_STROKE;
     ctx.stroke();
   }
@@ -1536,11 +1536,14 @@ export function setupGraphInteractions(containerEl, requestRender) {
     if (window.isSimulating) {
       const inter = containerEl._simStep?.interaction;
       if (inter && Array.isArray(inter.candidateNodeIds)) {
+        const graphData = getContainerGraphData(containerEl);
         const worldPt = screenToWorld(e.clientX, e.clientY);
         const clickedNode = hitTestNode(worldPt.x, worldPt.y);
         if (clickedNode && inter.candidateNodeIds.map(String).includes(String(clickedNode.id))) {
           e.stopImmediatePropagation();
           e.preventDefault();
+          containerEl._hoveredEdge = null;
+          canvas.style.cursor = '';
           if (typeof window.submitManualSimChoice === 'function') {
             window.submitManualSimChoice(String(clickedNode.id));
           }
@@ -1552,13 +1555,20 @@ export function setupGraphInteractions(containerEl, requestRender) {
           const sId = String(typeof clickedEdge.source === 'object' ? clickedEdge.source.id : clickedEdge.source);
           const tId = String(typeof clickedEdge.target === 'object' ? clickedEdge.target.id : clickedEdge.target);
           const srcId = String(inter.sourceNodeId);
+          const candSet = inter.candidateNodeIds.map(String);
+
           let chosenId = null;
-          if (sId === srcId && inter.candidateNodeIds.map(String).includes(tId)) chosenId = tId;
-          else if (tId === srcId && inter.candidateNodeIds.map(String).includes(sId)) chosenId = sId;
+          if (sId === srcId && candSet.includes(tId)) {
+            chosenId = tId;
+          } else if (!graphData.isDirected && tId === srcId && candSet.includes(sId)) {
+            chosenId = sId;
+          }
 
           if (chosenId && typeof window.submitManualSimChoice === 'function') {
             e.stopImmediatePropagation();
             e.preventDefault();
+            containerEl._hoveredEdge = null;
+            canvas.style.cursor = '';
             window.submitManualSimChoice(chosenId);
           }
         }
@@ -1642,8 +1652,10 @@ export function setupGraphInteractions(containerEl, requestRender) {
     if (window.isSimulating) {
       const inter = containerEl._simStep?.interaction;
       if (inter && Array.isArray(inter.candidateNodeIds)) {
+        const graphData = getContainerGraphData(containerEl);
+        const candSet = inter.candidateNodeIds.map(String);
         const hitNode = hitTestNode(worldPt.x, worldPt.y);
-        const isCandNode = hitNode && inter.candidateNodeIds.map(String).includes(String(hitNode.id));
+        const isCandNode = hitNode && candSet.includes(String(hitNode.id));
         const hitEdge = hitTestWeightBox(worldPt.x, worldPt.y) || hitTestEdge(worldPt.x, worldPt.y);
         let isCandEdge = false;
         if (hitEdge) {
@@ -1651,14 +1663,20 @@ export function setupGraphInteractions(containerEl, requestRender) {
           const tId = String(typeof hitEdge.target === 'object' ? hitEdge.target.id : hitEdge.target);
           const srcId = String(inter.sourceNodeId);
           isCandEdge =
-            (sId === srcId && inter.candidateNodeIds.map(String).includes(tId)) ||
-            (tId === srcId && inter.candidateNodeIds.map(String).includes(sId));
+            (sId === srcId && candSet.includes(tId)) ||
+            (!graphData.isDirected && tId === srcId && candSet.includes(sId));
         }
         if (containerEl._hoveredEdge !== (isCandEdge ? hitEdge : null)) {
           containerEl._hoveredEdge = isCandEdge ? hitEdge : null;
           requestRender();
         }
         canvas.style.cursor = (isCandNode || isCandEdge) ? 'pointer' : '';
+      } else {
+        if (containerEl._hoveredEdge) {
+          containerEl._hoveredEdge = null;
+          requestRender();
+        }
+        canvas.style.cursor = '';
       }
       return;
     }
