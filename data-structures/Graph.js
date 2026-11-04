@@ -1032,10 +1032,10 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
     const isCandidateEdge = simStep?.interaction?.candidateEdges && simStep.interaction.candidateEdges.some(matchesEdgePair);
 
     let strokeColor = hp.EDGE_STROKE;
-    if (isHovered) {
-      strokeColor = hp.EDGE_HOVER_STROKE;
-    } else if (isCandidateEdge) {
+    if (isCandidateEdge) {
       strokeColor = hp.CANDIDATE;
+    } else if (isHovered) {
+      strokeColor = hp.EDGE_HOVER_STROKE;
     } else if (isActiveEdge) {
       strokeColor = hp.CURRENT_FILL;
     } else if (isVisitedEdge) {
@@ -1044,11 +1044,8 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
 
     ctx.save();
     ctx.globalAlpha = hp.DEFAULT_ALPHA;
-    if (isCandidateEdge && !isHovered) {
-      ctx.setLineDash([10, 6]);
-    }
     ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = isCandidateEdge ? hp.EDGE_STROKE_WIDTH + 1.5 : hp.EDGE_STROKE_WIDTH;
+    ctx.lineWidth = hp.EDGE_STROKE_WIDTH;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.stroke(path2D);

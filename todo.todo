@@ -8,13 +8,9 @@ update syllabus
 add other graph algorithms
 
 
-
-dfs not highlighting edges
+Delete traversal card
 
 Parse quotes and hyphens in algorithm names (Dijkstra's Algorithm, Breadth-First Search)
-
-Dijkstra's algorithm must show up as a table, parent and distances showing up as object Object, parent = {node: None for node in graph} is showing up as n steps for n nodes.
-
-exact kebab and snake case - use the same thing overall
+exact kebab and snake case - use the same thing overall (snake case)
 
 Update syllabus (Double check)
