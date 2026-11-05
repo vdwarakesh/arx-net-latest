@@ -60,14 +60,10 @@
       /* Minimum height of each card on mobile (matches card header height) */
       --playback-bar-height-desktop: 2.5rem;
       /* Height of the bottom playback controls bar inside the DS card on desktop */
-      --playback-bar-height-mobile: 2rem;
-      /* Height of the bottom playback controls bar on mobile */
 
       /* ========== Default Panel Proportions ========== */
       --desktop-left-col-width: 45%;
       /* Default width of the left column (DS) on desktop */
-      --desktop-ds-height: 100%;
-      /* Default height of the DS card inside the left column on desktop */
       --desktop-right-top-height: 100%;
       /* Default height of the Algorithms + Code row inside the right column on desktop */
       --algorithms-default-width-desktop: 40%;
@@ -116,8 +112,6 @@
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
 
       /* ========== Algorithms, Code & Row Constraints ========== */
-      --left-col-min-width-desktop: 12rem;
-      /* Minimum width of the left column on desktop */
       --algorithms-min-width-desktop: 5rem;
       /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
       --algorithms-min-width-mobile: 5rem;
@@ -190,9 +184,6 @@
       /* Width of the left navigation sidebar inside the Profile modal on mobile */
       --profile-avatar-size: 2.5rem;
       /* Width and height of the circular user avatar badge in the Profile modal */
-
-      /* Common colors */
-      --transparent-color: #00000000;
     }
 
     :root,
@@ -1193,17 +1184,6 @@
       overflow: hidden;
     }
 
-    .ds-inner-pad {
-      /* .ds-inner-pad is used here for inner spacing inside .ds-canvas-area */
-      padding: 0.625rem 0.75rem;
-    }
-
-    .ds-placeholder-text {
-      /* .ds-placeholder-text is used here to style the placeholder text inside .ds-inner-pad */
-      color: var(--text-primary);
-      opacity: 0.9;
-    }
-
     /* ========== DS Containers, Splash Screen & History List ========== */
     .ds-splash-screen {
       display: flex;
@@ -1261,13 +1241,6 @@
       user-select: none;
     }
 
-    .ds-container-content {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-    }
-
     .playback-bar {
       /* .playback-bar is used here at the bottom of .ds-body-wrapper and #code-card to house simulation playback and speed controls */
       display: flex;
@@ -1283,48 +1256,12 @@
       overflow-x: auto;
     }
 
-    .incompatible-bar {
-      display: none;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      height: var(--playback-bar-height-desktop);
-      min-height: var(--playback-bar-height-desktop);
-      padding: 0 0.625rem;
-      background-color: var(--bg-card);
-      border-top: 0.0625rem solid var(--border-color);
-      font-weight: 500;
-      color: var(--text-muted);
-      text-align: center;
-      white-space: nowrap;
-      overflow-x: auto;
-    }
-
-    .vscode-card.is-h-collapsed .incompatible-bar,
-    #code-card.is-collapsed .incompatible-bar {
-      display: none !important;
-    }
-
     .playback-controls-left {
       /* .playback-controls-left is used here to group the Run button, Step buttons, and Speed slider in .playback-bar */
       display: flex;
       flex-shrink: 0;
       align-items: center;
       gap: 0.25rem;
-    }
-
-    .playback-text-btn {
-      /* .playback-text-btn gives the "Run" text button inside .playback-controls-left its styles */
-      height: var(--playback-icon-btn-size-desktop);
-      padding: 0 0.5625rem;
-      background-color: var(--bg-input);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.3125rem;
-    }
-
-    .playback-text-btn:hover {
-      /* .playback-text-btn:hover gives the "Run" text button inside .playback-controls-left its hover background */
-      background-color: var(--bg-hover);
     }
 
     .visualization-options {
@@ -2242,37 +2179,6 @@
       border-radius: 0.25rem;
       object-fit: contain;
       filter: var(--sidebar-icon-filter);
-    }
-
-    .sidebar-toggle-img.has-error {
-      /* .sidebar-toggle-img.has-error hides the icon image if it fails to load */
-      display: none;
-    }
-
-    .sidebar-toggle-img.has-error+.sidebar-fallback-box {
-      /* .sidebar-toggle-img.has-error + .sidebar-fallback-box reveals the CSS fallback icon box if the image fails to load */
-      display: inline-flex;
-    }
-
-    .sidebar-fallback-box {
-      /* .sidebar-fallback-box renders a pure-CSS icon box fallback when .sidebar-toggle-img fails to load */
-      position: relative;
-      display: none;
-      align-items: center;
-      width: 0.875rem;
-      height: 0.8125rem;
-      border: 0.08rem solid var(--text-muted);
-      border-radius: 0.125rem;
-      line-height: 1;
-      color: var(--text-primary);
-    }
-
-    .sidebar-fallback-box::before {
-      /* .sidebar-fallback-box::before draws the inner sidebar divider line inside .sidebar-fallback-box */
-      content: '';
-      width: 0.22rem;
-      height: 100%;
-      border-right: 0.08rem solid var(--text-muted);
     }
 
     #codeViewPane {
@@ -3251,13 +3157,11 @@
     /* 11. Mobile top row (Left Column) vs bottom row (Right Column) */
     body.zen-mode #left-column.is-row-h-collapsed,
     body.zen-mode #left-column.is-row-h-collapsed~#splitter-left-h,
-    body.zen-mode #workspace.right-col-all-collapsed>#splitter-left-h,
     body.zen-mode #right-column.is-row-h-collapsed {
       display: none !important;
     }
 
-    body.zen-mode #workspace.left-col-all-collapsed #right-column,
-    body.zen-mode #workspace.right-col-all-collapsed #left-column {
+    body.zen-mode #workspace.left-col-all-collapsed #right-column {
       flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
@@ -3410,42 +3314,7 @@
       }
 
       .playback-bar {
-        /* .playback-bar is used here at the bottom of .ds-body-wrapper and #code-card to house simulation playback and speed controls */
-        display: flex;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.375rem;
-        height: var(--playback-bar-height-desktop);
-        min-height: var(--playback-bar-height-desktop);
-        padding: 0 0.625rem;
-        background-color: var(--bg-card);
-        border-top: 0.0625rem solid var(--border-color);
-        overflow-x: auto;
         overflow-y: hidden;
-      }
-
-      .incompatible-bar {
-        display: none;
-        flex-shrink: 0;
-        align-items: center;
-        justify-content: center;
-        height: var(--playback-bar-height-desktop);
-        min-height: var(--playback-bar-height-desktop);
-        padding: 0 0.625rem;
-        background-color: var(--bg-card);
-        border-top: 0.0625rem solid var(--border-color);
-        font-weight: 500;
-        color: var(--text-muted);
-        text-align: center;
-        white-space: nowrap;
-        overflow-x: auto;
-        overflow-y: hidden;
-      }
-
-      .playback-text-btn {
-        /* Compacts the "Run" text button height in the playback bar on mobile */
-        height: var(--playback-icon-btn-size-mobile);
       }
 
       .playback-icon-btn {
@@ -4010,12 +3879,6 @@
               </div>
               <!--========== End of playback bar ==========-->
 
-              <!--===== This bar is shown when a selected algorithm is incompatible with a data structure =====-->
-              <div class="incompatible-bar" style="display: none;">
-                <span>This algorithm is not compatible with this data structure</span>
-              </div>
-              <!--==========-->
-
             </div>
 
             <!--===== Collapsed DS strip - Visible only on collapse =====-->
@@ -4371,12 +4234,6 @@
             </div>
             <!--========== End of playback bar ==========-->
 
-            <!--===== This bar is shown when a selected algorithm is incompatible with a data structure =====-->
-            <div class="incompatible-bar" style="display: none;">
-              <span>This algorithm is not compatible with this data structure</span>
-            </div>
-            <!--==========-->
-
             <!--========== Collapsed code strip - Visible only on collapse ==========-->
             <div id="code-collapsed-strip" title="Click to expand Code">
               <span class="algo-collapsed-label">Code</span>
@@ -4613,7 +4470,6 @@
       LAYOUT_STORAGE_KEY: 'shard-spiral-layout-state',
       LANG_STORAGE_KEY: 'shard-spiral-lang-pref',
       FAVOURITES_STORAGE_KEY: 'shard-spiral-favourites',
-      ZEN_STORAGE_KEY: 'shard-spiral-zen-mode',
       COLLAPSED_SIM_WARNING_KEY: 'shard-spiral-collapsed-sim-warning-shown',
       ZEN_STORAGE_KEY: 'shard-spiral-zen-mode',
 
@@ -4626,32 +4482,33 @@
       },
 
       /* Default Panel Proportions (CSS Variables) */
-      DESKTOP_LEFT_COL_WIDTH: 'var(--desktop-left-col-width)',
-      DESKTOP_DS_HEIGHT: 'var(--desktop-ds-height)',
-      DESKTOP_RIGHT_TOP_HEIGHT: 'var(--desktop-right-top-height)',
       ALGO_DEFAULT_WIDTH_DESKTOP: 'var(--algorithms-default-width-desktop)',
       ALGO_DEFAULT_WIDTH_MOBILE: 'var(--algorithms-default-width-mobile)',
       HISTORY_DEFAULT_WIDTH_DESKTOP: 'var(--history-default-width-desktop)',
       HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
-      MOBILE_DS_ROW_HEIGHT: 'var(--mobile-ds-row-height)',
-      MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
 
       /* Minimum & Collapsed Panel Constraints (CSS Variable Names) */
-      LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
       ALGO_MIN_WIDTH_DESKTOP_VAR: '--algorithms-min-width-desktop',
       ALGO_MIN_WIDTH_MOBILE_VAR: '--algorithms-min-width-mobile',
       ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--card-collapsed-width-desktop',
       ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--card-collapsed-width-mobile',
-      CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
       CARD_MIN_HEIGHT_DESKTOP_VAR: '--card-min-height-desktop',
       CARD_MIN_HEIGHT_MOBILE_VAR: '--card-min-height-mobile',
       RIGHT_TOP_ROW_MIN_HEIGHT_VAR: '--right-top-row-min-height',
       BOTTOM_ROW_MIN_HEIGHT_VAR: '--bottom-row-min-height'
     };
 
+    const toSnakeCase = (str) =>
+      str
+        .trim()
+        .replace(/['’]/g, '')
+        .replace(/\+/g, 'plus')
+        .replace(/[^a-zA-Z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .toLowerCase();
+
     /* Grid Constants & Themes */
     const STANDALONE_GRID_STEP = 80;
-    const STANDALONE_GRID_BAND = 40;
     const DS_ZOOM_MIN = 0.05;
     const DS_ZOOM_MAX = 5;
 
@@ -5602,9 +5459,6 @@
       const codeHCollapsed = checkCardMinHeight(codeCard, isCodeCollapsed);
 
       /* Sync parent helper classes for individual card horizontal collapses */
-      if (leftMainStack) {
-        leftMainStack.classList.toggle('ds-h-collapsed', dsHCollapsed);
-      }
       if (algoColumn) {
         algoColumn.classList.toggle('algo-h-collapsed', algoTopCollapsed);
         algoColumn.classList.toggle('settings-h-collapsed', algoBotCollapsed);
@@ -5619,7 +5473,6 @@
       if (bottomSplitRow) {
         isBottomRowMin = stateCollapsed;
         bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
-        bottomSplitRow.classList.toggle('state-h-collapsed', stateCollapsed);
       }
 
       /* 3. Check #right-top-row */
@@ -5878,11 +5731,8 @@
         const layout = {
           leftColumnW: leftColumn.style.width,
           leftColumnH: leftColumn.style.height,
-          dsCardH: dsCard.style.height,
           rightTopRowH: rightTopRow.style.height,
-          algoColumnW: algoColumn.style.width,
           algorithmsCardH: algoCard.style.height,
-          historyColumnW: historyColumn.style.width,
           metadataCardH: metadataCard.style.height,
           isAlgoCollapsed,
           isHistoryCollapsed,
@@ -6345,14 +6195,7 @@
       // 1. DYNAMICALLY IMPORT THE DATA STRUCTURE MODULE
       let dsModule = null;
       try {
-        const toSnakeCase = (str) =>
-          str
-            .trim()
-            .replace(/['’]/g, '')
-            .replace(/\+/g, 'plus')
-            .replace(/[^a-zA-Z0-9]+/g, '_')
-            .replace(/^_+|_+$/g, '')
-            .toLowerCase();
+
         const formattedType = toSnakeCase(dsType);
         dsModule = await import(`./data-structures/${formattedType}.js`);
       } catch (err) {
@@ -6567,26 +6410,9 @@
         return;
       }
 
-      if (activeRightTopTab === 'explanation') {
-        codeViewPane.innerHTML = `
-        <div class="card-inner-pad">
-          <span class="card-body-text">Explanations not implemented yet</span>
-        </div>
-      `;
-        return;
-      }
-
       const currentTarget = selectedDsaName;
       const currentTab = activeRightTopTab;
       const ext = currentTab === 'notes' ? '.html' : currentLangExt;
-      const toSnakeCase = (str) =>
-        str
-          .trim()
-          .replace(/['’]/g, '')
-          .replace(/\+/g, 'plus')
-          .replace(/[^a-zA-Z0-9]+/g, '_')
-          .replace(/^_+|_+$/g, '')
-          .toLowerCase();
       const formattedTarget = toSnakeCase(currentTarget);
       const folder = selectedDsaType === 'ds' ? 'data-structures' : 'algorithms';
       const filePath = `${folder}/${formattedTarget}${ext}`;
@@ -6866,14 +6692,6 @@
       const activeOption = document.querySelector('#lang-dropdown-menu .lang-option-item.active');
       const ext = activeOption ? activeOption.getAttribute('data-ext') : '.txt';
       const codeText = codeElement.textContent;
-      const toSnakeCase = (str) =>
-        str
-          .trim()
-          .replace(/['’]/g, '')
-          .replace(/\+/g, 'plus')
-          .replace(/[^a-zA-Z0-9]+/g, '_')
-          .replace(/^_+|_+$/g, '')
-          .toLowerCase();
       const baseName = toSnakeCase(selectedDsaName || 'algorithm');
 
       const blob = new Blob([codeText], { type: 'text/plain' });
@@ -7484,14 +7302,6 @@
 
       // Fetch the Python file and build the interactive <pre><code> signature
       configHeading.style.display = 'none';
-      const toSnakeCase = (str) =>
-        str
-          .trim()
-          .replace(/['’]/g, '')
-          .replace(/\+/g, 'plus')
-          .replace(/[^a-zA-Z0-9]+/g, '_')
-          .replace(/^_+|_+$/g, '')
-          .toLowerCase();
       const formattedTarget = toSnakeCase(name);
 
       try {
@@ -8168,15 +7978,6 @@
       }, delayMs);
     }
 
-    const toSnakeCase = (str) =>
-      str
-        .trim()
-        .normalize('NFKD')                  // split accented chars from diacritics (optional but safer)
-        .replace(/['’]/g, '')                // drop apostrophes entirely (don't -> dont)
-        .replace(/[^a-zA-Z0-9]+/g, '_')       // any run of non-alphanumeric chars -> single underscore
-        .replace(/^_+|_+$/g, '')              // trim leading/trailing underscores
-        .toLowerCase();
-
     async function buildSimulationIfNeeded() {
       const activeObj = dsContainers.find((c) => c.name === activeContainerName);
       if (!activeObj || selectedDsaType !== 'algo' || !selectedDsaName) return false;
@@ -8803,7 +8604,7 @@
         title: 'Code & Notes',
         description: 'View the syntax-highlighted code implementation with real-time execution highlights, or switch tabs to read detailed conceptual notes, intuition, and complexity breakdowns.',
         onEnter: () => {
-          if (typeof isPhone !== 'undefined' || (window.matchMedia && window.matchMedia('(max-width: 900px)').matches)) {
+          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
             if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
           }
           if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
