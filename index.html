@@ -5680,8 +5680,74 @@
       }
     }
 
-    function setHistoryCollapsed(collapse, customExpandedWidth) {
-      /* setHistoryCollapsed collapses or expands #history-column (Metadata + History cards) and restores its saved width */
+    function ensureCardVisibleHeight(cardEl) {
+      const isPhone = phoneMedia.matches;
+      const minCardH = isPhone
+        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
+        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.15);
+      const minVisibleRatio = 0.35; // Minimum 35% height when expanding a horizontally collapsed row
+
+      const expandRowIfCollapsed = (rowEl, parentEl, nextSiblingRowEl = null) => {
+        if (!rowEl || !parentEl) return;
+        const parentH = parentEl.getBoundingClientRect().height;
+        const rowH = rowEl.getBoundingClientRect().height;
+        if (
+          rowEl.classList.contains('is-row-h-collapsed') ||
+          rowH <= minCardH + 8 ||
+          (parentH > 0 && rowH < parentH * 0.18)
+        ) {
+          rowEl.classList.remove('is-row-h-collapsed');
+          if (nextSiblingRowEl) {
+            rowEl.style.height = `${Math.round(minVisibleRatio * 100)}%`;
+          }
+        }
+      };
+
+      // 1. Mobile top row (#left-column) vs bottom row (#right-column)
+      if (isPhone && leftColumn.contains(cardEl)) {
+        expandRowIfCollapsed(leftColumn, workspace, rightColumn);
+      }
+      if (isPhone && rightColumn.contains(cardEl)) {
+        const wsH = workspace.getBoundingClientRect().height;
+        const rcH = rightColumn.getBoundingClientRect().height;
+        if (rightColumn.classList.contains('is-row-h-collapsed') || rcH <= minCardH * 2 + 12) {
+          rightColumn.classList.remove('is-row-h-collapsed');
+          if (wsH > 0) {
+            const curLeftPct = (leftColumn.getBoundingClientRect().height / wsH) * 100;
+            const maxLeftPct = Math.round((1 - minVisibleRatio) * 100);
+            if (curLeftPct > maxLeftPct) leftColumn.style.height = `${maxLeftPct}%`;
+          }
+        }
+      }
+
+      // 2. Right column top row (#right-top-row) vs bottom row (#bottom-split-row)
+      if (rightTopRow.contains(cardEl)) {
+        expandRowIfCollapsed(rightTopRow, rightColumn, bottomSplitRow);
+      }
+
+      // 3. Inner stacked cards (Metadata/History or Algorithms/Settings)
+      if (cardEl === metadataCard || cardEl === historyCard) {
+        const colH = historyColumn.getBoundingClientRect().height;
+        const cardH = cardEl.getBoundingClientRect().height;
+        if (cardEl.classList.contains('is-h-collapsed') || (colH > 0 && cardH <= minCardH + 8)) {
+          metadataCard.classList.remove('is-h-collapsed');
+          historyCard.classList.remove('is-h-collapsed');
+          metadataCard.style.height = '50%';
+        }
+      } else if (cardEl === algoCard || cardEl === algoSettingsCard) {
+        const colH = algoColumn.getBoundingClientRect().height;
+        const cardH = cardEl.getBoundingClientRect().height;
+        if (cardEl.classList.contains('is-h-collapsed') || (colH > 0 && cardH <= minCardH + 8)) {
+          algoCard.classList.remove('is-h-collapsed');
+          algoSettingsCard.classList.remove('is-h-collapsed');
+          algoCard.style.height = '50%';
+        }
+      }
+
+      if (cardEl) cardEl.classList.remove('is-h-collapsed');
+    }
+
+    function setHistoryCollapsed(collapse, customExpandedWidth, targetCard = null) {
       isHistoryCollapsed = collapse;
       const isPhone = phoneMedia.matches;
 
@@ -5700,6 +5766,7 @@
         if (savedMetadataHeight) {
           metadataCard.style.height = savedMetadataHeight;
         }
+        ensureCardVisibleHeight(targetCard || metadataCard);
       }
 
       if (imgToggleHistory && btnToggleHistory) {
@@ -5712,14 +5779,15 @@
     }
 
     function setDsCollapsed(collapse) {
-      /* setDsCollapsed collapses or expands #left-main-stack (DS) */
       isDsCollapsed = Boolean(collapse);
       leftMainStack.classList.toggle('is-collapsed', isDsCollapsed);
+      if (!isDsCollapsed) {
+        ensureCardVisibleHeight(dsCard);
+      }
       updateHorizontalCollapsedStates();
     }
 
-    function setAlgoCollapsed(collapse, customExpandedWidth) {
-      /* setAlgoCollapsed collapses or expands #algo-column (Algorithms + Settings cards) and restores its saved width */
+    function setAlgoCollapsed(collapse, customExpandedWidth, targetCard = null) {
       isAlgoCollapsed = collapse;
       const isPhone = phoneMedia.matches;
 
@@ -5738,6 +5806,7 @@
         if (savedAlgoCardHeight) {
           algoCard.style.height = savedAlgoCardHeight;
         }
+        ensureCardVisibleHeight(targetCard || algoCard);
       }
 
       if (imgToggleAlgo && btnToggleAlgo) {
@@ -5750,10 +5819,12 @@
     }
 
     function setCodeCollapsed(collapse, algoFillsRow = false) {
-      /* setCodeCollapsed collapses or expands #code-card (Code / Notes card) */
       isCodeCollapsed = Boolean(collapse);
       codeCard.classList.toggle('is-collapsed', isCodeCollapsed);
       rightTopRow.classList.toggle('algo-fills-row', isCodeCollapsed && algoFillsRow);
+      if (!isCodeCollapsed) {
+        ensureCardVisibleHeight(codeCard);
+      }
       updateHorizontalCollapsedStates();
     }
 
@@ -5835,7 +5906,7 @@
           if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
           if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
           if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
-          
+
           savedAlgoWidth = layout.savedAlgoWidth || (phoneMedia.matches ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
           savedHistoryWidth = layout.savedHistoryWidth || (phoneMedia.matches ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
 
@@ -5871,18 +5942,52 @@
 
     /* Event Listeners for Collapsed Strips, Zen Mode, Reset Layout, and Responsive Breakpoint */
     metadataCollapsedStrip.addEventListener('click', () => {
-      setHistoryCollapsed(false);
+      setHistoryCollapsed(false, null, metadataCard);
       saveLayoutState();
     });
 
     historyCollapsedStrip.addEventListener('click', () => {
-      setHistoryCollapsed(false);
+      setHistoryCollapsed(false, null, historyCard);
       saveLayoutState();
     });
 
     dsCollapsedStrip.addEventListener('click', () => {
       setDsCollapsed(false);
       saveLayoutState();
+    });
+
+    if (algoCollapsedStrip) {
+      algoCollapsedStrip.addEventListener('click', () => {
+        setAlgoCollapsed(false, null, algoCard);
+        saveLayoutState();
+      });
+    }
+
+    if (algoSettingsCollapsedStrip) {
+      algoSettingsCollapsedStrip.addEventListener('click', () => {
+        setAlgoCollapsed(false, null, algoSettingsCard);
+        saveLayoutState();
+      });
+    }
+
+    [metadataCard, historyCard, dsCard, algoCard, algoSettingsCard, codeCard, stateCard].forEach(card => {
+      const header = card?.querySelector('.vscode-card-header');
+      if (!header) return;
+      header.addEventListener('click', (e) => {
+        if (e.target.closest('button, input, .lang-dropdown-wrapper, .tab-dropdown-wrapper')) return;
+        if (
+          card.classList.contains('is-h-collapsed') ||
+          card.parentElement?.classList.contains('is-row-h-collapsed')
+        ) {
+          if (card === stateCard && rightColumn) {
+            rightTopRow.style.height = '65%';
+          } else {
+            ensureCardVisibleHeight(card);
+          }
+          updateHorizontalCollapsedStates();
+          saveLayoutState();
+        }
+      });
     });
 
     btnToggleHistory.addEventListener('click', (e) => {
