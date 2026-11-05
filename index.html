@@ -64,15 +64,15 @@
       /* ========== Default Panel Proportions ========== */
       --desktop-left-col-width: 45%;
       /* Default width of the left column (DS) on desktop */
-      --desktop-right-top-height: 100%;
+      --desktop-right-top-height: 70%;
       /* Default height of the Algorithms + Code row inside the right column on desktop */
       --algorithms-default-width-desktop: 40%;
       /* Default expanded width of the Algorithms card on desktop */
-      --algorithms-default-width-mobile: 40%;
+      --algorithms-default-width-mobile: 20rem;
       /* Default expanded width of the Algorithms card when opened on mobile */
       --mobile-ds-row-height: 50%;
       /* Default height of the top DS row on mobile */
-      --mobile-code-row-height: 100%;
+      --mobile-code-row-height: 70%;
       /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
 
       /* ========== Icon & Action Button (Fullscreen, New, Library, Reset, Profile) Sizes ========== */
@@ -112,15 +112,15 @@
       /* Visual width and height of run.png, step.png, pause.png, reset.png on mobile */
 
       /* ========== Algorithms, Code & Row Constraints ========== */
-      --algorithms-min-width-desktop: 5rem;
+      --algorithms-min-width-desktop: 20rem;
       /* Minimum width of the Algorithms panel on desktop before dragging collapses it */
-      --algorithms-min-width-mobile: 5rem;
+      --algorithms-min-width-mobile: 20rem;
       /* Minimum width of the Algorithms panel on mobile before dragging collapses it */
       --card-collapsed-width-desktop: 2.15rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on desktop */
       --card-collapsed-width-mobile: 1.6rem;
       /* Width of the vertical strip when the Algorithms panel is collapsed on mobile/phone */
-      --history-default-width-desktop: 20%;
+      --history-default-width-desktop: 0;
       /* Default width of history section on desktop */
       --history-default-width-mobile: 40%;
       /* Default width of history section on mobile */
@@ -208,7 +208,7 @@
       --accent-hover: #1084df;
       --scrollbar-thumb: #383838;
       --scrollbar-thumb-hover: #4f4f4f;
-      --splitter-pill: #6e6e6e;
+      --splitter-pill: #6e6e6e00;
       --sidebar-icon-filter: invert(0.85);
 
       /* Prism color values - dark */
@@ -281,7 +281,7 @@
       --accent-hover: #0258a8;
       --scrollbar-thumb: #c4c4c4;
       --scrollbar-thumb-hover: #a6a6a6;
-      --splitter-pill: #9e9e9e;
+      --splitter-pill: #9e9e9e00;
       --sidebar-icon-filter: invert(0.25);
 
       /* Prism color values - light */
@@ -937,6 +937,11 @@
       border-bottom: 0.0625rem solid var(--border-color);
       font-weight: 600;
       color: var(--text-primary);
+    }
+
+    .vscode-card.is-h-collapsed .vscode-card-header,
+    .is-row-h-collapsed .vscode-card-header {
+      cursor: pointer;
     }
 
     .card-scroll-body {
@@ -4300,8 +4305,8 @@
             </div>
             <div id="stateViewPane" class="card-scroll-body">
               <div class="card-inner-pad">
-                <span class="card-body-text">
-                  State variables content goes here.
+                <span class="card-body-text" style="color: var(--text-muted);">
+                  Run or step through an algorithm to inspect live state variables.
                 </span>
               </div>
             </div>
