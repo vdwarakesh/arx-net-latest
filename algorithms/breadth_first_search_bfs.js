@@ -118,22 +118,24 @@ export async function breadth_first_search_bfs(containerEl, rawKwargs = {}, simO
 
     steps.push({
       lines: {
-        Python: { active: String(pyLine) },
+        Python: { active: String(errLine) },
       },
       activeLineKey: 'active',
       activeIndex: -1,
       foundIndex: -1,
       checkedIndices: [],
-      activeNodeId: vis.activeNodeId,
-      activeNodeIds: vis.activeNodeIds || [],
+      activeNodeId: lastStep ? lastStep.activeNodeId : null,
+      activeNodeIds: lastStep ? lastStep.activeNodeIds || [] : [],
       foundNodeId: null,
-      visitedNodes: vis.visitedNodes,
-      activeEdge: vis.activeEdge,
-      visitedEdges: vis.visitedEdges,
-      traversal: vis.traversal,
-      stateVars: sv,
-      stepDescription,
-      interaction: frame.interaction || null,
+      visitedNodes: lastStep ? lastStep.visitedNodes : [],
+      activeEdge: lastStep ? lastStep.activeEdge : null,
+      visitedEdges: lastStep ? lastStep.visitedEdges : [],
+      stateVars: {
+        ...(lastStep ? lastStep.stateVars : {}),
+        error: errDesc,
+      },
+      stepDescription: errDesc,
+      isError: true,
     });
   }
 

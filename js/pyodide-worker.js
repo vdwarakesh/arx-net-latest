@@ -96,8 +96,6 @@ class VisualSequence(list):
         super().__init__(iterable)
         self.param_name = param_name
         self.active_index = -1
-        self.traversal = []
-        self._visited_set = set()
         self.recent_accesses = {}
         self.step_accessed_indices = set()
 
@@ -111,9 +109,6 @@ class VisualSequence(list):
             self.step_accessed_indices.add(idx)
             val = super().__getitem__(idx)
             self.recent_accesses[f"{self.param_name}[{idx}]"] = val
-            if idx not in self._visited_set:
-                self._visited_set.add(idx)
-                self.traversal.append({'index': idx, 'value': val})
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):
@@ -156,7 +151,6 @@ class VisualSequence(list):
             'activeIndex': found_index if found_index >= 0 else self.active_index,
             'foundIndex': found_index,
             'checkedIndices': [],  # Populated accurately in post_process_steps
-            'traversal': list(self.traversal),
             '_accessed': list(self.step_accessed_indices),
         }
 
@@ -281,8 +275,6 @@ class VisualGraph(dict):
         super().__init__(wrapped)
 
         self.active_node = None
-        self.traversal = []
-        self._visited_set = set()
         self._discovered_nodes = set()
         self.active_edge = None
         self.visited_edges = []
@@ -298,13 +290,6 @@ class VisualGraph(dict):
         self.active_node = s_key
         self.step_accessed_nodes.add(s_key)
         self._discovered_nodes.add(s_key)
-        if s_key not in self._visited_set:
-            self._visited_set.add(s_key)
-            self.traversal.append({
-                'index': s_key,
-                'value': _node_labels.get(s_key, s_key),
-                'subLabel': f"ID {s_key}"
-            })
 
     def _on_edge_inspect(self, u_key, v_entry):
         u_str = str(u_key)
@@ -381,7 +366,6 @@ class VisualGraph(dict):
             'visitedNodes': [],
             'activeEdge': self.active_edge,
             'visitedEdges': list(self.visited_edges),
-            'traversal': list(self.traversal),
             '_accessed': list(self.step_accessed_nodes),
         }
 

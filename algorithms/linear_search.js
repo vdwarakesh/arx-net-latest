@@ -1,7 +1,7 @@
 import { getContainerArrayData } from '../data-structures/array.js';
 import { tracePythonAlgorithm } from '../js/pyodide-runner.js';
 
-export async function linearSearch(containerEl, rawKwargs = {}) {
+export async function linear_search(containerEl, rawKwargs = {}) {
   const data = getContainerArrayData(containerEl);
   const arrValues = data.map((d) => d.value);
 
@@ -57,7 +57,6 @@ export async function linearSearch(containerEl, rawKwargs = {}) {
       activeIndex: vis.activeIndex,
       foundIndex: vis.foundIndex,
       checkedIndices: vis.checkedIndices,
-      traversal: vis.traversal,
       stateVars: sv,
       stepDescription,
     });
@@ -78,7 +77,6 @@ export async function linearSearch(containerEl, rawKwargs = {}) {
       activeIndex: lastStep ? lastStep.activeIndex : -1,
       foundIndex: -1,
       checkedIndices: lastStep ? lastStep.checkedIndices : [],
-      traversal: lastStep ? lastStep.traversal : [],
       stateVars: {
         ...(lastStep ? lastStep.stateVars : {}),
         error: `${error.type}: ${error.message}`,

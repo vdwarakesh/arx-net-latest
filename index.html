@@ -65,7 +65,7 @@
 
       /* ========== Default Panel Proportions ========== */
       --desktop-left-col-width: 45%;
-      /* Default width of the left column (DS + Traversal) on desktop */
+      /* Default width of the left column (DS) on desktop */
       --desktop-ds-height: 100%;
       /* Default height of the DS card inside the left column on desktop */
       --desktop-right-top-height: 100%;
@@ -78,8 +78,6 @@
       /* Default height of the top DS row on mobile */
       --mobile-code-row-height: 100%;
       /* Default height of the middle Code/Algorithms row inside the lower container on mobile */
-      --mobile-traversal-width: 60%;
-      /* Default width of the Traversal card in the bottom side-by-side row on mobile */
 
       /* ========== Icon & Action Button (Fullscreen, New, Library, Reset, Profile) Sizes ========== */
       --brand-logo-size: 2rem;
@@ -139,9 +137,7 @@
       --right-top-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the top-right row containing Algorithms and Code */
       --bottom-row-min-height: var(--card-min-height-desktop);
-      /* Minimum height of the bottom row containing Traversal and State Variables */
-      --bottom-cards-min-width: 6.5rem;
-      /* Minimum width of the Traversal and State Variables cards when side-by-side */
+      /* Minimum height of the bottom row containing and State Variables */
       --algo-top-height: 50%;
       /* Default height for algorithms list split */
 
@@ -399,7 +395,6 @@
     #metadata-collapsed-strip,
     #history-collapsed-strip,
     #ds-collapsed-strip,
-    #log-collapsed-strip,
     #algo-collapsed-strip,
     #algo-settings-collapsed-strip,
     #code-collapsed-strip {
@@ -924,7 +919,7 @@
     }
 
     .vscode-card {
-      /* .vscode-card is used here as the shared card container for Metadata, History, DS, Algorithms, Settings, Code, Traversal, and State Variables */
+      /* .vscode-card is used here as the shared card container for Metadata, History, DS, Algorithms, Settings, Code and State Variables */
       position: relative;
       display: flex;
       flex-direction: column;
@@ -1050,12 +1045,16 @@
       opacity: 1;
     }
 
+    #splitter-left-h {
+      display: none;
+    }
+
     /* ========== End of Main Workspace & Shared Card Scaffolding ========== */
 
 
     /* ========== Left Column (History, Metadata, DS & Playback) ========== */
     .left-column {
-      /* .left-column is used here on #left-column to hold the History/Metadata column and the DS/Traversal stack */
+      /* .left-column is used here on #left-column to hold the History/Metadata column and the DS stack */
       display: flex;
       flex: 0 0 auto;
       flex-direction: row;
@@ -1160,7 +1159,7 @@
     }
 
     .left-main-stack {
-      /* .left-main-stack is used here on #left-main-stack to stack the DS card (#ds-card) and Desktop Traversal slot (#desktop-traversal-slot) */
+      /* .left-main-stack is used here on #left-main-stack to stack the DS card (#ds-card) */
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -1170,11 +1169,9 @@
     }
 
     #ds-card {
-      /* #ds-card is used here for the primary Data Structure visualization card inside #left-main-stack */
-      flex: 0 0 auto;
-      height: var(--desktop-ds-height);
+      flex: 1;
+      height: 100%;
       min-height: var(--card-min-height-desktop);
-      max-height: calc(100% - var(--card-min-height-desktop) - var(--splitter-thickness-desktop));
     }
 
     .ds-body-wrapper {
@@ -1460,21 +1457,12 @@
       white-space: nowrap;
     }
 
-    .desktop-traversal-slot {
-      /* .desktop-traversal-slot is used here on #desktop-traversal-slot to hold the Traversal card (#log-card) on desktop screens */
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      min-width: 0;
-      min-height: var(--card-min-height-desktop);
-    }
-
     /* ========== End of Left Column (History, Metadata, DS & Playback) ========== */
 
 
     /* ========== Right Column: Algorithms & Settings Column ========== */
     .right-column {
-      /* .right-column is used here on #right-column to stack the top Algorithms/Code row and bottom Traversal/State row */
+      /* .right-column is used here on #right-column to stack the top Algorithms/Code row and bottom State row */
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -2375,9 +2363,8 @@
     }
 
     #ds-collapsed-strip,
-    #log-collapsed-strip,
     #code-collapsed-strip {
-      /* #ds-collapsed-strip, #log-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
+      /* #ds-collapsed-strip, and #code-collapsed-strip are used here for the clickable vertical bars shown when #left-main-stack or #code-card is collapsed */
       display: none;
       flex: 1;
       flex-direction: column;
@@ -2392,123 +2379,21 @@
     /* ========== End of Right Column: Code & Notes Card ========== */
 
 
-    /* ========== Right Column: Bottom Split Row (Traversal & State Variables) ========== */
+    /* ========== Right Column: Bottom Split Row (State Variables) ========== */
     .bottom-split-row {
-      /* .bottom-split-row is used here on #bottom-split-row to hold the State Variables card (and Traversal card on mobile) */
+      /* .bottom-split-row is used here on #bottom-split-row to hold the State Variables card */
       display: flex;
       flex: 1;
       min-width: 0;
       min-height: var(--bottom-row-min-height);
     }
 
-    #log-card {
-      /* #log-card is used here to size the Traversal card inside #desktop-traversal-slot (desktop) or #bottom-split-row (mobile) */
-      flex: 1;
-      width: 100%;
-      min-width: 0;
-    }
-
-    #splitter-bottom-mobile-v {
-      /* #splitter-bottom-mobile-v hides the vertical splitter between Traversal and State Variables on desktop (shown only on mobile) */
-      display: none;
-    }
-
     #state-card {
       /* #state-card is used here to size the State Variables / Explanation card inside #bottom-split-row */
       flex: 1;
-      min-width: var(--bottom-cards-min-width);
     }
 
-    /* ========== Readable Traversal & State Variable Cards ========== */
-    .traversal-flow {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.75rem;
-    }
-
-    .traversal-node-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .traversal-node-box {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 5.25rem;
-      padding: 0.6rem 0.9rem;
-      background-color: var(--bg-elevated);
-      border: 0.09375rem solid var(--border-color);
-      border-radius: 0.45rem;
-      transition: border-color 0.15s ease, background-color 0.15s ease;
-    }
-
-    .traversal-node-box.is-current {
-      background-color: var(--bg-active-item);
-      border-color: var(--ds-current-fill);
-    }
-
-    .traversal-node-box.is-found {
-      background-color: rgba(18, 166, 124, 0.14);
-      border-color: var(--ds-found-fill);
-    }
-
-    .traversal-node-val {
-      font-size: 1.3rem;
-      font-weight: 700;
-      line-height: 1.2;
-      color: var(--text-bright);
-    }
-
-    .traversal-node-box.is-current .traversal-node-val {
-      color: var(--ds-current-fill);
-    }
-
-    .traversal-node-box.is-found .traversal-node-val {
-      color: var(--ds-found-fill);
-    }
-
-    .traversal-node-idx {
-      margin-top: 0.15rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .traversal-status-pill {
-      padding: 0.12rem 0.55rem;
-      background-color: var(--bg-elevated);
-      border: 0.0625rem solid var(--border-color);
-      border-radius: 0.3rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .traversal-status-pill.is-current {
-      background-color: var(--bg-active-item);
-      border-color: var(--ds-current-fill);
-      color: var(--text-bright);
-    }
-
-    .traversal-status-pill.is-found {
-      background-color: rgba(18, 166, 124, 0.16);
-      border-color: var(--ds-found-fill);
-      color: var(--ds-found-fill);
-    }
-
-    .traversal-arrow {
-      margin-bottom: 1.35rem;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      user-select: none;
-    }
-
+    /* ========== Readable State Variable Cards ========== */
     /* State Variables Banner & Boxed Grid */
     .state-step-banner {
       display: flex;
@@ -2677,7 +2562,7 @@
       color: var(--accent-primary);
     }
 
-    /* ========== End of Right Column: Bottom Split Row (Traversal & State Variables) ========== */
+    /* ========== End of Right Column: Bottom Split Row (State Variables) ========== */
 
 
     /* ========== Profile Floating Modal Window ========== */
@@ -3167,7 +3052,7 @@
     }
 
     #left-main-stack.is-collapsed {
-      /* #left-main-stack.is-collapsed shrinks the DS + Traversal stack down to a narrow vertical strip when collapsed */
+      /* #left-main-stack.is-collapsed shrinks the DS stack down to a narrow vertical strip when collapsed */
       flex: 0 0 auto !important;
       gap: var(--splitter-thickness-desktop);
       width: var(--card-collapsed-width-desktop) !important;
@@ -3181,16 +3066,11 @@
     }
 
     #left-main-stack.is-collapsed .vscode-card-header,
-    #left-main-stack.is-collapsed .ds-body-wrapper,
-    #left-main-stack.is-collapsed #log-card .card-scroll-body,
-    #left-main-stack.is-collapsed #splitter-left-h {
-      /* Hides the DS and Traversal headers, bodies, and splitter when #left-main-stack is collapsed */
+    #left-main-stack.is-collapsed .ds-body-wrapper {
       display: none !important;
     }
 
-    #left-main-stack.is-collapsed #ds-collapsed-strip,
-    #left-main-stack.is-collapsed #log-collapsed-strip {
-      /* Reveals the vertical rotated DS and Traversal strips when #left-main-stack is collapsed */
+    #left-main-stack.is-collapsed #ds-collapsed-strip {
       display: flex;
     }
 
@@ -3327,20 +3207,6 @@
       display: none !important;
     }
 
-    /* 6. Left stack (DS + Desktop Traversal) horizontal collapse handling */
-    body.zen-mode #ds-card.is-h-collapsed+#splitter-left-h,
-    body.zen-mode #left-main-stack.log-h-collapsed #splitter-left-h,
-    body.zen-mode #desktop-traversal-slot.log-h-collapsed {
-      display: none !important;
-    }
-
-    body.zen-mode #left-main-stack.ds-h-collapsed #desktop-traversal-slot,
-    body.zen-mode #left-main-stack.log-h-collapsed #ds-card {
-      flex: 1 1 0px !important;
-      height: 100% !important;
-      max-height: none !important;
-    }
-
     /* 7. Algo + Settings horizontal collapse handling */
     body.zen-mode #algorithms-card.is-h-collapsed+#splitter-algo-settings-h,
     body.zen-mode #algo-column.settings-h-collapsed #splitter-algo-settings-h {
@@ -3380,19 +3246,6 @@
       flex: 1 1 0px !important;
       height: 100% !important;
       max-height: none !important;
-    }
-
-    /* 10. Mobile bottom split row (Traversal | State) */
-    body.zen-mode #bottom-split-row.state-h-collapsed #splitter-bottom-mobile-v,
-    body.zen-mode #bottom-split-row.log-h-collapsed #splitter-bottom-mobile-v {
-      display: none !important;
-    }
-
-    body.zen-mode #bottom-split-row.state-h-collapsed #log-card:not(.is-h-collapsed),
-    body.zen-mode #bottom-split-row.log-h-collapsed #state-card:not(.is-h-collapsed) {
-      flex: 1 1 0px !important;
-      width: 100% !important;
-      max-width: none !important;
     }
 
     /* 11. Mobile top row (Left Column) vs bottom row (Right Column) */
@@ -3520,6 +3373,10 @@
         min-height: var(--splitter-thickness-mobile);
       }
 
+      #splitter-left-h {
+        display: flex;
+      }
+
       .left-column {
         /* Converts #left-column into the top full-width DS/History row on mobile */
         flex: 0 0 auto;
@@ -3618,11 +3475,6 @@
         width: var(--speed-slider-width-mobile);
       }
 
-      .desktop-traversal-slot {
-        /* Hides #desktop-traversal-slot on mobile (since #log-card moves into #bottom-split-row) */
-        display: none;
-      }
-
       .right-column {
         /* Sets #right-column to full width below the top DS row on mobile */
         width: 100%;
@@ -3717,21 +3569,8 @@
       }
 
       .bottom-split-row {
-        /* Applies mobile minimum height to the bottom side-by-side Traversal + State Variables row */
+        /* Applies mobile minimum height to the bottom side-by-side State Variables row */
         min-height: var(--bottom-row-min-height);
-      }
-
-      #log-card {
-        /* Sizes the Traversal card on the left side of #bottom-split-row on mobile */
-        flex: 0 0 auto;
-        width: var(--mobile-traversal-width);
-        min-width: var(--bottom-cards-min-width);
-        max-width: calc(100% - var(--bottom-cards-min-width) - var(--splitter-thickness-mobile));
-      }
-
-      #splitter-bottom-mobile-v {
-        /* Displays the vertical resizer bar between Traversal and State Variables on mobile */
-        display: flex;
       }
 
       .profile-modal {
@@ -4099,7 +3938,7 @@
         <div id="splitter-history-ds-v" class="splitter-v" title="Drag to resize"></div>
         <!--==========-->
 
-        <!--========== DS card and desktop Traversal slot stack ==========-->
+        <!--========== DS card ==========-->
         <div id="left-main-stack" class="left-main-stack">
 
           <!--========== DS card - Contains the data structure diagram and visualization controls ==========-->
@@ -4188,17 +4027,12 @@
           </section>
           <!--========== End of data structures and visualization controls card ==========-->
 
-          <!--===== Horizontal splitter to adjust size of DS / Traversal cards (Moves below DS Row on Mobile) =====-->
+          <!--===== Horizontal splitter to adjust size of DS card (Moves below DS Row on Mobile) =====-->
           <div id="splitter-left-h" class="splitter-h" title="Drag to resize"></div>
           <!--==========-->
 
-          <!--===== Desktop Traversal Slot: Dynamic placeholder for the Traversal card =====-->
-          <!-- This div is initially empty. JavaScript (syncResponsiveStructure) dynamically moves the Traversal (#log-card) into this slot on desktop screens, and moves it down to the bottom row on mobile screens. -->
-          <div id="desktop-traversal-slot" class="desktop-traversal-slot"></div>
-          <!--==========-->
-
         </div>
-        <!--========== End of DS card and desktop Traversal slot stack ==========-->
+        <!--========== End of DS card ==========-->
 
       </div>
       <!--========== End of left column contents ==========-->
@@ -4559,28 +4393,8 @@
         <div id="splitter-right-h" class="splitter-h" title="Drag to resize"></div>
         <!--==========-->
 
-        <!--========== Bottom row: desktop / Side by side: phone (Traversal | State variables) ==========-->
+        <!--========== Bottom row: desktop ==========-->
         <div id="bottom-split-row" class="bottom-split-row">
-
-          <!--===== Traversal card =====-->
-          <section id="log-card" class="vscode-card">
-            <div class="vscode-card-header">
-              <span>Traversal</span>
-            </div>
-
-            <div class="card-scroll-body">
-              <div class="card-inner-pad">
-                <span class="card-body-text">
-                  Traversal section content goes here.
-                </span>
-              </div>
-            </div>
-          </section>
-          <!--==========-->
-
-          <!--===== Vertical splitter to adjust size of Traversal / State variables cards (Visible only on Mobile) =====-->
-          <div id="splitter-bottom-mobile-v" class="splitter-v" title="Drag to resize"></div>
-          <!--==========-->
 
           <!--========== State variables / Explanation card ==========-->
           <section id="state-card" class="vscode-card">
@@ -4638,7 +4452,7 @@
           <!--========== End of State variables / Explanation card ==========-->
 
         </div>
-        <!--========== End of Bottom row: desktop / Side by side: phone (Traversal | State variables) ==========-->
+        <!--========== End of Bottom row: desktop ==========-->
 
       </div>
       <!--========== End of right column contents ==========-->
@@ -4821,7 +4635,6 @@
       HISTORY_DEFAULT_WIDTH_MOBILE: 'var(--history-default-width-mobile)',
       MOBILE_DS_ROW_HEIGHT: 'var(--mobile-ds-row-height)',
       MOBILE_CODE_ROW_HEIGHT: 'var(--mobile-code-row-height)',
-      MOBILE_TRAVERSAL_WIDTH: 'var(--mobile-traversal-width)',
 
       /* Minimum & Collapsed Panel Constraints (CSS Variable Names) */
       LEFT_COL_MIN_WIDTH_DESKTOP_VAR: '--left-col-min-width-desktop',
@@ -4830,7 +4643,6 @@
       ALGO_COLLAPSED_WIDTH_DESKTOP_VAR: '--card-collapsed-width-desktop',
       ALGO_COLLAPSED_WIDTH_MOBILE_VAR: '--card-collapsed-width-mobile',
       CODE_CARD_MIN_WIDTH_VAR: '--code-card-min-width',
-      BOTTOM_CARDS_MIN_WIDTH_VAR: '--bottom-cards-min-width',
       CARD_MIN_HEIGHT_DESKTOP_VAR: '--card-min-height-desktop',
       CARD_MIN_HEIGHT_MOBILE_VAR: '--card-min-height-mobile',
       RIGHT_TOP_ROW_MIN_HEIGHT_VAR: '--right-top-row-min-height',
@@ -4913,7 +4725,7 @@
     const resetLayoutBtn = document.getElementById('reset-layout-btn');
     const btnProfile = document.getElementById('btnProfile');
 
-    /* Main Workspace & Left Column DOM Elements (History, Metadata, DS, Desktop Traversal Slot) */
+    /* Main Workspace & Left Column DOM Elements (History, Metadata, DS) */
     const workspace = document.getElementById('workspace');
     const leftColumn = document.getElementById('left-column');
     const historyColumn = document.getElementById('history-column');
@@ -4935,11 +4747,10 @@
     const dsCanvasAreaEl = document.getElementById('ds-canvas-area');
     const dsSplashContainerEl = document.getElementById('ds-splash-container');
     const splitterLeftH = document.getElementById('splitter-left-h');
-    const desktopTraversalSlot = document.getElementById('desktop-traversal-slot');
     const btnToggleHistory = document.getElementById('btn-toggle-history');
     const imgToggleHistory = document.getElementById('img-toggle-history');
 
-    /* Right Column DOM Elements (Algorithms, Settings, Code, Traversal, State Variables) */
+    /* Right Column DOM Elements (Algorithms, Settings, Code, State Variables) */
     const rightColumn = document.getElementById('right-column');
     const rightTopRow = document.getElementById('right-top-row');
     const algoColumn = document.getElementById('algo-column');
@@ -4954,10 +4765,6 @@
     const codeCollapsedStrip = document.getElementById('code-collapsed-strip');
     const splitterRightH = document.getElementById('splitter-right-h');
     const bottomSplitRow = document.getElementById('bottom-split-row');
-    const logCard = document.getElementById('log-card');
-    const logCollapsedStrip = document.getElementById('log-collapsed-strip');
-    const logCardBody = document.querySelector('#log-card .card-scroll-body');
-    const splitterBottomMobileV = document.getElementById('splitter-bottom-mobile-v');
     const stateCard = document.getElementById('state-card');
     const btnToggleAlgo = document.getElementById('btn-toggle-algo');
     const imgToggleAlgo = document.getElementById('img-toggle-algo');
@@ -5787,7 +5594,6 @@
 
       /* 1. Check individual cards */
       const dsHCollapsed = checkCardMinHeight(dsCard, isDsCollapsed);
-      const logCollapsed = checkCardMinHeight(logCard, isDsCollapsed);
       const stateCollapsed = checkCardMinHeight(stateCard, false);
       const algoTopCollapsed = checkCardMinHeight(algoCard, isAlgoCollapsed);
       const algoBotCollapsed = checkCardMinHeight(algoSettingsCard, isAlgoCollapsed);
@@ -5798,10 +5604,6 @@
       /* Sync parent helper classes for individual card horizontal collapses */
       if (leftMainStack) {
         leftMainStack.classList.toggle('ds-h-collapsed', dsHCollapsed);
-        leftMainStack.classList.toggle('log-h-collapsed', !isPhone && logCollapsed);
-      }
-      if (desktopTraversalSlot) {
-        desktopTraversalSlot.classList.toggle('log-h-collapsed', !isPhone && logCollapsed);
       }
       if (algoColumn) {
         algoColumn.classList.toggle('algo-h-collapsed', algoTopCollapsed);
@@ -5815,9 +5617,8 @@
       /* 2. Check #bottom-split-row */
       let isBottomRowMin = false;
       if (bottomSplitRow) {
-        isBottomRowMin = isPhone ? (logCollapsed && stateCollapsed) : stateCollapsed;
+        isBottomRowMin = stateCollapsed;
         bottomSplitRow.classList.toggle('is-row-h-collapsed', isBottomRowMin);
-        bottomSplitRow.classList.toggle('log-h-collapsed', isPhone && logCollapsed);
         bottomSplitRow.classList.toggle('state-h-collapsed', stateCollapsed);
       }
 
@@ -5911,7 +5712,7 @@
     }
 
     function setDsCollapsed(collapse) {
-      /* setDsCollapsed collapses or expands #left-main-stack (DS + Desktop Traversal stack) */
+      /* setDsCollapsed collapses or expands #left-main-stack (DS) */
       isDsCollapsed = Boolean(collapse);
       leftMainStack.classList.toggle('is-collapsed', isDsCollapsed);
       updateHorizontalCollapsedStates();
@@ -5975,22 +5776,17 @@
       } catch (e) { }
     }
 
+    /* REPLACE syncResponsiveStructure() WITH: */
     function syncResponsiveStructure() {
-      /* syncResponsiveStructure moves #log-card (Traversal) and #splitter-left-h between their desktop slots and mobile slots when crossing the 900px breakpoint */
       const isPhone = phoneMedia.matches;
 
       leftColumn.style.width = '';
       leftColumn.style.height = '';
-      dsCard.style.height = '';
       rightTopRow.style.height = '';
-      logCard.style.width = '';
       algoCard.style.height = '';
       metadataCard.style.height = '';
 
       if (isPhone) {
-        if (logCard.parentElement !== bottomSplitRow) {
-          bottomSplitRow.insertBefore(logCard, splitterBottomMobileV);
-        }
         if (splitterLeftH.parentElement !== workspace) {
           workspace.insertBefore(splitterLeftH, rightColumn);
         }
@@ -5998,10 +5794,7 @@
         setHistoryCollapsed(true);
       } else {
         if (splitterLeftH.parentElement !== leftMainStack) {
-          leftMainStack.insertBefore(splitterLeftH, desktopTraversalSlot);
-        }
-        if (logCard.parentElement !== desktopTraversalSlot) {
-          desktopTraversalSlot.appendChild(logCard);
+          leftMainStack.appendChild(splitterLeftH);
         }
         setAlgoCollapsed(false);
         setHistoryCollapsed(true);
@@ -6020,7 +5813,6 @@
           algorithmsCardH: algoCard.style.height,
           historyColumnW: historyColumn.style.width,
           metadataCardH: metadataCard.style.height,
-          logCardW: logCard.style.width,
           isAlgoCollapsed,
           isHistoryCollapsed,
           isDsCollapsed,
@@ -6040,12 +5832,10 @@
           const layout = JSON.parse(stored);
           if (layout.leftColumnW) leftColumn.style.width = layout.leftColumnW;
           if (layout.leftColumnH) leftColumn.style.height = layout.leftColumnH;
-          if (layout.dsCardH) dsCard.style.height = layout.dsCardH;
           if (layout.rightTopRowH) rightTopRow.style.height = layout.rightTopRowH;
           if (layout.algorithmsCardH) algoCard.style.height = layout.algorithmsCardH;
           if (layout.metadataCardH) metadataCard.style.height = layout.metadataCardH;
-          if (layout.logCardW) logCard.style.width = layout.logCardW;
-
+          
           savedAlgoWidth = layout.savedAlgoWidth || (phoneMedia.matches ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
           savedHistoryWidth = layout.savedHistoryWidth || (phoneMedia.matches ? LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.HISTORY_DEFAULT_WIDTH_DESKTOP);
 
@@ -6106,13 +5896,6 @@
       setAlgoCollapsed(!isAlgoCollapsed);
       saveLayoutState();
     });
-
-    if (logCollapsedStrip) {
-      logCollapsedStrip.addEventListener('click', () => {
-        setDsCollapsed(false);
-        saveLayoutState();
-      });
-    }
 
     if (algoCollapsedStrip) {
       algoCollapsedStrip.addEventListener('click', () => {
@@ -6750,53 +6533,6 @@
         </div>
       `;
       }
-    }
-
-    function updateTraversalCard(step) {
-      /* Renders readable node cards with prominent values, index subtitles, and status pills inside #log-card */
-      if (!logCardBody) return;
-      if (!step || !step.traversal || step.traversal.length === 0) {
-        logCardBody.innerHTML = `
-          <div class="card-inner-pad">
-            <span class="card-body-text" style="color: var(--text-muted);">
-              No elements traversed yet.
-            </span>
-          </div>
-        `;
-        return;
-      }
-
-      const nodesHtml = step.traversal.map((item, idx) => {
-        const isCurrent = step.activeIndex === item.index;
-        const isFound = step.foundIndex === item.index;
-
-        let stateClass = '';
-        let statusLabel = 'Visited';
-        if (isFound) {
-          stateClass = ' is-found';
-          statusLabel = 'Found';
-        } else if (isCurrent) {
-          stateClass = ' is-current';
-          statusLabel = 'Current';
-        }
-
-        const arrowHtml = idx < step.traversal.length - 1
-          ? `<span class="traversal-arrow">&rarr;</span>`
-          : '';
-
-        return `
-          <div class="traversal-node-wrap">
-            <div class="traversal-node-box${stateClass}">
-              <span class="traversal-node-val">${item.value}</span>
-              <span class="traversal-node-idx">${item.subLabel || `Index ${item.index}`}</span>
-            </div>
-            <span class="traversal-status-pill${stateClass}">${statusLabel}</span>
-          </div>
-          ${arrowHtml}
-        `;
-      }).join('');
-
-      logCardBody.innerHTML = `<div class="traversal-flow">${nodesHtml}</div>`;
     }
 
     function updateStateViewPane() {
@@ -8105,12 +7841,6 @@
         codeCard.classList.contains('is-h-collapsed') ||
         rightTopRow.classList.contains('is-row-h-collapsed');
 
-      const isTraversalCollapsed =
-        isDsCollapsed ||
-        logCard.classList.contains('is-h-collapsed') ||
-        (!isPhone && desktopTraversalSlot.classList.contains('log-h-collapsed')) ||
-        (isPhone && bottomSplitRow.classList.contains('is-row-h-collapsed'));
-
       const isStateCollapsed =
         stateCard.classList.contains('is-h-collapsed') ||
         bottomSplitRow.classList.contains('is-row-h-collapsed');
@@ -8126,12 +7856,6 @@
         collapsedItems.push({
           name: 'Code Card',
           desc: 'Highlights the exact line of Python code currently executing at each simulation step.'
-        });
-      }
-      if (isTraversalCollapsed) {
-        collapsedItems.push({
-          name: 'Traversal Card',
-          desc: 'Shows the real-time sequence of elements or nodes visited and inspected so far.'
         });
       }
       if (isStateCollapsed) {
@@ -8294,8 +8018,7 @@
         s.value = String(simCurrentStepIdx + 1);
       });
 
-      // 4. Update Traversal and State Variables / Explanation cards
-      updateTraversalCard(step);
+      // 4. Update State Variables / Explanation cards
       updateStateViewPane();
     }
 
@@ -8455,7 +8178,6 @@
         s.max = '1';
         s.value = '1';
       });
-      updateTraversalCard(null);
       updateStateViewPane();
     }
 
@@ -8697,7 +8419,7 @@
       window.addEventListener('touchend', stopDrag);
     })();
 
-    /* 3. DS <-> Traversal Horizontal Splitter (#splitter-left-h) */
+    /* 3. DS Horizontal Splitter (#splitter-left-h) */
     makeResizable({
       splitter: splitterLeftH,
       getContainer: () => phoneMedia.matches ? workspace : leftMainStack,
@@ -8949,15 +8671,6 @@
         : getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_ROW_MIN_HEIGHT_VAR, 2.75)
     });
 
-    /* 8. Mobile Bottom Traversal <-> State Variables Vertical Splitter (#splitter-bottom-mobile-v) */
-    makeResizable({
-      splitter: splitterBottomMobileV,
-      getContainer: () => bottomSplitRow,
-      getTargetPane: () => logCard,
-      getDirection: () => 'horizontal',
-      getMinUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5),
-      getMaxReservedUnits: () => getRootCssVarUnits(LAYOUT_CONFIG.BOTTOM_CARDS_MIN_WIDTH_VAR, 6.5)
-    });
     /* ========== End of Interactive Resizable Splitters (Mouse & Touch) ========== */
   </script>
 
@@ -9050,15 +8763,6 @@
           if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
         }
       },
-      traversal: {
-        id: 'log-card',
-        fallbackIds: ['log-collapsed-strip', 'desktop-traversal-slot', 'bottom-split-row'],
-        title: 'Traversal',
-        description: 'Displays the active traversal sequence in real time, showing the order in which nodes and elements in the data structure are being visited, processed, or read.',
-        onEnter: () => {
-          if (typeof setDsCollapsed === 'function') setDsCollapsed(false);
-        }
-      },
       metadata: {
         id: 'metadata-card',
         fallbackIds: ['metadata-collapsed-strip', 'history-column'],
@@ -9123,7 +8827,6 @@
       'filterByDataStructure',
       'algorithmSettings',
       'stateAndExplanation',
-      'traversal',
       'metadata',
       'history',
       'fullscreen',
