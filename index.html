@@ -2383,7 +2383,7 @@
       align-items: center;
       justify-content: center;
       height: var(--playback-icon-btn-size-desktop);
-      padding: 0 0.55rem;
+      padding: 0 0.35rem;
       margin-right: 0.25rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
@@ -8139,7 +8139,7 @@
       btn.addEventListener('click', () => {
         simMode = simMode === 'auto' ? 'manual' : 'auto';
         document.querySelectorAll('.sync-sim-mode').forEach(b => {
-          b.textContent = simMode === 'manual' ? 'Manual' : 'Auto';
+          b.textContent = simMode === 'manual' ? 'Man' : 'Auto';
           b.classList.toggle('is-manual', simMode === 'manual');
         });
         if (window.isSimulating) {
