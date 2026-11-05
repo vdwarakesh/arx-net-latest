@@ -984,7 +984,7 @@ export function drawGraph(containerEl, camera = { x: 0, y: 0, z: 1 }, customHype
   });
 
   const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
   const graphData = getContainerGraphData(containerEl);
   const { nodes, edges, isDirected, isWeighted } = graphData;
 
@@ -1527,7 +1527,7 @@ export function setupGraphInteractions(containerEl, requestRender) {
 
   // 1. Left-Click: Weight Pill -> Edit Weight | Double-Click Drag Node -> Create Edge | Single-Click Drag Node -> Move Node
   canvas.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0 || e.shiftKey) return;
+    if (e.pointerType === 'mouse' && (e.button !== 0 || e.shiftKey)) return;
 
     // Allow clicking selectable candidate nodes or edges during Manual Simulation Mode
     if (window.isSimulating) {
