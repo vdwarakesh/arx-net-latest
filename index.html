@@ -2380,18 +2380,20 @@
 
     .sim-mode-toggle-btn {
       display: inline-flex;
+      flex-shrink: 0;
       align-items: center;
       justify-content: center;
+      width: var(--playback-icon-btn-size-desktop);
       height: var(--playback-icon-btn-size-desktop);
-      padding: 0 0.35rem;
+      min-width: var(--playback-icon-btn-size-desktop);
+      min-height: var(--playback-icon-btn-size-desktop);
+      padding: 0;
       margin-right: 0.25rem;
       background-color: var(--bg-input);
       border: 0.0625rem solid var(--border-color);
       border-radius: 0.3125rem;
-      font-weight: 600;
-      color: var(--text-primary);
       cursor: pointer;
-      transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
     }
 
     .sim-mode-toggle-btn.is-manual {
@@ -3322,8 +3324,8 @@
         overflow-y: hidden;
       }
 
-      .playback-icon-btn {
-        /* Compacts the Step Backward, Visualize (Run/Play), Step Forward, and Reset icon buttons on mobile */
+      .playback-icon-btn, .sim-mode-toggle-btn {
+        /* Compacts the Step Backward, Visualize, Step Forward, Reset, and Auto/Manual icon buttons on mobile */
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
         min-width: var(--playback-icon-btn-size-mobile);
@@ -3853,7 +3855,7 @@
                     <div class="visualization-options">
                       <button type="button" class="sim-mode-toggle-btn sync-sim-mode"
                         title="Switch between Auto and Manual neighbor selection">
-                        Auto
+                        <img src="images/auto.png" alt="Auto" class="playback-icon-img" />
                       </button>
                       <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
                         <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
@@ -4208,7 +4210,7 @@
                   <div class="visualization-options">
                     <button type="button" class="sim-mode-toggle-btn sync-sim-mode"
                       title="Switch between Auto and Manual neighbor selection">
-                      Auto
+                      <img src="images/auto.png" alt="Auto" class="playback-icon-img" />
                     </button>
                     <button type="button" class="playback-icon-btn sync-step-back" title="Step Backward">
                       <img src="images/step-back.png" alt="Step Backward" class="playback-icon-img" />
@@ -8139,8 +8141,12 @@
       btn.addEventListener('click', () => {
         simMode = simMode === 'auto' ? 'manual' : 'auto';
         document.querySelectorAll('.sync-sim-mode').forEach(b => {
-          b.textContent = simMode === 'manual' ? 'Man' : 'Auto';
           b.classList.toggle('is-manual', simMode === 'manual');
+          const img = b.querySelector('img');
+          if (img) {
+            img.src = simMode === 'manual' ? 'images/manual.png' : 'images/auto.png';
+            img.alt = simMode === 'manual' ? 'Manual' : 'Auto';
+          }
         });
         if (window.isSimulating) {
           resetSimulation();
