@@ -132,7 +132,7 @@
       /* Minimum height of the top-right row containing Algorithms and Code */
       --bottom-row-min-height: var(--card-min-height-desktop);
       /* Minimum height of the bottom row containing and State Variables */
-      --algo-top-height: 50%;
+      --algo-top-height: 100%;
       /* Default height for algorithms list split */
 
       /* ========== Interactive Controls & Sliders ========== */
@@ -1850,6 +1850,128 @@
       color: var(--text-muted);
     }
 
+    /* ========== DSA File-System Explorer & Floating Modals ========== */
+    #btnHistoryMobile {
+      display: none;
+    }
+
+    .dsa-fs-breadcrumb {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.2rem;
+      padding: 0.35rem 0.5rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.25rem;
+      font-size: 0.85em;
+    }
+
+    .dsa-crumb-btn {
+      padding: 0.1rem 0.35rem;
+      background: transparent;
+      border: none;
+      border-radius: 0.2rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+    }
+
+    .dsa-crumb-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-bright);
+    }
+
+    .dsa-crumb-btn.active {
+      font-weight: 600;
+      color: var(--text-bright);
+    }
+
+    .dsa-crumb-sep {
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    .fs-item-icon {
+      flex-shrink: 0;
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-right: 0.25rem;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .algo-compat-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      padding: 0.15rem 0.35rem 0.25rem 1.85rem;
+    }
+
+    .algo-ds-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.1rem 0.45rem;
+      background-color: var(--bg-elevated);
+      border: 0.0625rem solid var(--border-color);
+      border-radius: 0.3rem;
+      font-size: 0.82em;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .algo-ds-pill:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--accent-primary);
+      color: var(--text-bright);
+    }
+
+    .algo-ds-pill img {
+      width: 0.8rem;
+      height: 0.8rem;
+      object-fit: contain;
+      filter: var(--sidebar-icon-filter);
+    }
+
+    .search-path-hint {
+      padding: 0 0.35rem 0.15rem 1.85rem;
+      font-family: 'Noto Sans Mono', monospace;
+      font-size: 0.8em;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dsa-modal-window {
+      width: min(72rem, 95vw); /* Increased width from 56rem */
+      max-width: 95vw;
+      height: min(44rem, 86dvh); /* Slightly increased height to match proportions */
+      max-height: 86dvh;
+    }
+
+    .dsa-modal-split {
+      display: flex;
+      flex: 1;
+      gap: 0.65rem;
+      min-height: 0;
+      padding: 0.65rem;
+      overflow: hidden;
+    }
+
+    /* Override the legacy 50% height limit from the old split-pane layout */
+    .dsa-modal-split #algorithms-card,
+    .dsa-modal-split #algo-settings-card {
+      height: 100% !important;
+      max-height: none !important;
+    }
+
+    /* ========== End of DSA File-System Explorer & Floating Modals ========== */
+
     #algo-settings-card {
       /* #algo-settings-card is used here for the bottom Settings card inside #algo-column */
       flex: 1;
@@ -3320,11 +3442,25 @@
         max-height: none;
       }
 
+      .dsa-modal-split {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      
+      /* Allow cards to expand based on content when stacked vertically on phones */
+      .dsa-modal-split #algorithms-card,
+      .dsa-modal-split #algo-settings-card {
+        height: auto !important;
+        flex: none !important; 
+        min-height: 22rem;
+      }
+
       .playback-bar {
         overflow-y: hidden;
       }
 
-      .playback-icon-btn, .sim-mode-toggle-btn {
+      .playback-icon-btn,
+      .sim-mode-toggle-btn {
         /* Compacts the Step Backward, Visualize, Step Forward, Reset, and Auto/Manual icon buttons on mobile */
         width: var(--playback-icon-btn-size-mobile);
         height: var(--playback-icon-btn-size-mobile);
@@ -3555,6 +3691,14 @@
 
       <button type="button" id="btnFullscreen" class="activity-btn" title="Toggle Fullscreen">
         <img id="imgFullscreen" src="images/fullscreen.png" alt="Fullscreen" class="activity-icon-img" />
+      </button>
+
+      <button type="button" id="btnCreate" class="activity-btn" title="DSA & Settings">
+        <img src="images/create.png" alt="Create" class="activity-icon-img" />
+      </button>
+
+      <button type="button" id="btnHistoryMobile" class="activity-btn" title="Metadata & History">
+        <img src="images/history.png" alt="History" class="activity-icon-img" />
       </button>
 
       <!--===== Grid Controls Dropdown =====-->
@@ -3917,143 +4061,6 @@
         <!--========== Top right row: desktop (Code + Algorithms card) / Middle row: phone (Algorithms + Code card) ==========-->
         <div id="right-top-row" class="right-top-row">
 
-          <!--========== Contains Algorithms and Settings cards ==========-->
-          <div id="algo-column">
-
-            <!--========== Algorithms card ==========-->
-            <section id="algorithms-card" class="vscode-card">
-              <div class="vscode-card-header" id="algo-card-header">
-                <span id="algo-title">Data structures and algorithms</span>
-                <button type="button" id="btn-toggle-algo" class="card-icon-btn" title="Collapse Algorithms & Settings"
-                  aria-label="Toggle Algorithms and Settings">
-                  <img id="img-toggle-algo" src="images/collapse.png" alt="Collapse" class="sidebar-toggle-img" />
-                </button>
-              </div>
-
-              <!--========== Algorithms card content ==========-->
-              <div id="algo-body">
-
-                <!--========== Search algorithms, favourites, show only DS, filter options ==========-->
-                <div class="algo-search-row">
-
-                  <!--========== Search algorithm and clear inputs ==========-->
-                  <div class="algo-search-input-wrapper">
-                    <input type="text" id="algo-search-input" placeholder="Search algorithms..."
-                      class="algo-search-input" />
-                    <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn"
-                      aria-label="Clear search" style="display: none;">&times;</button>
-                  </div>
-                  <!--====================-->
-
-                  <button type="button" id="algo-fav-filter-btn" class="algo-filter-btn" title="Show Favourites Only"
-                    aria-pressed="false">
-                    <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
-                  </button>
-                  <button type="button" id="algo-syllabus-filter-btn" class="algo-filter-btn has-active-filter"
-                    title="Show Syllabus Only" aria-pressed="true">
-                    <img src="images/syllabus.png" alt="Syllabus" class="algo-filter-icon" />
-                  </button>
-                  <button type="button" id="algo-compatible-filter-btn" class="algo-filter-btn"
-                    title="Show Compatible Algorithms Only" aria-pressed="false">
-                    <img src="images/compatible.png" alt="Compatible Only" class="algo-filter-icon" />
-                  </button>
-                  <button type="button" id="algo-hide-btn" class="algo-filter-btn"
-                    title="Hide Algorithms (Show Data Structures only)" aria-pressed="false">
-                    <img src="images/hide.png" alt="Hide Algorithms" class="algo-filter-icon" />
-                  </button>
-                  <button type="button" id="algo-filter-btn" class="algo-filter-btn" title="Filter by data structure"
-                    aria-expanded="false">
-                    <img src="images/filter.png" alt="Filter" class="algo-filter-icon" />
-                  </button>
-                </div>
-                <!--========== End of algorithms utility row ==========-->
-
-                <!--========== Collapsible Filter Panel (Data Structure Folder Tree Only) Visible only when filter button is clicked ==========-->
-                <div id="algo-filter-panel" class="algo-filter-panel">
-                  <div class="algo-filter-panel-header">
-                    <span>Filter by Data Structure</span>
-                    <button type="button" id="algo-filter-clear-btn" class="algo-filter-clear-btn">Clear</button>
-                  </div>
-                  <div id="algo-filter-tree" class="algo-filter-tree-scroll"></div>
-                </div>
-                <!--========== End of filter panel ==========-->
-
-                <!--========== Main Collapsible Data Structure & Algorithm Tree - Javascript populates values here ==========-->
-                <div id="algo-tree-container" class="algo-tree-container"></div>
-                <!--====================-->
-
-              </div>
-              <!--========== End of algorithms card content ==========-->
-
-              <!--========== Collapsed algorithms strip - Visible only on collapse ==========-->
-              <div id="algo-collapsed-strip" title="Click to expand Algorithms">
-                <span class="algo-collapsed-label">
-                  DSA
-                </span>
-              </div>
-              <!--==========-->
-
-            </section>
-            <!--========== End of algorithms card ==========-->
-
-            <!--===== Horizontal splitter to adjust size of Algorithms / Settings cards =====-->
-            <div id="splitter-algo-settings-h" class="splitter-h" title="Drag to resize"></div>
-            <!--==========-->
-
-            <!--========== Settings card ==========-->
-            <section id="algo-settings-card" class="vscode-card">
-              <div class="vscode-card-header">
-                <span id="algo-settings-title">Settings</span>
-              </div>
-
-              <!--========== Settings card content ==========-->
-              <div id="algo-settings-body" class="card-scroll-body">
-                <div class="card-inner-pad">
-                  <!--===== Constraints & Tags =====-->
-                  <div id="algo-settings-meta-section" style="display: none; margin-bottom: 0.75rem;">
-                    <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.35rem;">Constraints &amp; Tags
-                    </h4>
-                    <div id="algo-settings-meta-container" class="algo-meta-container" style="padding: 0;"></div>
-                  </div>
-                  <!--==========-->
-
-                  <!--===== Unified Creation Settings / Interactive Function Signature =====-->
-                  <div id="algo-config-section" style="margin-bottom: 0.75rem;">
-                    <h4 id="algo-config-heading" class="card-body-text"
-                      style="display: none; font-weight: 600; margin-bottom: 0.35rem;"></h4>
-                    <div id="algo-config-container" class="card-body-text" style="color: var(--text-muted);">
-                      Select a data structure or algorithm to configure.
-                    </div>
-                  </div>
-                  <!--==========-->
-
-                  <button type="button" id="algo-settings-submit-btn" class="vscode-btn-secondary"
-                    style="display: none; width: 100%; margin-bottom: 0rem;">Create</button>
-                  <div id="algo-settings-incompatible-msg"
-                    style="display: none; width: 100%; text-align: center; color: var(--text-muted); padding: 0.65rem; background-color: var(--bg-card); border: 0.0625rem solid var(--border-color); border-radius: 0.25rem;">
-                  </div>
-                </div>
-              </div>
-              <!--========== End of settings card content ==========-->
-
-              <!--========== Collapsed settings strip - Visible only on collapse ==========-->
-              <div id="algo-settings-collapsed-strip" title="Click to expand Algorithms">
-                <span class="algo-collapsed-label">
-                  Settings
-                </span>
-              </div>
-              <!--========== End of collapsed strip ==========-->
-
-            </section>
-            <!--========== End of settings card ==========-->
-
-          </div>
-          <!--========== End of algorithms and settings cards ==========-->
-
-          <!--===== Vertical splitter to adjust size of Algorithms column / Code card =====-->
-          <div id="splitter-algo-code-v" class="splitter-v" title="Drag to resize"></div>
-          <!--==========-->
-
           <!--========== Code / Notes card ==========-->
           <section id="code-card" class="vscode-card">
 
@@ -4405,6 +4412,114 @@
   </div>
   <!--========== End of sample profile window ==========-->
 
+  <!--========== DSA & Settings Floating Window ==========-->
+  <div id="dsa-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="dsa-modal-title">
+    <div class="modal-window dsa-modal-window">
+      <div class="modal-header">
+        <span id="dsa-modal-title">Data Structures &amp; Settings</span>
+        <button type="button" id="close-dsa-modal" class="card-icon-btn" title="Close"
+          aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="dsa-modal-split">
+        <!-- Explorer Pane -->
+        <section id="algorithms-card" class="vscode-card" style="flex: 1.25; min-height: 15rem;">
+          <div class="vscode-card-header" id="algo-card-header">
+            <span id="algo-title">Explorer</span>
+          </div>
+          <div id="algo-body">
+            <div class="algo-search-row">
+              <div class="algo-search-input-wrapper">
+                <input type="text" id="algo-search-input" placeholder="Search data structures or algorithms..."
+                  class="algo-search-input" />
+                <button type="button" id="algo-search-clear-btn" class="algo-search-clear-btn" aria-label="Clear search"
+                  style="display: none;">&times;</button>
+              </div>
+              <button type="button" id="algo-fav-filter-btn" class="algo-filter-btn" title="Show Favourites Only"
+                aria-pressed="false">
+                <img src="images/favourite-selection.png" alt="Favourites" class="algo-filter-icon" />
+              </button>
+              <button type="button" id="algo-syllabus-filter-btn" class="algo-filter-btn has-active-filter"
+                title="Show Syllabus Only" aria-pressed="true">
+                <img src="images/syllabus.png" alt="Syllabus" class="algo-filter-icon" />
+              </button>
+              <button type="button" id="algo-compatible-filter-btn" class="algo-filter-btn"
+                title="Show Compatible Algorithms Only" aria-pressed="false">
+                <img src="images/compatible.png" alt="Compatible Only" class="algo-filter-icon" />
+              </button>
+            </div>
+
+            <!-- File-System Breadcrumb Navigation -->
+            <div id="dsa-fs-breadcrumb" class="dsa-fs-breadcrumb"></div>
+
+            <!-- File-System Items / Search Results Container -->
+            <div id="algo-tree-container" class="algo-tree-container"></div>
+          </div>
+        </section>
+
+        <!-- Settings Pane -->
+        <section id="algo-settings-card" class="vscode-card" style="flex: 1; min-height: 14rem;">
+          <div class="vscode-card-header">
+            <span id="algo-settings-title">Settings</span>
+          </div>
+          <div id="algo-settings-body" class="card-scroll-body">
+            <div class="card-inner-pad">
+              <div id="algo-settings-meta-section" style="display: none; margin-bottom: 0.75rem;">
+                <h4 class="card-body-text" style="font-weight: 600; margin-bottom: 0.35rem;">Constraints &amp; Tags</h4>
+                <div id="algo-settings-meta-container" class="algo-meta-container" style="padding: 0;"></div>
+              </div>
+              <div id="algo-config-section" style="margin-bottom: 0.75rem;">
+                <h4 id="algo-config-heading" class="card-body-text"
+                  style="display: none; font-weight: 600; margin-bottom: 0.35rem;"></h4>
+                <div id="algo-config-container" class="card-body-text" style="color: var(--text-muted);">
+                  Select a data structure or algorithm to configure.
+                </div>
+              </div>
+              <button type="button" id="algo-settings-submit-btn" class="vscode-btn-secondary"
+                style="display: none; width: 100%; margin-bottom: 0rem;">Create</button>
+              <div id="algo-settings-incompatible-msg"
+                style="display: none; width: 100%; text-align: center; color: var(--text-muted); padding: 0.65rem; background-color: var(--bg-card); border: 0.0625rem solid var(--border-color); border-radius: 0.25rem;">
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <!--========== End of DSA & Settings Floating Window ==========-->
+
+  <!--========== Mobile Metadata & History Floating Window ==========-->
+  <div id="mobile-history-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true"
+    aria-labelledby="mobile-history-modal-title">
+    <div class="modal-window" style="width: min(32rem, 94vw); height: min(34rem, 84dvh);">
+      <div class="modal-header">
+        <span id="mobile-history-modal-title">Metadata &amp; History</span>
+        <button type="button" id="close-mobile-history-modal" class="card-icon-btn" title="Close"
+          aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1; overflow: hidden;">
+        <section class="vscode-card" style="flex: 1; min-height: 0;">
+          <div class="vscode-card-header"><span>Metadata</span></div>
+          <div id="mobile-metadata-body" class="card-scroll-body">
+            <div class="card-inner-pad">
+              <span class="card-body-text" style="color: var(--text-muted);">Create a data structure to view its
+                metadata.</span>
+            </div>
+          </div>
+        </section>
+        <section class="vscode-card" style="flex: 1; min-height: 0;">
+          <div class="vscode-card-header"><span>History</span></div>
+          <div id="mobile-history-body" class="card-scroll-body">
+            <div class="card-inner-pad">
+              <span class="card-body-text" style="color: var(--text-muted);">No containers created yet.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+  <!--========== End of Mobile Metadata & History Floating Window ==========-->
+
   <script type="module">
 
     /* ========== Floating window ========== */
@@ -4563,6 +4678,16 @@
     const btnFullscreen = document.getElementById('btnFullscreen');
     const imgFullscreen = document.getElementById('imgFullscreen');
     const btnReload = document.getElementById('btnReload');
+    const btnCreate = document.getElementById('btnCreate');
+    const dsaModalBackdrop = document.getElementById('dsa-modal-backdrop');
+    const closeDsaModalBtn = document.getElementById('close-dsa-modal');
+    const dsaBreadcrumbEl = document.getElementById('dsa-fs-breadcrumb');
+
+    const btnHistoryMobile = document.getElementById('btnHistoryMobile');
+    const mobileHistoryModalBackdrop = document.getElementById('mobile-history-modal-backdrop');
+    const closeMobileHistoryModalBtn = document.getElementById('close-mobile-history-modal');
+    const mobileMetadataBodyEl = document.getElementById('mobile-metadata-body');
+    const mobileHistoryBodyEl = document.getElementById('mobile-history-body');
 
     const annotationOverlay = document.getElementById('annotation-overlay');
     const annotationDropdownWrapper = document.getElementById('annotation-dropdown-wrapper');
@@ -4639,11 +4764,6 @@
     const algoFavFilterBtn = document.getElementById('algo-fav-filter-btn');
     const algoSyllabusFilterBtn = document.getElementById('algo-syllabus-filter-btn');
     const algoCompatibleFilterBtn = document.getElementById('algo-compatible-filter-btn');
-    const algoHideBtn = document.getElementById('algo-hide-btn');
-    const algoFilterBtn = document.getElementById('algo-filter-btn');
-    const algoFilterPanel = document.getElementById('algo-filter-panel');
-    const algoFilterClearBtn = document.getElementById('algo-filter-clear-btn');
-    const algoFilterTreeEl = document.getElementById('algo-filter-tree');
     const algoTreeContainer = document.getElementById('algo-tree-container');
 
     /* Code / Notes Card & State / Explanation Card DOM Elements */
@@ -4694,6 +4814,7 @@
     let currentDsGridType = 'dots'; // Default grid is Dots
     const dsContainers = []; // Stores { name, dsType, userInput, element, canvas, camera }
     let activeContainerName = null; // null means splash screen is shown
+    let currentFsPath = [];
 
     // Panel Collapse & Saved Dimension State
     let isHistoryCollapsed = true;
@@ -5413,6 +5534,53 @@
         profilePaneShortcuts.classList.toggle('active', target === 'shortcuts');
       });
     });
+
+    /* DSA & Settings Floating Modal Window */
+    function setDsaModalOpen(open) {
+      if (!dsaModalBackdrop) return;
+      dsaModalBackdrop.classList.toggle('open', Boolean(open));
+    }
+
+    if (btnCreate) {
+      btnCreate.addEventListener('click', () => {
+        setDsaModalOpen(!dsaModalBackdrop.classList.contains('open'));
+      });
+    }
+    if (closeDsaModalBtn) {
+      closeDsaModalBtn.addEventListener('click', () => setDsaModalOpen(false));
+    }
+    if (dsaModalBackdrop) {
+      dsaModalBackdrop.addEventListener('mousedown', (e) => {
+        if (e.target === dsaModalBackdrop) setDsaModalOpen(false);
+      });
+    }
+
+    /* Mobile Metadata & History Floating Modal Window */
+    function setMobileHistoryModalOpen(open) {
+      if (!mobileHistoryModalBackdrop) return;
+      mobileHistoryModalBackdrop.classList.toggle('open', Boolean(open));
+    }
+
+    if (btnHistoryMobile) {
+      btnHistoryMobile.addEventListener('click', () => {
+        setMobileHistoryModalOpen(!mobileHistoryModalBackdrop.classList.contains('open'));
+      });
+    }
+    if (closeMobileHistoryModalBtn) {
+      closeMobileHistoryModalBtn.addEventListener('click', () => setMobileHistoryModalOpen(false));
+    }
+    if (mobileHistoryModalBackdrop) {
+      mobileHistoryModalBackdrop.addEventListener('mousedown', (e) => {
+        if (e.target === mobileHistoryModalBackdrop) setMobileHistoryModalOpen(false);
+      });
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (dsaModalBackdrop?.classList.contains('open')) setDsaModalOpen(false);
+        if (mobileHistoryModalBackdrop?.classList.contains('open')) setMobileHistoryModalOpen(false);
+      }
+    });
     /* ========== End of Top Title Bar: Right Group (Theme Switcher & Profile Modal) ========== */
 
 
@@ -5648,34 +5816,7 @@
     }
 
     function setAlgoCollapsed(collapse, customExpandedWidth, targetCard = null) {
-      isAlgoCollapsed = collapse;
-      const isPhone = phoneMedia.matches;
-
-      if (isAlgoCollapsed) {
-        if (!customExpandedWidth && algoColumn.style.width) {
-          savedAlgoWidth = algoColumn.style.width;
-        }
-        if (algoCard.style.height) {
-          savedAlgoCardHeight = algoCard.style.height;
-        }
-        algoColumn.classList.add('is-collapsed');
-        algoColumn.style.width = '';
-      } else {
-        algoColumn.classList.remove('is-collapsed');
-        algoColumn.style.width = customExpandedWidth || savedAlgoWidth || (isPhone ? LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_MOBILE : LAYOUT_CONFIG.ALGO_DEFAULT_WIDTH_DESKTOP);
-        if (savedAlgoCardHeight) {
-          algoCard.style.height = savedAlgoCardHeight;
-        }
-        ensureCardVisibleHeight(targetCard || algoCard);
-      }
-
-      if (imgToggleAlgo && btnToggleAlgo) {
-        imgToggleAlgo.src = isAlgoCollapsed ? 'images/expand.png' : 'images/collapse.png';
-        imgToggleAlgo.alt = isAlgoCollapsed ? 'Expand' : 'Collapse';
-        btnToggleAlgo.title = isAlgoCollapsed ? 'Expand Algorithms & Settings' : 'Collapse Algorithms & Settings';
-      }
-
-      updateHorizontalCollapsedStates();
+      if (collapse) setDsaModalOpen(false); else setDsaModalOpen(true);
     }
 
     function setCodeCollapsed(collapse, algoFillsRow = false) {
@@ -5850,12 +5991,6 @@
     btnToggleHistory.addEventListener('click', (e) => {
       e.stopPropagation();
       setHistoryCollapsed(!isHistoryCollapsed);
-      saveLayoutState();
-    });
-
-    btnToggleAlgo.addEventListener('click', (e) => {
-      e.stopPropagation();
-      setAlgoCollapsed(!isAlgoCollapsed);
       saveLayoutState();
     });
 
@@ -6063,6 +6198,9 @@
           </div>
         `;
       }
+      if (mobileMetadataBodyEl && metadataBody) {
+        mobileMetadataBodyEl.innerHTML = metadataBody.innerHTML;
+      }
     }
     window.updateMetadataUI = updateMetadataUI;
 
@@ -6095,61 +6233,61 @@
     };
 
     function renderHistoryList() {
-      /* Renders all created containers inside the History card (#history-body) */
-      if (!historyBodyEl) return;
+      const targets = [historyBodyEl, mobileHistoryBodyEl].filter(Boolean);
+      if (targets.length === 0) return;
 
       if (dsContainers.length === 0) {
-        historyBodyEl.innerHTML = `
-        <div class="card-inner-pad">
-          <span class="card-body-text" style="color: var(--text-muted);">
-            No containers created yet.
-          </span>
-        </div>
-      `;
+        const emptyHtml = `
+          <div class="card-inner-pad">
+            <span class="card-body-text" style="color: var(--text-muted);">
+              No containers created yet.
+            </span>
+          </div>
+        `;
+        targets.forEach(el => { el.innerHTML = emptyHtml; });
         return;
       }
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'card-inner-pad history-list';
+      targets.forEach(targetEl => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'card-inner-pad history-list';
 
-      dsContainers.forEach(item => {
-        const row = document.createElement('div');
-        row.className = `history-item${item.name === activeContainerName ? ' active' : ''}`;
+        dsContainers.forEach(item => {
+          const row = document.createElement('div');
+          row.className = `history-item${item.name === activeContainerName ? ' active' : ''}`;
 
-        // Group the dot and the name together on the left
-        const leftGroup = document.createElement('div');
-        leftGroup.style.display = 'flex';
-        leftGroup.style.alignItems = 'center';
-        leftGroup.style.gap = '0.45rem';
+          const leftGroup = document.createElement('div');
+          leftGroup.style.display = 'flex';
+          leftGroup.style.alignItems = 'center';
+          leftGroup.style.gap = '0.45rem';
 
-        // The filled dot
-        const dotSpan = document.createElement('span');
-        dotSpan.className = 'history-dot';
+          const dotSpan = document.createElement('span');
+          dotSpan.className = 'history-dot';
 
-        // The name
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = item.name;
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = item.name;
 
-        leftGroup.appendChild(dotSpan);
-        leftGroup.appendChild(nameSpan);
+          leftGroup.appendChild(dotSpan);
+          leftGroup.appendChild(nameSpan);
 
-        // The Data Structure type on the right
-        const typeSpan = document.createElement('span');
-        typeSpan.className = 'history-item-type';
-        typeSpan.textContent = item.dsType;
+          const typeSpan = document.createElement('span');
+          typeSpan.className = 'history-item-type';
+          typeSpan.textContent = item.dsType;
 
-        row.appendChild(leftGroup);
-        row.appendChild(typeSpan);
+          row.appendChild(leftGroup);
+          row.appendChild(typeSpan);
 
-        row.addEventListener('click', () => {
-          selectContainer(item.name);
+          row.addEventListener('click', () => {
+            selectContainer(item.name);
+            setMobileHistoryModalOpen(false);
+          });
+
+          wrapper.appendChild(row);
         });
 
-        wrapper.appendChild(row);
+        targetEl.innerHTML = '';
+        targetEl.appendChild(wrapper);
       });
-
-      historyBodyEl.innerHTML = '';
-      historyBodyEl.appendChild(wrapper);
     }
 
     function selectContainer(containerName) {
@@ -6807,17 +6945,414 @@
     }
 
     function dsSubtreeHasFavourite(dsName, dsObj) {
-      /* dsSubtreeHasFavourite checks whether a Data Structure or any of its nested algorithms/children is starred */
       if (favouritesSet.has(dsName)) return true;
-      if (!isAlgosHidden) {
-        const algos = dsDirectAlgorithmsMap[dsName] || [];
-        if (algos.some(a => favouritesSet.has(a.name))) return true;
-      }
+      const algos = dsDirectAlgorithmsMap[dsName] || [];
+      if (algos.some(a => favouritesSet.has(a.name))) return true;
       const children = (dsObj && dsObj.children) || {};
       for (const [childName, childObj] of Object.entries(children)) {
         if (dsSubtreeHasFavourite(childName, childObj)) return true;
       }
       return false;
+    }
+
+    function treeHasMatchWithFn(nodesObj, query, matchFn) {
+      for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
+        if (matchFn(query, dsName)) return true;
+        const algos = dsDirectAlgorithmsMap[dsName] || [];
+        for (const algo of algos) {
+          if (matchFn(query, algo.name)) return true;
+          if (algo.tags.some(tag => matchFn(query, tag))) return true;
+        }
+        if (treeHasMatchWithFn(dsObj.children || {}, query, matchFn)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function getDsNodeByPath(pathArr) {
+      let currMap = dataStructuresJson;
+      let currNode = null;
+      for (const segment of pathArr) {
+        if (!currMap || !currMap[segment]) return null;
+        currNode = currMap[segment];
+        currMap = currNode.children || {};
+      }
+      return currNode;
+    }
+
+    function navigateToDsFolder(dsName) {
+      const lineage = getDsLineage(dsName);
+      if (lineage) {
+        currentFsPath = [...lineage];
+        if (algoSearchInput) {
+          algoSearchInput.value = '';
+          if (algoSearchClearBtn) algoSearchClearBtn.style.display = 'none';
+        }
+        renderMainAlgoTree();
+      }
+    }
+
+    function renderFsBreadcrumbs(isSearching) {
+      if (!dsaBreadcrumbEl) return;
+      dsaBreadcrumbEl.innerHTML = '';
+
+      if (isSearching) {
+        const span = document.createElement('span');
+        span.className = 'dsa-crumb-btn active';
+        span.textContent = 'Search Results (Full Paths)';
+        dsaBreadcrumbEl.appendChild(span);
+        return;
+      }
+
+      const rootBtn = document.createElement('button');
+      rootBtn.type = 'button';
+      rootBtn.className = `dsa-crumb-btn${currentFsPath.length === 0 ? ' active' : ''}`;
+      rootBtn.textContent = 'Root';
+      rootBtn.addEventListener('click', () => {
+        currentFsPath = [];
+        renderMainAlgoTree();
+      });
+      dsaBreadcrumbEl.appendChild(rootBtn);
+
+      currentFsPath.forEach((seg, idx) => {
+        const sep = document.createElement('span');
+        sep.className = 'dsa-crumb-sep';
+        sep.textContent = '/';
+        dsaBreadcrumbEl.appendChild(sep);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `dsa-crumb-btn${idx === currentFsPath.length - 1 ? ' active' : ''}`;
+        btn.textContent = seg;
+        btn.addEventListener('click', () => {
+          currentFsPath = currentFsPath.slice(0, idx + 1);
+          renderMainAlgoTree();
+        });
+        dsaBreadcrumbEl.appendChild(btn);
+      });
+    }
+
+    function createFsIcon(src, alt) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt;
+      img.className = 'fs-item-icon';
+      return img;
+    }
+
+    function createAlgorithmEntryElement(algo, contextDsName, fullPathText = null) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'algo-item-wrapper';
+
+      const row = document.createElement('div');
+      row.className = `tree-row${selectedDsaType === 'algo' && selectedDsaName === algo.name ? ' selected' : ''}`;
+      row.setAttribute('data-dsa-name', algo.name);
+
+      row.appendChild(createFsIcon('images/file.png', 'Algorithm File'));
+
+      const label = document.createElement('span');
+      label.className = 'tree-label algo-label';
+      label.textContent = algo.name;
+      row.appendChild(label);
+
+      row.appendChild(createFavStarButton(algo.name));
+
+      row.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectDsaItem(algo.name, contextDsName, 'algo');
+      });
+
+      wrapper.appendChild(row);
+
+      // Show full path when searching
+      if (fullPathText) {
+        const pathHint = document.createElement('div');
+        pathHint.className = 'search-path-hint';
+        pathHint.textContent = fullPathText;
+        wrapper.appendChild(pathHint);
+      }
+
+      // Compatible DS pills underneath each algorithm
+      const algoObj = algorithmsJson[algo.name];
+      const compatibleDsNames = Object.keys((algoObj && algoObj.inputs) || {});
+      if (compatibleDsNames.length > 0) {
+        const pillsRow = document.createElement('div');
+        pillsRow.className = 'algo-compat-pills-row';
+
+        compatibleDsNames.forEach(compatDs => {
+          const pill = document.createElement('button');
+          pill.type = 'button';
+          pill.className = 'algo-ds-pill';
+          pill.title = `Open ${compatDs} folder`;
+
+          const pillImg = document.createElement('img');
+          pillImg.src = 'images/compatible.png';
+          pillImg.alt = compatDs;
+
+          const pillText = document.createElement('span');
+          pillText.textContent = compatDs;
+
+          pill.appendChild(pillImg);
+          pill.appendChild(pillText);
+
+          pill.addEventListener('click', (e) => {
+            e.stopPropagation();
+            navigateToDsFolder(compatDs);
+          });
+
+          pillsRow.appendChild(pill);
+        });
+
+        wrapper.appendChild(pillsRow);
+      }
+
+      return wrapper;
+    }
+
+    function renderMainAlgoTree() {
+      if (!algoTreeContainer) return;
+      const rawQuery = algoSearchInput ? algoSearchInput.value.trim() : '';
+      const isSearching = rawQuery.length > 0;
+
+      renderFsBreadcrumbs(isSearching);
+      algoTreeContainer.innerHTML = '';
+
+      const currentDsType = getActiveContainerDsType();
+      const activeDsLineage = currentDsType ? (getDsLineage(currentDsType) || [currentDsType]) : [];
+
+      const syllabusDsSet = isSyllabusFilterActive
+        ? new Set(syllabusJson['data-structures'] || [])
+        : null;
+      const syllabusAlgoSet = isSyllabusFilterActive
+        ? new Set(syllabusJson['algorithms'] || [])
+        : null;
+
+      function dsSubtreeMatchesSyllabus(dsName, dsObj) {
+        if (!isSyllabusFilterActive) return true;
+        if (syllabusDsSet.has(dsName) || favouritesSet.has(dsName)) return true;
+        const directAlgos = dsDirectAlgorithmsMap[dsName] || [];
+        if (directAlgos.some(algo => syllabusAlgoSet.has(algo.name) || favouritesSet.has(algo.name))) return true;
+        const children = Object.entries((dsObj && dsObj.children) || {});
+        return children.some(([childName, childObj]) => dsSubtreeMatchesSyllabus(childName, childObj));
+      }
+
+      function isDsVisibleUnderFilters(dsName, dsObj) {
+        if (isFavFilterActive && !dsSubtreeHasFavourite(dsName, dsObj)) return false;
+        if (isSyllabusFilterActive && !dsSubtreeMatchesSyllabus(dsName, dsObj)) return false;
+        if (isCompatibleFilterActive) {
+          if (!currentDsType || !activeDsLineage.includes(dsName)) return false;
+        }
+        return true;
+      }
+
+      function getFilteredAlgorithmsForDs(dsName) {
+        let algos = dsDirectAlgorithmsMap[dsName] || [];
+        if (isFavFilterActive && !favouritesSet.has(dsName)) {
+          algos = algos.filter(a => favouritesSet.has(a.name));
+        }
+        if (isSyllabusFilterActive && !favouritesSet.has(dsName)) {
+          algos = algos.filter(a => syllabusAlgoSet.has(a.name) || favouritesSet.has(a.name));
+        }
+        return algos;
+      }
+
+      /* 1. SEARCH MODE: Show full path of matching Data Structures and Algorithms */
+      if (isSearching) {
+        const hasExactOrAcronym = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactOrAcronymMatch);
+        const matchFn = hasExactOrAcronym ? isExactOrAcronymMatch : isSubsequenceMatch;
+        let anySearchMatch = false;
+
+        function searchWalk(nodesObj, pathPrefix = []) {
+          for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
+            if (!isDsVisibleUnderFilters(dsName, dsObj)) continue;
+            const currentPath = [...pathPrefix, dsName];
+            const pathString = currentPath.join(' / ');
+
+            // Matching Data Structure Folder
+            if (matchFn(rawQuery, dsName)) {
+              anySearchMatch = true;
+              const dsWrap = document.createElement('div');
+              dsWrap.className = 'algo-item-wrapper';
+
+              const dsRow = document.createElement('div');
+              dsRow.className = `tree-row${selectedDsaType === 'ds' && selectedDsaName === dsName ? ' selected' : ''}`;
+              dsRow.setAttribute('data-dsa-name', dsName);
+              dsRow.appendChild(createFsIcon('images/folder.png', 'Folder'));
+
+              const lbl = document.createElement('span');
+              lbl.className = 'tree-label ds-label';
+              lbl.textContent = dsName;
+              dsRow.appendChild(lbl);
+              dsRow.appendChild(createFavStarButton(dsName));
+
+              dsRow.addEventListener('click', () => {
+                navigateToDsFolder(dsName);
+              });
+
+              const hint = document.createElement('div');
+              hint.className = 'search-path-hint';
+              hint.textContent = pathString;
+
+              dsWrap.appendChild(dsRow);
+              dsWrap.appendChild(hint);
+              algoTreeContainer.appendChild(dsWrap);
+            }
+
+            // Matching Algorithms inside this Data Structure
+            const algos = getFilteredAlgorithmsForDs(dsName);
+            for (const algo of algos) {
+              if (matchFn(rawQuery, algo.name) || algo.tags.some(t => matchFn(rawQuery, t))) {
+                anySearchMatch = true;
+                const fullAlgoPath = `${pathString} / Algorithms / ${algo.name}`;
+                algoTreeContainer.appendChild(createAlgorithmEntryElement(algo, dsName, fullAlgoPath));
+              }
+            }
+
+            searchWalk(dsObj.children || {}, currentPath);
+          }
+        }
+
+        searchWalk(dataStructuresJson, []);
+
+        if (!anySearchMatch) {
+          const emptyEl = document.createElement('div');
+          emptyEl.className = 'algo-empty-msg';
+          emptyEl.textContent = 'No matching data structures or algorithms.';
+          algoTreeContainer.appendChild(emptyEl);
+        }
+        return;
+      }
+
+      /* 2. FILE-SYSTEM MODE: Add ".." Up Row when inside a subfolder */
+      if (currentFsPath.length > 0) {
+        const backRow = document.createElement('div');
+        backRow.className = 'tree-row';
+        backRow.appendChild(createFsIcon('images/folder.png', 'Back'));
+        const backLbl = document.createElement('span');
+        backLbl.className = 'tree-label ds-label';
+        backLbl.textContent = '..';
+        backRow.appendChild(backLbl);
+        backRow.addEventListener('click', () => {
+          currentFsPath.pop();
+          renderMainAlgoTree();
+        });
+        algoTreeContainer.appendChild(backRow);
+      }
+
+      /* Case A: At Root -> Show top-level Data Structure folders */
+      if (currentFsPath.length === 0) {
+        let count = 0;
+        for (const [dsName, dsObj] of Object.entries(dataStructuresJson)) {
+          if (!isDsVisibleUnderFilters(dsName, dsObj)) continue;
+          count++;
+          const row = document.createElement('div');
+          row.className = 'tree-row';
+          row.appendChild(createFsIcon('images/folder.png', 'Folder'));
+
+          const label = document.createElement('span');
+          label.className = 'tree-label ds-label';
+          label.textContent = dsName;
+          row.appendChild(label);
+          row.appendChild(createFavStarButton(dsName));
+
+          row.addEventListener('click', () => {
+            currentFsPath = [dsName];
+            renderMainAlgoTree();
+          });
+          algoTreeContainer.appendChild(row);
+        }
+        if (count === 0) {
+          algoTreeContainer.innerHTML += `<div class="algo-empty-msg">No matching data structures or algorithms.</div>`;
+        }
+        return;
+      }
+
+      /* Case B: Inside "... / <DS> / Algorithms" folder -> Show algorithm files + compatible DS pills */
+      if (currentFsPath[currentFsPath.length - 1] === 'Algorithms') {
+        const parentDsName = currentFsPath[currentFsPath.length - 2];
+        const algos = getFilteredAlgorithmsForDs(parentDsName);
+
+        if (algos.length === 0) {
+          const emptyEl = document.createElement('div');
+          emptyEl.className = 'algo-empty-msg';
+          emptyEl.textContent = 'No algorithms matching active filters in this folder.';
+          algoTreeContainer.appendChild(emptyEl);
+          return;
+        }
+
+        algos.forEach(algo => {
+          algoTreeContainer.appendChild(createAlgorithmEntryElement(algo, parentDsName));
+        });
+        return;
+      }
+
+      /* Case C: Inside a Data Structure folder -> Show "Introduction" file, "Algorithms" folder, and child DS folders */
+      const currentDsName = currentFsPath[currentFsPath.length - 1];
+      const currentDsNode = getDsNodeByPath(currentFsPath);
+      if (!currentDsNode) {
+        currentFsPath = [];
+        renderMainAlgoTree();
+        return;
+      }
+
+      // 1. "Introduction" file (populates notes/code and DS creation settings)
+      const introRow = document.createElement('div');
+      introRow.className = `tree-row${selectedDsaType === 'ds' && selectedDsaName === currentDsName ? ' selected' : ''}`;
+      introRow.setAttribute('data-dsa-name', currentDsName);
+      introRow.appendChild(createFsIcon('images/file.png', 'Introduction'));
+
+      const introLabel = document.createElement('span');
+      introLabel.className = 'tree-label';
+      introLabel.textContent = 'Implementation';
+      introRow.appendChild(introLabel);
+      introRow.appendChild(createFavStarButton(currentDsName));
+
+      introRow.addEventListener('click', () => {
+        selectDsaItem(currentDsName, null, 'ds');
+      });
+      algoTreeContainer.appendChild(introRow);
+
+      // 2. "Algorithms" folder (if this DS has algorithms)
+      const visibleAlgos = getFilteredAlgorithmsForDs(currentDsName);
+      if (visibleAlgos.length > 0) {
+        const algoFolderRow = document.createElement('div');
+        algoFolderRow.className = 'tree-row';
+        algoFolderRow.appendChild(createFsIcon('images/folder.png', 'Algorithms Folder'));
+
+        const algoFolderLabel = document.createElement('span');
+        algoFolderLabel.className = 'tree-label ds-label';
+        algoFolderLabel.textContent = 'Algorithms';
+        algoFolderRow.appendChild(algoFolderLabel);
+
+        algoFolderRow.addEventListener('click', () => {
+          currentFsPath.push('Algorithms');
+          renderMainAlgoTree();
+        });
+        algoTreeContainer.appendChild(algoFolderRow);
+      }
+
+      // 3. Child Data Structure folders
+      const childEntries = Object.entries(currentDsNode.children || {});
+      for (const [childName, childObj] of childEntries) {
+        if (!isDsVisibleUnderFilters(childName, childObj)) continue;
+
+        const childRow = document.createElement('div');
+        childRow.className = 'tree-row';
+        childRow.appendChild(createFsIcon('images/folder.png', 'Folder'));
+
+        const childLabel = document.createElement('span');
+        childLabel.className = 'tree-label ds-label';
+        childLabel.textContent = childName;
+        childRow.appendChild(childLabel);
+        childRow.appendChild(createFavStarButton(childName));
+
+        childRow.addEventListener('click', () => {
+          currentFsPath.push(childName);
+          renderMainAlgoTree();
+        });
+        algoTreeContainer.appendChild(childRow);
+      }
     }
 
     /* Lineage, Compatibility, Search & Filter Scope Helpers */
@@ -7009,42 +7544,6 @@
       return qIdx === cleanQuery.length;
     }
 
-    function isNodeInFilterScope(dsName, dsObj) {
-      /* isNodeInFilterScope checks whether a Data Structure node or any of its descendants is permitted by activeDsFilterSet */
-      if (activeDsFilterSet.size === 0) return true;
-      if (activeDsFilterSet.has(dsName)) return true;
-      const children = (dsObj && dsObj.children) || {};
-      for (const [childName, childObj] of Object.entries(children)) {
-        if (isNodeInFilterScope(childName, childObj)) return true;
-      }
-      return false;
-    }
-
-    function isDirectDsAllowedByFilter(dsName) {
-      /* isDirectDsAllowedByFilter checks if a specific Data Structure is directly enabled in activeDsFilterSet */
-      return activeDsFilterSet.size === 0 || activeDsFilterSet.has(dsName);
-    }
-
-    function treeHasMatchWithFn(nodesObj, query, matchFn) {
-      /* treeHasMatchWithFn tests whether any visible node in the tree matches the search query under the given matchFn */
-      for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
-        if (!isNodeInFilterScope(dsName, dsObj)) continue;
-
-        if (isDirectDsAllowedByFilter(dsName)) {
-          if (matchFn(query, dsName)) return true;
-          const algos = dsDirectAlgorithmsMap[dsName] || [];
-          for (const algo of algos) {
-            if (matchFn(query, algo.name)) return true;
-            if (algo.tags.some(tag => matchFn(query, tag))) return true;
-          }
-        }
-
-        if (treeHasMatchWithFn(dsObj.children || {}, query, matchFn)) {
-          return true;
-        }
-      }
-      return false;
-    }
 
     function createChevronSvg(isExpanded, isEmpty) {
       /* createChevronSvg creates the rotating SVG folder chevron icon for expandable Data Structure rows */
@@ -7373,291 +7872,6 @@
       updatePlaybackCompatibilityUI();
     }
 
-    /* Tree Rendering Functions */
-    function renderFilterDsTree() {
-      /* renderFilterDsTree builds the checkbox folder tree inside #algo-filter-tree for filtering by Data Structure */
-      algoFilterTreeEl.innerHTML = '';
-      algoFilterBtn.classList.toggle('has-active-filter', activeDsFilterSet.size > 0);
-
-      function buildFilterNode(dsName, dsObj) {
-        const childEntries = Object.entries((dsObj && dsObj.children) || {});
-        const hasChildren = childEntries.length > 0;
-        const isExpanded = expandedFilterFolders.has(dsName);
-
-        const nodeWrapper = document.createElement('div');
-        nodeWrapper.className = 'tree-node';
-
-        const row = document.createElement('div');
-        row.className = `tree-row${activeDsFilterSet.has(dsName) ? ' selected' : ''}`;
-
-        const chevron = createChevronSvg(isExpanded, !hasChildren);
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'filter-checkbox';
-        checkbox.checked = activeDsFilterSet.has(dsName);
-
-        const label = document.createElement('span');
-        label.className = 'tree-label ds-label';
-        label.textContent = dsName;
-
-        row.appendChild(chevron);
-        row.appendChild(checkbox);
-        row.appendChild(label);
-        nodeWrapper.appendChild(row);
-
-        const childrenContainer = document.createElement('div');
-        childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
-
-        for (const [childName, childObj] of childEntries) {
-          childrenContainer.appendChild(buildFilterNode(childName, childObj));
-        }
-
-        nodeWrapper.appendChild(childrenContainer);
-
-        chevron.addEventListener('click', (e) => {
-          if (!hasChildren) return;
-          e.stopPropagation();
-          const nextState = !childrenContainer.classList.contains('expanded');
-          childrenContainer.classList.toggle('expanded', nextState);
-          chevron.classList.toggle('expanded', nextState);
-          if (nextState) {
-            expandedFilterFolders.add(dsName);
-          } else {
-            expandedFilterFolders.delete(dsName);
-          }
-        });
-
-        const toggleFilterSelection = () => {
-          if (activeDsFilterSet.has(dsName)) {
-            activeDsFilterSet.delete(dsName);
-          } else {
-            activeDsFilterSet.add(dsName);
-          }
-          renderFilterDsTree();
-          renderMainAlgoTree();
-        };
-
-        checkbox.addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleFilterSelection();
-        });
-
-        row.addEventListener('click', (e) => {
-          e.stopPropagation();
-          toggleFilterSelection();
-        });
-
-        return nodeWrapper;
-      }
-
-      for (const [dsName, dsObj] of Object.entries(dataStructuresJson)) {
-        algoFilterTreeEl.appendChild(buildFilterNode(dsName, dsObj));
-      }
-    }
-
-    function renderMainAlgoTree() {
-      /* renderMainAlgoTree builds and renders the collapsible Data Structure & Algorithm hierarchy inside #algo-tree-container */
-      const rawQuery = algoSearchInput.value.trim();
-      const isSearching = rawQuery.length > 0;
-
-      let matchFn = null;
-      if (isSearching) {
-        const hasExactOrAcronym = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactOrAcronymMatch);
-        matchFn = hasExactOrAcronym ? isExactOrAcronymMatch : isSubsequenceMatch;
-      }
-
-      algoTreeContainer.innerHTML = '';
-
-      const currentDsType = getActiveContainerDsType();
-      // Calculate the lineage path for the active DS once before building the tree
-      const activeDsLineage = currentDsType ? (getDsLineage(currentDsType) || [currentDsType]) : [];
-
-      // Quick-lookup sets from syllabusJson, built once per render
-      const syllabusDsSet = isSyllabusFilterActive
-        ? new Set(syllabusJson['data-structures'] || [])
-        : null;
-      const syllabusAlgoSet = isSyllabusFilterActive
-        ? new Set(syllabusJson['algorithms'] || [])
-        : null;
-
-      function dsSubtreeMatchesSyllabus(dsName, dsObj) {
-        if (syllabusDsSet.has(dsName) || favouritesSet.has(dsName)) return true;
-
-        const directAlgos = dsDirectAlgorithmsMap[dsName] || [];
-        if (directAlgos.some(algo => favouritesSet.has(algo.name))) return true;
-
-        const children = Object.entries((dsObj && dsObj.children) || {});
-        return children.some(([childName, childObj]) => dsSubtreeMatchesSyllabus(childName, childObj));
-      }
-
-      function buildDsSubtree(dsName, dsObj, ancestorMatchedSearch = false) {
-        if (!isNodeInFilterScope(dsName, dsObj)) return null;
-        if (isFavFilterActive && !dsSubtreeHasFavourite(dsName, dsObj)) return null;
-        if (isSyllabusFilterActive && !dsSubtreeMatchesSyllabus(dsName, dsObj)) return null;
-
-        // If compatibility filter is active, only render nodes that are in the lineage of the active DS
-        if (isCompatibleFilterActive) {
-          if (!currentDsType || !activeDsLineage.includes(dsName)) {
-            return null; // Prunes siblings and children not in the direct ancestral path
-          }
-        }
-
-        const directAllowed = isDirectDsAllowedByFilter(dsName);
-        let allDirectAlgos = directAllowed ? (dsDirectAlgorithmsMap[dsName] || []) : [];
-
-        // Apply Favourite filter if active (favourited DS bypasses algo filtering entirely)
-        if (isFavFilterActive && !favouritesSet.has(dsName)) {
-          allDirectAlgos = allDirectAlgos.filter(algo => favouritesSet.has(algo.name));
-        }
-
-        if (isSyllabusFilterActive && !favouritesSet.has(dsName)) {
-          allDirectAlgos = allDirectAlgos.filter(algo =>
-            syllabusAlgoSet.has(algo.name) || favouritesSet.has(algo.name)
-          );
-        }
-
-        const childEntries = Object.entries((dsObj && dsObj.children) || {});
-
-        const selfMatchesSearch = isSearching && directAllowed && matchFn(rawQuery, dsName);
-        const effectiveAncestorMatch = ancestorMatchedSearch || selfMatchesSearch;
-
-        let visibleAlgos = allDirectAlgos;
-        let hasMatchingDirectAlgo = false;
-
-        if (isSearching) {
-          const matchedAlgos = allDirectAlgos.filter(algo =>
-            matchFn(rawQuery, algo.name) || algo.tags.some(tag => matchFn(rawQuery, tag))
-          );
-          hasMatchingDirectAlgo = matchedAlgos.length > 0;
-          visibleAlgos = hasMatchingDirectAlgo ? matchedAlgos : (effectiveAncestorMatch ? allDirectAlgos : []);
-        }
-
-        const childFragment = document.createDocumentFragment();
-        let hasVisibleChildDs = false;
-        for (const [childName, childObj] of childEntries) {
-          const childNodeEl = buildDsSubtree(childName, childObj, effectiveAncestorMatch);
-          if (childNodeEl) {
-            hasVisibleChildDs = true;
-            childFragment.appendChild(childNodeEl);
-          }
-        }
-
-        const effectiveHasMatchingAlgo = isAlgosHidden ? false : hasMatchingDirectAlgo;
-
-        if (isSearching && !selfMatchesSearch && !effectiveHasMatchingAlgo && !hasVisibleChildDs && !ancestorMatchedSearch) {
-          return null;
-        }
-
-        const hasAnyChildren = hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0);
-
-        let isExpanded = expandedMainFolders.has(dsName);
-        if (isSearching && (effectiveHasMatchingAlgo || hasVisibleChildDs || selfMatchesSearch)) {
-          isExpanded = true;
-        } else if (activeDsFilterSet.size > 0 && !activeDsFilterSet.has(dsName) && hasVisibleChildDs) {
-          isExpanded = true;
-        } else if (isFavFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
-          isExpanded = true;
-        } else if (isCompatibleFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
-          isExpanded = true;
-        } else if (isSyllabusFilterActive && (hasVisibleChildDs || (!isAlgosHidden && visibleAlgos.length > 0))) {
-          isExpanded = true;
-        }
-
-        const nodeWrapper = document.createElement('div');
-        nodeWrapper.className = 'tree-node';
-
-        const dsRow = document.createElement('div');
-        dsRow.className = `tree-row${selectedDsaName === dsName ? ' selected' : ''}`;
-        dsRow.setAttribute('data-dsa-name', dsName);
-
-        const chevron = createChevronSvg(isExpanded, !hasAnyChildren);
-        const label = document.createElement('span');
-        label.className = 'tree-label ds-label';
-        label.textContent = dsName;
-
-        if (!hasAnyChildren) {
-          const dsDot = document.createElement('span');
-          dsDot.className = 'ds-leaf-dot';
-          dsRow.appendChild(dsDot);
-        } else {
-          dsRow.appendChild(chevron);
-        }
-
-        dsRow.appendChild(label);
-        dsRow.appendChild(createFavStarButton(dsName));
-        nodeWrapper.appendChild(dsRow);
-
-        const childrenContainer = document.createElement('div');
-        childrenContainer.className = `tree-children${isExpanded ? ' expanded' : ''}`;
-
-        if (!isAlgosHidden) {
-          for (const algo of visibleAlgos) {
-            const algoWrapper = document.createElement('div');
-            algoWrapper.className = 'algo-item-wrapper';
-
-            const algoRow = document.createElement('div');
-            algoRow.className = `tree-row${selectedDsaName === algo.name ? ' selected' : ''}`;
-            algoRow.setAttribute('data-dsa-name', algo.name);
-
-            const dot = document.createElement('span');
-            dot.className = 'algo-dot';
-
-            const algoLabel = document.createElement('span');
-            algoLabel.className = 'tree-label algo-label';
-            algoLabel.textContent = algo.name;
-
-            algoRow.appendChild(dot);
-            algoRow.appendChild(algoLabel);
-            algoRow.appendChild(createFavStarButton(algo.name));
-
-            algoRow.addEventListener('click', (e) => {
-              e.stopPropagation();
-              selectDsaItem(algo.name, dsName, 'algo');
-            });
-
-            algoWrapper.appendChild(algoRow);
-            childrenContainer.appendChild(algoWrapper);
-          }
-        }
-
-        childrenContainer.appendChild(childFragment);
-        nodeWrapper.appendChild(childrenContainer);
-
-        dsRow.addEventListener('click', (e) => {
-          e.stopPropagation();
-          selectDsaItem(dsName, null, 'ds');
-          if (hasAnyChildren) {
-            const nowExpanded = !childrenContainer.classList.contains('expanded');
-            childrenContainer.classList.toggle('expanded', nowExpanded);
-            chevron.classList.toggle('expanded', nowExpanded);
-            if (nowExpanded) {
-              expandedMainFolders.add(dsName);
-            } else {
-              expandedMainFolders.delete(dsName);
-            }
-          }
-        });
-
-        return nodeWrapper;
-      }
-
-      let anyRendered = false;
-      for (const [dsName, dsObj] of Object.entries(dataStructuresJson)) {
-        const treeEl = buildDsSubtree(dsName, dsObj, false);
-        if (treeEl) {
-          anyRendered = true;
-          algoTreeContainer.appendChild(treeEl);
-        }
-      }
-
-      if (!anyRendered) {
-        const emptyEl = document.createElement('div');
-        emptyEl.className = 'algo-empty-msg';
-        emptyEl.textContent = 'No matching data structures or algorithms.';
-        algoTreeContainer.appendChild(emptyEl);
-      }
-    }
-
     async function loadDsaMetadata() {
       /* loadDsaMetadata fetches data-structures.json, algorithms.json, constraints-description.json, and attributes-description.json */
       try {
@@ -7676,7 +7890,6 @@
         syllabusJson = syllRes.ok ? await syllRes.json() : { "data-structures": [], "algorithms": [] };
 
         buildDirectAlgorithmsMap();
-        renderFilterDsTree();
         renderMainAlgoTree();
       } catch (err) {
         algoTreeContainer.innerHTML = `<div class="algo-empty-msg">Failed to load DSA JSON files.</div>`;
@@ -7719,26 +7932,6 @@
       isCompatibleFilterActive = !isCompatibleFilterActive;
       algoCompatibleFilterBtn.classList.toggle('has-active-filter', isCompatibleFilterActive);
       algoCompatibleFilterBtn.setAttribute('aria-pressed', String(isCompatibleFilterActive));
-      renderMainAlgoTree();
-    });
-
-    algoHideBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      isAlgosHidden = !isAlgosHidden;
-      algoHideBtn.classList.toggle('has-active-filter', isAlgosHidden);
-      algoHideBtn.setAttribute('aria-pressed', String(isAlgosHidden));
-      renderMainAlgoTree();
-    });
-
-    algoFilterBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = algoFilterPanel.classList.toggle('open');
-      algoFilterBtn.setAttribute('aria-expanded', String(isOpen));
-    });
-
-    algoFilterClearBtn.addEventListener('click', () => {
-      activeDsFilterSet.clear();
-      renderFilterDsTree();
       renderMainAlgoTree();
     });
 
@@ -7867,6 +8060,7 @@
 
     renderHistoryList();
     loadDsaMetadata();
+    setDsaModalOpen(false);
     /* ========== End of Right Column: Algorithms Search, Filters, Favourites & Tree View ========== */
 
 
@@ -8417,10 +8611,8 @@
           : (lockedHistWidthPx !== null ? lockedHistWidthPx : historyColumn.getBoundingClientRect().width);
         const histSplitW = splitterHistoryDs.getBoundingClientRect().width;
 
-        const algoW = isAlgoCollapsed
-          ? collapsedStripW
-          : (lockedAlgoWidthPx !== null ? lockedAlgoWidthPx : algoColumn.getBoundingClientRect().width);
-        const algoSplitW = splitterAlgoCode.getBoundingClientRect().width;
+        const algoW = 0;
+        const algoSplitW = 0;
 
         const dsAvailableW = desiredLeftW - histW - histSplitW;
         const codeAvailableW = desiredRightW - algoW - algoSplitW;
@@ -8487,93 +8679,6 @@
       window.addEventListener('touchend', stopDrag);
     })();
 
-    /* 5. Algorithms <-> Settings Horizontal Splitter (#splitter-algo-settings-h) */
-    makeResizable({
-      splitter: splitterAlgoSettingsH,
-      getContainer: () => algoColumn,
-      getTargetPane: () => algoCard,
-      getDirection: () => 'vertical',
-      getMinUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75),
-      getMaxReservedUnits: () => phoneMedia.matches
-        ? getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_MOBILE_VAR, 1.6)
-        : getRootCssVarUnits(LAYOUT_CONFIG.CARD_MIN_HEIGHT_DESKTOP_VAR, 2.75)
-    });
-
-    /* 6. Algorithms Column <-> Code Card Vertical Splitter (#splitter-algo-code-v) */
-    (function setupAlgoSplitter() {
-      /* setupAlgoSplitter handles resizing and auto-collapsing between #code-card and #algo-column (Code | Algorithms on desktop, Algorithms | Code on mobile) */
-      let isDragging = false;
-
-      const startDrag = (e) => {
-        isDragging = true;
-        splitterAlgoCode.classList.add('dragging');
-        document.body.style.cursor = 'col-resize';
-        e.preventDefault();
-      };
-
-      const onDrag = (e) => {
-        if (!isDragging) return;
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const rect = rightTopRow.getBoundingClientRect();
-        if (rect.width <= 0) return;
-
-        const isPhone = phoneMedia.matches;
-        const collapseThresholdU = isPhone
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_MOBILE_VAR, 5)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_MIN_WIDTH_DESKTOP_VAR, 5);
-        const collapsedStripW = isPhone
-          ? getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_MOBILE_VAR, 1.6)
-          : getRootCssVarUnits(LAYOUT_CONFIG.ALGO_COLLAPSED_WIDTH_DESKTOP_VAR, 2.15);
-        const splitterW = splitterAlgoCode.getBoundingClientRect().width;
-
-        /* On desktop, #algo-column is on the right (rect.right - clientX); on mobile, #algo-column is on the left (clientX - rect.left) */
-        const desiredWidthU = isPhone ? (clientX - rect.left) : (rect.right - clientX);
-        const remainingCodeWidthU = rect.width - desiredWidthU - splitterW;
-
-        if (desiredWidthU < collapseThresholdU) {
-          if (isCodeCollapsed) setCodeCollapsed(false);
-          if (!isAlgoCollapsed) setAlgoCollapsed(true);
-        } else if (remainingCodeWidthU < collapseThresholdU) {
-          if (isAlgoCollapsed) setAlgoCollapsed(false);
-          if (!isCodeCollapsed) setCodeCollapsed(true, true);
-          const expandedAlgoW = `${(((rect.width - collapsedStripW - splitterW) / rect.width) * 100).toFixed(2)}%`;
-          algoColumn.style.width = expandedAlgoW;
-        } else {
-          if (isCodeCollapsed) setCodeCollapsed(false);
-          const maxU = Math.max(collapseThresholdU, rect.width - collapseThresholdU - splitterW);
-          const clampedU = Math.max(collapseThresholdU, Math.min(maxU, desiredWidthU));
-          /* Store pixel width on desktop so resizing the main splitter only affects #code-card; keep percentage on mobile */
-          const widthStr = isPhone
-            ? `${((clampedU / rect.width) * 100).toFixed(2)}%`
-            : `${clampedU.toFixed(2)}px`;
-          savedAlgoWidth = widthStr;
-
-          if (isAlgoCollapsed) {
-            setAlgoCollapsed(false, widthStr);
-          } else {
-            algoColumn.style.width = widthStr;
-          }
-        }
-      };
-
-      const stopDrag = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        splitterAlgoCode.classList.remove('dragging');
-        document.body.style.cursor = '';
-        saveLayoutState();
-      };
-
-      splitterAlgoCode.addEventListener('mousedown', startDrag);
-      splitterAlgoCode.addEventListener('touchstart', startDrag, { passive: false });
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('touchmove', onDrag, { passive: false });
-      window.addEventListener('mouseup', stopDrag);
-      window.addEventListener('touchend', stopDrag);
-    })();
-
     /* 7. Right Top Row <-> Bottom Split Row Horizontal Splitter (#splitter-right-h) */
     makeResizable({
       splitter: splitterRightH,
@@ -8623,53 +8728,38 @@
       },
       algorithms: {
         id: 'algorithms-card',
-        fallbackIds: ['algo-collapsed-strip', 'algo-column'],
+        fallbackIds: ['btnCreate'],
         title: 'Data structures and algorithms',
-        description: 'Browse, search, and select from available algorithms and data structures to visualize.'
+        description: 'Browse data structures and algorithms like a file system, or search by full path.',
+        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
       },
       algorithmSettings: {
         id: 'algo-settings-card',
-        fallbackIds: ['algo-settings-collapsed-strip', 'algo-column'],
+        fallbackIds: ['btnCreate'],
         title: 'Settings',
-        description: 'View parameters, tags and constraints for an algorithm.',
-        onEnter: () => {
-          if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false);
-        }
+        description: 'Configure creation settings for data structures or input parameters for algorithms.',
+        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
       },
       favourites: {
         id: 'algo-fav-filter-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
+        fallbackIds: ['btnCreate'],
         title: 'Favourites',
         description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
+        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
       },
       syllabus: {
         id: 'algo-syllabus-filter-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
+        fallbackIds: ['btnCreate'],
         title: 'Syllabus',
         description: 'Filter the list to show only the data structures and algorithms assigned by your institution.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
+        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
       },
       filterByCompatible: {
         id: 'algo-compatible-filter-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
+        fallbackIds: ['btnCreate'],
         title: 'Compatible algorithms',
         description: 'Filter the list to show only the algorithms that are compatible with your selected data structure.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
-      },
-      filterByAlgorithm: {
-        id: 'algo-hide-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
-        title: 'Hide Algorithms Filter',
-        description: 'Toggle this button to hide algorithms in the tree and view only Data Structures.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
-      },
-      filterByDataStructure: {
-        id: 'algo-filter-btn',
-        fallbackIds: ['algo-collapsed-strip', 'algorithms-card'],
-        title: 'Filter by Data Structure',
-        description: 'Open the collapsible filter tree to narrow down items by specific data structure categories.',
-        onEnter: () => { if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(false); }
+        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
       },
       stateAndExplanation: {
         id: 'state-card',
@@ -8677,18 +8767,19 @@
         title: 'State Variables & Explanation',
         description: 'Inspect live pointer values and algorithm counters at each step, or switch tabs to look at the algorithm execution steps all at once.',
         onEnter: () => {
+          if (typeof setDsaModalOpen === 'function') setDsaModalOpen(false);
           if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
         }
       },
       metadata: {
         id: 'metadata-card',
-        fallbackIds: ['metadata-collapsed-strip', 'history-column'],
+        fallbackIds: ['metadata-collapsed-strip', 'history-column', 'btnHistoryMobile'],
         title: 'Metadata',
         description: 'Displays key properties and structural details about the data structure.'
       },
       history: {
         id: 'history-card',
-        fallbackIds: ['history-collapsed-strip', 'history-column'],
+        fallbackIds: ['history-collapsed-strip', 'history-column', 'btnHistoryMobile'],
         title: 'History',
         description: 'Tracks your recent operations and modifications so you can review or revisit previous data structures.'
       },
@@ -8740,8 +8831,6 @@
       'favourites',
       'syllabus',
       'filterByCompatible',
-      'filterByAlgorithm',
-      'filterByDataStructure',
       'algorithmSettings',
       'stateAndExplanation',
       'metadata',
