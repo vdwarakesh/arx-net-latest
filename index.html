@@ -2614,7 +2614,7 @@
       /* .modal-backdrop is used here on #profile-modal-backdrop for the dimmed full-screen overlay behind the Profile modal */
       position: fixed;
       inset: 0;
-      z-index: 9998;
+      z-index: 9994;
       display: none;
       align-items: center;
       justify-content: center;
@@ -4592,7 +4592,7 @@
           aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body" style="display: flex; flex-direction: column; gap: 0.65rem; flex: 1; overflow: hidden;">
-        <section class="vscode-card" style="flex: 1; min-height: 0;">
+        <section id="mobile-metadata-card" class="vscode-card" style="flex: 1; min-height: 0;">
           <div class="vscode-card-header"><span>Metadata</span></div>
           <div id="mobile-metadata-body" class="card-scroll-body">
             <div class="card-inner-pad">
@@ -4601,7 +4601,7 @@
             </div>
           </div>
         </section>
-        <section class="vscode-card" style="flex: 1; min-height: 0;">
+        <section id="mobile-history-card" class="vscode-card" style="flex: 1; min-height: 0;">
           <div class="vscode-card-header"><span>History</span></div>
           <div id="mobile-history-body" class="card-scroll-body">
             <div class="card-inner-pad">
@@ -8869,19 +8869,62 @@
     // ========== Modular welcome tour ========== //
     const TOUR_STORAGE_KEY = 'shard-spiral-welcome-tour-completed-v1';
 
+    /* Tour UI Helpers (works independently of module-scoped functions) */
+    const tourHelpers = {
+      isMobile: () => window.matchMedia && window.matchMedia('(max-width: 900px)').matches,
+
+      setDsaModal: (open) => {
+        const el = document.getElementById('dsa-modal-backdrop');
+        if (el) el.classList.toggle('open', Boolean(open));
+      },
+
+      setMobileHistoryModal: (open) => {
+        const el = document.getElementById('mobile-history-modal-backdrop');
+        if (el) el.classList.toggle('open', Boolean(open));
+      },
+
+      expandHeaderGroup: (side, targetId) => {
+        const tb = document.querySelector('.top-titlebar');
+        if (!tb) return;
+        if (side === 'left') {
+          tb.classList.add('expand-left');
+          tb.classList.remove('expand-right');
+        } else if (side === 'right') {
+          tb.classList.add('expand-right');
+          tb.classList.remove('expand-left');
+        }
+        if (targetId) {
+          const targetEl = document.getElementById(targetId);
+          if (targetEl && typeof targetEl.scrollIntoView === 'function') {
+            targetEl.scrollIntoView({ inline: 'center', block: 'nearest' });
+          }
+        }
+      },
+
+      scrollCardIntoModalView: (id) => {
+        const el = document.getElementById(id);
+        if (el && typeof el.scrollIntoView === 'function') {
+          el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+      }
+    };
+
     /**
      * 1. TOUR STEPS REGISTRY
      * - `id`: Primary HTML element ID to point to.
      * - `fallbackIds`: Backup IDs if the primary element is collapsed or on mobile.
-     * - `onEnter`: Executed before measuring the element (e.g., auto-expanding a
-     *              collapsed mobile column so inner buttons are visible).
+     * - `onEnter`: Executed before measuring the element.
      */
     const TOUR_STEPS_REGISTRY = {
       dataStructures: {
         id: 'ds-card',
         fallbackIds: ['ds-collapsed-strip', 'left-main-stack'],
         title: 'Data Structures & Canvas',
-        description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.'
+        description: 'Interactive visualization canvas where data structures and algorithm steps are animated in real time.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+        }
       },
       codeAndNotes: {
         id: 'code-card',
@@ -8889,10 +8932,8 @@
         title: 'Code & Notes',
         description: 'View the syntax-highlighted code implementation with real-time execution highlights, or switch tabs to read detailed conceptual notes, intuition, and complexity breakdowns.',
         onEnter: () => {
-          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
-            if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(true);
-          }
-          if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
         }
       },
       algorithms: {
@@ -8900,35 +8941,55 @@
         fallbackIds: ['btnCreate'],
         title: 'Data structures and algorithms',
         description: 'Browse data structures and algorithms like a file system, or search by full path.',
-        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
+        onEnter: () => {
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.setDsaModal(true);
+          tourHelpers.scrollCardIntoModalView('algorithms-card');
+        }
+      },
+      favourites: {
+        id: 'algo-fav-filter-btn',
+        fallbackIds: ['algorithms-card', 'btnCreate'],
+        title: 'Favourites',
+        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
+        onEnter: () => {
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.setDsaModal(true);
+          tourHelpers.scrollCardIntoModalView('algorithms-card');
+        }
+      },
+      syllabus: {
+        id: 'algo-syllabus-filter-btn',
+        fallbackIds: ['algorithms-card', 'btnCreate'],
+        title: 'Syllabus',
+        description: 'Filter the list to show only the data structures and algorithms assigned by your institution.',
+        onEnter: () => {
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.setDsaModal(true);
+          tourHelpers.scrollCardIntoModalView('algorithms-card');
+        }
+      },
+      filterByCompatible: {
+        id: 'algo-compatible-filter-btn',
+        fallbackIds: ['algorithms-card', 'btnCreate'],
+        title: 'Compatible algorithms',
+        description: 'Filter the list to show only the algorithms that are compatible with your selected data structure.',
+        onEnter: () => {
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.setDsaModal(true);
+          tourHelpers.scrollCardIntoModalView('algorithms-card');
+        }
       },
       algorithmSettings: {
         id: 'algo-settings-card',
         fallbackIds: ['btnCreate'],
         title: 'Settings',
         description: 'Configure creation settings for data structures or input parameters for algorithms.',
-        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
-      },
-      favourites: {
-        id: 'algo-fav-filter-btn',
-        fallbackIds: ['btnCreate'],
-        title: 'Favourites',
-        description: 'Filter the list to show only the data structures and algorithms you have starred as favourites.',
-        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
-      },
-      syllabus: {
-        id: 'algo-syllabus-filter-btn',
-        fallbackIds: ['btnCreate'],
-        title: 'Syllabus',
-        description: 'Filter the list to show only the data structures and algorithms assigned by your institution.',
-        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
-      },
-      filterByCompatible: {
-        id: 'algo-compatible-filter-btn',
-        fallbackIds: ['btnCreate'],
-        title: 'Compatible algorithms',
-        description: 'Filter the list to show only the algorithms that are compatible with your selected data structure.',
-        onEnter: () => { if (typeof setDsaModalOpen === 'function') setDsaModalOpen(true); }
+        onEnter: () => {
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.setDsaModal(true);
+          tourHelpers.scrollCardIntoModalView('algo-settings-card');
+        }
       },
       stateAndExplanation: {
         id: 'state-card',
@@ -8936,30 +8997,35 @@
         title: 'State Variables & Explanation',
         description: 'Inspect live pointer values and algorithm counters at each step, or switch tabs to look at the algorithm execution steps all at once.',
         onEnter: () => {
-          if (typeof setDsaModalOpen === 'function') setDsaModalOpen(false);
-          if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
         }
       },
       metadata: {
         id: 'metadata-card',
-        fallbackIds: ['mobile-metadata-body', 'btnHistoryMobile', 'metadata-collapsed-strip', 'history-column'],
+        fallbackIds: ['mobile-metadata-card', 'mobile-metadata-body', 'metadata-collapsed-strip', 'history-column', 'btnHistoryMobile'],
         title: 'Metadata',
         description: 'Displays key properties and structural details about the data structure.',
         onEnter: () => {
-          if (typeof setDsaModalOpen === 'function') setDsaModalOpen(false);
-          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
-            if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(true);
+          tourHelpers.setDsaModal(false);
+          if (tourHelpers.isMobile()) {
+            tourHelpers.setMobileHistoryModal(true);
+          } else {
+            tourHelpers.setMobileHistoryModal(false);
           }
         }
       },
       history: {
         id: 'history-card',
-        fallbackIds: ['mobile-history-body', 'btnHistoryMobile', 'history-collapsed-strip', 'history-column'],
+        fallbackIds: ['mobile-history-card', 'mobile-history-body', 'history-collapsed-strip', 'history-column', 'btnHistoryMobile'],
         title: 'History',
         description: 'Tracks your recent operations and modifications so you can review or revisit previous data structures.',
         onEnter: () => {
-          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
-            if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(true);
+          tourHelpers.setDsaModal(false);
+          if (tourHelpers.isMobile()) {
+            tourHelpers.setMobileHistoryModal(true);
+          } else {
+            tourHelpers.setMobileHistoryModal(false);
           }
         }
       },
@@ -8968,38 +9034,90 @@
         title: 'Fullscreen',
         description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.',
         onEnter: () => {
-          if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(false);
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'btnFullscreen');
+        }
+      },
+      createMenu: {
+        id: 'btnCreate',
+        title: 'Create & Settings',
+        description: 'Open the Data Structures & Settings window to create new containers, browse algorithms, and adjust properties.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'btnCreate');
+        }
+      },
+      historyMobile: {
+        id: 'btnHistoryMobile',
+        title: 'Metadata & History',
+        description: 'Access your container history and view the metadata for your active data structure.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'btnHistoryMobile');
         }
       },
       grid: {
         id: 'grid-dropdown-wrapper',
         title: 'Grid varieties',
-        description: 'Choose your preferred background in the canvas.'
+        description: 'Choose your preferred background in the canvas.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'grid-dropdown-wrapper');
+        }
       },
       annotations: {
         id: 'annotation-dropdown-wrapper',
         title: 'Annotations',
-        description: 'Annotate on your screen to mark anything you wish to.'
+        description: 'Annotate on your screen to mark anything you wish to.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'annotation-dropdown-wrapper');
+        }
       },
       toggleAnnotations: {
         id: 'btnToggleAnnotationsVis',
         title: 'Toggle annotations',
-        description: 'Show/hide your drawn annotations on the screen.'
+        description: 'Show/hide your drawn annotations on the screen.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('left', 'btnToggleAnnotationsVis');
+        }
       },
       zenMode: {
         id: 'zen-mode-btn',
         title: 'Zen Mode',
-        description: 'Automatically hides any collapsed panels and splitters for a clean, distraction-free workspace.'
+        description: 'Automatically hides any collapsed panels and splitters for a clean, distraction-free workspace.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('right', 'zen-mode-btn');
+        }
       },
       resetLayout: {
         id: 'reset-layout-btn',
         title: 'Reset Layout',
-        description: 'Restore all resized or collapsed panels back to their default proportions with a single click.'
+        description: 'Restore all resized or collapsed panels back to their default proportions with a single click.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('right', 'reset-layout-btn');
+        }
       },
       btnHelp: {
         id: 'btnHelp',
         title: 'Help',
-        description: 'If you are ever stuck, you can always revisit this tour by clicking this button.'
+        description: 'If you are ever stuck, you can always revisit this tour by clicking this button.',
+        onEnter: () => {
+          tourHelpers.setDsaModal(false);
+          tourHelpers.setMobileHistoryModal(false);
+          tourHelpers.expandHeaderGroup('right', 'btnHelp');
+        }
       }
     };
 
@@ -9010,12 +9128,14 @@
     const TOUR_STEP_ORDER = [
       'dataStructures',
       'codeAndNotes',
+      'createMenu',
       'algorithms',
       'favourites',
       'syllabus',
       'filterByCompatible',
       'algorithmSettings',
       'stateAndExplanation',
+      'historyMobile',
       'metadata',
       'history',
       'fullscreen',
@@ -9044,7 +9164,6 @@
       let activeStepIndex = 0;
       let isTourRunning = false;
       let wasZenModeBeforeTour = false;
-      let wasAlgoCollapsedBeforeTour = false;
 
       function isElementVisible(el) {
         if (!el) return false;
@@ -9102,7 +9221,6 @@
         } else if (spaceLeft >= cardW + gap) {
           placement = 'left';
         } else {
-          // On small mobile screens when pointing to large cards, prefer top or bottom
           placement = spaceBottom >= spaceTop ? 'bottom' : 'top';
         }
 
@@ -9188,7 +9306,7 @@
           stepConfig.onEnter();
         }
 
-        // Wait a frame so any DOM layout changes from `onEnter` settle before measuring
+        // Wait a frame so any DOM layout/modal changes from `onEnter` settle before measuring
         requestAnimationFrame(() => {
           const targetEl = resolveStepTargetElement(stepConfig);
           if (!targetEl) {
@@ -9213,8 +9331,13 @@
         const stepKey = TOUR_STEP_ORDER[activeStepIndex];
         const stepConfig = TOUR_STEPS_REGISTRY[stepKey];
         if (!stepConfig) return;
-        const targetEl = resolveStepTargetElement(stepConfig);
-        if (targetEl) positionTourAroundTarget(targetEl);
+        if (typeof stepConfig.onEnter === 'function') {
+          stepConfig.onEnter();
+        }
+        requestAnimationFrame(() => {
+          const targetEl = resolveStepTargetElement(stepConfig);
+          if (targetEl) positionTourAroundTarget(targetEl);
+        });
       }
 
       function endTour(markCompleted = true) {
@@ -9222,11 +9345,14 @@
         cardEl.classList.remove('open');
         spotlightEl.style.display = 'none';
 
-        // Restore tabs & layout states that were modified during the tour
-        if (typeof setActiveTab === 'function') setActiveTab('code', 'Code');
-        if (typeof setActiveStateTab === 'function') setActiveStateTab('state', 'State variables');
-        if (typeof setAlgoCollapsed === 'function') setAlgoCollapsed(wasAlgoCollapsedBeforeTour);
-        if (wasZenModeBeforeTour && typeof setZenMode === 'function') setZenMode(true);
+        // Close any modals opened during the tour and restore left mobile header tools
+        tourHelpers.setDsaModal(false);
+        tourHelpers.setMobileHistoryModal(false);
+        tourHelpers.expandHeaderGroup('left');
+
+        if (wasZenModeBeforeTour) {
+          document.body.classList.add('zen-mode');
+        }
 
         if (markCompleted) {
           try {
@@ -9242,13 +9368,9 @@
           }
         } catch (e) { }
 
-        // Save current states so we can restore them when the tour finishes
         wasZenModeBeforeTour = document.body.classList.contains('zen-mode');
-        wasAlgoCollapsedBeforeTour = typeof isAlgoCollapsed !== 'undefined' ? isAlgoCollapsed : false;
-
-        // Temporarily turn off Zen Mode during the tour so collapsed strips are visible
-        if (wasZenModeBeforeTour && typeof setZenMode === 'function') {
-          setZenMode(false);
+        if (wasZenModeBeforeTour) {
+          document.body.classList.remove('zen-mode');
         }
 
         isTourRunning = true;
@@ -9271,14 +9393,12 @@
 
       skipBtn.addEventListener('click', () => endTour(true));
 
-      // Replay the entire tour anytime when the Help button in the titlebar is clicked
       if (btnHelp) {
         btnHelp.addEventListener('click', () => {
           startTour(true);
         });
       }
 
-      // Keep tour card synced if window resizes, orientation changes, or splitters are dragged
       window.addEventListener('resize', refreshCurrentStepPosition);
       window.addEventListener('orientationchange', () => setTimeout(refreshCurrentStepPosition, 150));
       window.addEventListener('mousemove', () => {
@@ -9294,7 +9414,6 @@
 
       window.startShardSpiralTour = startTour;
 
-      // Safely launch on first load whether `load` has already fired or not
       if (document.readyState === 'complete') {
         setTimeout(() => startTour(false), 450);
       } else {
