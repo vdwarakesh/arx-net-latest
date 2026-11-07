@@ -1956,6 +1956,13 @@
       max-height: 86dvh;
     }
 
+    .history-modal-window {
+      width: min(36rem, 94vw);
+      max-width: 94vw;
+      height: min(36rem, 84dvh);
+      max-height: 84dvh;
+    }
+
     .dsa-modal-split {
       display: flex;
       flex: 1;
@@ -3380,6 +3387,16 @@
         min-height: var(--header-action-icon-size-mobile);
       }
 
+      #btnHistoryMobile {
+        display: inline-flex;
+      }
+
+      /* Completely hide the side Metadata/History cards and splitter on mobile */
+      #history-column,
+      #splitter-history-ds-v {
+        display: none !important;
+      }
+
       #btnReload {
         /* Displays the Reload page button (#btnReload) in the top titlebar on mobile */
         display: flex;
@@ -4566,9 +4583,9 @@
   <!--========== End of DSA & Settings Floating Window ==========-->
 
   <!--========== Mobile Metadata & History Floating Window ==========-->
-  <div id="mobile-history-modal-backdrop" class="modal-backdrop" role="dialog" aria-modal="true"
+  <div id="mobile-history-modal-backdrop" class="modal-backdrop " role="dialog" aria-modal="true"
     aria-labelledby="mobile-history-modal-title">
-    <div class="modal-window" style="width: min(32rem, 94vw); height: min(34rem, 84dvh);">
+    <div class="modal-window history-modal-window" style="width: min(32rem, 94vw); height: min(34rem, 84dvh);">
       <div class="modal-header">
         <span id="mobile-history-modal-title">Metadata &amp; History</span>
         <button type="button" id="close-mobile-history-modal" class="card-icon-btn" title="Close"
@@ -6202,12 +6219,14 @@
 
       const activeObj = dsContainers.find(c => c.name === activeContainerName);
       if (!activeObj) {
-        metadataBody.innerHTML = `
+        const emptyHtml = `
           <div class="card-inner-pad">
             <span class="card-body-text" style="color: var(--text-muted);">
               Create a data structure to view its metadata.
             </span>
           </div>`;
+        metadataBody.innerHTML = emptyHtml;
+        if (mobileMetadataBodyEl) mobileMetadataBodyEl.innerHTML = emptyHtml;
         return;
       }
 
@@ -7262,55 +7281,72 @@
         return algos;
       }
 
-      /* 1. SEARCH MODE: Show full path of matching Data Structures and Algorithms */
+      /* 1. SEARCH MODE: Prioritize current folder, then show other folders in full paths */
       if (isSearching) {
         const hasExactOrAcronym = treeHasMatchWithFn(dataStructuresJson, rawQuery, isExactOrAcronymMatch);
         const matchFn = hasExactOrAcronym ? isExactOrAcronymMatch : isSubsequenceMatch;
-        let anySearchMatch = false;
+
+        // Determine the active folder DS scope (if currently inside a DS folder or its Algorithms subfolder)
+        const activeFolderDsPath = currentFsPath[currentFsPath.length - 1] === 'Algorithms'
+          ? currentFsPath.slice(0, -1)
+          : currentFsPath;
+
+        const isInsideCurrentFolder = (candidateDsPath) => {
+          if (activeFolderDsPath.length === 0) return false;
+          if (candidateDsPath.length < activeFolderDsPath.length) return false;
+          return activeFolderDsPath.every((seg, i) => candidateDsPath[i] === seg);
+        };
+
+        const currentFolderMatches = [];
+        const otherFolderMatches = [];
+
+        function buildDsSearchElement(dsName, pathString) {
+          const dsWrap = document.createElement('div');
+          dsWrap.className = 'algo-item-wrapper';
+
+          const dsRow = document.createElement('div');
+          dsRow.className = `tree-row${selectedDsaType === 'ds' && selectedDsaName === dsName ? ' selected' : ''}`;
+          dsRow.setAttribute('data-dsa-name', dsName);
+          dsRow.appendChild(createFsIcon('images/folder.png', 'Folder'));
+
+          const lbl = document.createElement('span');
+          lbl.className = 'tree-label ds-label';
+          lbl.textContent = dsName;
+          dsRow.appendChild(lbl);
+          dsRow.appendChild(createFavStarButton(dsName));
+
+          dsRow.addEventListener('click', () => {
+            navigateToDsFolder(dsName);
+          });
+
+          const hint = document.createElement('div');
+          hint.className = 'search-path-hint';
+          hint.textContent = pathString;
+
+          dsWrap.appendChild(dsRow);
+          dsWrap.appendChild(hint);
+          return dsWrap;
+        }
 
         function searchWalk(nodesObj, pathPrefix = []) {
           for (const [dsName, dsObj] of Object.entries(nodesObj || {})) {
             if (!isDsVisibleUnderFilters(dsName, dsObj)) continue;
             const currentPath = [...pathPrefix, dsName];
             const pathString = currentPath.join(' / ');
+            const inCurrentScope = isInsideCurrentFolder(currentPath);
+            const targetBucket = inCurrentScope ? currentFolderMatches : otherFolderMatches;
 
             // Matching Data Structure Folder
             if (matchFn(rawQuery, dsName)) {
-              anySearchMatch = true;
-              const dsWrap = document.createElement('div');
-              dsWrap.className = 'algo-item-wrapper';
-
-              const dsRow = document.createElement('div');
-              dsRow.className = `tree-row${selectedDsaType === 'ds' && selectedDsaName === dsName ? ' selected' : ''}`;
-              dsRow.setAttribute('data-dsa-name', dsName);
-              dsRow.appendChild(createFsIcon('images/folder.png', 'Folder'));
-
-              const lbl = document.createElement('span');
-              lbl.className = 'tree-label ds-label';
-              lbl.textContent = dsName;
-              dsRow.appendChild(lbl);
-              dsRow.appendChild(createFavStarButton(dsName));
-
-              dsRow.addEventListener('click', () => {
-                navigateToDsFolder(dsName);
-              });
-
-              const hint = document.createElement('div');
-              hint.className = 'search-path-hint';
-              hint.textContent = pathString;
-
-              dsWrap.appendChild(dsRow);
-              dsWrap.appendChild(hint);
-              algoTreeContainer.appendChild(dsWrap);
+              targetBucket.push(buildDsSearchElement(dsName, pathString));
             }
 
             // Matching Algorithms inside this Data Structure
             const algos = getFilteredAlgorithmsForDs(dsName);
             for (const algo of algos) {
               if (matchFn(rawQuery, algo.name) || algo.tags.some(t => matchFn(rawQuery, t))) {
-                anySearchMatch = true;
                 const fullAlgoPath = `${pathString} / Algorithms / ${algo.name}`;
-                algoTreeContainer.appendChild(createAlgorithmEntryElement(algo, dsName, fullAlgoPath));
+                targetBucket.push(createAlgorithmEntryElement(algo, dsName, fullAlgoPath));
               }
             }
 
@@ -7320,12 +7356,40 @@
 
         searchWalk(dataStructuresJson, []);
 
-        if (!anySearchMatch) {
+        if (currentFolderMatches.length === 0 && otherFolderMatches.length === 0) {
           const emptyEl = document.createElement('div');
           emptyEl.className = 'algo-empty-msg';
           emptyEl.textContent = 'No matching data structures or algorithms.';
           algoTreeContainer.appendChild(emptyEl);
+          return;
         }
+
+        // Render Current Folder matches first, followed by Other Folders
+        if (activeFolderDsPath.length > 0 && currentFolderMatches.length > 0) {
+          const curHeader = document.createElement('div');
+          curHeader.className = 'search-path-hint';
+          curHeader.style.padding = '0.2rem 0.35rem';
+          curHeader.style.fontWeight = '600';
+          curHeader.style.color = 'var(--text-bright)';
+          curHeader.textContent = `In ${activeFolderDsPath.join(' / ')}`;
+          algoTreeContainer.appendChild(curHeader);
+
+          currentFolderMatches.forEach(el => algoTreeContainer.appendChild(el));
+
+          if (otherFolderMatches.length > 0) {
+            const otherHeader = document.createElement('div');
+            otherHeader.className = 'search-path-hint';
+            otherHeader.style.padding = '0.45rem 0.35rem 0.2rem 0.35rem';
+            otherHeader.style.fontWeight = '600';
+            otherHeader.style.color = 'var(--text-bright)';
+            otherHeader.textContent = 'Other Folders';
+            algoTreeContainer.appendChild(otherHeader);
+          }
+        } else {
+          currentFolderMatches.forEach(el => algoTreeContainer.appendChild(el));
+        }
+
+        otherFolderMatches.forEach(el => algoTreeContainer.appendChild(el));
         return;
       }
 
@@ -8878,20 +8942,34 @@
       },
       metadata: {
         id: 'metadata-card',
-        fallbackIds: ['metadata-collapsed-strip', 'history-column', 'btnHistoryMobile'],
+        fallbackIds: ['mobile-metadata-body', 'btnHistoryMobile', 'metadata-collapsed-strip', 'history-column'],
         title: 'Metadata',
-        description: 'Displays key properties and structural details about the data structure.'
+        description: 'Displays key properties and structural details about the data structure.',
+        onEnter: () => {
+          if (typeof setDsaModalOpen === 'function') setDsaModalOpen(false);
+          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
+            if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(true);
+          }
+        }
       },
       history: {
         id: 'history-card',
-        fallbackIds: ['history-collapsed-strip', 'history-column', 'btnHistoryMobile'],
+        fallbackIds: ['mobile-history-body', 'btnHistoryMobile', 'history-collapsed-strip', 'history-column'],
         title: 'History',
-        description: 'Tracks your recent operations and modifications so you can review or revisit previous data structures.'
+        description: 'Tracks your recent operations and modifications so you can review or revisit previous data structures.',
+        onEnter: () => {
+          if (window.matchMedia && window.matchMedia('(max-width: 900px)').matches) {
+            if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(true);
+          }
+        }
       },
       fullscreen: {
         id: 'btnFullscreen',
         title: 'Fullscreen',
-        description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.'
+        description: 'Toggle fullscreen mode to maximize your workspace while visualizing complex structures.',
+        onEnter: () => {
+          if (typeof setMobileHistoryModalOpen === 'function') setMobileHistoryModalOpen(false);
+        }
       },
       grid: {
         id: 'grid-dropdown-wrapper',
