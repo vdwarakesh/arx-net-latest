@@ -198,25 +198,22 @@ class _WaitForUserChoice(Exception):
 class _GraphNeighborList(list):
     """In 'auto' mode, iterates in standard order.
     In 'manual' mode, treats ALL remaining incident edges of the current node
-    as choices whenever 2 or more edges remain to be inspected (including edges
-    leading to already-visited nodes, so the user can see the algorithm inspect
-    and skip visited neighbors or pick unvisited ones)."""
+    as choices whenever 2 or more edges remain to be inspected."""
     def __init__(self, graph, source_key, neighbors):
         super().__init__(neighbors)
         self._graph = graph
         self._source = str(source_key)
 
-    def __iter__(self):
+    def _iterate_items(self, items_list):
         if _sim_mode != 'manual':
-            for nb in super().__iter__():
+            for nb in items_list:
                 self._graph._on_edge_inspect(self._source, nb)
                 yield nb
             self._graph.active_edge = None
             return
 
-        remaining = list(super().__iter__())
+        remaining = list(items_list)
         while remaining:
-            # Prompt the user whenever 2 or more incident edges remain to be inspected
             if len(remaining) > 1:
                 if _user_choices:
                     chosen_id = str(_user_choices.pop(0))
@@ -258,6 +255,12 @@ class _GraphNeighborList(list):
             yield nb
 
         self._graph.active_edge = None
+
+    def __iter__(self):
+        return self._iterate_items(super().__iter__())
+
+    def __reversed__(self):
+        return self._iterate_items(super().__reversed__())
 
 class VisualGraph(dict):
     """Generic proxy for Graph, Directed Graph, Weighted Graph, Tree, etc."""
@@ -486,7 +489,15 @@ try:
         _eval_kwargs[_k] = _val
 
     def _build_state_vars(frame, executed_lineno):
-        loc = frame.f_locals
+        # Merge outer algorithm frame locals with current recursive frame locals
+        loc = {}
+        curr_f = frame
+        frames_chain = []
+        while curr_f is not None and curr_f.f_code.co_filename == '<algorithm>':
+            frames_chain.append(curr_f)
+            curr_f = curr_f.f_back
+        for f_item in reversed(frames_chain):
+            loc.update(f_item.f_locals)
         loop_var_names = _loop_targets.get(executed_lineno, [])
         loop_var_vals = [
             loc[name] for name in loop_var_names
@@ -507,7 +518,7 @@ try:
         global _step_count
         if frame.f_code.co_filename != '<algorithm>':
             return _tracer
-        if event not in ('line', 'return'):
+        if event not in ('call', 'line', 'return'):
             return _tracer
 
         _step_count += 1
@@ -515,6 +526,23 @@ try:
             raise _StepLimitExceeded(
                 f"Execution exceeded {_MAX_STEPS} steps (possible infinite loop)."
             )
+
+        # If a recursive call is starting, flush the caller frame's pending line immediately
+        # so the call line (e.g. 'dfs(neighbor)') appears BEFORE the callee's steps!
+        if event == 'call':
+            caller = frame.f_back
+            if caller is not None and caller.f_code.co_filename == '<algorithm>':
+                caller_fid = id(caller)
+                caller_pending = _pending_steps.pop(caller_fid, None)
+                if caller_pending is not None:
+                    caller_state = _build_state_vars(caller, caller_pending['line'])
+                    _trace_steps.append({
+                        'event': 'line',
+                        'line': caller_pending['line'],
+                        'stateVars': caller_state,
+                        'visual': _visual_ds.snapshot(),
+                    })
+            return _tracer
 
         fid = id(frame)
         pending = _pending_steps.pop(fid, None)
@@ -534,17 +562,19 @@ try:
             _visual_ds.on_step_start()
             _pending_steps[fid] = {'line': frame.f_lineno}
         else:  # 'return'
-            ret_val = _serialize(arg)
-            ret_state_vars = dict(state_vars)
-            ret_state_vars['return'] = ret_val
-            final_visual = _visual_ds.on_return(arg)
+            # Only trigger final on_return cleanup when the top-level algorithm function returns
+            if frame.f_code.co_name == _func_name:
+                ret_val = _serialize(arg)
+                ret_state_vars = dict(state_vars)
+                ret_state_vars['return'] = ret_val
+                final_visual = _visual_ds.on_return(arg)
 
-            _trace_steps.append({
-                'event': 'return',
-                'line': frame.f_lineno,
-                'stateVars': ret_state_vars,
-                'visual': final_visual,
-            })
+                _trace_steps.append({
+                    'event': 'return',
+                    'line': frame.f_lineno,
+                    'stateVars': ret_state_vars,
+                    'visual': final_visual,
+                })
 
         return _tracer
 
