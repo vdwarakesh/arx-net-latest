@@ -147,9 +147,6 @@ class VisualSequence(list):
         self.step_accessed_indices = set()
         self.last_op = None
 
-        if self.subtype == 'max_heap' and len(self) > 1:
-            pass
-
     def on_step_start(self):
         self.recent_accesses.clear()
         self.step_accessed_indices.clear()
@@ -542,7 +539,7 @@ class VisualLinkedList:
         self.active_node = None
         self.active_edge = None
         self.step_accessed_nodes.clear()
-        return self.snapshot(found_node= str(ret_val._id) if isinstance(ret_val, ListNode) else None)
+        return self.snapshot(found_node=str(ret_val._id) if isinstance(ret_val, ListNode) else None)
 
     def snapshot(self, found_node=None):
         nodes_ordered = self._reachable_nodes()
@@ -846,6 +843,13 @@ class VisualTree:
         s_key = str(key._id) if isinstance(key, TreeNode) else str(key)
         return s_key in self.all_nodes
 
+    def __iter__(self):
+        for nid in self.all_nodes.keys():
+            yield _NodeId(nid)
+
+    def keys(self):
+        return [_NodeId(nid) for nid in self.all_nodes.keys()]
+
     def on_step_start(self):
         self.step_accessed_nodes.clear()
         self.active_edge = None
@@ -1065,21 +1069,22 @@ class VisualGraph(dict):
         self.step_accessed_nodes.add(v_str)
 
     def _promote_discovered_edges(self, frame_locals):
-        for val in frame_locals.values():
-            if isinstance(val, (list, tuple, set, deque)):
-                for item in val:
-                    if isinstance(item, _NodeId) or str(item) in self:
-                        self._discovered_nodes.add(str(item))
-                    elif isinstance(item, tuple) and len(item) >= 2:
-                        for sub in item:
-                            if isinstance(sub, _NodeId) or str(sub) in self:
-                                self._discovered_nodes.add(str(sub))
-            elif isinstance(val, dict):
-                for k, v in val.items():
-                    if (isinstance(k, _NodeId) or str(k) in self) and v is not None and v != float('inf'):
-                        self._discovered_nodes.add(str(k))
         if not self.active_edge: return
         u_str, v_str = self.active_edge
+        
+        # Check only user queues/collections to see if node has been marked visited or enqueued
+        for var_name, val in frame_locals.items():
+            if var_name.startswith('_') or val is self:
+                continue
+            if isinstance(val, (list, tuple, set, deque)):
+                for item in val:
+                    if str(item) == v_str:
+                        self._discovered_nodes.add(v_str)
+                        break
+            elif isinstance(val, dict):
+                if str(v_str) in val:
+                    self._discovered_nodes.add(v_str)
+
         if v_str in self._discovered_nodes:
             pair = [u_str, v_str]
             if pair not in self.visited_edges:
@@ -1099,10 +1104,20 @@ class VisualGraph(dict):
         if s_key in self: return self[s_key]
         return default
 
+    # Passive iterations and lookups DO NOT trigger node visits
+    def __contains__(self, key):
+        s_key = _NodeId(str(key))
+        return super().__contains__(s_key)
+
     def __iter__(self):
-        for k in super().__iter__(): yield _NodeId(k)
-    def keys(self): return [_NodeId(k) for k in super().keys()]
-    def items(self): return [(_NodeId(k), self[k]) for k in super().keys()]
+        for k in super().__iter__():
+            yield _NodeId(k)
+
+    def keys(self):
+        return [_NodeId(k) for k in super().keys()]
+
+    def items(self):
+        return [(_NodeId(k), super().__getitem__(k)) for k in super().keys()]
 
     def on_line_fallback(self, loop_target_vars, frame_locals):
         for val in loop_target_vars:
@@ -1368,19 +1383,19 @@ class VisualHash:
     def __delitem__(self, key):
         self._record_key(key, status='REMOVE')
         del self._store[key]
+
+    # Passive membership check should not trigger visited state
     def __contains__(self, key):
-        hit = key in self._store
-        self._record_key(key, self._store.get(key), status='HIT' if hit else 'MISS')
-        return hit
+        return key in self._store
 
     def keys(self): return list(self._store.keys())
     def values(self): return list(self._store.values()) if not self.is_set else list(self._store.keys())
     def items(self): return list(self._store.items())
 
+    # Passive iteration should not mark all items as visited
     def __iter__(self):
-        for k in list(self._store.keys()):
-            self._record_key(k, self._store.get(k))
-            yield k
+        return iter(self._store)
+
     def __len__(self): return len(self._store)
 
     def on_step_start(self):
